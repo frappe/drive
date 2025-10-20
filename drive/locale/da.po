@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: frappe\n"
 "Report-Msgid-Bugs-To: developers@frappe.io\n"
 "POT-Creation-Date: 2025-10-10 16:11+0000\n"
-"PO-Revision-Date: 2025-10-15 02:15\n"
+"PO-Revision-Date: 2025-10-20 02:54\n"
 "Last-Translator: developers@frappe.io\n"
 "Language-Team: Danish\n"
 "MIME-Version: 1.0\n"
@@ -96,7 +96,7 @@ msgstr "Alle"
 #. Label of the allow_download (Check) field in DocType 'Drive File'
 #: drive/drive/doctype/drive_file/drive_file.json
 msgid "Allow Download"
-msgstr ""
+msgstr "Tillad Download"
 
 #: frontend/src/components/Sidebar.vue:101
 msgid "Apps"
@@ -189,7 +189,7 @@ msgstr "Udvikler"
 #. Settings'
 #: drive/drive/doctype/drive_disk_settings/drive_disk_settings.json
 msgid "Disk"
-msgstr ""
+msgstr "Disk"
 
 #. Label of the flat (Check) field in DocType 'Drive Disk Settings'
 #: drive/drive/doctype/drive_disk_settings/drive_disk_settings.json
@@ -240,7 +240,7 @@ msgstr "Drive Kommentar"
 #. Name of a DocType
 #: drive/drive/doctype/drive_desktop_client/drive_desktop_client.json
 msgid "Drive Desktop Client"
-msgstr ""
+msgstr "Skrivebordsklient"
 
 #. Name of a DocType
 #: drive/drive/doctype/drive_disk_settings/drive_disk_settings.json
@@ -250,7 +250,7 @@ msgstr "Drive Disk Indstillinger"
 #. Name of a DocType
 #: drive/drive/doctype/drive_doc_version/drive_doc_version.json
 msgid "Drive Doc Version"
-msgstr ""
+msgstr "Doc Version"
 
 #. Name of a DocType
 #: drive/drive/doctype/drive_document/drive_document.json
@@ -292,12 +292,12 @@ msgstr "Drive Fil"
 #. Name of a DocType
 #: drive/drive/doctype/drive_file_update/drive_file_update.json
 msgid "Drive File Update"
-msgstr ""
+msgstr "Fil Opdatering"
 
 #. Label of the root_folder (Data) field in DocType 'Drive Disk Settings'
 #: drive/drive/doctype/drive_disk_settings/drive_disk_settings.json
 msgid "Drive Folder"
-msgstr ""
+msgstr "Mappe"
 
 #. Name of a DocType
 #: drive/drive/doctype/drive_notification/drive_notification.json
@@ -457,7 +457,7 @@ msgstr "Ip Adresse"
 #. Label of the icon (Data) field in DocType 'Drive Team'
 #: drive/drive/doctype/drive_team/drive_team.json
 msgid "Icon"
-msgstr ""
+msgstr "Ikon"
 
 #. Description of the 'Storage' (Int) field in DocType 'Drive Team'
 #. Description of the 'Quota' (Int) field in DocType 'Drive Team'
@@ -535,11 +535,11 @@ msgstr "Ældre indstillinger.\n"
 
 #: drive/public/js/TreeNode.vue:52
 msgid "Load more"
-msgstr ""
+msgstr "Indlæs mere"
 
 #: drive/public/js/TreeNode.vue:52
 msgid "Loading..."
-msgstr ""
+msgstr "Indlæser..."
 
 #: frontend/src/components/Sidebar.vue:151
 msgid "Log out"
@@ -568,7 +568,7 @@ msgstr "Administrér Diskindstillinger"
 #. Label of the manual (Check) field in DocType 'Drive Doc Version'
 #: drive/drive/doctype/drive_doc_version/drive_doc_version.json
 msgid "Manual"
-msgstr ""
+msgstr "Manuel"
 
 #. Option for the 'Type' (Select) field in DocType 'Drive Notification'
 #: drive/drive/doctype/drive_notification/drive_notification.json
@@ -620,7 +620,7 @@ msgstr "Ny Tag"
 
 #: frontend/src/components/Settings/UserListSettings.vue:361
 msgid "New Team"
-msgstr ""
+msgstr "Nyt Team"
 
 #. Label of the new_value (Data) field in DocType 'Drive Entity Activity Log'
 #: drive/drive/doctype/drive_entity_activity_log/drive_entity_activity_log.json
@@ -659,7 +659,7 @@ msgstr "Gammel Værdi"
 #. Description of the 'S3 Bucket' (Data) field in DocType 'Drive Team'
 #: drive/drive/doctype/drive_team/drive_team.json
 msgid "Only applies if S3 is turned on."
-msgstr ""
+msgstr "Gælder kun, hvis S3 er aktiveret."
 
 #: frontend/src/components/GenericPage.vue:290
 msgid "Open"
@@ -668,7 +668,7 @@ msgstr "Åben"
 #: drive/drive/doctype/drive_file/drive_file.js:9
 #: drive/drive/doctype/drive_team/drive_team.js:6
 msgid "Open in Drive"
-msgstr ""
+msgstr "Åbn i Drive"
 
 #: frontend/src/components/Sidebar.vue:141
 msgid "Others"
@@ -697,12 +697,12 @@ msgstr "Afventer"
 
 #: drive/drive/doctype/drive_file/drive_file.js:6
 msgid "Permissions"
-msgstr ""
+msgstr "Rettigheder"
 
 #. Label of the personal (Check) field in DocType 'Drive Team'
 #: drive/drive/doctype/drive_team/drive_team.json
 msgid "Personal"
-msgstr ""
+msgstr "Personlig"
 
 #: frontend/src/components/Settings/ProfileSettings.vue:94
 msgid "Preferences"
@@ -711,7 +711,7 @@ msgstr "Indstillinger"
 #. Label of the prefix (Data) field in DocType 'Drive Team'
 #: drive/drive/doctype/drive_team/drive_team.json
 msgid "Prefix"
-msgstr ""
+msgstr "Præfiks"
 
 #: frontend/src/components/GenericPage.vue:284
 msgid "Preview"
@@ -720,7 +720,7 @@ msgstr "Forhåndsvisning"
 #. Label of the preview_size (Int) field in DocType 'Drive Disk Settings'
 #: drive/drive/doctype/drive_disk_settings/drive_disk_settings.json
 msgid "Preview size"
-msgstr ""
+msgstr "Forhåndsvisning størrelse"
 
 #: frontend/src/components/Settings/ProfileSettings.vue:3
 msgid "Profile"
@@ -734,7 +734,7 @@ msgstr "Foreslået"
 #. Description of the 'Updates' (Table) field in DocType 'Drive Desktop Client'
 #: drive/drive/doctype/drive_desktop_client/drive_desktop_client.json
 msgid "Queue for all the un-applied changes in the desktop."
-msgstr ""
+msgstr "Kø til alle uanvendte ændringer på skrivebordet."
 
 #. Label of the quota (Int) field in DocType 'Drive Team'
 #: drive/drive/doctype/drive_team/drive_team.json
@@ -956,7 +956,7 @@ msgstr "Teams"
 
 #: frontend/src/components/TagInput.vue:21
 msgid "This file has no tags"
-msgstr ""
+msgstr "Denne fil har ingen tags"
 
 #. Label of the thumbnail_prefix (Data) field in DocType 'Drive Disk Settings'
 #: drive/drive/doctype/drive_disk_settings/drive_disk_settings.json
@@ -1004,7 +1004,7 @@ msgstr "Fjern fra favoritter"
 #. Label of the updates (Table) field in DocType 'Drive Desktop Client'
 #: drive/drive/doctype/drive_desktop_client/drive_desktop_client.json
 msgid "Updates"
-msgstr ""
+msgstr "Opdateringer"
 
 #. Label of the upload (Check) field in DocType 'Drive Permission'
 #: drive/drive/doctype/drive_permission/drive_permission.json
@@ -1015,7 +1015,7 @@ msgstr "Overfør"
 #. Settings'
 #: drive/drive/doctype/drive_disk_settings/drive_disk_settings.json
 msgid "Used to configure maximum file sizes of in-browser previews (in megabytes)."
-msgstr ""
+msgstr "Bruges til at konfigurere maksimale filstørrelser for forhåndsvisninger i browseren (i megabyte)."
 
 #. Label of the user (Link) field in DocType 'Drive Desktop Client'
 #. Label of the user (Link) field in DocType 'Drive Entity Log'
@@ -1045,7 +1045,7 @@ msgstr "Version"
 #. Label of the versions (Table) field in DocType 'Drive Document'
 #: drive/drive/doctype/drive_document/drive_document.json
 msgid "Versions"
-msgstr ""
+msgstr "Versioner"
 
 #: frontend/src/components/DriveToolBar.vue:26
 msgid "With you"
@@ -1069,7 +1069,7 @@ msgstr "Forfatter"
 #. Label of the writer_settings (JSON) field in DocType 'Drive Settings'
 #: drive/drive/doctype/drive_settings/drive_settings.json
 msgid "Writer Settings"
-msgstr ""
+msgstr "Skribentindstillinger"
 
 #: frontend/src/components/Settings/StorageSettings.vue:19
 msgid "You"
@@ -1122,7 +1122,7 @@ msgstr "flytte"
 #. Option for the 'Team Prefix' (Select) field in DocType 'Drive Disk Settings'
 #: drive/drive/doctype/drive_disk_settings/drive_disk_settings.json
 msgid "none"
-msgstr ""
+msgstr "ingen"
 
 #: frontend/src/components/InfoPopup.vue:119
 msgid "people"
