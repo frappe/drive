@@ -412,7 +412,7 @@ const navBarActions = computed(
                 onClick: exportBlog,
                 label: "Export Blog",
                 icon: LucideImageDown,
-                cond: apps.data.find((k) => k.name === "blog"),
+                cond: apps.data && apps.data.find((k) => k.name === "blog"),
               },
             ]),
           },

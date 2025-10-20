@@ -449,12 +449,16 @@ def save_doc(entity_name, doc_name=None, content=None, yjs=None, comment=False):
                 frappe.db.set_value("Drive Document", doc_name, "raw_content", content)
             if yjs:
                 frappe.db.set_value("Drive Document", doc_name, "content", yjs)
+                file = frappe.get_doc("Drive File", entity_name)
+                file._modified = frappe.utils.now()
+                file.file_size = len(yjs.encode("utf-8"))
+                file.save(ignore_permissions=True)
         except (frappe.exceptions.QueryDeadlockError, frappe.exceptions.TimestampMismatchError):
             if yjs:
                 # Pass if there's a deadlock, as CRDT is supposed to take care of it.
-                frappe.log_error(f"There was a collision, not storing data -{entity_name}, {doc_name}")
+                frappe.log_error(f"There was a collision, not storing data - {entity_name}, {frappe.session.user}")
             else:
-                frappe.throw("There was a conflict - consider turning on collaborative mode.")
+                frappe.throw("This schema doesn't support collaboration - you will likely lose data.")
     else:
         # Text based files
         # BROKEN - should reparse markdown files.
@@ -464,13 +468,13 @@ def save_doc(entity_name, doc_name=None, content=None, yjs=None, comment=False):
         path = frappe.db.get_value("Drive File", entity_name, "path")
         FileManager().write_file(path, md_content)
 
-    file = frappe.get_doc("Drive File", entity_name)
-    file._modified = frappe.utils.now()
-    if content:
-        file.file_size = len(content.encode("utf-8"))
-    if yjs:
-        file.file_size = len(yjs.encode("utf-8"))
-    file.save()
+    if not yjs:
+        file = frappe.get_doc("Drive File", entity_name)
+        file._modified = frappe.utils.now()
+        if content:
+            file.file_size = len(content.encode("utf-8"))
+
+        file.save()
 
     if content:
         mentions = extract_mentions(content)
