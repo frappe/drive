@@ -92,6 +92,10 @@
     }
   }
 
+  .ProseMirror h1,h2,h3{
+    font-weight: 600;
+  }
+  
   .ProseMirror span[data-comment-id] {
     border: none;
     background: transparent;
