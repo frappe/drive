@@ -92,10 +92,32 @@
     }
   }
 
-  .ProseMirror h1,h2,h3{
+  .ProseMirror h1,
+  h2,
+  h3 {
     font-weight: 600;
   }
+
+  .ProseMirror blockquote {
+    font-weight: 500;
+    font-style: italic;
+    border-inline-start-width: 0.25rem;
+    margin-top: 1.6em;
+    margin-bottom: 1.6em;
+    padding-inline-start: 1em;
+    position: relative;
+  }
+
+  .ProseMirror blockquote p:first-child::before {
+    content: open-quote;
+  }
+
+  .ProseMirror blockquote p:last-child::after {
+    content: close-quote;
+  }
+
   
+
   .ProseMirror span[data-comment-id] {
     border: none;
     background: transparent;
@@ -159,7 +181,7 @@
     float: right;
     margin-left: 1rem;
   }
-
+  
   video[dataalign="left"] {
     display: block;
     margin-right: auto;
