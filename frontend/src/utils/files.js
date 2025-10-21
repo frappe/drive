@@ -21,6 +21,7 @@ import { useFileUpload, toast as nToast } from "frappe-ui"
 import emitter from "@/emitter"
 import { saveAs } from "file-saver"
 import jszip from "jszip"
+import TurndownService from "turndown"
 
 export const openEntity = (entity, new_tab = false) => {
   if (!entity.is_group) {
@@ -369,6 +370,40 @@ export function enterFullScreen() {
     /* IE/Edge */
     elem.msRequestFullscreen()
   }
+}
+
+export async function downloadMD(editor, foldername){
+  var html = editor.value.getHTML()
+  const turndownService = new TurndownService({
+    headingStyle: "atx",
+    codeBlockStyle: "fenced",
+    bulletListMarker: "-"
+  })
+
+  const zip = new jszip()
+  const urls = editor.value.commands.getEmbedUrls()
+  const getExtension = createResource({
+    url: "drive.api.docs.get_extension",
+  })
+  const parent = router.currentRoute.value.params.entityName
+  for (const i in urls) {
+    const ext = await getExtension.fetch({ entity_name: urls[i].name })
+    const pattern =
+    /src="\/api\/method\/drive\.api\.embed\.get_file_content[^"]+"/
+    html = html.replace(pattern, `src="./${i}.${ext}"`)
+    const fileUrl = `/api/method/drive.api.embed.get_file_content?embed_name=${encodeURIComponent(
+      urls[i].name
+    )}&parent_entity_name=${encodeURIComponent(parent)}`
+    const res = await fetch(fileUrl)
+    const blob = await res.blob()
+    zip.file(`${i}.${ext}`, blob)
+  }
+  
+  const markdown = turndownService.turndown(html)
+  const blob = new Blob([markdown], { type: "text/markdown;charset=utf-8" })
+  zip.file("file.md", blob)
+  const blobzip = await zip.generateAsync({ type: "blob", compression: "DEFLATE" })
+  saveAs(blobzip, `${foldername}.zip`)
 }
 
 export async function downloadZippedHTML(editor, foldername) {

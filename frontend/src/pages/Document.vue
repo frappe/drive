@@ -197,7 +197,8 @@ import {
   setBreadCrumbs,
   prettyData,
   updateURLSlug,
-  downloadZippedHTML
+  downloadZippedHTML,
+  downloadMD
 } from "@/utils/files"
 import { allUsers } from "@/resources/permissions"
 import VersionsSidebar from "@/components/DocEditor/components/VersionsSidebar.vue"
@@ -221,6 +222,7 @@ import LucideLockOpen from "~icons/lucide/lock-open"
 import LucideWifiOff from "~icons/lucide/wifi-off"
 import LucideFileWarning from "~icons/lucide/file-warning"
 import LucideFolderArchive from "~icons/lucide/folder-archive"
+import LucideMarkdown from "~icons/lucide/pilcrow"
 import LucideFileText from "~icons/lucide/file-text"
 import { dynamicList } from "@/utils/files"
 import { useTemplateRef } from "vue"
@@ -480,6 +482,13 @@ const navBarActions = computed(
                 onClick: () => {
                   console.log(entity.value.title)
                   downloadZippedHTML(editorValue, entity.value.title)},
+              },
+              {
+                label: "Markdown",
+                icon: LucideMarkdown,
+                onClick: () => {
+                  console.log(entity.value.title)
+                  downloadMD(editorValue, entity.value.title)},
               },
             ],
           },
