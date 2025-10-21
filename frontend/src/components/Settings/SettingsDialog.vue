@@ -15,12 +15,12 @@
             <h1 class="text-xl font-semibold leading-6 text-ink-gray-9 pr-2">
               {{ __("Settings") }}
             </h1>
-            <Button
+            <!-- <Button
               class="ml-auto text-sm"
               variant="ghost"
               label="Exit"
               @click="$emit('update:modelValue', false)"
-            />
+            /> -->
           </div>
           <div class="mt-3 space-y-1">
             <template

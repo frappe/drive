@@ -259,13 +259,23 @@ const showComments = ref(false)
 const showVersions = ref(false)
 const showSettings = ref(false)
 const edited = ref(false)
+const owner = computed(() => entity.value?.owner)
+const isOldSchema = computed(() => {
+  if (!owner.value) return false
+  return (
+    !docSettings?.doc?.settings?.collab && store.state.user.id !== owner.value
+  )
+})
+
 const editable = computed(
-  () => !!entity?.value?.write && !docSettings?.doc?.settings?.lock
+  () =>
+    !!entity?.value?.write &&
+    !docSettings?.doc?.settings?.lock &&
+    !isOldSchema.value
 )
 watch(showVersions, (v) => {
   if (!v) current.value = null
 })
-
 let docSettings, globalSettings
 const isFrappeDoc = computed(
   () => entity.value && entity.value.mime_type === "frappe_doc"
@@ -489,6 +499,10 @@ const navBarActions = computed(
                 onClick: () => {
                   console.log(entity.value.title)
                   downloadMD(editorValue, entity.value.title)},
+                onClick: exportBlog,
+                label: "Export Blog",
+                icon: LucideImageDown,
+                cond: apps.data && apps.data.find((k) => k.name === "blog"),
               },
             ],
           },
@@ -546,10 +560,12 @@ const navBarActions = computed(
 )
 
 const toggleMinimal = (val) => {
+  const sidebar = window.document.querySelector("#sidebar")
+  if (!sidebar) return
   if (val) {
-    window.document.querySelector("#sidebar").style.display = "none"
+    sidebar.style.display = "none"
   } else {
-    window.document.querySelector("#sidebar").style.removeProperty("display")
+    sidebar.style.removeProperty("display")
   }
 }
 
@@ -638,5 +654,18 @@ onBeforeUnmount(() => {
   if (edited.value) saveDocument()
   const sidebar = window.document.querySelector("#sidebar")
   if (sidebar) sidebar.style.removeProperty("display")
+})
+
+let toasted
+watch(isOldSchema, (v) => {
+  if (docSettings?.doc?.settings && entity.value.write && v && !toasted) {
+    toast({
+      title:
+        "This document uses an old schema. Collaborative editing is disabled.",
+      type: "warning",
+      duration: 8000,
+    })
+    toasted = true
+  }
 })
 </script>

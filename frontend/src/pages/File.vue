@@ -13,7 +13,7 @@
         v-else
         id="renderContainer"
         :draggable="false"
-        class="w-full p-10 flex-grow w-full flex justify-center align-center items-center relative"
+        class="w-full px-10 py-5 flex-grow w-full flex justify-center align-center items-center relative"
       >
         <Button
           class="text-ink-gray-8 absolute top-4 left-4"

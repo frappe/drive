@@ -23,7 +23,7 @@
         class="my-auto"
         @click="
           rejectInvite.submit({ key: invite.name }),
-          getInvites.data.splice(index, 1)
+            getInvites.data.splice(index, 1)
         "
       >
         <LucideX
@@ -58,7 +58,8 @@
     <div class="py-1 flex justify-between">
       <div>
         You have an invite to join
-        <span class="font-medium">{{ invite.team_name }}</span>.
+        <span class="font-medium">{{ invite.team_name }}</span
+        >.
       </div>
     </div>
   </Alert>
@@ -156,8 +157,8 @@
                       user.access_level == 2
                         ? "Manager"
                         : user.access_level == 1
-                          ? "User"
-                          : "Guest"
+                        ? "User"
+                        : "Guest"
                     )
                   }}
                   <template #suffix>
@@ -180,11 +181,13 @@
                   user.access_level == 2
                     ? "Manager"
                     : user.access_level == 1
-                      ? "User"
-                      : "Guest"
+                    ? "User"
+                    : "Guest"
                 )
               }}
-              <template v-if="user.name === $store.state.user.id">(you)</template>
+              <template v-if="user.name === $store.state.user.id"
+                >(you)</template
+              >
             </span>
           </div>
         </div>
@@ -210,7 +213,8 @@
                 <span class="text-base my-auto text-ink-gray-8">{{
                   invite.email
                 }}</span>
-                <span class="text-xs text-ink-gray-5">Invited by
+                <span class="text-xs text-ink-gray-5"
+                  >Invited by
                   <UserTooltip :email="invite.owner" />
                 </span>
               </div>
@@ -239,7 +243,7 @@
                     class="my-auto"
                     @click="
                       rejectInvite.submit({ key: invite.name }),
-                      invites.data.splice(index, 1)
+                        invites.data.splice(index, 1)
                     "
                   >
                     <LucideX
@@ -259,7 +263,7 @@
                     variant="outline"
                     @click="
                       acceptInvite.submit({ key: invite.name, redirect: 0 }),
-                      invites.data.splice(index, 1)
+                        invites.data.splice(index, 1)
                     "
                   >
                     <LucideCheck class="size-4" />
@@ -324,7 +328,7 @@
               @keydown="isValidEmail"
               @keydown.enter.capture.stop="extractEmails"
               @keydown.space.prevent.stop="extractEmails"
-            >
+            />
           </div>
         </div>
       </div>
@@ -578,11 +582,13 @@ const isAdmin = createResource({
   url: "drive.api.permissions.is_admin",
 })
 
+console.log(route.params.team)
 const team = ref(
-  route.params.team || getTeams.data ? Object.keys(getTeams.data)[0] : null
+  route.params.team || (getTeams.data ? Object.keys(getTeams.data)[0] : null)
 )
 
 const teamData = computed(() => getTeams.data?.[team.value] || {})
+console.log(teamData.value)
 watch(
   team,
   (team) => {

@@ -103,7 +103,7 @@ class DriveFile(Document):
         new_team = new_team or self.team
         new_parent = new_parent or get_home_folder(new_team).name
 
-        if new_parent == self.parent_entity:
+        if new_parent == self.parent_entity: 
             frappe.throw("You can't move to the current folder.")
 
         if new_parent == self.name:

@@ -314,6 +314,7 @@ let prov, doc, localstorage
 const collab = computed(() => props.settings?.collab)
 import { yDocToProsemirrorJSON } from "y-prosemirror"
 import { Editor } from "@tiptap/core"
+import { isModKey } from "@/utils/files"
 
 if (collab.value) {
   doc = new Y.Doc({ gc: true })
@@ -533,7 +534,7 @@ const createNewComment = (editor) => {
 
 // Events
 onKeyDown("p", (e) => {
-  if (e.metaKey) {
+  if (isModKey(e)) {
     e.preventDefault()
     if (editor.value) printDoc(editor.value.getHTML(),false)
   }

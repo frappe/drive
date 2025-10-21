@@ -1,16 +1,31 @@
 <template>
   <div
     v-if="isMobile"
-    class="flex flex-col w-96 h-full justify-between grow"
+    class="flex flex-col gap-3 w-96 h-full justify-between grow"
   >
-    <div class="grow flex items-center">
+    <div class="flex gap-2 justify-center items-center">
+      <Button
+        @click="scale = scale > 0.25 ? scale - 0.25 : scale"
+        :disabled="scale == 0.25"
+        label="-"
+      />
+      <span class="text-sm">{{ scale * 100 }}%</span>
+      <Button
+        @click="scale = scale < 2 ? scale + 0.25 : scale"
+        :disabled="scale == 2"
+        label="+"
+      />
+    </div>
+    <div class="grow flex items-center border rounded-sm max-h-[70vh]">
       <VuePDF
-        class="border rounded-sm overflow-y-auto overflow-x-hidden max-h-[80vh]"
+        class="rounded-sm overflow-y-auto overflow-x-auto w-full h-full"
         :pdf
         :page
-        fit-parent
+        :scale
         :text-layer="true"
-      />
+      >
+        <LoadingIndicator class="w-10 text-neutral-100 mx-auto h-full" />
+      </VuePDF>
     </div>
     <div
       v-if="pages"
@@ -38,6 +53,7 @@
 
 <script setup>
 import { computed, ref } from "vue"
+import { LoadingIndicator } from "frappe-ui"
 import { breakpointsTailwind, useBreakpoints } from "@vueuse/core"
 import { VuePDF, usePDF } from "@tato30/vue-pdf"
 import "@tato30/vue-pdf/style.css"
@@ -52,9 +68,10 @@ const src = computed(
     `/api/method/drive.api.files.get_file_content?entity_name=${props.previewEntity.name}`
 )
 
-let page, pages, pdf
+let page, pages, pdf, scale
 if (isMobile.value) {
   page = ref(1)
+  scale = ref(1)
   ;({ pages, pdf } = usePDF(src.value))
 }
 </script>
