@@ -116,8 +116,6 @@
     content: close-quote;
   }
 
-  
-
   .ProseMirror span[data-comment-id] {
     border: none;
     background: transparent;
