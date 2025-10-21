@@ -25,6 +25,10 @@ body {
   padding: 1rem 2.5rem;
 }
 
+.prose strong,b {
+  color: inherit !important;
+}
+
 .collaboration-cursor__caret {
   border-left: 0px solid currentColor;
   border-right: 2px solid currentColor;
