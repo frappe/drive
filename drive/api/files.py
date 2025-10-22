@@ -548,8 +548,9 @@ def get_file_content(entity_name, trigger_download=0, jwt_token=None):
         frappe.throw("Not found", frappe.NotFound)
 
     if drive_file.document:
-        html = frappe.get_value("Drive Document", drive_file.document, "raw_content")
-        return html
+        frappe.local.response["type"] = "redirect"
+        frappe.local.response["location"] = "/drive/w/" + entity_name
+        return
     else:
         manager = FileManager()
         return send_file(
