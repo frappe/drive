@@ -14,7 +14,7 @@
       ]"
       :draggable="true"
       @contextmenu="(e) => !selections.size && contextMenu(e, row)"
-      @[action]="!selections.size && open(row)"
+      @[action]="!isModKey($event) && !selections.size && open(row)"
       @dragstart="draggedItem = row.name"
       @dragend="draggedItem = null"
       @dragover="row.is_group && $event.preventDefault()"
@@ -35,7 +35,7 @@
 <script setup>
 import { ListRow } from "frappe-ui"
 import CustomListRowItem from "./CustomListRowItem.vue"
-import { openEntity } from "@/utils/files"
+import { openEntity, isModKey } from "@/utils/files"
 import { settings } from "@/resources/permissions"
 import { useRoute } from "vue-router"
 import { useStore } from "vuex"
