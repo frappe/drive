@@ -530,8 +530,8 @@ export const pasteObj = (e) => {
     const file = clipboardItems
       .find((item) => item.type.includes("image"))
       ?.getAsFile()
-    if (file) {
-      const route = router.currentRoute.value
+    const route = router.currentRoute.value
+    if (file && ["Home", "Folder", "Team"].includes(route.name)) {
       const entity = uploadImage(file, {
         team: route.params.team,
         parent: route.params.entityName || "",
@@ -688,7 +688,6 @@ export const newExternal = async (type) => {
     ? createDocument
     : createPresentation
   ).submit({
-    title: "Untitled " + type,
     team: route.params.team,
     parent: store.state.currentFolder.name,
   })

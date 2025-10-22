@@ -103,7 +103,7 @@ class DriveFile(Document):
         new_team = new_team or self.team
         new_parent = new_parent or get_home_folder(new_team).name
 
-        if new_parent == self.parent_entity: 
+        if new_parent == self.parent_entity:
             frappe.throw("You can't move to the current folder.")
 
         if new_parent == self.name:
@@ -270,7 +270,7 @@ class DriveFile(Document):
             return self
 
         validated_name = get_new_title(new_title, self.parent_entity, self.is_group, self.name)
-        if new_title != validated_name and new_title != "Untitled Document":
+        if new_title != validated_name:
             return frappe.throw(
                 f"{'Folder' if self.is_group else 'File'} '{new_title}' already exists\n Try '{validated_name}' ",
                 FileExistsError,
@@ -291,7 +291,7 @@ class DriveFile(Document):
         self.title = new_title
         path = self.manager.rename(self)
 
-        if self.path and not self.mime_type.startswith("frappe"):
+        if self.path and self.mime_type != "frappe/slides":
             self.recursive_path_move(self.path, path)
 
         self.save()

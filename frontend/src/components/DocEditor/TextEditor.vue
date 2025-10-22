@@ -173,8 +173,6 @@ import H2 from "./icons/h-2.vue"
 import H3 from "./icons/h-3.vue"
 import LucideMessageCircle from "~icons/lucide/message-circle"
 
-import { Doc, applyUpdate } from "yjs"
-
 import store from "@/store"
 import emitter from "@/emitter"
 import { rename } from "@/resources/files"

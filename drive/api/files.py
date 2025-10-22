@@ -235,10 +235,13 @@ def create_presentation(title, team, parent=None):
 
 @frappe.whitelist()
 @default_team
-def create_document_entity(title, team, parent=None):
+def create_document_entity(team, title=None, parent=None):
     home_directory = get_home_folder(team)
     parent = parent or home_directory.name
+    parent_doc = frappe.get_cached_doc("Drive File", parent)
     team = frappe.db.get_value("Drive File", parent, "team")
+    if not title:
+        title = get_new_title("Untitled Document", parent)
 
     if not user_has_permission(parent, "upload"):
         frappe.throw(
@@ -250,12 +253,35 @@ def create_document_entity(title, team, parent=None):
     drive_doc.settings = '{"collab": true}'
     drive_doc.save()
 
+    manager = FileManager()
+    path = manager.create_folder(
+        frappe._dict(
+            {
+                "title": title,
+                "parent_path": Path(parent_doc.path or ""),
+                "team": team,
+                "parent_entity": parent_doc.name,
+            }
+        ),
+        home_directory,
+    )
+    manager.create_folder(
+        frappe._dict(
+            {
+                "title": ".embeds",
+                "team": team,
+                "parent_path": path,
+            }
+        ),
+        home_directory,
+    )
+
     entity = create_drive_file(
         team,
         title,
         parent,
         "frappe_doc",
-        lambda _: "",
+        lambda _: path,
         document=drive_doc.name,
     )
     return entity
@@ -313,9 +339,8 @@ def create_folder(team, title, parent=None):
         frappe._dict(
             {
                 "title": title,
+                "team": team,
                 "parent_path": Path(parent_doc.path or ""),
-                "is_group": 1,
-                "parent_entity": parent_doc.name,
             }
         ),
         home_folder,
