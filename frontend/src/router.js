@@ -111,20 +111,25 @@ const routes = [
     component: Dummy,
     beforeEnter: async (to) => {
       const entity = createResource({
-        url: "/api/method/drive.api.files.get_entity_type",
+        url: "/api/method/drive.api.permissions.get_entity_with_permissions",
         method: "GET",
         params: {
           entity_name: to.params.entityName,
         },
       })
       await entity.fetch()
-      const letter = {
-        folder: "d",
-        document: "w",
-        file: "f",
-      }[entity.data.type]
+      
+      const file_type = entity.data.file_type
+      let letter = "f" // default to file
+      
+      if (file_type === "Folder") {
+        letter = "d"
+      } else if (file_type === "Document" || file_type === "Frappe Document") {
+        letter = "w"
+      }
+      
       return {
-        path: `/${letter}/${entity.data.name}`,
+        path: `/${letter}/${to.params.entityName}`,
       }
     },
   },

@@ -135,13 +135,12 @@ def get_teams(user=None, details=None, exclude_personal=True):
 
 
 @frappe.whitelist(allow_guest=True)
-def get_entity_with_permissions(entity_name, expected_type=None):
+def get_entity_with_permissions(entity_name):
     """
-    Return file data with permissions
+    Return file data with permissions. Validates that the request path matches
+    the entity type and returns redirect information if there's a mismatch.
     
     :param entity_name: Name of the entity to fetch
-    :param expected_type: Expected entity type ('file', 'folder', or 'document'). 
-                         If provided and doesn't match, returns redirect info
     """
     entity = frappe.db.get_value(
         "Drive File",
@@ -152,13 +151,26 @@ def get_entity_with_permissions(entity_name, expected_type=None):
     if not entity:
         frappe.throw("We couldn't find what you're looking for.", {"error": frappe.NotFound})
 
-    # Determine actual entity type
-    if entity.document or entity.mime_type == "text/markdown":
-        actual_type = "document"
-    elif entity.is_group:
+    # Determine actual entity type using get_file_type
+    file_type = get_file_type(entity)
+    
+    # Map file_type to route type (Document, Folder, or anything else is file)
+    if file_type == "Folder":
         actual_type = "folder"
+    elif file_type in ["Document", "Frappe Document"]:
+        actual_type = "document"
     else:
         actual_type = "file"
+    
+    request_path = frappe.request.path
+    expected_type = None
+    
+    if "/w/" in request_path:
+        expected_type = "document"
+    elif "/d/" in request_path:
+        expected_type = "folder"
+    elif "/f/" in request_path:
+        expected_type = "file"
     
     # Check if type matches expected type and return redirect if mismatch
     if expected_type and expected_type != actual_type:

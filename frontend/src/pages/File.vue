@@ -125,16 +125,17 @@ const onSuccess = async (entity) => {
 
 const file = createResource({
   url: "drive.api.permissions.get_entity_with_permissions",
-  params: { entity_name: props.entityName, expected_type: "file" },
-  transform(entity) {
-    if (entity.redirect) {
-      router.push(entity.route)
-      return null
+  params: { entity_name: props.entityName },
+  onSuccess(data) {
+    if (data.redirect) {
+      router.push(data.route)
+      return
     }
-    store.commit("setActiveEntity", entity)
-    return prettyData([entity])[0]
+    store.commit("setActiveEntity", data)
+    const prettyEntity = prettyData([data])[0]
+    file.setData(prettyEntity)
+    onSuccess(prettyEntity)
   },
-  onSuccess,
 })
 store.commit("setCurrentResource", file)
 
