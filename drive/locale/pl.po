@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: frappe\n"
 "Report-Msgid-Bugs-To: developers@frappe.io\n"
 "POT-Creation-Date: 2025-10-10 16:11+0000\n"
-"PO-Revision-Date: 2025-10-15 02:15\n"
+"PO-Revision-Date: 2025-10-26 04:11\n"
 "Last-Translator: developers@frappe.io\n"
 "Language-Team: Polish\n"
 "MIME-Version: 1.0\n"
@@ -336,7 +336,7 @@ msgstr ""
 
 #: frontend/src/components/Settings/UserListSettings.vue:522
 msgid "Edit"
-msgstr ""
+msgstr "Edytuj"
 
 #: frontend/src/components/Settings/ProfileSettings.vue:26
 msgid "Edit Profile"
@@ -532,7 +532,7 @@ msgstr ""
 
 #: drive/public/js/TreeNode.vue:52
 msgid "Load more"
-msgstr ""
+msgstr "Załaduj więcej"
 
 #: drive/public/js/TreeNode.vue:52
 msgid "Loading..."
@@ -805,7 +805,7 @@ msgstr ""
 #: frontend/src/components/EmojiPicker.vue:22
 #: frontend/src/components/Sidebar.vue:183
 msgid "Search"
-msgstr ""
+msgstr "Szukaj"
 
 #: frontend/src/components/TagColorInput.vue:36
 msgid "Set Color"
