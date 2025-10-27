@@ -386,6 +386,13 @@ export async function downloadMD(editor, foldername) {
     url: "drive.api.docs.get_extension",
   })
   const parent = router.currentRoute.value.params.entityName
+  const markdown = turndownService.turndown(html)
+  const blob = new Blob([markdown], { type: "text/markdown;charset=utf-8" })
+  if(urls.length === 0){
+    saveAs(blob, `${foldername}.md`)
+    return
+  }
+
   for (const i in urls) {
     const ext = await getExtension.fetch({ entity_name: urls[i].name })
     const pattern =
@@ -399,13 +406,13 @@ export async function downloadMD(editor, foldername) {
     zip.file(`${i}.${ext}`, blob)
   }
 
-  const markdown = turndownService.turndown(html)
-  const blob = new Blob([markdown], { type: "text/markdown;charset=utf-8" })
-  zip.file("file.md", blob)
+  zip.file(`${foldername}.md`, blob)
+
   const blobzip = await zip.generateAsync({
     type: "blob",
     compression: "DEFLATE",
   })
+
   saveAs(blobzip, `${foldername}.zip`)
 }
 
