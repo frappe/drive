@@ -28,7 +28,6 @@
     "dropzone": "^6.0.0-beta.2",
     "file-saver": "^2.0.5",
     "frappe-ui": "^0.1.204",
-    "frappe-ui": "^0.1.207",
     "html2pdf.js": "^0.10.3",
     "idb-keyval": "^6.2.1",
     "js-base64": "^3.7.8",
