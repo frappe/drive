@@ -86,8 +86,8 @@
       <Dropdown
         v-if="
           ['Folder', 'Home', 'Team'].includes($route.name) &&
-          isLoggedIn &&
-          props.rootResource?.data?.upload
+            isLoggedIn &&
+            props.rootResource?.data?.upload
         "
         :button="{
           variant: 'solid',
@@ -213,7 +213,8 @@ const defaultActions = computed(() => {
         {
           label: __("Download"),
           icon: LucideDownload,
-          isEnabled: () => rootEntity.value.allow_download,
+          isEnabled: () =>
+            rootEntity.value.allow_download && !route.name === "Document",
           onClick: () =>
             entitiesDownload(route.params.team, [rootEntity.value]),
         },

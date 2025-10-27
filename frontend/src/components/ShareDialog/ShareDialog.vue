@@ -69,7 +69,9 @@
             </div>
           </div>
           <!-- Members section -->
-          <div class="text-ink-gray-5 font-medium text-base mb-2">Members</div>
+          <div class="text-ink-gray-5 font-medium text-base mb-2">
+            Members
+          </div>
           <div class="flex gap-3">
             <div class="flex-grow">
               <Combobox
@@ -181,9 +183,7 @@
                             }"
                           >
                             {{ person.email }}
-                            <span v-if="person.full_name"
-                              >({{ person.full_name }})</span
-                            >
+                            <span v-if="person.full_name">({{ person.full_name }})</span>
                           </span>
                         </li>
                       </ComboboxOption>
@@ -198,9 +198,9 @@
               :options="
                 advancedTweak
                   ? filteredAccess.map((k) => ({
-                      value: k,
-                      label: k[0].toUpperCase() + k.slice(1),
-                    }))
+                    value: k,
+                    label: k[0].toUpperCase() + k.slice(1),
+                  }))
                   : accessOptions
               "
             />
@@ -256,11 +256,11 @@
                 "
                 @remove-access="
                   getUsersWithAccess.data.splice(idx, 1),
-                    updateAccess.submit({
-                      method: 'unshare',
-                      entity_name: entity.name,
-                      user: user.user,
-                    })
+                  updateAccess.submit({
+                    method: 'unshare',
+                    entity_name: entity.name,
+                    user: user.user,
+                  })
                 "
               />
               <span

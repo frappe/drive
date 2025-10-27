@@ -5,15 +5,15 @@
   >
     <div class="flex gap-2 justify-center items-center">
       <Button
-        @click="scale = scale > 0.25 ? scale - 0.25 : scale"
         :disabled="scale == 0.25"
         label="-"
+        @click="scale = scale > 0.25 ? scale - 0.25 : scale"
       />
       <span class="text-sm">{{ scale * 100 }}%</span>
       <Button
-        @click="scale = scale < 2 ? scale + 0.25 : scale"
         :disabled="scale == 2"
         label="+"
+        @click="scale = scale < 2 ? scale + 0.25 : scale"
       />
     </div>
     <div class="grow flex items-center border rounded-sm max-h-[70vh]">
@@ -48,7 +48,7 @@
     :src
     type="application/pdf"
     class="w-full h-full max-h-[80vh] max-w-[80vw] self-center"
-  />
+  >
 </template>
 
 <script setup>

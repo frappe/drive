@@ -60,7 +60,7 @@
 </template>
 <script setup>
 import { ref, markRaw, computed } from "vue"
-import { Dialog, Button } from "frappe-ui"
+import { Dialog } from "frappe-ui"
 import { isAdmin } from "@/resources/permissions"
 import ProfileSettings from "@/components/Settings/ProfileSettings.vue"
 import StorageSettings from "./StorageSettings.vue"

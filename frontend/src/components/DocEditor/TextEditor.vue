@@ -50,8 +50,8 @@
         <FTextEditor
           v-if="
             !collab ||
-            editorExtensions.find((k) => k.name === 'collaborationCursor') ||
-            !isFrappeDoc
+              editorExtensions.find((k) => k.name === 'collaborationCursor') ||
+              !isFrappeDoc
           "
           :key="editorExtensions.length"
           ref="textEditor"
@@ -586,15 +586,15 @@ onKeyDown("s", (e) => {
 })
 
 const syncToWiki = async (wiki_space, group, entity_names) => {
-  for (let k of entity_names) {
+  for (const k of entity_names) {
     const data = await createResource({
       url: "drive.api.wiki_integration.get_yjs_content",
       params: { entity_name: k },
     }).fetch()
-    let pre_doc = new Y.Doc({ gc: true })
+    const pre_doc = new Y.Doc({ gc: true })
     Y.applyUpdate(pre_doc, toUint8Array(data))
-    let obj = yDocToProsemirrorJSON(pre_doc, "default")
-    let editor = new Editor({
+    const obj = yDocToProsemirrorJSON(pre_doc, "default")
+    const editor = new Editor({
       content: obj,
       extensions: textEditor.value.DEFAULT_EXTENSIONS,
     })
@@ -608,7 +608,7 @@ const syncToWiki = async (wiki_space, group, entity_names) => {
 window.run = () => syncToWiki(["uu9pbukv8s", "5fpvulc7so"])
 const socket = inject("socket")
 socket.on("sync_to_wiki", (data) => {
-  for (let [title, pages] of Object.entries(data.groups)) {
+  for (const [title, pages] of Object.entries(data.groups)) {
     syncToWiki(data.space, title, pages)
   }
 })

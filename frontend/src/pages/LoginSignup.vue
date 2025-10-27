@@ -15,8 +15,8 @@
                   isLogin
                     ? "Login to Drive"
                     : params.get("t")
-                    ? "Join " + params.get("t")
-                    : "Create a new account"
+                      ? "Join " + params.get("t")
+                      : "Create a new account"
                 }}
               </p>
               <p
@@ -169,10 +169,8 @@
                 >
                   <div class="flex items-center">
                     <div v-html="provider.icon" />
-                    <span class="ml-2"
-                      >{{ isLogin ? "Continue" : "Join" }} with
-                      {{ provider.provider_name }}</span
-                    >
+                    <span class="ml-2">{{ isLogin ? "Continue" : "Join" }} with
+                      {{ provider.provider_name }}</span>
                   </div>
                 </Button>
               </template>

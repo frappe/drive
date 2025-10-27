@@ -115,14 +115,11 @@
                           @keydown.enter="openEntity(node)"
                         />
                       </div>
-                      <span v-else
-                        >{{ node.label }}
+                      <span v-else>{{ node.label }}
                         <span
                           v-if="entities[0].parent_entity === node.value"
                           class="text-ink-gray-5"
-                          >(current)</span
-                        ></span
-                      >
+                        >(current)</span></span>
                       <Button
                         class="shrink hidden group-hover:block ml-auto"
                         :class="{
@@ -168,7 +165,9 @@
         </Tabs>
         <div class="flex items-center justify-between pt-4">
           <div class="flex items-center my-auto justify-start">
-            <p class="text-sm pr-0.5">Moving to:</p>
+            <p class="text-sm pr-0.5">
+              Moving to:
+            </p>
             <Dropdown
               v-if="dropDownBreadcrumbs.length"
               class="h-7"
@@ -215,7 +214,7 @@
             size="sm"
             :disabled="
               entities[0].parent_entity !== selected &&
-              chosenTeam === entities[0].team
+                chosenTeam === entities[0].team
             "
             :loading="move.loading"
             @click="moveFile"

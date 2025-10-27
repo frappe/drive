@@ -439,7 +439,6 @@ export async function downloadZippedHTML(editor, foldername) {
     const blob = await res.blob()
     zip.file(`${i}.${ext}`, blob)
   }
-  console.log(editor.value.commands.getEmbedUrls())
   zip.file("index.html", content)
   const blob = await zip.generateAsync({ type: "blob", compression: "DEFLATE" })
   saveAs(blob, `${foldername}.zip`)

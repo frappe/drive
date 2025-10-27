@@ -55,8 +55,8 @@
     :actions="isFrappeDoc ? navBarActions : null"
   >
     <template
-      #breadcrumbs
       v-if="docSettings?.doc?.settings?.minimal && entity.write"
+      #breadcrumbs
     >
       <Button variant="ghost">
         <router-link
@@ -507,11 +507,6 @@ const navBarActions = computed(
               },
             ],
           },
-          {
-            onClick: clearCache,
-            label: "Clear Cache",
-            icon: LucideListRestart,
-          },
         ]),
       },
       {
@@ -556,6 +551,17 @@ const navBarActions = computed(
             cond: entity.value?.comments?.filter((k) => k.resolved)?.length,
           },
         ]),
+      },
+      {
+        group: true,
+        hideLabel: true,
+        items: [
+          {
+            onClick: clearCache,
+            label: "Clear Cache",
+            icon: LucideListRestart,
+          },
+        ],
       },
     ]
 )

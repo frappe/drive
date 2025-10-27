@@ -94,8 +94,7 @@
           <span
             v-else
             class="rounded-md py-4 px-1 text-sm text-gray-600"
-            >No tags found</span
-          >
+          >No tags found</span>
         </div>
         <div class="flex items-center justify-end border-t p-1">
           <Button
