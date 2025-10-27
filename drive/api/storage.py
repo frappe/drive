@@ -48,8 +48,8 @@ def storage_breakdown(team, owned_only):
 @frappe.whitelist()
 @default_team
 def storage_bar_data(team, entity_name=None):
-    team = frappe.get_value("Drive File", entity_name, "team")
-
+    if not team:
+        team = frappe.get_value("Drive File", entity_name, "team")
     query = (
         frappe.qb.from_(DriveFile)
         .where(

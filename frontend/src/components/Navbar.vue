@@ -83,12 +83,11 @@
           icon: LucideMoreHorizontal,
         }"
       />
-
       <Dropdown
         v-if="
           ['Folder', 'Home', 'Team'].includes($route.name) &&
           isLoggedIn &&
-          props.rootResource?.data?.write !== false
+          props.rootResource?.data?.upload
         "
         :button="{
           variant: 'solid',

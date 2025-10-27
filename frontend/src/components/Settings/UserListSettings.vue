@@ -282,22 +282,6 @@
     :options="{
       title: 'Invite people to ' + teamData.title,
       size: 'lg',
-      actions: [
-        {
-          label: 'Send Invitation',
-          variant: 'solid',
-          disabled: !emailTest().length && !invited.length,
-          loading: inviteUsers.loading,
-          onClick: () => {
-            extractEmails()
-            showInvite = false
-            inviteUsers.submit({
-              emails: invited.join(','),
-              team,
-            })
-          },
-        },
-      ],
     }"
   >
     <template #body-content>
@@ -332,6 +316,29 @@
           </div>
         </div>
       </div>
+      <Checkbox
+        v-model="inviteAsGuest"
+        class="mt-4 mb-2"
+        label="Invite as guest"
+      />
+      <Button
+        class="w-full"
+        variant="solid"
+        label="Send Invitation"
+        :disabled="!emailTest().length && !invited.length"
+        :loading="inviteUsers.loading"
+        @click="
+          () => {
+            extractEmails()
+            showInvite = false
+            inviteUsers.submit({
+              emails: invited.join(','),
+              as_guest: inviteAsGuest,
+              team,
+            })
+          }
+        "
+      />
     </template>
   </Dialog>
   <Dialog
@@ -549,6 +556,7 @@ import {
   createResource,
   FormControl,
   FormLabel,
+  Checkbox,
 } from "frappe-ui"
 import SyncBreakdown from "@/components/SyncBreakdown.vue"
 import { createDialog } from "@/utils/dialogs"
@@ -582,13 +590,11 @@ const isAdmin = createResource({
   url: "drive.api.permissions.is_admin",
 })
 
-console.log(route.params.team)
 const team = ref(
   route.params.team || (getTeams.data ? Object.keys(getTeams.data)[0] : null)
 )
 
 const teamData = computed(() => getTeams.data?.[team.value] || {})
-console.log(teamData.value)
 watch(
   team,
   (team) => {
@@ -603,6 +609,7 @@ watch(
 const selectedUser = ref(null)
 const invited = ref("")
 const emailInput = ref("")
+const inviteAsGuest = ref(false)
 const showInvite = ref(false)
 const showRemove = ref(false)
 

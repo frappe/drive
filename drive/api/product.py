@@ -298,7 +298,7 @@ def resend_otp(email):
 
 
 @frappe.whitelist()
-def invite_users(team, emails):
+def invite_users(team, emails, as_guest=False):
     if not emails:
         return
 
@@ -319,6 +319,7 @@ def invite_users(team, emails):
         invite.email = email
         invite.team = team
         invite.status = "Pending"
+        invite.as_guest = as_guest
         invite.insert()
 
 
@@ -369,7 +370,7 @@ def accept_invite(key, redirect=True):
     try:
         invitation = frappe.get_doc("Drive User Invitation", key)
     except:
-        frappe.throw("Invalid or expired key")
+        frappe.throw("Could not find invitation.")
 
     return invitation.accept(redirect)
 
@@ -379,7 +380,7 @@ def reject_invite(key):
     try:
         invitation = frappe.get_doc("Drive User Invitation", key)
     except:
-        frappe.throw("Invalid or expired key")
+        frappe.throw("Could not find invitation.")
 
     invitation.status = "Expired"
     invitation.save(ignore_permissions=True)

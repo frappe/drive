@@ -53,6 +53,7 @@ class DriveUserInvitation(Document):
         if self.status == "Expired" or self.has_expired():
             self.status = "Expired"
             self.save(ignore_permissions=True)
+            frappe.db.commit()
             frappe.throw("Invalid or expired key")
 
         exists = frappe.db.exists(
@@ -86,7 +87,7 @@ class DriveUserInvitation(Document):
 
         # Otherwise, add the user to the team
         team = frappe.get_doc("Drive Team", self.team)
-        team.append("users", {"user": self.email})
+        team.append("users", {"user": self.email, "access_level": 0 if self.as_guest else 1})
         team.save(ignore_permissions=True)
         self.status = "Accepted"
         self.accepted_at = frappe.utils.now()

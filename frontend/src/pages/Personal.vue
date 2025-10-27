@@ -9,6 +9,7 @@
     :verify="{
       data: {
         write: 1,
+        upload: 1,
       },
     }"
   />

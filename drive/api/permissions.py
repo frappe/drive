@@ -55,9 +55,9 @@ def get_user_access(entity, user: str = None, team: bool = False):
     if isinstance(entity, str):
         entity = frappe.get_cached_doc("Drive File", entity)
     access = NO_ACCESS.copy()
-    # Return team perms immediately
     if not user:
         if team:
+            # Return team perms immediately
             return get_team_access(entity)
         else:
             user = frappe.session.user
@@ -75,7 +75,7 @@ def get_user_access(entity, user: str = None, team: bool = False):
             "read": 1,
             "comment": 1,
             "share": 1,
-            "upload": int(entity.is_group),
+            "upload": int(entity.is_group) and access_level,
             "write": int(access_level == 2 or entity.owner == user),
             "type": {2: "admin", 1: "user", 0: "guest"}[access_level],
         }
