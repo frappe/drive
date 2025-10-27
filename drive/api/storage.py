@@ -2,6 +2,7 @@ import frappe
 from pypika import functions as fn
 
 from drive.utils import default_team, get_file_type
+from drive.api.permissions import user_has_permission
 
 MEGA_BYTE = 1024**2
 DriveFile = frappe.qb.DocType("Drive File")
@@ -47,9 +48,8 @@ def storage_breakdown(team, owned_only):
 @frappe.whitelist()
 @default_team
 def storage_bar_data(team, entity_name=None):
-    if entity_name and frappe.has_permission("Drive File", entity_name, "read"):
+    if not team:
         team = frappe.get_value("Drive File", entity_name, "team")
-
     query = (
         frappe.qb.from_(DriveFile)
         .where(

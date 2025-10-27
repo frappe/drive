@@ -81,14 +81,6 @@
           :bubble-menu="settings.minimal && menuButtons"
           :extensions="editorExtensions"
           :autofocus="true"
-          @transaction="
-            () => {
-              if (collabTurned && doc) {
-                yjsContent = Y.encodeStateAsUpdate(doc)
-                emit('saveDocument')
-              }
-            }
-          "
           @change="
             (val) => {
               if (val === rawContent || current) return
@@ -173,8 +165,6 @@ import H2 from "./icons/h-2.vue"
 import H3 from "./icons/h-3.vue"
 import LucideMessageCircle from "~icons/lucide/message-circle"
 
-import { Doc, applyUpdate } from "yjs"
-
 import store from "@/store"
 import emitter from "@/emitter"
 import { rename } from "@/resources/files"
@@ -203,7 +193,6 @@ const props = defineProps({
   editable: Boolean,
   isFrappeDoc: Boolean,
   showResolved: Boolean,
-  collabTurned: Boolean,
   users: Object,
   currentVersion: { required: false, type: Object },
 })
@@ -323,6 +312,21 @@ if (collab.value) {
 
   prov = new WebrtcProvider("fdoc-" + props.entity.name, doc, {
     signaling: ["wss://signal.frappe.cloud"],
+    peerOpts: {
+      config: {
+        iceServers: [
+          { urls: "stun:stun.l.google.com:19302" },
+          {
+            urls: [
+              "turn:signal.frappe.cloud:3478?transport=udp",
+              "turn:signal.frappe.cloud:3478?transport=tcp",
+            ],
+            username: "turnuser",
+            credential: "turnpass",
+          },
+        ],
+      },
+    },
   })
   const permanentUserData = new Y.PermanentUserData(doc)
   permanentUserData.setUserMapping(doc, doc.clientID, store.state.user.id)
@@ -396,8 +400,8 @@ const menuButtons = computed(() =>
               defineAsyncComponent(() => import("./components/FontFamily.vue")),
               {
                 editor,
-                font_size: props.settings.font_size,
-                font_family: props.settings.font_family,
+                font_size: props.settings.font_size || 15,
+                font_family: props.settings.font_family || "inter",
               }
             ),
           },
@@ -604,7 +608,6 @@ const syncToWiki = async (wiki_space, group, entity_names) => {
 window.run = () => syncToWiki(["uu9pbukv8s", "5fpvulc7so"])
 const socket = inject("socket")
 socket.on("sync_to_wiki", (data) => {
-  console.log("syncing", data.space)
   for (let [title, pages] of Object.entries(data.groups)) {
     syncToWiki(data.space, title, pages)
   }

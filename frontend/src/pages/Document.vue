@@ -17,7 +17,11 @@
   >
     <UsersBar
       v-if="editorValue?.storage?.collaborationCursor?.users?.length > 1"
-      :users="editorValue.storage.collaborationCursor.users"
+      :users="
+        editorValue.storage.collaborationCursor.users.filter(
+          (k) => k.name !== $store.state.user.id
+        )
+      "
     />
 
     <Button
@@ -97,7 +101,6 @@
       v-model:current="current"
       :entity
       :editable="inIframe ? false : editable"
-      :collab-turned
       :is-frappe-doc
       :settings
       :users="allUsers.data || []"
@@ -241,7 +244,6 @@ const props = defineProps({
 
 const store = useStore()
 const showResolved = ref(false)
-const collabTurned = ref(null)
 const editor = useTemplateRef("editor")
 const editorValue = computed(() => editor.value?.editor)
 provide("editor", editorValue)
@@ -408,7 +410,6 @@ const navBarActions = computed(
                 }),
               })
               $router.go()
-              collabTurned.value = val
             },
           },
           {

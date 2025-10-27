@@ -59,12 +59,6 @@
       />
       <template v-if="!isLoggedIn">
         <Button
-          v-if="rootEntity && rootEntity.allow_download"
-          label="Download"
-          variant="outline"
-          @click="entitiesDownload($route.params.team, [rootEntity])"
-        />
-        <Button
           variant="outline"
           @click="$router.push({ name: 'Login' })"
         >
@@ -72,6 +66,7 @@
         </Button>
         <Button
           v-if="!isLoggedIn"
+          class="hidden md:block"
           variant="solid"
           label="Try out Drive"
           @click="
@@ -88,12 +83,11 @@
           icon: LucideMoreHorizontal,
         }"
       />
-
       <Dropdown
         v-if="
           ['Folder', 'Home', 'Team'].includes($route.name) &&
           isLoggedIn &&
-          props.rootResource?.data?.write !== false
+          props.rootResource?.data?.upload
         "
         :button="{
           variant: 'solid',

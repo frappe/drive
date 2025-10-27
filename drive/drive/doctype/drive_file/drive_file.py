@@ -8,7 +8,8 @@ from frappe.utils import now
 from drive.api.activity import create_new_activity_log
 from drive.api.files import get_new_title
 from drive.api.permissions import get_user_access, user_has_permission
-from drive.utils import generate_upward_path, get_ancestors_of, get_home_folder, update_file_size, update_clients
+from drive.api.product import invite_users
+from drive.utils import generate_upward_path, get_home_folder, update_file_size, update_clients
 from drive.utils.files import FileManager
 from drive.utils.api import prettify_file
 
@@ -103,9 +104,6 @@ class DriveFile(Document):
         new_team = new_team or self.team
         new_parent = new_parent or get_home_folder(new_team).name
 
-        if new_parent == self.parent_entity: 
-            frappe.throw("You can't move to the current folder.")
-
         if new_parent == self.name:
             frappe.throw(
                 "Cannot move into itself",
@@ -121,23 +119,17 @@ class DriveFile(Document):
             if child.name == self.name or child.name == new_parent:
                 frappe.throw(
                     "Cannot move into itself",
-                    frappe.PermissionError,
+                    ValueError,
                 )
-                return frappe.get_value(
-                    "Drive File",
-                    self.parent_entity,
-                    ["title", "team", "name"],
-                    as_dict=True,
-                )
-            else:
+            elif new_team != child.team:
                 child.move(self.name, new_team)
 
         if new_parent != self.parent_entity:
             update_file_size(self.parent_entity, -self.file_size)
             update_file_size(new_parent, +self.file_size)
             self.parent_entity = new_parent
+            self.title = get_new_title(self.title, new_parent, self.is_group, self.name)
 
-        self.title = get_new_title(self.title, new_parent, self.is_group, self.name)
         self.team = new_team
 
         not_in_disk = self.document or self.mime_type == "frappe/slides" or self.is_link
@@ -146,115 +138,12 @@ class DriveFile(Document):
         if not self.manager.flat and not not_in_disk:
             new_path = self.manager.get_disk_path(self)
             self.manager.move(self, str(new_path))
+            self.recursive_path_move(self.path, new_path)
             self.path = new_path
 
         self.save()
 
         return frappe.get_value("Drive File", new_parent, ["title", "team", "name", "parent_entity"], as_dict=True)
-
-    @frappe.whitelist()
-    def copy(self, new_parent=None, parent_user_directory=None):
-        """
-        Copy file or folder along with its contents to the new parent folder
-
-        :param new_parent: Document-name of the new parent folder. Defaults to the user directory
-        :raises NotADirectoryError: If the new_parent is not a folder, or does not exist
-        :raises FileExistsError: If a file or folder with the same name already exists in the specified parent folder
-        """
-        title = self.title
-
-        if not parent_user_directory:
-            parent_owner = frappe.db.get_value("Drive File", new_parent, "owner") if new_parent else frappe.session.user
-            # BROKEN - parent dir is team
-            new_parent = new_parent or parent_user_directory.name
-            parent_is_group = frappe.db.get_value("Drive File", new_parent, "is_group")
-            if not parent_is_group:
-                raise NotADirectoryError()
-            if not user_has_permission(new_parent, "upload"):
-                frappe.throw(
-                    "Cannot paste to this folder due to insufficient permissions",
-                    frappe.PermissionError,
-                )
-            if self.name == new_parent or self.name in get_ancestors_of("Drive File", new_parent):
-                frappe.throw("You cannot copy a folder into itself")
-
-            title = get_new_title(title, new_parent, self.name)
-
-        if self.is_group:
-            drive_entity = frappe.get_doc(
-                {
-                    "doctype": "Drive File",
-                    "name": name,
-                    "title": title,
-                    "is_group": 1,
-                    "parent_entity": new_parent,
-                    "color": self.color,
-                }
-            )
-            drive_entity.insert()
-
-            for child in self.get_children():
-                child.copy(name, parent_user_directory)
-
-        elif self.document is not None:
-            drive_doc_content = frappe.db.get_list("Drive Document", self.document, "content")
-
-            new_drive_doc = frappe.new_doc("Drive Document")
-            new_drive_doc.title = title
-            new_drive_doc.content = drive_doc_content
-            new_drive_doc.save()
-
-            drive_entity = frappe.get_doc(
-                {
-                    "doctype": "Drive File",
-                    "name": name,
-                    "title": title,
-                    "mime_type": self.mime_type,
-                    "parent_entity": new_parent,
-                    "document": new_drive_doc,
-                }
-            )
-            drive_entity.insert()
-
-        else:
-            save_path = Path(parent_user_directory.path) / f"{new_parent}_{title}"
-            if save_path.exists():
-                frappe.throw(f"File '{title}' already exists", FileExistsError)
-
-            shutil.copy(self.path, save_path)
-
-            path = save_path.parent / f"{name}{save_path.suffix}"
-            save_path.rename(path)
-            drive_entity = frappe.get_doc(
-                {
-                    "doctype": "Drive File",
-                    "name": name,
-                    "title": title,
-                    "parent_entity": new_parent,
-                    "path": path,
-                    "file_size": self.file_size,
-                    "file_ext": self.file_ext,
-                    "mime_type": self.mime_type,
-                }
-            )
-            drive_entity.flags.file_created = True
-            drive_entity.insert()
-
-        if new_parent == parent_user_directory.name:
-            drive_entity.share(frappe.session.user, write=1, share=1)
-
-        if drive_entity.mime_type:
-            if drive_entity.mime_type.startswith("image") or drive_entity.mime_type.startswith("video"):
-                frappe.enqueue(
-                    create_thumbnail,
-                    queue="default",
-                    timeout=None,
-                    now=True,
-                    # will set to false once reactivity in new UI is solved
-                    entity_name=name,
-                    path=path,
-                    mime_type=drive_entity.mime_type,
-                )
 
     @frappe.whitelist()
     @__update_modified
@@ -270,7 +159,7 @@ class DriveFile(Document):
             return self
 
         validated_name = get_new_title(new_title, self.parent_entity, self.is_group, self.name)
-        if new_title != validated_name and new_title != "Untitled Document":
+        if new_title != validated_name:
             return frappe.throw(
                 f"{'Folder' if self.is_group else 'File'} '{new_title}' already exists\n Try '{validated_name}' ",
                 FileExistsError,
@@ -291,7 +180,7 @@ class DriveFile(Document):
         self.title = new_title
         path = self.manager.rename(self)
 
-        if self.path and not self.mime_type.startswith("frappe"):
+        if self.path and self.mime_type != "frappe/slides":
             self.recursive_path_move(self.path, path)
 
         self.save()
@@ -301,7 +190,9 @@ class DriveFile(Document):
         if new:
             self.path = new
         for child in self.get_children():
-            child.recursive_path_move(child.path, str(Path(new) / Path(child.path).relative_to(old)))
+            not_in_disk = child.mime_type == "frappe/slides" or child.is_link
+            if child.path and not not_in_disk:
+                child.recursive_path_move(child.path, str(Path(new) / Path(child.path).relative_to(old)))
         self.save()
 
     @frappe.whitelist()
@@ -339,8 +230,7 @@ class DriveFile(Document):
         write=None,
         team=False,
     ):
-        if frappe.session.user != self.owner and not user_has_permission(self, "share"):
-            # Complicated logic was removed here
+        if not user_has_permission(self, "share"):
             frappe.throw("Not permitted to share", frappe.PermissionError)
 
         # Clean out existing general records
@@ -366,6 +256,10 @@ class DriveFile(Document):
             )
         else:
             permission = frappe.get_doc("Drive Permission", permission)
+
+        # Create user
+        if not frappe.db.exists("User", user):
+            invite_users(user)
 
         levels = [
             ["read", read],

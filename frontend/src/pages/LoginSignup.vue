@@ -264,7 +264,7 @@ const signup = createResource({
     if (err.exc_type === "DuplicateEntryError") {
       toast({ title: "Account already exists - please login.", type: "error" })
     } else {
-      toast({ title: "Failed to create account", type: "error" })
+      toast({ title: err.messages[0], type: "error" })
     }
   },
 })

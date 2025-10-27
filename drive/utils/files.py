@@ -191,6 +191,8 @@ class FileManager:
                 if not hasattr(entity, "parent_path")
                 else Path(entity.parent_path)
             )
+            if embed:
+                return parent / ".embeds" / entity.title
             return parent / entity.title
 
     @__not_if_flat
@@ -204,7 +206,7 @@ class FileManager:
             self.conn.put_object(Bucket=self.get_bucket(entity.team), Key=str(path) + "/", Body="")
         else:
             (self.site_folder / path).mkdir()
-        return str(path) + ("/" if entity.is_group else "")
+        return str(path) + "/"
 
     def get_file(self, entity):
         """
@@ -346,7 +348,7 @@ class FileManager:
 
     @__not_if_flat
     def rename(self, entity):
-        if not entity.path or entity.mime_type.startswith("frappe"):
+        if not entity.path or entity.mime_type == "frappe/slides":
             return
         new_path = self.get_disk_path(entity)
         return self.move(entity, new_path)
