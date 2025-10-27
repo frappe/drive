@@ -411,17 +411,8 @@ export async function downloadZippedHTML(editor, foldername) {
   let content = `
             <!DOCTYPE html>
             <html>
-              <head>
-                <style>${globalStyle}</style>
-                <style>${editorStyle}</style>
-                <style>html, body {
-                  height: auto;
-                  overflow: auto;
-                  }
-                </style>
-              </head>
               <body>
-                <div class="ProseMirror prose-sm" style='padding-left: 40px; padding-right: 40px; padding-top: 20px; padding-bottom: 20px; margin: 0;'>
+                <div>
                   ${html}
                 </div>
               </body>

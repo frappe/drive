@@ -481,10 +481,10 @@ const navBarActions = computed(
                   watermarkDialog.value = true
                 },
               },
-              {
-                label: "DOCX",
-                icon: LucideFileText,
-              },
+              // {
+              //   label: "DOCX",
+              //   icon: LucideFileText,
+              // },
               {
                 label: "Folder",
                 icon: LucideFolderArchive,
