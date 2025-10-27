@@ -33,7 +33,7 @@ from drive.utils.files import FileManager
 from .permissions import get_teams, user_has_permission
 
 
-@frappe.whitelist()
+@frappe.whitelist(allow_guest=True)
 def upload_embed(doc):
     doc = frappe.get_doc("Drive File", doc)
     file = frappe.request.files["file"]
@@ -127,8 +127,14 @@ def upload_file(
 
     # Upload and update parent folder size
     manager.upload_file(temp_path, drive_file)
-    update_clients(drive_file.name, drive_file.team, "upload")
-    update_file_size(parent, file_size)
+
+    try:
+        update_clients(drive_file.name, drive_file.team, "upload")
+        update_file_size(parent, file_size)
+    except:
+        # Find a cleaner way to handle folder sizes as multiple simultaneous uploads will break this
+        pass
+
     if not embed:
         frappe.publish_realtime("list-add", {"file": prettify_file(drive_file.as_dict())})
 

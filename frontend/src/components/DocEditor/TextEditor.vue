@@ -81,14 +81,6 @@
           :bubble-menu="settings.minimal && menuButtons"
           :extensions="editorExtensions"
           :autofocus="true"
-          @transaction="
-            () => {
-              if (collabTurned && doc) {
-                yjsContent = Y.encodeStateAsUpdate(doc)
-                emit('saveDocument')
-              }
-            }
-          "
           @change="
             (val) => {
               if (val === rawContent || current) return
@@ -201,10 +193,10 @@ const props = defineProps({
   editable: Boolean,
   isFrappeDoc: Boolean,
   showResolved: Boolean,
-  collabTurned: Boolean,
   users: Object,
   currentVersion: { required: false, type: Object },
 })
+console.log(props.settings)
 const emit = defineEmits(["newVersion", "saveComment", "saveDocument"])
 const inIframe = inject("inIframe")
 
@@ -394,8 +386,8 @@ const menuButtons = computed(() =>
               defineAsyncComponent(() => import("./components/FontFamily.vue")),
               {
                 editor,
-                font_size: props.settings.font_size,
-                font_family: props.settings.font_family,
+                font_size: props.settings.font_size || 15,
+                font_family: props.settings.font_family || "inter",
               }
             ),
           },
