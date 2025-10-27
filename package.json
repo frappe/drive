@@ -19,10 +19,5 @@
   "devDependencies": {
     "cypress": "^14.5.2",
     "cypress-file-upload": "^5.0.8"
-  },
-  "dependencies": {
-    "file-saver": "^2.0.5",
-    "jszip": "^3.10.1",
-    "turndown": "^7.2.1"
   }
 }

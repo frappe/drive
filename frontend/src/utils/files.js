@@ -372,12 +372,12 @@ export function enterFullScreen() {
   }
 }
 
-export async function downloadMD(editor, foldername){
+export async function downloadMD(editor, foldername) {
   var html = editor.value.getHTML()
   const turndownService = new TurndownService({
     headingStyle: "atx",
     codeBlockStyle: "fenced",
-    bulletListMarker: "-"
+    bulletListMarker: "-",
   })
 
   const zip = new jszip()
@@ -389,7 +389,7 @@ export async function downloadMD(editor, foldername){
   for (const i in urls) {
     const ext = await getExtension.fetch({ entity_name: urls[i].name })
     const pattern =
-    /src="\/api\/method\/drive\.api\.embed\.get_file_content[^"]+"/
+      /src="\/api\/method\/drive\.api\.embed\.get_file_content[^"]+"/
     html = html.replace(pattern, `src="./${i}.${ext}"`)
     const fileUrl = `/api/method/drive.api.embed.get_file_content?embed_name=${encodeURIComponent(
       urls[i].name
@@ -398,11 +398,14 @@ export async function downloadMD(editor, foldername){
     const blob = await res.blob()
     zip.file(`${i}.${ext}`, blob)
   }
-  
+
   const markdown = turndownService.turndown(html)
   const blob = new Blob([markdown], { type: "text/markdown;charset=utf-8" })
   zip.file("file.md", blob)
-  const blobzip = await zip.generateAsync({ type: "blob", compression: "DEFLATE" })
+  const blobzip = await zip.generateAsync({
+    type: "blob",
+    compression: "DEFLATE",
+  })
   saveAs(blobzip, `${foldername}.zip`)
 }
 
@@ -442,16 +445,11 @@ export async function downloadZippedHTML(editor, foldername) {
   saveAs(blob, `${foldername}.zip`)
 }
 
-export function printDoc(html, watermarkStatus) {
+export function printDoc(html, watermarkStatus = false) {
   const storedData = localStorage.getItem("watermark-obj")
-  let watermarkText
-  let watermarkTextAngle
-  let watermarkTextSize
+  let watermark
   if (storedData) {
-    const data = JSON.parse(storedData)
-    watermarkText = data.text?.trim()
-    watermarkTextAngle = data.angle || -45
-    watermarkTextSize = data.size || 64
+    watermark = JSON.parse(storedData)
   }
   const content = `
             <!DOCTYPE html>
@@ -464,9 +462,11 @@ export function printDoc(html, watermarkStatus) {
                     position: fixed;
                     top: 50%;
                     left: 50%;
-                    transform: translate(-50%, -50%) rotate(${watermarkTextAngle}deg);
+                    transform: translate(-50%, -50%) rotate(${
+                      watermark.angle
+                    }deg);
                     opacity: 0.12;
-                    font-size: ${watermarkTextSize}px;
+                    font-size: ${watermark.size}px;
                     color: #999;
                     pointer-events: none;
                     z-index: 9999;
@@ -477,7 +477,7 @@ export function printDoc(html, watermarkStatus) {
               <body>
                  ${
                    watermarkStatus
-                     ? `<div class="watermark">${watermarkText}</div>`
+                     ? `<div class="watermark">${watermark.text}</div>`
                      : ""
                  }
                 <div class="ProseMirror prose-sm" style='padding-left: 40px; padding-right: 40px; padding-top: 20px; padding-bottom: 20px; margin: 0;'>

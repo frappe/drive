@@ -540,13 +540,13 @@ const createNewComment = (editor) => {
 onKeyDown("p", (e) => {
   if (isModKey(e)) {
     e.preventDefault()
-    if (editor.value) printDoc(editor.value.getHTML(),false)
+    if (editor.value) printDoc(editor.value.getHTML())
   }
 })
-
-emitter.on("printFile",(watermarkStatus) => {
-  if (editor.value) printDoc(editor.value.getHTML(),watermarkStatus)
+emitter.on("printFile", (watermarkStatus) => {
+  if (editor.value) printDoc(editor.value.getHTML(), watermarkStatus)
 })
+
 emitter.on("create-version", (title) => {
   const snap = Y.snapshot(doc)
   emit("newVersion", Y.encodeSnapshot(snap), 0, title)

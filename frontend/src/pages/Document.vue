@@ -201,7 +201,7 @@ import {
   prettyData,
   updateURLSlug,
   downloadZippedHTML,
-  downloadMD
+  downloadMD,
 } from "@/utils/files"
 import { allUsers } from "@/resources/permissions"
 import VersionsSidebar from "@/components/DocEditor/components/VersionsSidebar.vue"
@@ -225,7 +225,7 @@ import LucideWifiOff from "~icons/lucide/wifi-off"
 import LucideFileWarning from "~icons/lucide/file-warning"
 import LucideFolderArchive from "~icons/lucide/folder-archive"
 import LucideMarkdown from "~icons/lucide/pilcrow"
-import LucideFileText from "~icons/lucide/file-text"
+import LucideFileUser from "~icons/lucide/file-user"
 import { dynamicList } from "@/utils/files"
 import { useTemplateRef } from "vue"
 import UsersBar from "@/components/UsersBar.vue"
@@ -491,17 +491,18 @@ const navBarActions = computed(
                 icon: LucideFolderArchive,
                 onClick: () => {
                   console.log(entity.value.title)
-                  downloadZippedHTML(editorValue, entity.value.title)},
+                  downloadZippedHTML(editorValue, entity.value.title)
+                },
               },
               {
                 label: "Markdown",
                 icon: LucideMarkdown,
-                onClick: () => {
-                  console.log(entity.value.title)
-                  downloadMD(editorValue, entity.value.title)},
+                onClick: () => downloadMD(editorValue, entity.value.title),
+              },
+              {
                 onClick: exportBlog,
-                label: "Export Blog",
-                icon: LucideImageDown,
+                label: "Blog",
+                icon: LucideFileUser,
                 cond: apps.data && apps.data.find((k) => k.name === "blog"),
               },
             ],
