@@ -7,7 +7,7 @@
   <p
     style="font-size: 14px; color: #444; max-width: 400px; margin: 0 auto 20px"
   >
-    {{ user }} has invited to you to join <strong>{{ team_name }}</strong> on
+    {{ user }} has invited to you to join <strong>{{ team_name ? team_name + ' on' : '' }}</strong>
     Frappe Drive. Click below to get started.
   </p>
 
