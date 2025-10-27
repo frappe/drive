@@ -105,10 +105,10 @@ def get_team_invites(team):
 
 @frappe.whitelist(allow_guest=True)
 def signup(account_request, first_name, last_name=None, team=None):
-    if frappe.get_website_settings("disable_signup"):
-        frappe.throw("Sign up is disabled", frappe.PermissionError)
-
     account_request = frappe.get_doc("Account Request", account_request)
+    if not account_request and frappe.get_website_settings("disable_signup"):
+        frappe.throw("Signing up is disabled on this site.", frappe.PermissionError)
+
     if not account_request.login_count:
         frappe.throw("Please verify the email first.")
 
@@ -198,7 +198,7 @@ def oauth_providers():
 def send_otp(email, login):
     disable_signups = signup_disabled()
     if not login and disable_signups:
-        frappe.throw("Sign ups are disabled on this site.", frappe.PermissionError)
+        frappe.throw("Signing up is disabled on this site.", frappe.PermissionError)
 
     is_login = frappe.db.exists(
         "Account Request",
