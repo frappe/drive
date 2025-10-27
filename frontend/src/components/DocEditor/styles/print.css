@@ -155,17 +155,17 @@
     border-radius: 0px;
   }
 
-  img[dataalign="left"] {
+  img[data-align="left"] {
     display: block;
     margin-right: auto;
   }
 
-  img[dataalign="center"] {
+  img[data-align="center"] {
     display: block;
     margin: 0 auto;
   }
 
-  img[dataalign="right"] {
+  img[data-align="right"] {
     display: block;
     margin-left: auto;
   }
@@ -180,17 +180,17 @@
     margin-left: 1rem;
   }
   
-  video[dataalign="left"] {
+  video[data-align="left"] {
     display: block;
     margin-right: auto;
   }
 
-  video[dataalign="center"] {
+  video[data-align="center"] {
     display: block;
     margin: 0 auto;
   }
 
-  video[dataalign="right"] {
+  video[data-align="right"] {
     display: block;
     margin-left: auto;
   }
