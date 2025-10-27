@@ -43,7 +43,7 @@ import { computed, ref } from "vue"
 
 defineProps({
   rows: Array,
-  contextMenu: Function,
+  contextMenu: Function | Boolean,
   selections: Set,
 })
 defineEmits(["dropped"])

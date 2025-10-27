@@ -15,7 +15,7 @@
         class="h-[16px] w-[16px] rounded-sm"
         :src="backupLink"
         :draggable="false"
-      >
+      />
       <img
         v-show="imgLoaded"
         class="h-[16px] w-[16px] object-cover rounded-sm"
@@ -23,7 +23,7 @@
         :draggable="false"
         @error="src = backupLink"
         @load="imgLoaded = true"
-      >
+      />
     </template>
     <template #default="{ label }">
       <div
@@ -70,7 +70,7 @@ const props = defineProps({
   column: Object,
   row: Object,
   item: String,
-  contextMenu: Function,
+  contextMenu: Function | Boolean,
 })
 
 let src, imgLoaded, thumbnailLink, backupLink, _
