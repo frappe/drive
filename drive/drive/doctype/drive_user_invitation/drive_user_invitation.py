@@ -81,7 +81,8 @@ class DriveUserInvitation(Document):
             user_exists = frappe.db.exists("User", self.email)
 
             if not user_exists:
-                url = f"/drive/signup?e={self.email}&t={frappe.db.get_value('Drive Team', self.team, 'title')}&r={req.name}"
+                team_name = frappe.db.get_value("Drive Team", self.team, "title")
+                url = f"/drive/signup?e={self.email}{'&t=' + team_name if team_name else ''}&r={req.name}"
                 frappe.local.response["location"] = url
                 return
 

@@ -8,7 +8,8 @@ from frappe.utils import now
 from drive.api.activity import create_new_activity_log
 from drive.api.files import get_new_title
 from drive.api.permissions import get_user_access, user_has_permission
-from drive.utils import generate_upward_path, get_ancestors_of, get_home_folder, update_file_size, update_clients
+from drive.api.product import invite_users
+from drive.utils import generate_upward_path, get_home_folder, update_file_size, update_clients
 from drive.utils.files import FileManager
 from drive.utils.api import prettify_file
 
@@ -229,8 +230,7 @@ class DriveFile(Document):
         write=None,
         team=False,
     ):
-        if frappe.session.user != self.owner and not user_has_permission(self, "share"):
-            # Complicated logic was removed here
+        if not user_has_permission(self, "share"):
             frappe.throw("Not permitted to share", frappe.PermissionError)
 
         # Clean out existing general records
@@ -256,6 +256,10 @@ class DriveFile(Document):
             )
         else:
             permission = frappe.get_doc("Drive Permission", permission)
+
+        # Create user
+        if not frappe.db.exists("User", user):
+            invite_users(user)
 
         levels = [
             ["read", read],

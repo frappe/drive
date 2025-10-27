@@ -106,16 +106,35 @@ def get_team_invites(team):
 @frappe.whitelist(allow_guest=True)
 def signup(account_request, first_name, last_name=None, team=None):
     account_request = frappe.get_doc("Account Request", account_request)
-    if not account_request and frappe.get_website_settings("disable_signup"):
+    if not account_request.invite and frappe.get_website_settings("disable_signup"):
         frappe.throw("Signing up is disabled on this site.", frappe.PermissionError)
 
     if not account_request.login_count:
         frappe.throw("Please verify the email first.")
 
+    user = create_user(account_request.email, first_name, last_name, True)
+    account_request.signed_up = 1
+    account_request.save(ignore_permissions=True)
+
+    team = None
+    if account_request.invite:
+        invite = frappe.get_doc("Drive User Invitation", account_request.invite)
+        invite.status = "Accepted"
+        invite.save(ignore_permissions=True)
+        if invite.team:
+            # Add to that team
+            team = frappe.get_doc("Drive Team", invite.team)
+            team.append("users", {"user": user.email, "access_level": 0 if invite.as_guest else 1})
+            team.save(ignore_permissions=True)
+            team = invite.team
+    return {"location": f"/drive/t/{team}" if team else "/drive/"}
+
+
+def create_user(email, first_name, last_name=None, login=False):
     user = frappe.get_doc(
         {
             "doctype": "User",
-            "email": account_request.email,
+            "email": email,
             "first_name": escape_html(first_name),
             "last_name": escape_html(last_name),
             "enabled": 1,
@@ -129,30 +148,16 @@ def signup(account_request, first_name, last_name=None, team=None):
         user.insert(ignore_permissions=True)
     except frappe.DuplicateEntryError:
         frappe.throw("User already exists")
-    account_request.signed_up = 1
-
-    team = None
-
-    if account_request.invite:
-        invite = frappe.get_doc("Drive User Invitation", account_request.invite)
-        invite.status = "Accepted"
-        invite.save(ignore_permissions=True)
-        # Add to that team
-        team = frappe.get_doc("Drive Team", invite.team)
-        team.append("users", {"user": account_request.email})
-        team.save(ignore_permissions=True)
-        team = invite.team
-    account_request.save(ignore_permissions=True)
-
-    frappe.local.login_manager.login_as(user.email)
+    if login:
+        frappe.local.login_manager.login_as(user.email)
     doc = frappe.get_doc(
         {
             "doctype": "Drive Settings",
-            "user": account_request.email,
+            "user": email,
         }
     )
     doc.insert()
-    return {"location": f"/drive/t/{team}" if team else "/drive/"}
+    return user
 
 
 @frappe.whitelist(allow_guest=True)
@@ -298,7 +303,7 @@ def resend_otp(email):
 
 
 @frappe.whitelist()
-def invite_users(team, emails, as_guest=False):
+def invite_users(emails, team=None, as_guest=False):
     if not emails:
         return
 
