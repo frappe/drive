@@ -196,7 +196,6 @@ const props = defineProps({
   users: Object,
   currentVersion: { required: false, type: Object },
 })
-console.log(props.settings)
 const emit = defineEmits(["newVersion", "saveComment", "saveDocument"])
 const inIframe = inject("inIframe")
 
@@ -313,6 +312,21 @@ if (collab.value) {
 
   prov = new WebrtcProvider("fdoc-" + props.entity.name, doc, {
     signaling: ["wss://signal.frappe.cloud"],
+    peerOpts: {
+      config: {
+        iceServers: [
+          { urls: "stun:stun.l.google.com:19302" },
+          {
+            urls: [
+              "turn:signal.frappe.cloud:3478?transport=udp",
+              "turn:signal.frappe.cloud:3478?transport=tcp",
+            ],
+            username: "turnuser",
+            credential: "turnpass",
+          },
+        ],
+      },
+    },
   })
   const permanentUserData = new Y.PermanentUserData(doc)
   permanentUserData.setUserMapping(doc, doc.clientID, store.state.user.id)
@@ -594,7 +608,6 @@ const syncToWiki = async (wiki_space, group, entity_names) => {
 window.run = () => syncToWiki(["uu9pbukv8s", "5fpvulc7so"])
 const socket = inject("socket")
 socket.on("sync_to_wiki", (data) => {
-  console.log("syncing", data.space)
   for (let [title, pages] of Object.entries(data.groups)) {
     syncToWiki(data.space, title, pages)
   }
