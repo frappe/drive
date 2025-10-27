@@ -487,7 +487,7 @@ export function printDoc(html, watermarkStatus) {
                  ${
                    watermarkStatus
                      ? `<div class="watermark">${watermarkText}</div>`
-                     : null
+                     : ""
                  }
                 <div class="ProseMirror prose-sm" style='padding-left: 40px; padding-right: 40px; padding-top: 20px; padding-bottom: 20px; margin: 0;'>
                   ${html}
