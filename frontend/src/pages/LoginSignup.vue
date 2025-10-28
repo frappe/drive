@@ -164,7 +164,6 @@
                   v-for="provider in oAuthProviders.data"
                   :key="provider.name"
                   class="mb-2"
-                  :loading="oAuth.loading"
                   :link="provider.auth_url"
                 >
                   <div class="flex items-center">
@@ -274,13 +273,6 @@ const oAuthProviders = createResource({
   auto: true,
 })
 
-const oAuth = createResource({
-  url: "drive.api.product.google_login",
-  onSuccess(url) {
-    window.location.href = url
-  },
-})
-
 const sendOTP = createResource({
   url: "drive.api.product.send_otp",
   onSuccess(data) {
@@ -299,9 +291,7 @@ const verifyOTP = createResource({
   onSuccess: (data) => {
     otpValidated.value = true
     settings.fetch()
-    if (data.location) {
-      window.location.replace(data.location)
-    }
+    window.location.replace(params.get('redirect-to') || '/drive')
   },
 })
 </script>

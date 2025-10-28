@@ -238,7 +238,8 @@ def send_otp(email, login):
         try:
             req.send_otp()
         except:
-            frappe.throw("Please setup an email account in Desk.")
+            pass
+            # frappe.throw("Please setup an email account in Desk.")
         return is_login
 
 
@@ -252,7 +253,6 @@ def verify_otp(account_request, otp):
     req.save(ignore_permissions=True)
     if req.signed_up:
         frappe.local.login_manager.login_as(req.email)
-        return {"location": "/drive"}
 
 
 @frappe.whitelist(allow_guest=True)
@@ -280,26 +280,6 @@ def set_settings(updates):
     if "default_team" in updates:
         settings.default_team = updates["default_team"]
     settings.save()
-
-
-@frappe.whitelist(allow_guest=True)
-@rate_limit(limit=5, seconds=60)
-def resend_otp(email):
-    account_request = frappe.db.get_value("Account Request", {"email": email}, "name")
-    if not account_request:
-        frappe.throw("OTP was never requested.")
-
-    account_request = frappe.get_doc("Account Request", account_request)
-
-    # if last OTP was sent less than 30 seconds ago, throw an error
-    if (
-        account_request.otp_generated_at
-        and (frappe.utils.now_datetime() - account_request.otp_generated_at).seconds < 30
-    ):
-        frappe.throw("Please wait for 30 seconds before requesting a new OTP")
-
-    account_request.reset_otp()
-    account_request.send_login_mail()
 
 
 @frappe.whitelist()
