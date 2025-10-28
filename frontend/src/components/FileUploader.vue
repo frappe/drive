@@ -140,6 +140,7 @@ onMounted(() => {
       if (file.parent) formData.append("parent", file.parent)
       const path = file.newFullPath || file.webkitRelativePath || file.fullPath
       if (path) formData.append("fullpath", path)
+      if (route.name === "Transfer") formData.append("transfer", 1)
     },
     params: function (files, xhr, chunk) {
       if (chunk) {

@@ -82,13 +82,13 @@ class FileManager:
             or file.mime_type in FileManager.ACCEPTABLE_MIME_TYPES
         )
 
-    def upload_file(self, current_path: Path, drive_file) -> None:
+    def upload_file(self, current_path: Path, drive_file, create_thumbnail=True) -> None:
         """
         Moves the file from the current path to another path
         """
         if self.s3_enabled:
             self.conn.upload_file(current_path, self.get_bucket(drive_file.team), drive_file.path)
-            if drive_file and self.can_create_thumbnail(drive_file):
+            if drive_file and create_thumbnail and self.can_create_thumbnail(drive_file):
                 frappe.enqueue(
                     self.upload_thumbnail,
                     now=True,
@@ -101,7 +101,7 @@ class FileManager:
         else:
             # could break for folders?
             os.rename(current_path, self.site_folder / drive_file.path)
-            if drive_file and self.can_create_thumbnail(drive_file):
+            if drive_file and create_thumbnail and self.can_create_thumbnail(drive_file):
                 frappe.enqueue(
                     self.upload_thumbnail,
                     now=True,

@@ -53,17 +53,13 @@ def upload_file(
     fullpath=None,
     parent=None,
     embed=0,
+    transfer=0,
 ):
     """
-    Accept chunked file contents via a multipart upload, store the file on
-    disk, and insert a corresponding DriveEntity doc.
-
-    :param fullpath: Full path of the uploaded file
-    :param parent: Document-name of the parent folder. Defaults to the user directory
-    :raises PermissionError: If the user does not have write access to the specified parent folder
-    :raises FileExistsError: If a file with the same name already exists in the specified parent folder
-    :raises ValueError: If the size of the stored file does not match the specified filesize
-    :return: DriveEntity doc once the entire file has been uploaded
+    Accept chunked file contents via a multipart upload.
+    Store the file on disk, and insert a corresponding DriveFile doc.
+    Works with normal uploads, transfers, and embeds.
+    :return: DriveFile doc once the entire file has been uploaded
     """
     checks = frappe.get_hooks("validate_drive_upload")
     for check in checks:
@@ -74,11 +70,12 @@ def upload_file(
     home_folder = get_home_folder(team)
     parent = parent or home_folder["name"]
     embed = int(embed)
+
     # Get again for non-root folders
-    team = frappe.db.get_value("Drive File", parent, "team")
     if not embed and not user_has_permission(parent, "upload"):
         frappe.throw("Ask the folder owner for upload access.", frappe.PermissionError)
 
+    team = frappe.db.get_value("Drive File", parent, "team")
     if fullpath:
         parent = ensure_path(team, fullpath, parent)
 
@@ -93,7 +90,7 @@ def upload_file(
         total_chunks = 1
 
     file = frappe.request.files["file"]
-    title = get_new_title(file.filename, parent)
+    title = get_new_title(file.filename, parent) if not transfer else file.filename
     upload_session = frappe.form_dict.uuid
     temp_path = get_upload_path(home_folder["path"], f"{upload_session}_{secure_filename(title)}")
     with temp_path.open("ab") as f:
@@ -115,18 +112,25 @@ def upload_file(
     manager = FileManager()
 
     # Create DB record
-    drive_file = create_drive_file(
-        team,
-        title,
-        parent,
-        mime_type,
-        lambda entity: manager.get_disk_path(entity, home_folder, embed),
-        file_size,
-        int(last_modified) / 1000 if last_modified else None,
-    )
+    if transfer:
+        entity = frappe.get_doc({"doctype": "Drive Transfer", "title": title, "file_size": file_size})
+        entity.insert()
+        entity.path = Path(home_folder["path"]) / (entity.name if manager.flat else Path(".transfers") / entity.title)
+        entity.save()
+        drive_file = frappe._dict(**entity.as_dict(), team=team, parent=parent)
+    else:
+        drive_file = create_drive_file(
+            team,
+            title,
+            parent,
+            mime_type,
+            lambda entity: manager.get_disk_path(entity, home_folder, embed),
+            file_size,
+            int(last_modified) / 1000 if last_modified else None,
+        )
 
     # Upload and update parent folder size
-    manager.upload_file(temp_path, drive_file)
+    manager.upload_file(temp_path, drive_file, not embed and not transfer)
 
     try:
         update_clients(drive_file.name, drive_file.team, "upload")
@@ -135,7 +139,9 @@ def upload_file(
         # Find a cleaner way to handle folder sizes as multiple simultaneous uploads will break this
         pass
 
-    if not embed:
+    if transfer:
+        frappe.publish_realtime("transfer-add", {"file": drive_file})
+    elif not embed:
         frappe.publish_realtime("list-add", {"file": prettify_file(drive_file.as_dict())})
 
     return drive_file

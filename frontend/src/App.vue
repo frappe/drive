@@ -38,7 +38,10 @@
       @click="emitter.emit('uploadFile')"
     />
     <FileUploader
-      v-if="normalView && ['Folder', 'Home', 'Team'].includes($route.name)"
+      v-if="
+        normalView &&
+        ['Folder', 'Home', 'Team', 'Transfer'].includes($route.name)
+      "
     />
     <FDialogs />
   </FrappeUIProvider>
