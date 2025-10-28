@@ -214,9 +214,12 @@ class FileManager:
         """
         try:
             if self.s3_enabled:
-                buf = self.conn.get_object(Bucket=self.get_bucket(entity.team), Key=entity.path, Range=range_header)[
-                    "Body"
-                ]
+                if range_header:
+                    buf = self.conn.get_object(
+                        Bucket=self.get_bucket(entity.team), Key=entity.path, Range=range_header
+                    )["Body"]
+                else:
+                    buf = self.conn.get_object(Bucket=self.get_bucket(entity.team), Key=entity.path)["Body"]
             else:
                 with open(self.site_folder / entity.path, "rb") as fh:
                     buf = BytesIO(fh.read())
