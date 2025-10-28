@@ -61,8 +61,8 @@ def get_user_access(entity, user: str = None, team: bool = False):
             return get_team_access(entity)
         else:
             user = frappe.session.user
-    if not team and user not in [frappe.session.user, "Guest"] and not is_admin(entity.team):
-        frappe.throw("You cannot check permissions of other users", PermissionError)
+    # if not team and user not in [frappe.session.user, "Guest"] and not is_admin(entity.team):
+    #     frappe.throw("You cannot check permissions of other users", PermissionError)
 
     # Owners and team members of a file have access
     teams = get_teams(user)

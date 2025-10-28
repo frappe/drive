@@ -208,15 +208,15 @@ class FileManager:
             (self.site_folder / path).mkdir()
         return str(path) + "/"
 
-    def get_file(self, entity):
+    def get_file(self, entity, range_header=None):
         """
-        Function to read file from a s3 file.
-
-        Temporary: if not found in S3, look at disk.
+        Function to get a file, with an optional range header for S3 objects
         """
         try:
             if self.s3_enabled:
-                buf = self.conn.get_object(Bucket=self.get_bucket(entity.team), Key=entity.path)["Body"]
+                buf = self.conn.get_object(Bucket=self.get_bucket(entity.team), Key=entity.path, Range=range_header)[
+                    "Body"
+                ]
             else:
                 with open(self.site_folder / entity.path, "rb") as fh:
                     buf = BytesIO(fh.read())

@@ -629,9 +629,12 @@ def stream_file_content(entity_name):
 
     manager = FileManager()
     data = None
-    with manager.open_file(entity.path) as f:
-        f.seek(byte1)
-        data = f.read(length)
+    if manager.s3_enabled:
+        data = manager.get_file(entity, f"bytes={byte1}-{byte1 + length - 1}")
+    else:
+        with manager.open_file(entity.path) as f:
+            f.seek(byte1)
+            data = f.read(length)
 
     res = Response(data, 206, mimetype=entity.mime_type, direct_passthrough=True)
     res.headers.add("Content-Range", "bytes {0}-{1}/{2}".format(byte1, byte1 + length - 1, size))
