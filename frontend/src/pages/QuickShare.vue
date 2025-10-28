@@ -50,22 +50,32 @@ import { createResource } from "frappe-ui"
 import { prettyData } from "@/utils/files"
 import LucideDownload from "~icons/lucide/download"
 import { entitiesDownload } from "@/utils/download"
+import { inject } from "vue"
+
+const transform = (data) => {
+  return prettyData(
+    data.map((k) => {
+      const modified = new Date(new Date(k.creation).getTime() + 60 * 60 * 1000)
+      return {
+        ...k,
+        modified: modified.toISOString(),
+      }
+    })
+  )
+}
 
 const transfers = createResource({
   url: "drive.api.list.get_transfers",
   auto: true,
-  transform(data) {
-    return prettyData(
-      data.map((k) => {
-        const modified = new Date(
-          new Date(k.creation).getTime() + 60 * 60 * 1000
-        )
-        return {
-          ...k,
-          modified: modified.toISOString(),
-        }
-      })
-    )
-  },
+  transform,
+})
+
+const socket = inject("socket")
+socket.on("transfer-add", ({ file }) => {
+  // broken - security
+  if (file.owner === $state.store.user.id) {
+    props.getEntities.data.push(...transform([file]))
+    props.getEntities.setData(props.getEntities.data)
+  }
 })
 </script>

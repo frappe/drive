@@ -979,3 +979,14 @@ def get_root_folder(team):
     if team not in get_teams():
         frappe.throw("You can't check the home folder of a team you don't belong to.", frappe.PermissionError)
     return get_home_folder(team)
+
+
+def auto_delete_transfers():
+    from frappe.utils import now_datetime, add_to_date
+
+    one_hour_ago = add_to_date(now_datetime(), hours=-1)
+
+    transfers = frappe.get_all("Drive Transfer", filters={"creation": ["<", one_hour_ago]}, pluck="name")
+
+    for name in transfers:
+        frappe.delete_doc("Drive Transfer", name)

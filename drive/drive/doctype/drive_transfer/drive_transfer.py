@@ -10,6 +10,4 @@ from drive.utils import get_default_team
 class DriveTransfer(Document):
     def after_delete(self):
         if self.path:
-            print("alooo", self.path)
             FileManager().delete_file(frappe._dict(**self.as_dict(), team=get_default_team()))
-            print("deleted!")

@@ -139,7 +139,7 @@ doc_events = {
 
 scheduler_events = {
     "daily": ["drive.api.files.auto_delete_from_trash", "drive.api.files.clear_deleted_files"],
-    "hourly": ["drive.api.permissions.auto_delete_expired_perms"],
+    "hourly": ["drive.api.permissions.auto_delete_expired_perms", "drive.api.files.auto_delete_transfers"],
 }
 
 after_request = "drive.api.product.after_request"
