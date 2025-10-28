@@ -2,8 +2,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: frappe\n"
 "Report-Msgid-Bugs-To: developers@frappe.io\n"
-"POT-Creation-Date: 2025-10-10 16:11+0000\n"
-"PO-Revision-Date: 2025-10-15 02:15\n"
+"POT-Creation-Date: 2025-10-24 16:11+0000\n"
+"PO-Revision-Date: 2025-10-28 04:41\n"
 "Last-Translator: developers@frappe.io\n"
 "Language-Team: Swedish\n"
 "MIME-Version: 1.0\n"
@@ -64,8 +64,8 @@ msgstr "Konto Begäran"
 msgid "Action Type"
 msgstr "Åtgärd Typ"
 
-#: frontend/src/components/Settings/UserListSettings.vue:445
-#: frontend/src/components/TagInput.vue:27
+#: frontend/src/components/Settings/UserListSettings.vue:449
+#: frontend/src/components/TagInput.vue:25
 msgid "Add"
 msgstr "Lägg till"
 
@@ -73,11 +73,12 @@ msgstr "Lägg till"
 msgid "Add Image"
 msgstr "Lägg till bild"
 
-#: frontend/src/components/InfoPopup.vue:38
+#: frontend/src/components/InfoPopup.vue:47
 msgid "Added"
 msgstr "Lagt till av"
 
 #. Name of a role
+#: drive/drive/doctype/drive_desktop_client/drive_desktop_client.json
 #: drive/drive/doctype/drive_document/drive_document.json
 #: drive/drive/doctype/drive_document_version/drive_document_version.json
 #: drive/drive/doctype/drive_entity_activity_log/drive_entity_activity_log.json
@@ -117,7 +118,7 @@ msgstr "Av"
 msgid "Can contain whatever meta value needed for the access log. Ex: Used to store access level 1,2,3 etc on a DriveDocShare"
 msgstr "Kan innehålla vilket metavärde som helst som behövs för åtkomst logg. Ex: Används för att lagra åtkomstnivå 1,2,3 o. s. v på DriveDocShare"
 
-#: frontend/src/components/InfoPopup.vue:62
+#: frontend/src/components/InfoPopup.vue:77
 msgid "Characters"
 msgstr "Tecken"
 
@@ -160,7 +161,7 @@ msgstr "Bekräfta"
 msgid "Content"
 msgstr "Innehåll "
 
-#: frontend/src/components/GenericPage.vue:313
+#: frontend/src/components/GenericPage.vue:314
 #: frontend/src/components/Navbar.vue:227
 msgid "Copy Link"
 msgstr "Kopiera Länk"
@@ -176,12 +177,12 @@ msgstr "System"
 msgid "Defaults to \"s3v4\". Some providers only support \"s3\"."
 msgstr "Standardvärdet är \"s3v4\". Vissa leverantörer stöder endast \"s3\"."
 
-#: frontend/src/components/GenericPage.vue:380
+#: frontend/src/components/GenericPage.vue:381
 #: frontend/src/components/Navbar.vue:285
 msgid "Delete"
 msgstr "Ta bort"
 
-#: frontend/src/components/InfoPopup.vue:135
+#: frontend/src/components/InfoPopup.vue:157
 msgid "Developer"
 msgstr "Utvecklare"
 
@@ -222,7 +223,7 @@ msgstr "DocType"
 msgid "Documentation"
 msgstr "Dokumentation"
 
-#: frontend/src/components/GenericPage.vue:304
+#: frontend/src/components/GenericPage.vue:305
 #: frontend/src/components/Navbar.vue:220
 msgid "Download"
 msgstr "Ladda ner"
@@ -334,7 +335,7 @@ msgstr "Team Medlem"
 msgid "Drive User Invitation"
 msgstr "Användarinbjudan"
 
-#: frontend/src/components/Settings/UserListSettings.vue:522
+#: frontend/src/components/Settings/UserListSettings.vue:526
 msgid "Edit"
 msgstr "Redigera"
 
@@ -399,7 +400,7 @@ msgstr "Exempel format: https://s3.ap-south-1.amazonaws.com"
 msgid "Expired"
 msgstr "Utgången"
 
-#: frontend/src/components/GenericPage.vue:341
+#: frontend/src/components/GenericPage.vue:342
 #: frontend/src/components/Navbar.vue:256
 msgid "Favourite"
 msgstr "Favorit"
@@ -425,7 +426,7 @@ msgstr "Från Användare"
 #. Label of the general_section (Section Break) field in DocType 'Drive Disk
 #. Settings'
 #: drive/drive/doctype/drive_disk_settings/drive_disk_settings.json
-#: frontend/src/components/InfoPopup.vue:100
+#: frontend/src/components/InfoPopup.vue:119
 msgid "General"
 msgstr "Allmän"
 
@@ -555,7 +556,7 @@ msgstr "Antal Inloggningar"
 msgid "MIME Type"
 msgstr "MIME Typ"
 
-#: frontend/src/components/InfoPopup.vue:88
+#: frontend/src/components/InfoPopup.vue:106
 #: frontend/src/components/Sidebar.vue:96
 msgid "Manage"
 msgstr "Hantera"
@@ -595,11 +596,11 @@ msgstr "Meta Värde"
 #. Label of the _modified (Datetime) field in DocType 'Drive File'
 #: drive/drive/doctype/drive_file/drive_file.json
 #: frontend/src/components/DriveToolBar.vue:251
-#: frontend/src/components/InfoPopup.vue:34
+#: frontend/src/components/InfoPopup.vue:41
 msgid "Modified"
 msgstr "Ändrad"
 
-#: frontend/src/components/GenericPage.vue:320
+#: frontend/src/components/GenericPage.vue:321
 #: frontend/src/components/Navbar.vue:238
 msgid "Move"
 msgstr "Flytta"
@@ -618,7 +619,7 @@ msgstr "Ny"
 msgid "New Tag"
 msgstr "Ny Tagg"
 
-#: frontend/src/components/Settings/UserListSettings.vue:361
+#: frontend/src/components/Settings/UserListSettings.vue:365
 msgid "New Team"
 msgstr "Ny Team"
 
@@ -627,7 +628,11 @@ msgstr "Ny Team"
 msgid "New Value"
 msgstr "Ny Värde"
 
-#: drive/public/js/ff_integration.bundle.js:30
+#: frontend/src/components/TagInput.vue:18
+msgid "No tags"
+msgstr "Inga Taggar"
+
+#: drive/public/js/ff_integration.bundle.js:29
 msgid "No teams available"
 msgstr "Inga team är tillgängliga"
 
@@ -661,7 +666,7 @@ msgstr "Gammalt Värde"
 msgid "Only applies if S3 is turned on."
 msgstr "Gäller endast om S3 är aktiverad."
 
-#: frontend/src/components/GenericPage.vue:290
+#: frontend/src/components/GenericPage.vue:291
 msgid "Open"
 msgstr "Öppen"
 
@@ -675,7 +680,7 @@ msgid "Others"
 msgstr "Övriga"
 
 #: frontend/src/components/DriveToolBar.vue:247
-#: frontend/src/components/InfoPopup.vue:18
+#: frontend/src/components/InfoPopup.vue:19
 #: frontend/src/components/ListView.vue:150
 msgid "Owner"
 msgstr "Ansvarig"
@@ -713,7 +718,7 @@ msgstr "Inställningar"
 msgid "Prefix"
 msgstr "Prefix"
 
-#: frontend/src/components/GenericPage.vue:284
+#: frontend/src/components/GenericPage.vue:285
 msgid "Preview"
 msgstr "Förhandsgranska"
 
@@ -753,7 +758,7 @@ msgstr "Rå Innehåll"
 msgid "Read"
 msgstr "Läsa"
 
-#: frontend/src/components/InfoPopup.vue:68
+#: frontend/src/components/InfoPopup.vue:85
 msgid "Reading time"
 msgstr "Lästid"
 
@@ -773,11 +778,11 @@ msgstr "Referens Data"
 msgid "Referrer ID"
 msgstr "Referens"
 
-#: frontend/src/components/GenericPage.vue:367
+#: frontend/src/components/GenericPage.vue:368
 msgid "Remove from Recents"
 msgstr "Ta bort från Senaste"
 
-#: frontend/src/components/GenericPage.vue:328
+#: frontend/src/components/GenericPage.vue:329
 #: frontend/src/components/Navbar.vue:244
 msgid "Rename"
 msgstr "Ändra Namn"
@@ -825,16 +830,16 @@ msgstr "Inställningar"
 #. Label of the share (Check) field in DocType 'Drive Permission'
 #: drive/drive/doctype/drive_notification/drive_notification.json
 #: drive/drive/doctype/drive_permission/drive_permission.json
-#: frontend/src/components/GenericPage.vue:297
+#: frontend/src/components/GenericPage.vue:298
 #: frontend/src/components/Navbar.vue:212
 msgid "Share"
 msgstr "Dela "
 
-#: frontend/src/components/InfoPopup.vue:111 frontend/src/utils/files.js:206
+#: frontend/src/components/InfoPopup.vue:132 frontend/src/utils/files.js:206
 msgid "Shared"
 msgstr "Delad"
 
-#: frontend/src/components/GenericPage.vue:334
+#: frontend/src/components/GenericPage.vue:335
 #: frontend/src/components/Navbar.vue:250
 msgid "Show Info"
 msgstr "Visa Info"
@@ -855,7 +860,7 @@ msgid "Single Click"
 msgstr "Enkel Klick"
 
 #: frontend/src/components/DriveToolBar.vue:255
-#: frontend/src/components/InfoPopup.vue:28
+#: frontend/src/components/InfoPopup.vue:33
 #: frontend/src/components/ListView.vue:186
 msgid "Size"
 msgstr "Storlek"
@@ -876,7 +881,7 @@ msgstr "Ögonblicksbild Data"
 msgid "Snapshot Size"
 msgstr "Ögonblicksbild Storlek"
 
-#: frontend/src/components/InfoPopup.vue:54
+#: frontend/src/components/InfoPopup.vue:66
 msgid "Stats"
 msgstr "Statistik"
 
@@ -919,7 +924,7 @@ msgstr "Tagg"
 
 #. Label of the tags (Table) field in DocType 'Drive File'
 #: drive/drive/doctype/drive_file/drive_file.json
-#: frontend/src/components/InfoPopup.vue:42
+#: frontend/src/components/InfoPopup.vue:53
 #: frontend/src/components/Settings/TagSettings.vue:4
 msgid "Tags"
 msgstr "Taggar"
@@ -954,10 +959,6 @@ msgstr "Team Prefix"
 msgid "Teams"
 msgstr "Teams"
 
-#: frontend/src/components/TagInput.vue:21
-msgid "This file has no tags"
-msgstr "Denna fil har inga taggar"
-
 #. Label of the thumbnail_prefix (Data) field in DocType 'Drive Disk Settings'
 #: drive/drive/doctype/drive_disk_settings/drive_disk_settings.json
 msgid "Thumbnail prefix"
@@ -987,7 +988,7 @@ msgstr "Till Användare"
 #: drive/drive/doctype/drive_file_update/drive_file_update.json
 #: drive/drive/doctype/drive_notification/drive_notification.json
 #: frontend/src/components/DriveToolBar.vue:259
-#: frontend/src/components/InfoPopup.vue:24
+#: frontend/src/components/InfoPopup.vue:27
 msgid "Type"
 msgstr "Typ"
 
@@ -996,7 +997,7 @@ msgstr "Typ"
 msgid "URL Args"
 msgstr "URL Argument"
 
-#: frontend/src/components/GenericPage.vue:354
+#: frontend/src/components/GenericPage.vue:355
 #: frontend/src/components/Navbar.vue:267
 msgid "Unfavourite"
 msgstr "Ta bort Favorit"
@@ -1051,7 +1052,7 @@ msgstr "Versioner"
 msgid "With you"
 msgstr "Med dig"
 
-#: frontend/src/components/InfoPopup.vue:56
+#: frontend/src/components/InfoPopup.vue:69
 msgid "Words"
 msgstr "Ord"
 
@@ -1124,11 +1125,11 @@ msgstr "flytta"
 msgid "none"
 msgstr "ingen"
 
-#: frontend/src/components/InfoPopup.vue:119
+#: frontend/src/components/InfoPopup.vue:141
 msgid "people"
 msgstr "personer"
 
-#: frontend/src/components/InfoPopup.vue:119
+#: frontend/src/components/InfoPopup.vue:141
 msgid "person"
 msgstr "person"
 
