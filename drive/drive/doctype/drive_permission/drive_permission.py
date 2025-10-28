@@ -12,11 +12,11 @@ class DrivePermission(Document):
         if self.user:
             frappe.enqueue(
                 notify_share,
-                queue="long",
+                queue="short",
                 job_id=f"fdocperm_{self.name}",
                 deduplicate=True,
                 timeout=None,
-                now=False,
+                now=True,
                 at_front=False,
                 entity_name=self.entity,
                 docperm_name=self.name,

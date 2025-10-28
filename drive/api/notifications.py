@@ -96,10 +96,14 @@ def notify_share(entity_name, docperm_name):
 
     author_full_name = frappe.db.get_value("User", {"name": docshare.owner}, ["full_name"])
     entity_type = "document" if entity.document else "folder" if entity.is_group else "file"
-
+    link = get_link(entity)
     message = f'{author_full_name} shared a {entity_type} with you: "{entity.title}"'
-    create_notification(docshare.owner, docshare.user, "Share", entity, message)
-    send_share_email(docshare.user, message, get_link(entity), entity.team, entity_type)
+    if not frappe.db.exists("User", docshare.user):
+        key = frappe.get_value("Drive User Invitation", {"email": docshare.user})
+        link = frappe.utils.get_url(f"/api/method/drive.api.product.accept_invite?key={key}&redirect={link}")
+    else:
+        create_notification(docshare.owner, docshare.user, "Share", entity, message)
+    send_share_email(docshare.user, message, link, entity.team, entity_type)
 
 
 def create_notification(from_user, to_user, type, entity, message=None):
@@ -137,15 +141,19 @@ def create_notification(from_user, to_user, type, entity, message=None):
 
 
 def send_share_email(to, message, link, team, type_):
-    frappe.sendmail(
-        recipients=to,
-        subject=f"Frappe Drive - {type_.capitalize()} Shared",
-        template="drive_share",
-        args={
-            "message": message,
-            "type": type_,
-            "link": link,
-            "team_name": frappe.db.get_value("Drive Team", team, "title"),
-        },
-        now=True,
-    )
+    print("SHARE MAIL", link)
+    try:
+        frappe.sendmail(
+            recipients=to,
+            subject=f"Frappe Drive - {type_.capitalize()} Shared",
+            template="drive_share",
+            args={
+                "message": message,
+                "type": type_,
+                "link": link,
+                "team_name": frappe.db.get_value("Drive Team", team, "title"),
+            },
+            now=True,
+        )
+    except:
+        pass

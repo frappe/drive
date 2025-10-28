@@ -283,7 +283,7 @@ def set_settings(updates):
 
 
 @frappe.whitelist()
-def invite_users(emails, team=None, as_guest=False):
+def invite_users(emails, team=None, as_guest=False, auto=False):
     if not emails:
         return
 
@@ -303,7 +303,7 @@ def invite_users(emails, team=None, as_guest=False):
         invite = frappe.new_doc("Drive User Invitation")
         invite.email = email
         invite.team = team
-        invite.status = "Pending"
+        invite.status = "Automatic" if auto else "Pending"
         invite.as_guest = as_guest
         invite.insert()
 

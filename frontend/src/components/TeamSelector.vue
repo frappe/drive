@@ -18,15 +18,15 @@ import { dynamicList } from "@/utils/files"
 getTeams.fetch()
 const team = defineModel<string>()
 const props = defineProps({
+  // UC - redo
   none: { default: false, type: Boolean || String },
   allowBlank: { default: false },
   disabled: { default: false },
 })
 watch(
-  getTeams.data,
+  () => getTeams.data,
   (teams) => {
-    if (!Object.values(teams || {}).length || props.allowBlank || team.value)
-      return
+    if (props.allowBlank || team.value) return
     if (props.none) {
       team.value = props.none === true ? "all" : "home"
     } else {

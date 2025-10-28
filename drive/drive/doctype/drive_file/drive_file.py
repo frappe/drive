@@ -259,7 +259,7 @@ class DriveFile(Document):
 
         # Create user
         if not frappe.db.exists("User", user):
-            invite_users(user)
+            invite_users(user, auto=True)
 
         levels = [
             ["read", read],

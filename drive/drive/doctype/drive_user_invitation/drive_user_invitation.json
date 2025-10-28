@@ -27,7 +27,7 @@
    "fieldname": "status",
    "fieldtype": "Select",
    "label": "Status",
-   "options": "Expired\nPending\nAccepted\nProposed"
+   "options": "Expired\nPending\nAccepted\nAutomatic\nProposed"
   },
   {
    "fieldname": "accepted_on",
@@ -43,7 +43,7 @@
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2025-10-27 12:12:10.390364",
+ "modified": "2025-10-28 17:43:24.917547",
  "modified_by": "Administrator",
  "module": "Drive",
  "name": "Drive User Invitation",

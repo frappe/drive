@@ -48,7 +48,7 @@ class DriveUserInvitation(Document):
         )
 
     def accept(self, redirect=True):
-        if self.status != "Pending":
+        if self.status not in ["Pending", "Automatic"]:
             frappe.throw("This key has already been used")
         if self.status == "Expired" or self.has_expired():
             self.status = "Expired"
@@ -83,6 +83,8 @@ class DriveUserInvitation(Document):
             if not user_exists:
                 team_name = frappe.db.get_value("Drive Team", self.team, "title")
                 url = f"/drive/signup?e={self.email}{'&t=' + team_name if team_name else ''}&r={req.name}"
+                if isinstance(redirect, str):
+                    url += f"&redirect-to={redirect}"
                 frappe.local.response["location"] = url
                 return
 

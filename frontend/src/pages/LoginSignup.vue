@@ -16,7 +16,7 @@
                     ? "Login to Drive"
                     : params.get("t")
                     ? "Join " + params.get("t")
-                    : "Create a new account"
+                    : "Create an account"
                 }}
               </p>
               <p
@@ -26,7 +26,7 @@
                   !isLogin
                     ? params.get("t")
                       ? "Powered by Frappe Drive."
-                      : "Get 5 GB for free, no credit card required."
+                      : "Welcome to Drive."
                     : "Welcome back!"
                 }}
               </p>
@@ -50,6 +50,7 @@
                     type="text"
                     placeholder="Robin"
                     variant="outline"
+                    autocomplete="off"
                     required
                   />
                   <FormControl
@@ -58,6 +59,7 @@
                     type="text"
                     placeholder="Hood"
                     variant="outline"
+                    autocomplete="off"
                   />
                 </div>
                 <div class="!mt-6 flex gap-2">
@@ -84,7 +86,7 @@
                     class="w-full font-medium"
                     @click="signup.submit()"
                   >
-                    Create Account
+                    Sign up
                   </Button>
                 </div>
               </template>
@@ -255,8 +257,7 @@ const signup = createResource({
     }
   },
   onSuccess(data) {
-    console.log(data.location)
-    window.location.href = data.location
+    window.location.replace(params.get("redirect-to") || data.location)
   },
   onError(err) {
     console.log(err.messages)
@@ -291,7 +292,7 @@ const verifyOTP = createResource({
   onSuccess: (data) => {
     otpValidated.value = true
     settings.fetch()
-    window.location.replace(params.get('redirect-to') || '/drive')
+    window.location.replace(params.get("redirect-to") || "/drive")
   },
 })
 </script>
