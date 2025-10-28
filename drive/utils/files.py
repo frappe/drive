@@ -417,13 +417,19 @@ class FileManager:
 
     def delete_file(self, entity):
         thumbnail_path = self.get_thumbnail_path(entity.team, entity.name)
+
         if self.s3_enabled:
             bucket = self.get_bucket(entity.team)
-            self.conn.delete_object(Bucket=bucket, Key=entity.path)
-            self.conn.delete_object(Bucket=bucket, Key=str(thumbnail_path))
+            try:
+                self.conn.delete_object(Bucket=bucket, Key=entity.path)
+                if thumbnail_path:
+                    self.conn.delete_object(Bucket=bucket, Key=str(thumbnail_path))
+            except:
+                pass
         else:
             try:
                 (self.site_folder / entity.path).unlink()
-                thumbnail_path.unlink()
+                if thumbnail_path:
+                    (self.site_folder / thumbnail_path).unlink()
             except FileNotFoundError:
                 pass

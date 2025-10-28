@@ -15,9 +15,57 @@
       variant="solid"
       @click="emitter.emit('uploadFile')"
     />
+    <div
+      v-if="transfers.data && transfers.data.length"
+      class="w-full gap-3 grid grid-cols-1 sm:grid-cols-2 mt-6 max-w-3xl px-12"
+    >
+      <div
+        v-for="file in transfers.data"
+        :key="file.name"
+        class="flex justify-between rounded border border-outline-gray-modals p-3 shadow-sm"
+      >
+        <div class="flex flex-col gap-2 justify-center">
+          <span class="text-sm font-medium text-ink-gray-9 truncate">
+            {{ file.title }}
+          </span>
+          <span class="text-xs text-ink-gray-5">
+            {{ file.file_size_pretty }} · {{ file.relativeModified }}
+          </span>
+        </div>
+        <div class="flex items-center gap-2">
+          <Button
+            :icon="LucideDownload"
+            @click="entitiesDownload(null, [{ name: file.name }], true)"
+            variant="subtle"
+          />
+        </div>
+      </div>
+    </div>
   </div>
 </template>
 <script setup>
 import Navbar from "@/components/Navbar.vue"
 import emitter from "@/emitter"
+import { createResource } from "frappe-ui"
+import { prettyData } from "@/utils/files"
+import LucideDownload from "~icons/lucide/download"
+import { entitiesDownload } from "@/utils/download"
+
+const transfers = createResource({
+  url: "drive.api.list.get_transfers",
+  auto: true,
+  transform(data) {
+    return prettyData(
+      data.map((k) => {
+        const modified = new Date(
+          new Date(k.creation).getTime() + 60 * 60 * 1000
+        )
+        return {
+          ...k,
+          modified: modified.toISOString(),
+        }
+      })
+    )
+  },
+})
 </script>

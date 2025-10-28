@@ -26,6 +26,7 @@ from drive.utils import (
     update_clients,
     strip_comment_spans,
     update_file_size,
+    get_default_team,
 )
 from drive.utils.api import prettify_file
 from drive.utils.files import FileManager
@@ -539,7 +540,7 @@ def create_auth_token(entity_name):
 
 
 @frappe.whitelist(allow_guest=True)
-def get_file_content(entity_name, trigger_download=0, jwt_token=None):
+def get_file_content(entity_name, trigger_download=0, jwt_token=None, transfer=False):
     """
     Stream file content and optionally trigger download
 
@@ -564,24 +565,27 @@ def get_file_content(entity_name, trigger_download=0, jwt_token=None):
         raise frappe.PermissionError("You do not have permission to view this file")
 
     trigger_download = int(trigger_download)
-    drive_file = frappe.get_value(
-        "Drive File",
-        {"name": entity_name, "is_active": 1},
-        [
-            "is_group",
-            "team",
-            "is_link",
-            "path",
-            "title",
-            "mime_type",
-            "file_size",
-            "is_active",
-            "owner",
-            "document",
-        ],
-        as_dict=1,
-    )
-    if not drive_file or drive_file.is_group or drive_file.is_link or drive_file.is_active != 1:
+    if transfer:
+        transfer = frappe.get_doc("Drive Transfer", entity_name)
+        drive_file = frappe._dict(**transfer.as_dict(), team=get_default_team())
+    else:
+        drive_file = frappe.get_value(
+            "Drive File",
+            {"name": entity_name},
+            [
+                "is_group",
+                "team",
+                "is_link",
+                "path",
+                "title",
+                "mime_type",
+                "is_active",
+                "document",
+            ],
+            as_dict=1,
+        )
+
+    if not drive_file or drive_file.is_group or drive_file.is_link or (not transfer and drive_file.is_active != 1):
         frappe.throw("Not found", frappe.NotFound)
 
     if drive_file.document:
