@@ -356,7 +356,7 @@ def ensure_path(team, fullpath, parent=None):
             doc = create_folder(team, folder, parent=current_parent)
             current_parent = doc.name
         else:
-            return exists
+            current_parent = exists
     return current_parent
 
 
