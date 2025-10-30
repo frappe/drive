@@ -46,6 +46,7 @@
 <script setup>
 import Navbar from "@/components/Navbar.vue"
 import emitter from "@/emitter"
+import store from "@/store"
 import { createResource } from "frappe-ui"
 import { prettyData } from "@/utils/files"
 import LucideDownload from "~icons/lucide/download"
@@ -73,9 +74,9 @@ const transfers = createResource({
 const socket = inject("socket")
 socket.on("transfer-add", ({ file }) => {
   // broken - security
-  if (file.owner === $state.store.user.id) {
-    props.getEntities.data.push(...transform([file]))
-    props.getEntities.setData(props.getEntities.data)
+  if (file.owner === store.state.user.id) {
+    transfers.data.push(...transform([file]))
+    transfers.setData(transfers.data)
   }
 })
 </script>

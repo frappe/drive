@@ -157,6 +157,7 @@ import LucideEraser from "~icons/lucide/eraser"
 import LucideView from "~icons/lucide/view"
 import LucideSettings from "~icons/lucide/settings"
 import LucideImageDown from "~icons/lucide/image-down"
+import LucideNewspaper from "~icons/lucide/newspaper"
 import LucideDownload from "~icons/lucide/download"
 import LucideListRestart from "~icons/lucide/list-restart"
 import LucideHistory from "~icons/lucide/history"
@@ -412,7 +413,7 @@ const navBarActions = computed(
               {
                 onClick: exportBlog,
                 label: "Export Blog",
-                icon: LucideImageDown,
+                icon: LucideNewspaper,
                 cond: apps.data && apps.data.find((k) => k.name === "blog"),
               },
             ]),

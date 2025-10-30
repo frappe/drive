@@ -116,7 +116,9 @@ def upload_file(
     if transfer:
         entity = frappe.get_doc({"doctype": "Drive Transfer", "title": title, "file_size": file_size})
         entity.insert()
-        entity.path = Path(home_folder["path"]) / (entity.name if manager.flat else Path(".transfers") / entity.title)
+        entity.path = str(
+            Path(home_folder["path"]) / (entity.name if manager.flat else Path(".transfers") / entity.title)
+        )
         entity.save()
         drive_file = frappe._dict(**entity.as_dict(), team=team, parent=parent)
     else:
