@@ -22,6 +22,7 @@ import emitter from "@/emitter"
 import { saveAs } from "file-saver"
 import jszip from "jszip"
 import TurndownService from "turndown"
+import html2docx from "@/utils/docxexporter";
 
 export const openEntity = (entity, new_tab = false) => {
   if (!entity.is_group) {
@@ -370,6 +371,13 @@ export function enterFullScreen() {
     /* IE/Edge */
     elem.msRequestFullscreen()
   }
+}
+
+export async function downloadDOCX(editor, filename) {
+    const html = editor.value.getHTML();
+    const blob = await html2docx(html, { styles: [globalStyle, editorStyle], strict: false });
+    console.log(blob)
+    saveAs(blob, `${filename}.docx`);
 }
 
 export async function downloadMD(editor, foldername) {

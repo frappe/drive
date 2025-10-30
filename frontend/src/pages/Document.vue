@@ -202,6 +202,7 @@ import {
   updateURLSlug,
   downloadZippedHTML,
   downloadMD,
+  downloadDOCX,
 } from "@/utils/files"
 import { allUsers } from "@/resources/permissions"
 import VersionsSidebar from "@/components/DocEditor/components/VersionsSidebar.vue"
@@ -482,10 +483,13 @@ const navBarActions = computed(
                   watermarkDialog.value = true
                 },
               },
-              // {
-              //   label: "DOCX",
-              //   icon: LucideFileText,
-              // },
+              {
+                label: "DOCX",
+                icon: LucideFileText,
+                onClick: () => {
+                  downloadDOCX(editorValue, entity.value.title )
+                },
+              },
               {
                 label: "Folder",
                 icon: LucideFolderArchive,
