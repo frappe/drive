@@ -6,7 +6,7 @@ from drive.api.permissions import get_user_access
 
 no_cache = 1
 
-TITLES = {"login": "Login", "signup": "Create an Account", "setup": "Set up your Account"}
+TITLES = {"login": "Login", "signup": "Create an Account"}
 
 
 def get_context():
@@ -20,24 +20,19 @@ def get_context():
 
     context.title = "Frappe Drive"
     context.description = "Visit Drive online."
-    context.og_image = "https://raw.githubusercontent.com/frappe/drive/main/.github/og_1200.png"
 
     if not frappe.form_dict.app_path:
         return context
 
     # Parsing
     parts = frappe.form_dict.app_path.split("/")
-    if len(parts) >= 4:
+    if len(parts) >= 3:
         context.description = "Open this online."
-        context.og_image = ""
-        doc = frappe.get_doc("Drive File", parts[3])
-        if get_user_access(doc)["read"]:
-            context.title = "Folder - " + doc.title if doc.is_group else doc.title
-            context.description = "Owned by " + doc.owner
+        # Ideally add thumbnail, but that might break if there's no thumbnail
+        [title, owner, is_group] = frappe.get_cached_value("Drive File", parts[1], ["title", "owner", "is_group"])
+        context.title = "Folder - " + title if is_group else title
+        context.description = "Owned by " + frappe.get_cached_value("User", owner, "full_name")
 
-            context.og_image = (
-                "/api/method/drive.api.thumbnail_generator.create_image_thumbnail?entity_name=" + doc.name
-            )
     elif parts[0] in TITLES:
         context.title = TITLES[parts[0]]
         context.description = ""

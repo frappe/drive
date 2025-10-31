@@ -60,8 +60,8 @@ importers:
         specifier: ^6.0.0-beta.2
         version: 6.0.0-beta.2
       frappe-ui:
-        specifier: ^0.1.207
-        version: 0.1.207(@babel/parser@7.28.4)(@nuxt/kit@3.19.1(magicast@0.3.5))(@vue/compiler-sfc@3.5.21)(tailwindcss@3.4.17)(vue-router@4.5.1(vue@3.5.21(typescript@5.9.2)))(vue@3.5.21(typescript@5.9.2))
+        specifier: ^0.1.209
+        version: 0.1.209(@babel/parser@7.28.4)(@nuxt/kit@3.19.1(magicast@0.3.5))(@vue/compiler-sfc@3.5.21)(tailwindcss@3.4.17)(vue-router@4.5.1(vue@3.5.21(typescript@5.9.2)))(vue@3.5.21(typescript@5.9.2))
       html2pdf.js:
         specifier: ^0.10.3
         version: 0.10.3
@@ -2913,8 +2913,8 @@ packages:
   fraction.js@4.3.7:
     resolution: {integrity: sha512-ZsDfxO51wGAXREY55a7la9LScWpwv9RxIrYABrlvOFBlH/ShPnrtsXeuUIfXKKOVicNxQ+o8JTbJvjS4M89yew==}
 
-  frappe-ui@0.1.207:
-    resolution: {integrity: sha512-PP/dpemp0dMpOzub7UxN2yxXIQTbn2DJ1mM9Io3zOda/1xNsKUMXS6dQqas8aMqqavrJdTut/2fuAKulFwuslw==}
+  frappe-ui@0.1.209:
+    resolution: {integrity: sha512-r485gg+Av2yAxOajkWj49d2d0+OTTXm3IcQmzzuGyrJrgRTSG5jQ+PHWN6fcrwIb94ksEJD0XSPratBDOw1brA==}
     peerDependencies:
       vue: '>=3.5.0'
       vue-router: ^4.1.6
@@ -8118,7 +8118,7 @@ snapshots:
 
   fraction.js@4.3.7: {}
 
-  frappe-ui@0.1.207(@babel/parser@7.28.4)(@nuxt/kit@3.19.1(magicast@0.3.5))(@vue/compiler-sfc@3.5.21)(tailwindcss@3.4.17)(vue-router@4.5.1(vue@3.5.21(typescript@5.9.2)))(vue@3.5.21(typescript@5.9.2)):
+  frappe-ui@0.1.209(@babel/parser@7.28.4)(@nuxt/kit@3.19.1(magicast@0.3.5))(@vue/compiler-sfc@3.5.21)(tailwindcss@3.4.17)(vue-router@4.5.1(vue@3.5.21(typescript@5.9.2)))(vue@3.5.21(typescript@5.9.2)):
     dependencies:
       '@floating-ui/vue': 1.1.8(vue@3.5.21(typescript@5.9.2))
       '@headlessui/vue': 1.7.23(vue@3.5.21(typescript@5.9.2))

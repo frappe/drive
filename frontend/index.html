@@ -18,10 +18,12 @@
       property="og:description"
       content="{{ description }}"
     />
+    {% if og_image %}
     <meta
       property="og:image"
       content="{{ og_image }}"
     />
+    {% endif %}
 
     <!-- Twitter Meta Tags -->
     <meta
@@ -36,10 +38,12 @@
       name="twitter:description"
       content="{{ description }}"
     />
+    {% if og_image %}
     <meta
       name="twitter:image"
       content="{{ og_image }}"
     />
+    {% endif %}
 
     <link
       rel="apple-touch-icon"
