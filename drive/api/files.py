@@ -586,15 +586,15 @@ def get_file_content(entity_name, trigger_download=0, jwt_token=None, transfer=F
             ],
             as_dict=1,
         )
-    if not trigger_download and get_file_type(drive_file) == "Video":
-        return stream_file_content(entity_name)
-
     if not drive_file or drive_file.is_group or drive_file.is_link or (not transfer and drive_file.is_active != 1):
         frappe.throw("Not found", frappe.NotFound)
+
     return get_file_internal(drive_file, trigger_download)
 
 
 def get_file_internal(file, trigger_download=0):
+    if not trigger_download and get_file_type(file.as_dict()) == "Video":
+        return stream_file_content(file.name)
     if file.document:
         frappe.local.response["type"] = "redirect"
         frappe.local.response["location"] = "/drive/w/" + file.name
