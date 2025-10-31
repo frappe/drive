@@ -1,8 +1,5 @@
 export function getIconUrl(file_type) {
-  return new URL(
-    `/src/assets/images/icons/${file_type.toLowerCase()}.svg`,
-    import.meta.url
-  )
+  return `/assets/drive/images/icons/${file_type.toLowerCase()}.svg`
 }
 
 export function getThumbnailUrl({ name, file_type, thumbnail, external }) {
