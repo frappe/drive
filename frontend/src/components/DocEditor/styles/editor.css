@@ -1,4 +1,4 @@
-@import url("../../../assets/fonts/fonts.css");
+@import url("./fonts.css");
 @import url("./comment.css");
 @import url("./print.css");
 @import "frappe-ui/src/components/TextEditor/extensions/color/color-styles.css";

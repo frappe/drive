@@ -161,8 +161,6 @@ onKeyDown("Escape", (e) => {
 })
 </script>
 <style scoped>
-@import url("./DocEditor/styles/editor.css");
-
 .grid-container {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(170px, 1fr));

@@ -1,7 +1,7 @@
 /* IBM Plex Sans */
 @font-face {
   font-family: "IBM Plex Sans";
-  src: url("./IBM_Plex_Sans/IBMPlexSans-VariableFont_wdth,wght.ttf")
+  src: url("/assets/drive/fonts/IBM_Plex_Sans/IBMPlexSans-VariableFont_wdth,wght.ttf")
     format("truetype");
   font-weight: 100 700;
   font-stretch: 75% 100%;
@@ -10,7 +10,7 @@
 }
 @font-face {
   font-family: "IBM Plex Sans";
-  src: url("./IBM_Plex_Sans/IBMPlexSans-Italic-VariableFont_wdth,wght.ttf")
+  src: url("/assets/drive/fonts/IBM_Plex_Sans/IBMPlexSans-Italic-VariableFont_wdth,wght.ttf")
     format("truetype");
   font-weight: 100 700;
   font-stretch: 75% 100%;
@@ -21,14 +21,14 @@
 /* EB Garamond */
 @font-face {
   font-family: "EB Garamond";
-  src: url("./EB_Garamond/EBGaramond-VariableFont_wght.ttf") format("truetype");
+  src: url("/assets/drive/fonts/EB_Garamond/EBGaramond-VariableFont_wght.ttf") format("truetype");
   font-weight: 400 800;
   font-style: normal;
   font-display: swap;
 }
 @font-face {
   font-family: "EB Garamond";
-  src: url("./EB_Garamond/EBGaramond-Italic-VariableFont_wght.ttf")
+  src: url("/assets/drive/fonts/EB_Garamond/EBGaramond-Italic-VariableFont_wght.ttf")
     format("truetype");
   font-weight: 400 800;
   font-style: italic;
@@ -38,14 +38,14 @@
 /* Comic Sans MS */
 @font-face {
   font-family: "Comic Sans MS";
-  src: url("./Comic_Sans_MS/Comic-Sans-MS.ttf") format("truetype");
+  src: url("/assets/drive/fonts/Comic_Sans_MS/Comic-Sans-MS.ttf") format("truetype");
   font-weight: 400 800;
   font-style: normal;
   font-display: swap;
 }
 @font-face {
   font-family: "Comic Sans MS";
-  src: url("./Comic_Sans_MS/Comic-Sans-MS-Italics.ttf") format("truetype");
+  src: url("/assets/drive/fonts/Comic_Sans_MS/Comic-Sans-MS-Italics.ttf") format("truetype");
   font-weight: 400 800;
   font-style: italic;
   font-display: swap;
@@ -54,7 +54,7 @@
 /* Comfortaa */
 @font-face {
   font-family: "Comfortaa";
-  src: url("./Comfortaa/Comfortaa-VariableFont_wght.ttf") format("truetype");
+  src: url("/assets/drive/fonts/Comfortaa/Comfortaa-VariableFont_wght.ttf") format("truetype");
   font-weight: 300 700;
   font-style: normal;
   font-display: swap;
@@ -63,14 +63,14 @@
 /* Cormorant */
 @font-face {
   font-family: "Cormorant";
-  src: url("./Cormorant/Cormorant-VariableFont_wght.ttf") format("truetype");
+  src: url("/assets/drive/fonts/Cormorant/Cormorant-VariableFont_wght.ttf") format("truetype");
   font-weight: 300 700;
   font-style: normal;
   font-display: swap;
 }
 @font-face {
   font-family: "Cormorant";
-  src: url("./Cormorant/Cormorant-Italic-VariableFont_wght.ttf")
+  src: url("/assets/drive/fonts/Cormorant/Cormorant-Italic-VariableFont_wght.ttf")
     format("truetype");
   font-weight: 300 700;
   font-style: italic;
@@ -80,7 +80,7 @@
 /* Merriweather */
 @font-face {
   font-family: "Merriweather";
-  src: url("./Merriweather/Merriweather-VariableFont_opsz,wdth,wght.ttf")
+  src: url("/assets/drive/fonts/Merriweather/Merriweather-VariableFont_opsz,wdth,wght.ttf")
     format("truetype");
   font-style: normal;
   font-weight: 300 900;
@@ -91,7 +91,7 @@
 /* Merriweather Italic */
 @font-face {
   font-family: "Merriweather";
-  src: url("./Merriweather/Merriweather-Italic-VariableFont_opsz,wdth,wght.ttf")
+  src: url("/assets/drive/fonts/Merriweather/Merriweather-Italic-VariableFont_opsz,wdth,wght.ttf")
     format("truetype");
   font-style: italic;
   font-weight: 300 900;
@@ -102,14 +102,14 @@
 /* Lora */
 @font-face {
   font-family: "Lora";
-  src: url("./Lora/Lora-VariableFont_wght.ttf") format("truetype");
+  src: url("/assets/drive/fonts/Lora/Lora-VariableFont_wght.ttf") format("truetype");
   font-weight: 400 700;
   font-style: normal;
   font-display: swap;
 }
 @font-face {
   font-family: "Lora";
-  src: url("./Lora/Lora-Italic-VariableFont_wght.ttf") format("truetype");
+  src: url("/assets/drive/fonts/Lora/Lora-Italic-VariableFont_wght.ttf") format("truetype");
   font-weight: 400 700;
   font-style: italic;
   font-display: swap;
@@ -118,7 +118,7 @@
 /* Nunito */
 @font-face {
   font-family: "Nunito";
-  src: url("./Nunito/Nunito-VariableFont_wght.ttf") format("truetype");
+  src: url("/assets/drive/fonts/Nunito/Nunito-VariableFont_wght.ttf") format("truetype");
   font-weight: 200 1000;
   font-style: normal;
   font-display: swap;
@@ -127,14 +127,14 @@
 /* Roboto */
 @font-face {
   font-family: "Roboto";
-  src: url("./Roboto/Roboto-VariableFont_wght.ttf") format("truetype");
+  src: url("/assets/drive/fonts/Roboto/Roboto-VariableFont_wght.ttf") format("truetype");
   font-weight: 100 900;
   font-style: normal;
   font-display: swap;
 }
 @font-face {
   font-family: "Roboto";
-  src: url("./Roboto/Roboto-Italic-VariableFont_wght.ttf") format("truetype");
+  src: url("/assets/drive/fonts/Roboto/Roboto-Italic-VariableFont_wght.ttf") format("truetype");
   font-weight: 100 900;
   font-style: italic;
   font-display: swap;
@@ -143,14 +143,14 @@
 /* Geist */
 @font-face {
   font-family: "Geist";
-  src: url("./Geist/Geist-VariableFont_wght.ttf") format("truetype");
+  src: url("/assets/drive/fonts/Geist/Geist-VariableFont_wght.ttf") format("truetype");
   font-weight: 100 900;
   font-style: normal;
   font-display: swap;
 }
 @font-face {
   font-family: "Geist";
-  src: url("./Geist/Geist-VariableItalic.ttf") format("truetype");
+  src: url("/assets/drive/fonts/Geist/Geist-VariableItalic.ttf") format("truetype");
   font-weight: 100 900;
   font-style: italic;
   font-display: swap;
@@ -159,7 +159,7 @@
 /* Caveat */
 @font-face {
   font-family: "Caveat";
-  src: url("./Caveat/Caveat-VariableFont_wght.ttf") format("truetype");
+  src: url("/assets/drive/fonts/Caveat/Caveat-VariableFont_wght.ttf") format("truetype");
   font-weight: 400 700;
   font-style: normal;
   font-display: swap;
