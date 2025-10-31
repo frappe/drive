@@ -466,10 +466,11 @@ if (props.entity.write) {
 }
 
 // Util functions
-const evalImplicitTitle = (bypass = false) => {
+const autorename = (bypass = false) => {
   const { $anchor } = editor.value.view.state.selection
   // Check if we're in the very first textblock
   if (!($anchor.index(0) === 1 && $anchor.depth === 1)) {
+    // scroll down if in the last line
     if (
       $anchor.depth === 1 &&
       editor.value.state.doc.childCount - 1 === $anchor.index(0)
@@ -483,21 +484,20 @@ const evalImplicitTitle = (bypass = false) => {
     .replaceAll("@", "")
     .trim()
   if (!props.entity.title.startsWith("Untitled Document") && !bypass) {
-    if (implicitTitle !== props.entity.title)
-      toast({
-        title: `Update title?`,
-        buttons: [{ label: "Rename", onClick: () => evalImplicitTitle(true) }],
-      })
+    // disable to improve ux
+    // if (implicitTitle !== props.entity.title)
+    //   toast({
+    //     title: `Update title?`,
+    //     buttons: [{ label: "Rename", onClick: () => autorename(true) }],
+    //   })
     return
   }
 
-  if (implicitTitle.length === 0) return
-  if (implicitTitle.length) {
+  if (implicitTitle.length)
     rename.submit({
       entity_name: props.entity.name,
       new_title: implicitTitle,
     })
-  }
 }
 
 const getOrderedComments = (doc) => {
@@ -573,7 +573,7 @@ onBeforeUnmount(() => {
   }
 })
 
-onKeyDown("Enter", () => evalImplicitTitle())
+onKeyDown("Enter", () => autorename())
 onKeyDown("s", (e) => {
   if (!e.metaKey || !e.shiftKey) {
     return
