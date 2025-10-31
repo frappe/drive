@@ -18,6 +18,8 @@ import slugify from "slugify"
 import { toast } from "@/utils/toasts.js"
 import { useFileUpload, toast as nToast } from "frappe-ui"
 import emitter from "@/emitter"
+import { createLowlight, common } from "lowlight"
+import { toHtml } from 'hast-util-to-html'
 
 export const openEntity = (entity, new_tab = false) => {
   if (!entity.is_group) {
@@ -358,7 +360,19 @@ export function enterFullScreen() {
   }
 }
 
+function highlightCodeBlocks(html) {
+  const lowlight = createLowlight(common)
+  const doc = new DOMParser().parseFromString(html, "text/html")
+  doc.querySelectorAll("pre code").forEach((block) => {
+    const result = lowlight.highlightAuto(block.textContent)
+    block.innerHTML = toHtml(result)
+  })
+  
+  return doc.body.innerHTML
+}
+
 export function printDoc(html) {
+  const highlightedHtml = highlightCodeBlocks(html)
   const content = `
             <!DOCTYPE html>
             <html>
@@ -368,7 +382,7 @@ export function printDoc(html) {
               </head>
               <body>
                 <div class="ProseMirror prose-sm" style='padding-left: 40px; padding-right: 40px; padding-top: 20px; padding-bottom: 20px; margin: 0;'>
-                  ${html}
+                  ${highlightedHtml}
                 </div>
               </body>
             </html>

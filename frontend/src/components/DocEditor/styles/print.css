@@ -137,12 +137,65 @@
     padding: 0.75rem 1rem;
     border-radius: 0.75rem;
     caret-color: #fff;
+    page-break-inside: avoid;
   }
   .ProseMirror pre code {
     color: inherit;
     padding: 0;
     background: none;
     font-size: 12px;
+  }
+
+  /* Syntax Highlighting - Lowlight */
+  .ProseMirror pre code .hljs-comment,
+  .ProseMirror pre code .hljs-quote {
+    color: #616161 !important;
+  }
+
+  .ProseMirror pre code .hljs-variable,
+  .ProseMirror pre code .hljs-template-variable,
+  .ProseMirror pre code .hljs-attribute,
+  .ProseMirror pre code .hljs-tag,
+  .ProseMirror pre code .hljs-name,
+  .ProseMirror pre code .hljs-regexp,
+  .ProseMirror pre code .hljs-link,
+  .ProseMirror pre code .hljs-selector-id,
+  .ProseMirror pre code .hljs-selector-class {
+    color: #f98181 !important;
+  }
+
+  .ProseMirror pre code .hljs-number,
+  .ProseMirror pre code .hljs-meta,
+  .ProseMirror pre code .hljs-built_in,
+  .ProseMirror pre code .hljs-builtin-name,
+  .ProseMirror pre code .hljs-literal,
+  .ProseMirror pre code .hljs-type,
+  .ProseMirror pre code .hljs-params {
+    color: #fbbc88 !important;
+  }
+
+  .ProseMirror pre code .hljs-string,
+  .ProseMirror pre code .hljs-symbol,
+  .ProseMirror pre code .hljs-bullet {
+    color: #b9f18d !important;
+  }
+
+  .ProseMirror pre code .hljs-title,
+  .ProseMirror pre code .hljs-section {
+    color: #faf594 !important;
+  }
+
+  .ProseMirror pre code .hljs-keyword,
+  .ProseMirror pre code .hljs-selector-tag {
+    color: #70cff8 !important;
+  }
+
+  .ProseMirror pre code .hljs-emphasis {
+    font-style: italic !important;
+  }
+
+  .ProseMirror pre code .hljs-strong {
+    font-weight: 700 !important;
   }
 
   #page-break-div {
