@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: frappe\n"
 "Report-Msgid-Bugs-To: developers@frappe.io\n"
 "POT-Creation-Date: 2025-10-24 16:11+0000\n"
-"PO-Revision-Date: 2025-10-28 04:41\n"
+"PO-Revision-Date: 2025-11-03 06:54\n"
 "Last-Translator: developers@frappe.io\n"
 "Language-Team: Chinese Simplified\n"
 "MIME-Version: 1.0\n"
@@ -97,7 +97,7 @@ msgstr "全部"
 #. Label of the allow_download (Check) field in DocType 'Drive File'
 #: drive/drive/doctype/drive_file/drive_file.json
 msgid "Allow Download"
-msgstr ""
+msgstr "允许下载"
 
 #: frontend/src/components/Sidebar.vue:101
 msgid "Apps"
@@ -110,7 +110,7 @@ msgstr "自动检测链接"
 
 #: frontend/src/components/DriveToolBar.vue:19
 msgid "By"
-msgstr "由"
+msgstr "共享管理"
 
 #. Description of the 'Meta Value' (Data) field in DocType 'Drive Entity
 #. Activity Log'
@@ -190,7 +190,7 @@ msgstr "开发者"
 #. Settings'
 #: drive/drive/doctype/drive_disk_settings/drive_disk_settings.json
 msgid "Disk"
-msgstr ""
+msgstr "磁盘"
 
 #. Label of the flat (Check) field in DocType 'Drive Disk Settings'
 #: drive/drive/doctype/drive_disk_settings/drive_disk_settings.json
@@ -241,7 +241,7 @@ msgstr "云盘评论"
 #. Name of a DocType
 #: drive/drive/doctype/drive_desktop_client/drive_desktop_client.json
 msgid "Drive Desktop Client"
-msgstr ""
+msgstr "云盘桌面客户端"
 
 #. Name of a DocType
 #: drive/drive/doctype/drive_disk_settings/drive_disk_settings.json
@@ -251,7 +251,7 @@ msgstr "云盘磁盘设置"
 #. Name of a DocType
 #: drive/drive/doctype/drive_doc_version/drive_doc_version.json
 msgid "Drive Doc Version"
-msgstr ""
+msgstr "云盘文档版本"
 
 #. Name of a DocType
 #: drive/drive/doctype/drive_document/drive_document.json
@@ -293,12 +293,12 @@ msgstr "云盘文件"
 #. Name of a DocType
 #: drive/drive/doctype/drive_file_update/drive_file_update.json
 msgid "Drive File Update"
-msgstr ""
+msgstr "云盘文件更新"
 
 #. Label of the root_folder (Data) field in DocType 'Drive Disk Settings'
 #: drive/drive/doctype/drive_disk_settings/drive_disk_settings.json
 msgid "Drive Folder"
-msgstr ""
+msgstr "云盘文件夹"
 
 #. Name of a DocType
 #: drive/drive/doctype/drive_notification/drive_notification.json
@@ -618,7 +618,7 @@ msgstr "新标签"
 
 #: frontend/src/components/Settings/UserListSettings.vue:365
 msgid "New Team"
-msgstr ""
+msgstr "新建团队"
 
 #. Label of the new_value (Data) field in DocType 'Drive Entity Activity Log'
 #: drive/drive/doctype/drive_entity_activity_log/drive_entity_activity_log.json
@@ -627,7 +627,7 @@ msgstr "新值"
 
 #: frontend/src/components/TagInput.vue:18
 msgid "No tags"
-msgstr ""
+msgstr "无标签"
 
 #: drive/public/js/ff_integration.bundle.js:29
 msgid "No teams available"
@@ -661,7 +661,7 @@ msgstr "旧值"
 #. Description of the 'S3 Bucket' (Data) field in DocType 'Drive Team'
 #: drive/drive/doctype/drive_team/drive_team.json
 msgid "Only applies if S3 is turned on."
-msgstr ""
+msgstr "仅当S3服务启用时生效。"
 
 #: frontend/src/components/GenericPage.vue:291
 msgid "Open"
@@ -670,7 +670,7 @@ msgstr "待处理"
 #: drive/drive/doctype/drive_file/drive_file.js:9
 #: drive/drive/doctype/drive_team/drive_team.js:6
 msgid "Open in Drive"
-msgstr ""
+msgstr "在云盘中打开"
 
 #: frontend/src/components/Sidebar.vue:141
 msgid "Others"
@@ -722,7 +722,7 @@ msgstr "预览"
 #. Label of the preview_size (Int) field in DocType 'Drive Disk Settings'
 #: drive/drive/doctype/drive_disk_settings/drive_disk_settings.json
 msgid "Preview size"
-msgstr ""
+msgstr "预览大小"
 
 #: frontend/src/components/Settings/ProfileSettings.vue:3
 msgid "Profile"
@@ -736,7 +736,7 @@ msgstr "建议"
 #. Description of the 'Updates' (Table) field in DocType 'Drive Desktop Client'
 #: drive/drive/doctype/drive_desktop_client/drive_desktop_client.json
 msgid "Queue for all the un-applied changes in the desktop."
-msgstr ""
+msgstr "桌面端所有未应用更改的队列。"
 
 #. Label of the quota (Int) field in DocType 'Drive Team'
 #: drive/drive/doctype/drive_team/drive_team.json
@@ -834,7 +834,7 @@ msgstr "分享"
 
 #: frontend/src/components/InfoPopup.vue:132 frontend/src/utils/files.js:206
 msgid "Shared"
-msgstr "已共享"
+msgstr "共享文件"
 
 #: frontend/src/components/GenericPage.vue:335
 #: frontend/src/components/Navbar.vue:250
@@ -1013,7 +1013,7 @@ msgstr "上传"
 #. Settings'
 #: drive/drive/doctype/drive_disk_settings/drive_disk_settings.json
 msgid "Used to configure maximum file sizes of in-browser previews (in megabytes)."
-msgstr ""
+msgstr "用于配置浏览器内预览的最大文件大小（单位：兆字节）。"
 
 #. Label of the user (Link) field in DocType 'Drive Desktop Client'
 #. Label of the user (Link) field in DocType 'Drive Entity Log'
@@ -1043,7 +1043,7 @@ msgstr "版本"
 #. Label of the versions (Table) field in DocType 'Drive Document'
 #: drive/drive/doctype/drive_document/drive_document.json
 msgid "Versions"
-msgstr ""
+msgstr "版本列表"
 
 #: frontend/src/components/DriveToolBar.vue:26
 msgid "With you"
@@ -1067,7 +1067,7 @@ msgstr "编写器"
 #. Label of the writer_settings (JSON) field in DocType 'Drive Settings'
 #: drive/drive/doctype/drive_settings/drive_settings.json
 msgid "Writer Settings"
-msgstr ""
+msgstr "写入器设置"
 
 #: frontend/src/components/Settings/StorageSettings.vue:19
 msgid "You"
