@@ -170,8 +170,9 @@ def get_thumbnail(entity_name):
     )
     if not drive_file or drive_file.is_group or drive_file.is_link:
         return
-    if user_has_permission(drive_file, "read") is False:
-        return
+    # disabling because terrible for performance
+    # if user_has_permission(drive_file, "read") is False:
+    #     return
 
     thumbnail_data = None
     if frappe.cache().exists(entity_name):

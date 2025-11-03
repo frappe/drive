@@ -1,109 +1,115 @@
 {
-  "actions": [],
-  "autoname": "hash",
-  "creation": "2025-01-23 16:04:40.527171",
-  "doctype": "DocType",
-  "engine": "InnoDB",
-  "field_order": [
-    "entity",
-    "team",
-    "user",
-    "read",
-    "comment",
-    "share",
-    "write",
-    "upload"
-  ],
-  "fields": [
-    {
-      "fieldname": "user",
-      "fieldtype": "Data",
-      "label": "User",
-      "not_nullable": 1
-    },
-    {
-      "fieldname": "entity",
-      "fieldtype": "Link",
-      "in_list_view": 1,
-      "label": "Entity",
-      "options": "Drive File",
-      "reqd": 1
-    },
-    {
-      "default": "0",
-      "fieldname": "read",
-      "fieldtype": "Check",
-      "label": "Read"
-    },
-    {
-      "default": "0",
-      "fieldname": "comment",
-      "fieldtype": "Check",
-      "label": "Comment"
-    },
-    {
-      "default": "0",
-      "fieldname": "share",
-      "fieldtype": "Check",
-      "label": "Share"
-    },
-    {
-      "default": "0",
-      "fieldname": "write",
-      "fieldtype": "Check",
-      "label": "Write"
-    },
-    {
-      "default": "0",
-      "fieldname": "upload",
-      "fieldtype": "Check",
-      "label": "Upload"
-    },
-    {
-      "default": "0",
-      "fieldname": "team",
-      "fieldtype": "Check",
-      "label": "Team"
-    }
-  ],
-  "grid_page_length": 50,
-  "index_web_pages_for_search": 1,
-  "links": [],
-  "modified": "2025-09-16 17:50:51.591779",
-  "modified_by": "four@test.io",
-  "module": "Drive",
-  "name": "Drive Permission",
-  "naming_rule": "Random",
-  "owner": "Administrator",
-  "permissions": [
-    {
-      "create": 1,
-      "delete": 1,
-      "email": 1,
-      "export": 1,
-      "print": 1,
-      "read": 1,
-      "report": 1,
-      "role": "System Manager",
-      "share": 1,
-      "write": 1
-    },
-    {
-      "create": 1,
-      "delete": 1,
-      "email": 1,
-      "export": 1,
-      "print": 1,
-      "read": 1,
-      "report": 1,
-      "role": "All",
-      "share": 1,
-      "write": 1
-    }
-  ],
-  "row_format": "Dynamic",
-  "sort_field": "creation",
-  "sort_order": "DESC",
-  "states": [],
-  "title_field": "entity"
+ "actions": [],
+ "autoname": "hash",
+ "creation": "2025-01-23 16:04:40.527171",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "entity",
+  "team",
+  "user",
+  "read",
+  "comment",
+  "share",
+  "write",
+  "upload",
+  "password_hash"
+ ],
+ "fields": [
+  {
+   "fieldname": "user",
+   "fieldtype": "Data",
+   "label": "User",
+   "not_nullable": 1
+  },
+  {
+   "fieldname": "entity",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "Entity",
+   "options": "Drive File",
+   "reqd": 1
+  },
+  {
+   "default": "0",
+   "fieldname": "read",
+   "fieldtype": "Check",
+   "label": "Read"
+  },
+  {
+   "default": "0",
+   "fieldname": "comment",
+   "fieldtype": "Check",
+   "label": "Comment"
+  },
+  {
+   "default": "0",
+   "fieldname": "share",
+   "fieldtype": "Check",
+   "label": "Share"
+  },
+  {
+   "default": "0",
+   "fieldname": "write",
+   "fieldtype": "Check",
+   "label": "Write"
+  },
+  {
+   "default": "0",
+   "fieldname": "upload",
+   "fieldtype": "Check",
+   "label": "Upload"
+  },
+  {
+   "default": "0",
+   "fieldname": "team",
+   "fieldtype": "Check",
+   "label": "Team"
+  },
+  {
+   "fieldname": "password_hash",
+   "fieldtype": "Data",
+   "label": "Password Hash"
+  }
+ ],
+ "grid_page_length": 50,
+ "index_web_pages_for_search": 1,
+ "links": [],
+ "modified": "2025-11-03 12:55:10.508770",
+ "modified_by": "Administrator",
+ "module": "Drive",
+ "name": "Drive Permission",
+ "naming_rule": "Random",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  },
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "All",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "row_format": "Dynamic",
+ "sort_field": "creation",
+ "sort_order": "DESC",
+ "states": [],
+ "title_field": "entity"
 }

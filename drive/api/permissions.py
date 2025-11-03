@@ -1,4 +1,5 @@
 import io
+import hashlib
 
 import frappe
 import markdown
@@ -35,11 +36,12 @@ NO_ACCESS = {
     "share": 0,
     "write": 0,
     "upload": 0,
+    "password_hash": None,
 }
 
 
 def filter_access(path):
-    return {k: v for k, v in path[-1].items() if k in NO_ACCESS.keys()}
+    return {k: v for k, v in path[-1].items() if k in NO_ACCESS.keys() and k != "password_hash"}
 
 
 def get_team_access(entity):
@@ -88,7 +90,8 @@ def get_user_access(entity, user: str = None, team: bool = False):
         return user_access
 
     # Gather all accesses, and award highest
-    public_access = filter_access(generate_upward_path(entity.name, "Guest"))
+    public_share = generate_upward_path(entity.name, "Guest")
+    public_access = filter_access(public_share)
     team_access = get_team_access(entity)
     if team_access["team"] not in teams:
         team_access = NO_ACCESS
@@ -114,6 +117,17 @@ def get_access_level(team):
     return drive_team[frappe.session.user].access_level
 
 
+def hash_text_sha256(text):
+    if not text:
+        return ""
+    """Generates a SHA256 hash for the given text."""
+    # Ensure input is bytes (hashlib works with bytes)
+    text_bytes = text.encode("utf-8")
+    sha = hashlib.sha256()
+    sha.update(text_bytes)
+    return sha.hexdigest()
+
+
 @frappe.whitelist()
 def get_teams(user=None, details=None, exclude_personal=True):
     """
@@ -135,7 +149,7 @@ def get_teams(user=None, details=None, exclude_personal=True):
 
 
 @frappe.whitelist(allow_guest=True)
-def get_entity_with_permissions(entity_name):
+def get_entity_with_permissions(entity_name, password=None):
     """
     Return file data with permissions
     """
@@ -152,6 +166,10 @@ def get_entity_with_permissions(entity_name):
     user_access = get_user_access(entity)
     if user_access.get("read") == 0:
         frappe.throw("You don't have access to this file.", frappe.PermissionError)
+
+    perm_password = user_access.get("password_hash")
+    if perm_password and hash_text_sha256(password) != perm_password:
+        frappe.throw("The provided password is incorrect.")
 
     owner_info = frappe.db.get_value("User", entity.owner, ["user_image", "full_name"], as_dict=True) or {}
     breadcrumbs = {"breadcrumbs": get_valid_breadcrumbs(entity.name, user_access)}
@@ -289,3 +307,8 @@ def toggle_allow_download(entity, val):
     if not user_has_permission(entity, "share"):
         frappe.throw("You don't have permission for this action.", frappe.PermissionError)
     frappe.db.set_value("Drive File", entity, "allow_download", val)
+
+
+@frappe.whitelist(allow_guest=True)
+def requires_password(entity_name):
+    return bool(get_user_access(entity_name).get("password_hash"))

@@ -149,6 +149,7 @@ def dribble_access(path):
         "upload": 0,
         "write": 0,
         "shared_team": None,
+        "password_hash": None,
     }
     result = {}
     for k in path[::-1]:
@@ -206,12 +207,13 @@ def generate_upward_path(entity_name, user=None, team=0):
             gp.owner,
             gp.parent_entity,
             gp.team,
-            p.read,
-            p.upload,
             p.user AS shared_team,
-            p.write,
+            p.read,
             p.comment,
-            p.share
+            p.share,
+            p.write,
+            p.upload,
+            p.password_hash
         FROM
             generated_path  as gp
         LEFT JOIN `tabDrive Permission` as p

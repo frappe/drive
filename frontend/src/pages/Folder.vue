@@ -1,5 +1,50 @@
 <template>
+  <div
+    v-if="requiresPassword.data"
+    class="mx-auto w-full bg-surface-white px-4 p-8 sm:mt-16 sm:w-112 sm:rounded-2xl sm:px-6 py-6 sm:shadow-2xl"
+  >
+    <div class="space-y-2">
+      <h2 class="text-lg font-semibold text-gray-800 dark:text-gray-100">
+        This file is protected.
+      </h2>
+      <p class="text-gray-500 dark:text-gray-400 text-sm">
+        Please enter the password to access it.
+      </p>
+    </div>
+
+    <form
+      @submit.prevent="
+        currentFolder.fetch({ entity_name: entityName, password })
+      "
+      class="mt-4 space-y-4"
+    >
+      <FormControl
+        @keydown="currentFolder.error = null"
+        v-model="password"
+        type="password"
+        placeholder="Enter password"
+        :disabled="loading"
+        autofocus
+      />
+      <p
+        v-if="currentFolder.error"
+        class="text-red-500 text-sm mt-4"
+      >
+        {{ currentFolder.error.messages[0] }}
+      </p>
+      <Button
+        :disabled="!password"
+        :loading="loading"
+        variant="solid"
+        class="w-full"
+        type="submit"
+      >
+        Unlock
+      </Button>
+    </form>
+  </div>
   <GenericPage
+    v-else
     :verify="currentFolder"
     :get-entities="getFolderContents"
     :empty="{
@@ -11,7 +56,7 @@
 
 <script setup>
 import GenericPage from "@/components/GenericPage.vue"
-import { watch, computed } from "vue"
+import { watch, computed, ref } from "vue"
 import { useStore } from "vuex"
 import { createResource } from "frappe-ui"
 import { COMMON_OPTIONS } from "@/resources/files"
@@ -46,11 +91,22 @@ setCache(getFolderContents, ["folder", props.entityName])
 const onSuccess = (entity) => {
   if (router.currentRoute.value.params.entityName !== entity.name) return
   document.title = "Folder - " + entity.title
+  requiresPassword.data = false
   setBreadCrumbs(entity)
   updateURLSlug(entity.title)
 }
 
-const e = computed(() => props.entityName)
+const password = ref()
+const requiresPassword = createResource({
+  url: "drive.api.permissions.requires_password",
+  auto: true,
+  params: {
+    entity_name: props.entityName,
+  },
+  onSuccess: (requires) =>
+    !requires && currentFolder.fetch({ entity_name: params.entityName }),
+})
+
 const currentFolder = createResource({
   url: "drive.api.permissions.get_entity_with_permissions",
   transform(entity) {
@@ -59,5 +115,4 @@ const currentFolder = createResource({
   onSuccess,
 })
 store.commit("setCurrentResource", currentFolder)
-watch(e, (v) => currentFolder.fetch({ entity_name: v }), { immediate: true })
 </script>
