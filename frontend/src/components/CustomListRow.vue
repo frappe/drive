@@ -11,14 +11,34 @@
           ? 'bg-surface-gray-2 hover:!bg-surface-gray-3'
           : 'bg-surface-white',
         draggedItem === row.name ? 'opacity-60 hover:shadow-none' : '',
+        dragOverItem === row.name ? '!bg-surface-gray-3' : '',
       ]"
       :draggable="true"
       @contextmenu="(e) => !selections.size && contextMenu(e, row)"
       @[action]="!isModKey($event) && !selections.size && open(row)"
-      @dragstart="draggedItem = row.name"
+      @dragstart="
+        (e) => {
+          draggedItem = row.name
+          e.dataTransfer?.setData('application/x-filename', draggedItem)
+        }
+      "
       @dragend="draggedItem = null"
-      @dragover="row.is_group && $event.preventDefault()"
-      @drop="$emit('dropped', row, draggedItem)"
+      @dragover="
+        (e) => {
+          if (row.is_group) {
+            e.preventDefault()
+            dragOverItem = row.name
+          }
+        }
+      "
+      @dragleave="dragOverItem = null"
+      @drop="
+        $emit(
+          'dropped',
+          row,
+          $event.dataTransfer.getData('application/x-filename')
+        )
+      "
     >
       <template #default="{ idx, column, item }">
         <CustomListRowItem
@@ -49,6 +69,7 @@ defineProps({
 defineEmits(["dropped"])
 
 const draggedItem = ref()
+const dragOverItem = ref()
 
 const route = useRoute()
 const store = useStore()

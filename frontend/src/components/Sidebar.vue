@@ -17,6 +17,29 @@
         :is-expanded="!isCollapsed"
       />
     </template>
+    <template #sidebar-item="{ item, isCollapsed }">
+      <SidebarItem
+        :class="
+          draggedSpace === item.label &&
+          'ring-1 ring-outline-gray-3 !bg-surface-gray-3'
+        "
+        :label="item.label"
+        :accessKey="item.accessKey"
+        :icon="item.icon"
+        :suffix="item.suffix"
+        :to="item.to"
+        :isActive="item.isActive"
+        :isCollapsed
+        :onClick="item.onClick"
+        @dragover.prevent="
+          ;(['Trash', 'Home'].includes(item.label) ||
+            item.to.startsWith('/t')) &&
+            (draggedSpace = item.label)
+        "
+        @dragleave="draggedSpace = null"
+        @drop.prevent="handleDrop($event, item)"
+      />
+    </template>
   </Sidebar>
   <SettingsDialog
     v-if="showSettings"
@@ -33,7 +56,7 @@ import FrappeDriveLogo from "@/components/FrappeDriveLogo.vue"
 
 import StorageBar from "./StorageBar.vue"
 import { Sidebar, createResource } from "frappe-ui"
-
+import SidebarItem from "frappe-ui/src/components/Sidebar/SidebarItem.vue"
 import { notifCount, apps } from "@/resources/permissions"
 import { getTeams } from "@/resources/files"
 import { dynamicList } from "@/utils/files"
@@ -56,11 +79,13 @@ import emitter from "@/emitter"
 import { ref, computed, watch, onMounted, h } from "vue"
 import AppsIcon from "@/components/AppsIcon.vue"
 import { useRouter } from "vue-router"
+import { move } from "@/resources/files"
 
 import LucideBook from "~icons/lucide/book"
 import LucideBadgeHelp from "~icons/lucide/badge-help"
 import LucideMoon from "~icons/lucide/moon"
 
+const FOLDER_SPACES = ["Trash"]
 defineEmits(["toggleMobileSidebar", "showSearchPopUp"])
 const store = useStore()
 const router = useRouter()
@@ -268,4 +293,24 @@ const sidebarItems = computed(() => {
     },
   ])
 })
+
+const draggedSpace = ref(null)
+const handleDrop = (e, space) => {
+  draggedSpace.value = null
+  const file_name = e.dataTransfer.getData("application/x-filename")
+  if (space.label === "Trash") {
+    emitter.emit("remove-file", file_name)
+  } else if (space.label === "Home") {
+    move.submit(
+      { entity_names: [file_name] },
+      { onSuccess: () => emitter.emit("remove-file-ui", file_name) }
+    )
+  } else if (space.to.startsWith("/t/")) {
+    const team = space.to.slice(3, -1)
+    move.submit(
+      { entity_names: [file_name], team },
+      { onSuccess: () => emitter.emit("remove-file-ui", file_name) }
+    )
+  }
+}
 </script>

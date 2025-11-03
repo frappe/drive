@@ -14,11 +14,20 @@
           ? 'bg-surface-gray-2 shadow-gray'
           : 'border-outline-gray-modals hover:shadow-lg',
         draggedItem === file.name ? 'opacity-60 hover:shadow-none' : '',
+        dragOverItem === file.name ? '!bg-surface-gray-3' : '',
       ]"
       :draggable="true"
       @dragstart="draggedItem = file.name"
       @dragend="draggedItem = null"
-      @dragover="file.is_group && $event.preventDefault()"
+      @dragleave="dragOverItem = null"
+      @dragover="
+        (e) => {
+          if (file.is_group) {
+            e.preventDefault()
+            dragOverItem = file.name
+          }
+        }
+      "
       @drop="$emit('dropped', file, draggedItem)"
       @click.meta="
         selections.has(file.name)
@@ -116,6 +125,7 @@ const open = (row) =>
   !selections.value.size && route.name !== "Trash" && openEntity(row)
 
 const draggedItem = ref(null)
+const dragOverItem = ref(null)
 
 onKeyDown("a", (e) => {
   if (

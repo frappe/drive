@@ -109,7 +109,10 @@ class DriveFile(Document):
                 "Cannot move into itself",
                 frappe.PermissionError,
             )
-        if not frappe.db.get_value("Drive File", new_parent, "is_group"):
+        if not (
+            frappe.db.get_value("Drive File", new_parent, "is_group")
+            or frappe.db.get_value("Drive File", new_parent, "document")
+        ):
             frappe.throw(
                 "Can only move into folders",
                 NotADirectoryError,

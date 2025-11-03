@@ -237,6 +237,12 @@ watch(
   { immediate: true, deep: false }
 )
 emitter.on("refresh", refreshData)
+emitter.on("remove-file", (item) => {
+  console.log("alo")
+  selections.value.clear()
+  selections.value.add(item)
+  dialog.value = "remove"
+})
 
 if (team.value && !allUsers.fetched && store.getters.isLoggedIn) {
   allUsers.fetch({ team: team.value })
@@ -244,6 +250,13 @@ if (team.value && !allUsers.fetched && store.getters.isLoggedIn) {
 if (!settings.fetched && store.getters.isLoggedIn) settings.fetch()
 
 // Drag and drop
+const removeFile = (file, target) => {
+  const removedIndex = props.getEntities.data.findIndex((k) => k.name === file)
+  props.getEntities.data.splice(removedIndex, 1)
+  const targetRow = props.getEntities.data.find((k) => k.name === target)
+  if (targetRow) targetRow.children += 1
+  props.getEntities.setData(props.getEntities.data)
+}
 const onDrop = (targetFile, draggedItem) => {
   if (!targetFile.is_group || draggedItem === targetFile.name || !draggedItem)
     return
@@ -251,13 +264,9 @@ const onDrop = (targetFile, draggedItem) => {
     entity_names: [draggedItem],
     new_parent: targetFile.name,
   })
-  const removedIndex = props.getEntities.data.findIndex(
-    (k) => k.name === draggedItem
-  )
-  props.getEntities.data.splice(removedIndex, 1)
-  props.getEntities.data.find((k) => k.name === targetFile.name).children += 1
-  props.getEntities.setData(data)
+  removeFile(draggedItem, targetFile.name)
 }
+emitter.on("remove-file-ui", removeFile)
 
 // Action Items
 const actionItems = computed(() => {
