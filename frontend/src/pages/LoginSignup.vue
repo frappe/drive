@@ -69,13 +69,13 @@
                   />
                   <label class="text-base">
                     I accept the
-                    <Link
+                    <a
                       class="!text-ink-gray-7"
-                      to="https://frappecloud.com/policies"
+                      href="https://frappecloud.com/policies"
                       target="_blank"
                     >
                       Terms and Policies
-                    </Link>
+                    </a>
                   </label>
                 </div>
                 <div class="mt-8 flex flex-col items-center gap-3">
@@ -205,7 +205,7 @@
 </template>
 
 <script setup>
-import { createResource, ErrorMessage, FormControl, Link } from "frappe-ui"
+import { createResource, ErrorMessage, FormControl } from "frappe-ui"
 import { ref, onMounted, computed } from "vue"
 import FrappeDriveLogo from "@/components/FrappeDriveLogo.vue"
 import { toast } from "@/utils/toasts"
