@@ -57,7 +57,7 @@
           ref="textEditor"
           class="min-w-full h-full flex flex-col"
           :editor-class="[
-            'prose-sm min-h-full mx-auto px-10 overflow-x-auto pt-4 md:pt-0',
+            'prose-sm min-h-full mx-auto px-10 overflow-x-auto py-7',
             `text-[${settings?.font_size || 15}px]`,
             `leading-[${settings?.line_height || 1.5}]`,
             settings?.wide

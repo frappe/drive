@@ -22,7 +22,6 @@ body {
 
 .prose-sm {
   caret-color: theme("colors.blue.600");
-  padding: 1rem 2.5rem;
 }
 
 .prose strong,b {
