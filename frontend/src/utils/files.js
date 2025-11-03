@@ -371,14 +371,20 @@ function highlightCodeBlocks(html) {
   return doc.body.innerHTML
 }
 
-export function printDoc(html) {
+export function printDoc(html, settings = {}) {
   const highlightedHtml = highlightCodeBlocks(html)
+  const fontFamily = settings?.font_family
   const content = `
             <!DOCTYPE html>
             <html>
               <head>
-                <style>${globalStyle}</style>
-                <style>${editorStyle}</style>
+              <style>${globalStyle}</style>
+              <style>${editorStyle}</style>
+              <style>
+                .ProseMirror {
+                  font-family: ${fontFamily}
+                }
+              </style>
               </head>
               <body>
                 <div class="ProseMirror prose-sm" style='padding-left: 40px; padding-right: 40px; padding-top: 20px; padding-bottom: 20px; margin: 0;'>

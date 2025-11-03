@@ -540,12 +540,12 @@ const createNewComment = (editor) => {
 onKeyDown("p", (e) => {
   if (isModKey(e)) {
     e.preventDefault()
-    if (editor.value) printDoc(editor.value.getHTML())
+    if (editor.value) printDoc(editor.value.getHTML(), props.settings)
   }
 })
 
 emitter.on("printFile", () => {
-  if (editor.value) printDoc(editor.value.getHTML())
+  if (editor.value) printDoc(editor.value.getHTML(), props.settings)
 })
 emitter.on("create-version", (title) => {
   const snap = Y.snapshot(doc)
