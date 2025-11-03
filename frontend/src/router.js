@@ -1,12 +1,20 @@
 import { createRouter, createWebHistory } from "vue-router"
 import store from "./store"
-import { manageBreadcrumbs } from "./utils/files"
 import { createResource } from "frappe-ui"
 import Dummy from "@/pages/Dummy.vue"
 function clearStore() {
   store.commit("setActiveEntity", null)
 }
 
+const manageBreadcrumbs = (to) => {
+  if (
+    store.state.breadcrumbs[store.state.breadcrumbs.length - 1]?.name !==
+    to.params.entityName
+  ) {
+    store.state.breadcrumbs.splice(1)
+    store.state.breadcrumbs.push({ loading: true })
+  }
+}
 async function setRootBreadCrumb(to) {
   if (store.getters.isLoggedIn) {
     document.title = __(to.name)
