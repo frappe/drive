@@ -373,7 +373,14 @@ function highlightCodeBlocks(html) {
 
 export function printDoc(html, settings = {}) {
   const highlightedHtml = highlightCodeBlocks(html)
-  const fontFamily = settings?.font_family
+  const fontMap = {
+  caveat: 'var(--font-caveat)', 'comic-sans': 'var(--font-comic-sans)',
+  comfortaa: 'var(--font-comfortaa)', 'eb-garamond': 'var(--font-eb-garamond)',
+  fantasy: 'fantasy', geist: 'var(--font-geist)', 'ibm-plex': 'var(--font-ibm-plex)',
+  inter: 'var(--font-inter)', jetbrains: 'var(--font-jetbrains)', lora: 'var(--font-lora)',
+  merriweather: 'var(--font-merriweather)', nunito: 'var(--font-nunito)'
+  }
+  const fontFamily = fontMap[settings?.font_family]
   const content = `
             <!DOCTYPE html>
             <html>
@@ -382,7 +389,7 @@ export function printDoc(html, settings = {}) {
               <style>${editorStyle}</style>
               <style>
                 .ProseMirror {
-                  font-family: ${fontFamily}
+                  font-family: ${fontFamily} !important;
                 }
               </style>
               </head>
