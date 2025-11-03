@@ -2,13 +2,10 @@ from io import BytesIO
 from pathlib import Path
 
 import frappe
-from werkzeug.wrappers import Response
-from werkzeug.wsgi import wrap_file
 
 from drive.api.permissions import user_has_permission
 from drive.api.files import get_file_internal
 from drive.utils import get_home_folder
-from drive.utils.files import FileManager
 
 
 @frappe.whitelist(allow_guest=True)

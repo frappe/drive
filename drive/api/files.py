@@ -593,7 +593,7 @@ def get_file_content(entity_name, trigger_download=0, jwt_token=None, transfer=F
 
 
 def get_file_internal(file, trigger_download=0):
-    if not trigger_download and get_file_type(file.as_dict()) == "Video":
+    if not trigger_download and get_file_type(file.as_dict() if file.as_dict else dict(file)) == "Video":
         return stream_file_content(file.name)
     if file.document:
         frappe.local.response["type"] = "redirect"

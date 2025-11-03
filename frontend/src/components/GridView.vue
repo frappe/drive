@@ -83,9 +83,7 @@ const store = useStore()
 const selections = defineModel(new Set())
 
 const rows = computed(() => props.folderContents)
-const action = (settings.data?.message || settings.data)?.single_click
-  ? "click"
-  : "dblclick"
+const action = settings.data?.single_click === 0 ? "dblclick" : "click"
 
 const selectedRow = ref(null)
 const rowEvent = ref(null)
