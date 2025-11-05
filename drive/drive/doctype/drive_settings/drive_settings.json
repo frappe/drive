@@ -38,7 +38,7 @@
       "label": "Writer"
     },
     {
-      "default": "{\"font_family\":\"inter\",\"font_size\":\"15\",\"line_height\":\"1.5\", \"versioning\": 5}",
+      "default": "{\"font_family\":\"inter\",\"font_size\":\"15\",\"line_height\":\"1.5\",\"versioning\":5,\"watermark_text\":\"\",\"watermark_size\":90,\"watermark_angle\":-45}",
       "fieldname": "writer_settings",
       "fieldtype": "JSON",
       "label": "Writer Settings"

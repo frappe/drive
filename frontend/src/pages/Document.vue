@@ -126,52 +126,6 @@
       :editable
     />
   </div>
-  <Dialog
-    v-model="watermarkDialog"
-    :options="{
-      title: 'Add watermark',
-      actions: [
-        {
-          label: 'Download',
-          variant: 'solid',
-          disabled: !watermarkConfig.text?.trim(),
-          onClick: downloadWithWatermark,
-        },
-      ],
-    }"
-  >
-    <template #body-content>
-      <div class="space-y-4">
-        <FormControl
-          v-model="watermarkConfig.text"
-          type="text"
-          label="Watermark text"
-          placeholder="Brand name"
-          required
-        />
-
-        <FormControl
-          v-model.number="watermarkConfig.size"
-          type="number"
-          label="Text size (px)"
-          placeholder="64"
-          :min="0"
-          :max="300"
-          :step="16"
-        />
-
-        <FormControl
-          v-model.number="watermarkConfig.angle"
-          type="number"
-          label="Angle (°)"
-          placeholder="-45"
-          :min="-180"
-          :max="180"
-          :step="15"
-        />
-      </div>
-    </template>
-  </Dialog>
 </template>
 
 <script setup>
@@ -180,7 +134,6 @@ import Navbar from "@/components/Navbar.vue"
 import {
   ref,
   inject,
-  reactive,
   defineAsyncComponent,
   provide,
   onBeforeUnmount,
@@ -193,8 +146,6 @@ import {
   createResource,
   LoadingIndicator,
   useDoc,
-  Dialog,
-  FormControl,
 } from "frappe-ui"
 import {
   setBreadCrumbs,
@@ -202,8 +153,8 @@ import {
   updateURLSlug,
   downloadZippedHTML,
   downloadMD,
-  downloadDOCX,
 } from "@/utils/files"
+import { downloadDocxFromHtml } from "../utils/docxexporter"
 import { allUsers } from "@/resources/permissions"
 import VersionsSidebar from "@/components/DocEditor/components/VersionsSidebar.vue"
 import WriterSettings from "@/components/DocEditor/components/WriterSettings.vue"
@@ -231,8 +182,8 @@ import { dynamicList } from "@/utils/files"
 import { useTemplateRef } from "vue"
 import UsersBar from "@/components/UsersBar.vue"
 import { apps } from "../resources/permissions"
-import LucideStamp from "~icons/lucide/stamp"
 import LucideFile from "~icons/lucide/file"
+import LucideFileText from "~icons/lucide/file-text"
 
 const TextEditor = defineAsyncComponent(() =>
   import("@/components/DocEditor/TextEditor.vue")
@@ -471,23 +422,14 @@ const navBarActions = computed(
                 label: "PDF",
                 icon: LucideFile,
                 onClick: () => {
-                  watermarkStatus.value = false
-                  entitiesDownload(null, [entity.value], watermarkStatus.value)
-                },
-              },
-              {
-                label: "PDF with Watermark",
-                icon: LucideStamp,
-                onClick: () => {
-                  watermarkStatus.value = true
-                  watermarkDialog.value = true
+                  entitiesDownload(null, [entity.value], settings.value)
                 },
               },
               {
                 label: "DOCX",
                 icon: LucideFileText,
                 onClick: () => {
-                  downloadDOCX(editorValue, entity.value.title )
+                  downloadDocxFromHtml(editorValue.value.getHTML(), `${entity.value.title}.docx`, settings.value);
                 },
               },
               {
@@ -625,28 +567,6 @@ const exportBlog = async () => {
       })
     },
   })
-}
-
-const watermarkConfig = reactive({
-  text: "",
-  size: 40,
-  angle: -45,
-})
-
-watch(
-  watermarkConfig,
-  (newObj) => {
-    localStorage.setItem("watermark-obj", JSON.stringify(newObj))
-  },
-  { deep: true }
-)
-
-const watermarkDialog = ref(false)
-const watermarkStatus = ref(false)
-
-function downloadWithWatermark() {
-  watermarkDialog.value = false
-  entitiesDownload(null, [entity.value], watermarkStatus.value)
 }
 
 // Events

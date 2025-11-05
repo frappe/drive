@@ -64,32 +64,81 @@
                     :options="lineHeightOptions"
                     description="Set the line height of the editor."
                   />
-                  <!-- <FormControl
-                    label="Custom Classes"
-                    placeholder="font-semibold"
-                    v-model="settings.custom_css"
-                    description="Any additional classes to apply."
-                    type="textarea"
-                  /> -->
-                  <div class="mt-2">
-                    <div
-                      v-if="error"
-                      class="text-xs text-ink-red-4"
-                    >
-                      {{ error }}
-                    </div>
-                    <Button
-                      label="Update"
-                      variant="solid"
-                      class="w-full mt-3"
-                      :disabled="!dirty || error"
-                      :loading="resource.loading"
-                      @click="
-                        resource.setValue.submit({ [key]: settings }),
-                        setDirty(false)
-                      "
+                </div>
+                <div class="flex flex-col gap-4 pb-5 pr-5">
+                  <FormControl
+                    v-if="tabIndex === 0"
+                    v-model="settings.watermark_text"
+                    type="text"
+                    label="Watermark Text"
+                    placeholder="Enter watermark text"
+                    :description="`Default watermark text for ${
+                      tabIndex === 1 ? 'this document' : 'new documents'
+                    } when exporting to PDF.`"
+                  />
+                  <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <FormControl
+                      v-if="tabIndex === 0"
+                      v-model.number="settings.watermark_size"
+                      type="number"
+                      label="Watermark Size (px)"
+                      placeholder="40"
+                      :min="10"
+                      :max="300"
+                      :step="5"
+                      :description="`Default watermark size for ${
+                        tabIndex === 1 ? 'this document' : 'new documents'
+                      }.`"
+                      class="w-full"
+                    />
+                    <FormControl
+                      v-if="tabIndex === 0"
+                      v-model.number="settings.watermark_angle"
+                      type="number"
+                      label="Watermark Angle (°)"
+                      placeholder="-45"
+                      :min="-180"
+                      :max="180"
+                      :step="15"
+                      :description="`Default watermark angle for ${
+                        tabIndex === 1 ? 'this document' : 'new documents'
+                      }.`"
+                      class="w-full"
                     />
                   </div>
+                  <FormControl
+                    v-if="tabIndex === 1"
+                    v-model="settings.apply_watermark"
+                    type="checkbox"
+                    label="Apply Watermark to PDF"
+                    :description="'Enable this to automatically apply watermark when downloading PDF for this document.'"
+                  />
+                </div>
+                <!-- <FormControl
+                  label="Custom Classes"
+                  placeholder="font-semibold"
+                  v-model="settings.custom_css"
+                  description="Any additional classes to apply."
+                  type="textarea"
+                /> -->
+                <div class="mt-2">
+                  <div
+                    v-if="error"
+                    class="text-xs text-ink-red-4"
+                  >
+                    {{ error }}
+                  </div>
+                  <Button
+                    label="Update"
+                    variant="solid"
+                    class="w-full mt-3"
+                    :disabled="!dirty || error"
+                    :loading="resource.loading"
+                    @click="
+                      resource.setValue.submit({ [key]: settings }),
+                      setDirty(false)
+                    "
+                  />
                 </div>
               </template>
             </Form>
@@ -172,14 +221,18 @@ const key = computed(() =>
   tabIndex.value === 1 ? "settings" : "writer_settings"
 )
 
-const KEYS = ["font_family", "font_size", "line_height", "versioning"]
+const KEYS = ["font_family", "font_size", "line_height", "versioning", "watermark_text", "watermark_size", "watermark_angle", "apply_watermark"]
 
 const settings = reactive({})
 
 watchEffect(() => {
   const base = { ...resource.value.doc[key.value] }
   for (const k of KEYS) {
-    settings[k] = base[k] || "global"
+    if (k === "apply_watermark") {
+      settings[k] = base[k] === true
+    } else {
+      settings[k] = base[k] || "global"
+    }
   }
   if (tabIndex.value === 1) settings.collab = base.collab
 })

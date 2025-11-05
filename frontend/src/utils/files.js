@@ -459,11 +459,12 @@ export async function downloadZippedHTML(editor, foldername) {
   saveAs(blob, `${foldername}.zip`)
 }
 
-export function printDoc(html, watermarkStatus = false) {
-  const storedData = localStorage.getItem("watermark-obj")
-  let watermark
-  if (storedData) {
-    watermark = JSON.parse(storedData)
+export function printDoc(html, settings = null) {
+  const applyWatermark = settings?.apply_watermark || false
+  const watermark = {
+    text: settings?.watermark_text || "",
+    size: settings?.watermark_size || 90,
+    angle: settings?.watermark_angle || -45
   }
   const content = `
             <!DOCTYPE html>
@@ -490,7 +491,7 @@ export function printDoc(html, watermarkStatus = false) {
               </head>
               <body>
                  ${
-                   watermarkStatus
+                   applyWatermark && watermark.text
                      ? `<div class="watermark">${watermark.text}</div>`
                      : ""
                  }

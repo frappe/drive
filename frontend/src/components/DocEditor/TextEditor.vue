@@ -543,8 +543,10 @@ onKeyDown("p", (e) => {
     if (editor.value) printDoc(editor.value.getHTML())
   }
 })
-emitter.on("printFile", (watermarkStatus) => {
-  if (editor.value) printDoc(editor.value.getHTML(), watermarkStatus)
+emitter.on("printFile", (settings) => {
+  if (editor.value) {
+    printDoc(editor.value.getHTML(), settings)
+  }
 })
 
 emitter.on("create-version", (title) => {
