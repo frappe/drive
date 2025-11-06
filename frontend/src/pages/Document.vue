@@ -222,7 +222,7 @@ const isFrappeDoc = computed(
 )
 
 const saveDocument = (comment = false) => {
-  if (!edited.value || current.value) return
+  if ((!comment && !edited.value) || current.value) return
   if (entity.value.write || (comment && entity.value.comment)) {
     if (isFrappeDoc.value) {
       const params = {
@@ -447,7 +447,7 @@ const navBarActions = computed(
             icon: MessagesSquare,
             label: "Hide Comments",
             onClick: () => (showComments.value = false),
-            isEnabled: () => showComments,
+            isEnabled: () => showComments.value,
             cond: entity.value?.comments?.length,
           },
           {

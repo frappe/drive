@@ -472,9 +472,12 @@ def edit_file_content(entity_name, client=None):
 
 @frappe.whitelist(allow_guest=True)
 def save_doc(entity_name, doc_name=None, content=None, yjs=None, comment=False):
-    # BROKEN
-    # In Collab mode file size is off
-    can_write = user_has_permission(entity_name, "write")
+    # SECURITY: commenting also gives edit access in collab documents
+    can_write = (
+        user_has_permission(entity_name, "write")
+        if not yjs
+        else user_has_permission(entity_name, "comment" if comment else "write")
+    )
     if comment and not can_write:
         old_content = frappe.db.get_value("Drive Document", doc_name, "raw_content")
         if not strip_comment_spans(old_content) == strip_comment_spans(content):

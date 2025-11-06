@@ -120,8 +120,7 @@
         v-model:comments="comments"
         :entity="entity"
         :editor
-        @save="$emit('saveComment')"
-        @autosave="autosave"
+        @save="console.log('recieved'), $emit('saveComment')"
       />
     </div>
   </div>
