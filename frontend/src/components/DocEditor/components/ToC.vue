@@ -1,13 +1,13 @@
 <template>
-  <div class="hidden md:flex right-3 absolute max-h-96 pt-1">
+  <div class="hidden md:flex right-3 absolute">
     <div
       v-show="show"
-      class="p-2 table-of-contents bg-white shadow-lg rounded-sm"
+      class="p-2 table-of-contents bg-white shadow-lg rounded-sm max-h-96 overflow-auto pt-1"
     >
       <div
         v-for="anchor in anchors"
         :key="anchor.id"
-        class="hover:bg-surface-gray-2 cursor-pointer max-w-52 truncate"
+        class="hover:bg-surface-gray-2 cursor-pointer max-w-52 truncate shrink-0"
         :class="{
           'is-active': anchor.isActive && !anchor.isScrolledOver,
           'text-ink-gray-5': anchor.isScrolledOver,
