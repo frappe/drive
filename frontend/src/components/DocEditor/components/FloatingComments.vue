@@ -39,9 +39,9 @@
         <div
           v-show="
             activeComment === comment.name &&
-              $store.state.user.id !== 'Guest' &&
-              !comment.new &&
-              (comment.owner == $store.state.user.id || entity.write)
+            $store.state.user.id !== 'Guest' &&
+            !comment.new &&
+            (comment.owner == $store.state.user.id || entity.write)
           "
           class="p-1.5 text-sm flex gap-1 border-b text-ink-gray-9"
           :class="comment.loading && !comment.edit && 'opacity-70'"
@@ -49,7 +49,7 @@
           <Button
             v-if="
               !comment.resolved &&
-                (comment.owner == $store.state.user.id || entity.write)
+              (comment.owner == $store.state.user.id || entity.write)
             "
             :disabled="comment.loading"
             variant="ghost"
@@ -64,7 +64,7 @@
           <Button
             v-if="
               comment.resolved &&
-                (comment.owner == $store.state.user.id || entity.write)
+              (comment.owner == $store.state.user.id || entity.write)
             "
             :disabled="comment.loading"
             variant="ghost"
@@ -79,12 +79,12 @@
           <Button
             v-if="
               comment.owner == $store.state.user.id ||
-                (comment.owner === 'Guest' && entity.write)
+              (comment.owner === 'Guest' && entity.write)
             "
             :disabled="comment.loading"
             variant="ghost"
             class="!h-5 !text-xs !px-1.5 !rounded-sm"
-            @click="removeComment(comment.name, true)"
+            @click="removeComment(comment.name, true, true)"
           >
             <template #prefix>
               <LucideX class="size-3.5" />
@@ -96,18 +96,18 @@
           class="flex flex-col gap-5 p-3"
           :class="
             activeComment !== comment.name &&
-              comment.replies.length > 0 &&
-              'pb-1.5'
+            comment.replies.length > 0 &&
+            'pb-1.5'
           "
         >
           <div
             v-for="(reply, index) in activeComment === comment.name
               ? [
-                comment,
-                ...comment.replies.toSorted((a, b) =>
-                  new Date(a.creation) > new Date(b.creation) ? 1 : -1
-                ),
-              ]
+                  comment,
+                  ...comment.replies.toSorted((a, b) =>
+                    new Date(a.creation) > new Date(b.creation) ? 1 : -1
+                  ),
+                ]
               : [comment]"
             :key="reply.name"
             class="group w-full flex gap-3"
@@ -131,20 +131,22 @@
                 <div class="flex gap-1">
                   <label
                     class="font-medium text-ink-gray-8 max-w-[70%] truncate"
-                  >{{ $user(reply.owner)?.full_name || reply.owner }}</label>
+                    >{{ $user(reply.owner)?.full_name || reply.owner }}</label
+                  >
 
                   <label class="text-ink-gray-6 truncate">
                     &#183;
-                    {{ formatDateOrTime(reply.creation) }}</label>
+                    {{ formatDateOrTime(reply.creation) }}</label
+                  >
                 </div>
                 <Dropdown
                   class="ml-auto opacity-0"
                   :class="
                     activeComment === comment.name &&
-                      !reply.edit &&
-                      !reply.resolved &&
-                      comment.owner == $store.state.user.id &&
-                      'opacity-100'
+                    !reply.edit &&
+                    !reply.resolved &&
+                    comment.owner == $store.state.user.id &&
+                    'opacity-100'
                   "
                   :options="
                     dynamicList([
@@ -155,7 +157,7 @@
                       },
                       {
                         label: 'Delete',
-                        onClick: () => removeComment(reply.name, false),
+                        onClick: () => removeComment(reply.name, false, true),
                         cond:
                           comment.owner == $store.state.user.id && index !== 0,
                       },
@@ -165,16 +167,16 @@
                   <Button
                     :disabled="
                       activeComment !== comment.name ||
-                        reply.edit ||
-                        reply.resolved
+                      reply.edit ||
+                      reply.resolved
                     "
                     class="!h-5 !text-xs !px-1.5 !rounded-sm opacity-0"
                     :class="
                       activeComment === comment.name &&
-                        !reply.edit &&
-                        !reply.resolved &&
-                        comment.owner == $store.state.user.id &&
-                        'opacity-100'
+                      !reply.edit &&
+                      !reply.resolved &&
+                      comment.owner == $store.state.user.id &&
+                      'opacity-100'
                     "
                     variant="ghost"
                     :icon="h(LucideMoreVertical, { class: 'size-3' })"
@@ -192,7 +194,7 @@
                   placeholder="Edit"
                   :disabled="
                     isEmpty(commentContents[reply.name]) ||
-                      commentContents[reply.name] == reply.content
+                    commentContents[reply.name] == reply.content
                   "
                   :editable="reply.edit === true"
                   :content="reply.content"
@@ -217,7 +219,7 @@
                   @cancel="
                     (editor) => {
                       if (reply.new) {
-                        removeComment(reply.name, false, false)
+                        removeComment(reply.name, false)
                       } else {
                         editor.commands.setContent(reply.content)
                         reply.edit = false
@@ -232,8 +234,8 @@
           <div
             v-show="
               activeComment === comment.name &&
-                !comment.edit &&
-                !comment.resolved
+              !comment.edit &&
+              !comment.resolved
             "
             class="flex gap-3"
           >
@@ -426,7 +428,7 @@ const newReply = (comment, editor) => {
   setCommentHeights()
 }
 
-const removeComment = (name, entire, server = true) => {
+const removeComment = (name, entire, server = false) => {
   if (server) {
     deleteComment.submit({ name, entire })
   }
@@ -507,13 +509,14 @@ props.editor.on("update", () => {
       }
     })
   })
-  for (const comment of comments.value)
-    if (!currentNames.has(comment.name)) removeComment(comment.name, true)
+  // disable autodeletion
+  // for (const comment of comments.value)
+  //   if (!currentNames.has(comment.name)) removeComment(comment.name, true)
 })
 
 const purgeNewEmptyComments = () => {
   for (const comment of comments.value)
-    if (comment.new) removeComment(comment.name, true, false)
+    if (comment.new) removeComment(comment.name, true)
 }
 onBeforeUnmount(purgeNewEmptyComments)
 useEventListener(window, "beforeunload", purgeNewEmptyComments)
