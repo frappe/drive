@@ -89,7 +89,6 @@
       :editor="editor?.editor"
       :versions="entity.versions"
       @save-document="saveDocument"
-      @save-comment="saveDocument(true)"
     />
     <TextEditor
       v-if="!isFrappeDoc || docSettings?.doc?.settings"
@@ -106,6 +105,7 @@
       :users="allUsers.data || []"
       :show-resolved
       @save-document="saveDocument"
+      @save-comment="saveDocument(true)"
       @new-version="
         (snap, duration, title) => {
           newVersion.submit({
