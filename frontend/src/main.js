@@ -7,9 +7,9 @@ import {
   frappeRequest,
   Button,
 } from "frappe-ui"
+import { translation } from "frappe-ui/frappe"
 
 import store from "./store"
-import translationPlugin from "./translation"
 import router from "./router"
 import App from "./App.vue"
 import emitter from "@/emitter"
@@ -28,9 +28,9 @@ app.config.globalProperties.$user = (user) => {
 }
 
 app.provide("emitter", emitter)
-app.use(translationPlugin)
 app.use(router)
 app.use(store)
+app.use(translation, "drive.api.product.get_translations")
 
 app.use(FrappeUI, { socketio: false })
 app.provide("socket", initSocket())
