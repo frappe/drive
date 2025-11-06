@@ -3,8 +3,8 @@ from pypika import Order
 
 
 def get_link(entity):
-    type_ = {True: "file", bool(entity.is_group): "folder", bool(entity.document): "document"}
-    return entity.path if entity.is_link else f"/drive/t/{entity.team}/{type_.get(True)}/{entity.name}/"
+    type_ = {True: "f", bool(entity.is_group): "d", bool(entity.document): "w"}
+    return entity.path if entity.is_link else f"/drive/{type_.get(True)}/{entity.name}/"
 
 
 @frappe.whitelist()
