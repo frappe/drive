@@ -377,6 +377,7 @@ const createComment = createResource({
   url: "drive.api.docs.create_comment",
   onSuccess: () => {
     findComment(createComment.params.name).loading = false
+    console.log("successified")
     emit("save")
   },
   onError: () => {
@@ -475,16 +476,16 @@ const formatDateOrTime = (datetimeStr) => {
 }
 
 const setCommentHeights = useDebounceFn(() => {
+  if (!scrollContainer.value) return
   let lastBottom = 0
   nextTick(() => {
     scrollContainer.value.style.height = `max(${scrollContainer.value.parentElement.scrollHeight}px, calc(100vh - 3rem))`
     for (const comment of filteredComments.value) {
       try {
         const containerTop = scrollContainer.value.getBoundingClientRect().top
-        const anchorTop =
-          document
-            .querySelector(`[data-comment-id="${comment.name}"]`)
-            .getBoundingClientRect().top - containerTop
+        const el = document.querySelector(`[data-comment-id="${comment.name}"]`)
+        if (!el) continue
+        const anchorTop = el.getBoundingClientRect().top - containerTop
 
         const adjustedTop = Math.max(anchorTop, lastBottom)
         comment.top = adjustedTop
