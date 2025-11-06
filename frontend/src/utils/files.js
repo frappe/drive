@@ -381,6 +381,8 @@ export function printDoc(html, settings = {}) {
   merriweather: 'var(--font-merriweather)', nunito: 'var(--font-nunito)'
   }
   const fontFamily = fontMap[settings?.font_family]
+  const fontSize = settings?.font_size
+  const lineHeight = settings?.line_height
   const content = `
             <!DOCTYPE html>
             <html>
@@ -390,6 +392,8 @@ export function printDoc(html, settings = {}) {
               <style>
                 .ProseMirror {
                   font-family: ${fontFamily} !important;
+                  font-size: ${fontSize}px;
+                  line-height: ${lineHeight}px;
                 }
               </style>
               </head>
