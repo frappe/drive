@@ -29,9 +29,12 @@ def get_context():
     if len(parts) >= 3:
         context.description = "Open this online."
         # Ideally add thumbnail, but that might break if there's no thumbnail
-        [title, owner, is_group] = frappe.get_cached_value("Drive File", parts[1], ["title", "owner", "is_group"])
-        context.title = "Folder - " + title if is_group else title
-        context.description = "Owned by " + frappe.get_cached_value("User", owner, "full_name")
+        try:
+            [title, owner, is_group] = frappe.get_cached_value("Drive File", parts[1], ["title", "owner", "is_group"])
+            context.title = "Folder - " + title if is_group else title
+            context.description = "Owned by " + frappe.get_cached_value("User", owner, "full_name")
+        except:
+            pass
 
     elif parts[0] in TITLES:
         context.title = TITLES[parts[0]]
