@@ -19,7 +19,7 @@ import { toast } from "@/utils/toasts.js"
 import { useFileUpload, toast as nToast } from "frappe-ui"
 import emitter from "@/emitter"
 import { createLowlight, common } from "lowlight"
-import { toHtml } from 'hast-util-to-html'
+import { toHtml } from "hast-util-to-html"
 
 export const openEntity = (entity, new_tab = false) => {
   if (!entity.is_group) {
@@ -367,18 +367,25 @@ function highlightCodeBlocks(html) {
     const result = lowlight.highlightAuto(block.textContent)
     block.innerHTML = toHtml(result)
   })
-  
+
   return doc.body.innerHTML
 }
 
 export function printDoc(html, settings = {}) {
   const highlightedHtml = highlightCodeBlocks(html)
   const fontMap = {
-  caveat: 'var(--font-caveat)', 'comic-sans': 'var(--font-comic-sans)',
-  comfortaa: 'var(--font-comfortaa)', 'eb-garamond': 'var(--font-eb-garamond)',
-  fantasy: 'fantasy', geist: 'var(--font-geist)', 'ibm-plex': 'var(--font-ibm-plex)',
-  inter: 'var(--font-inter)', jetbrains: 'var(--font-jetbrains)', lora: 'var(--font-lora)',
-  merriweather: 'var(--font-merriweather)', nunito: 'var(--font-nunito)'
+    caveat: "var(--font-caveat)",
+    "comic-sans": "var(--font-comic-sans)",
+    comfortaa: "var(--font-comfortaa)",
+    "eb-garamond": "var(--font-eb-garamond)",
+    fantasy: "fantasy",
+    geist: "var(--font-geist)",
+    "ibm-plex": "var(--font-ibm-plex)",
+    inter: "var(--font-inter)",
+    jetbrains: "var(--font-jetbrains)",
+    lora: "var(--font-lora)",
+    merriweather: "var(--font-merriweather)",
+    nunito: "var(--font-nunito)",
   }
   const fontFamily = fontMap[settings?.font_family]
   const fontSize = settings?.font_size
@@ -722,7 +729,7 @@ export const newExternal = async (type) => {
       params: { entityName: data.name },
     })
   } else if (type === "Presentation") {
-    window.open("/slides/presentation/" + data.path)
+    window.location.replace("/slides/presentation/" + data.path)
   }
 }
 

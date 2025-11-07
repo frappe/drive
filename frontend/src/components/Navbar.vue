@@ -315,7 +315,7 @@ const button = computed(() =>
   possibleButtons.find((k) => k.route == route.name)
 )
 
-const newEntityOptions = [
+const newEntityOptions = computed(() => [
   {
     group: "Create",
     items: dynamicList([
@@ -357,5 +357,5 @@ const newEntityOptions = [
       },
     ],
   },
-]
+])
 </script>
