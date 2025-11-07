@@ -256,8 +256,11 @@ const signup = createResource({
       throw new Error("Please accept the terms of service")
     }
   },
-  onSuccess(data) {
-    window.location.replace(params.get("redirect-to") || data.location)
+  onSuccess() {
+    console.log("redirecting to", params.get("redirect-to"))
+    window.location.replace(
+      "/drive/setup?redirect-to=" + params.get("redirect-to")
+    )
   },
   onError(err) {
     console.log(err.messages)

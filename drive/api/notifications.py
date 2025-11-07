@@ -141,7 +141,6 @@ def create_notification(from_user, to_user, type, entity, message=None):
 
 
 def send_share_email(to, message, link, team, type_):
-    print("SHARE MAIL", link)
     try:
         frappe.sendmail(
             recipients=to,

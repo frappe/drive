@@ -85,7 +85,6 @@ import LucideBook from "~icons/lucide/book"
 import LucideBadgeHelp from "~icons/lucide/badge-help"
 import LucideMoon from "~icons/lucide/moon"
 
-
 defineEmits(["toggleMobileSidebar", "showSearchPopUp"])
 const store = useStore()
 const router = useRouter()

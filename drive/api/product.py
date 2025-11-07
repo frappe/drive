@@ -29,7 +29,7 @@ def create_team(user, team_name=None, icon=None, s3_bucket=None, prefix=None, pe
     team_name = team_name if team_name else frappe.session.user
     exists = frappe.db.exists("Drive Team", {"title": team_name, "owner": user})
     if exists:
-        frappe.throw("There is already a team with this title.", ValueError)
+        return exists
 
     team = frappe.get_doc(
         {
