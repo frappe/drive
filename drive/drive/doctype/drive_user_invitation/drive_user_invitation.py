@@ -19,7 +19,8 @@ class DriveUserInvitation(Document):
         if self.status == "Pending":
             try:
                 self.invite_via_email()
-            except:
+            except BaseException as e:
+                frappe.log_error(f"Failed to send invite email: {e}")
                 pass
         elif self.status == "Proposed":
             admins = frappe.get_all("Drive Team Member", filters={"parent": self.team, "access_level": 2}, pluck="user")

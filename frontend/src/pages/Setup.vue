@@ -36,9 +36,7 @@
               class="flex flex-col py-5 gap-3"
             >
               <LoadingIndicator class="size-5 self-center" />
-              <div class="text-sm text-center">
-                Just a minute...
-              </div>
+              <div class="text-sm text-center">Just a minute...</div>
             </div>
             <div
               v-else-if="domainTeams.data.length"
@@ -50,7 +48,8 @@
               </p>
               <p v-if="domainTeams.data.length">
                 Do you want to create a personal account, or request to join the
-                team (<strong>{{ domainTeams.data[0].title }}</strong>) associated with your domain?
+                team (<strong>{{ domainTeams.data[0].title }}</strong
+                >) associated with your domain?
               </p>
               <p v-else>
                 Do you want to create a personal account, or create a team with
@@ -79,7 +78,7 @@
                     requestInvite.submit({
                       team: domainTeams.data[0].name,
                     }),
-                    $router.replace({ path: '/drive/teams' })
+                      $router.replace({ path: '/drive/teams' })
                   "
                 >
                   Join {{ domainTeams.data[0].title }}
@@ -108,6 +107,7 @@
 import { createResource, FormControl } from "frappe-ui"
 import { ref, computed } from "vue"
 import FrappeDriveLogo from "@/components/FrappeDriveLogo.vue"
+import { useRoute } from "vue-router"
 import { useStore } from "vuex"
 import LoadingIndicator from "frappe-ui/src/components/LoadingIndicator.vue"
 import { createTeam } from "@/resources/permissions"
@@ -115,6 +115,7 @@ import { createTeam } from "@/resources/permissions"
 const store = useStore()
 const team_name = ref(null)
 const email = computed(() => store.state.user.id)
+const route = useRoute()
 
 const domainTeams = createResource({
   url: "drive.api.product.get_domain_teams",
@@ -135,9 +136,8 @@ const domainTeams = createResource({
 
 const onSuccess = (data) => {
   if (data) {
-    window.location.replace("/drive")
-  } else {
-    window.location.reload()
+    console.log(route.query["redirect-to"], "/drive")
+    window.location.replace(route.query["redirect-to"] || "/drive")
   }
 }
 
