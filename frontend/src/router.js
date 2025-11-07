@@ -4,6 +4,8 @@ import { createResource } from "frappe-ui"
 import Dummy from "@/pages/Dummy.vue"
 import { getTeams, translate } from "@/resources/files"
 
+import { getTeams, translate } from "@/resources/files"
+
 function clearStore() {
   store.commit("setActiveEntity", null)
 }
@@ -114,16 +116,6 @@ const routes = [
     beforeEnter: [setRootBreadCrumb],
   },
   {
-    path: "/t/:team/:letter/:entityName/:slug?",
-    component: Dummy,
-
-    beforeEnter: async (to) => {
-      return {
-        path: `/g/${to.params.entityName}`,
-      }
-    },
-  },
-  {
     path: "/g/:entityName/",
     component: Dummy,
     beforeEnter: async (to) => {
@@ -176,6 +168,61 @@ const routes = [
     component: () => import("@/pages/Document.vue"),
     props: true,
     beforeEnter: [manageBreadcrumbs],
+  },
+  // old redirects
+  {
+    path: "/folder/:entityName",
+    component: () => null,
+    beforeEnter: async (to) => {
+      await getTeams.fetch()
+      await translate.fetch()
+      return {
+        name: "Folder",
+        params: {
+          entityName:
+            translate.data[to.params.entityName] || to.params.entityName,
+        },
+      }
+    },
+  },
+  {
+    path: "/document/:entityName",
+    component: () => null,
+    beforeEnter: async (to) => {
+      await getTeams.fetch()
+      await translate.fetch()
+      return {
+        name: "Document",
+        params: {
+          entityName:
+            translate.data[to.params.entityName] || to.params.entityName,
+        },
+      }
+    },
+  },
+  {
+    path: "/file/:entityName",
+    component: () => null,
+    beforeEnter: async (to) => {
+      await getTeams.fetch()
+      await translate.fetch()
+      return {
+        name: "File",
+        params: {
+          entityName:
+            translate.data[to.params.entityName] || to.params.entityName,
+        },
+      }
+    },
+  },
+  {
+    path: "/t/:team/:letter/:entityName/:slug?",
+    component: Dummy,
+    beforeEnter: async (to) => {
+      return {
+        path: `/g/${to.params.entityName}`,
+      }
+    },
   },
   // old redirects
   {
