@@ -213,10 +213,7 @@
             variant="solid"
             class="ml-auto"
             size="sm"
-            :disabled="
-              entities[0].parent_entity !== selected &&
-              chosenTeam === entities[0].team
-            "
+            :disabled="isMoveDisabled"
             :loading="move.loading"
             @click="moveFile"
           >
@@ -271,6 +268,7 @@ const store = useStore()
 const route = useRoute()
 const in_home = store.state.breadcrumbs[0].name == "Home"
 const tabIndex = ref(in_home ? 0 : 1)
+console.log(route.params)
 const chosenTeam = ref(route.params.team || "")
 const tree = reactive({
   name: "",
@@ -336,6 +334,13 @@ const fetchFolderContents = (tree, params = {}, nested = false) => {
     },
   })
 }
+const homeTeam = createResource({
+  url: "drive.utils.get_default_team",
+  params: {
+    with_file: true,
+  },
+  auto: true,
+})
 
 const selectedPerms = createResource({
   url: "drive.api.permissions.get_entity_with_permissions",
@@ -390,6 +395,15 @@ const slicedBreadcrumbs = computed(() => {
     return breadcrumbs.value.slice(-3)
   }
   return breadcrumbs.value
+})
+const isMoveDisabled = computed(() => {
+  const parent = props.entities[0].parent_entity
+  console.log(getTeams.data?.[chosenTeam.value])
+  if (!selected.value) {
+    // buggy: does not check for team root files
+    if (!chosenTeam.value && homeTeam.data?.file === parent) return true
+  }
+  return parent === selected.value
 })
 
 const dropDownBreadcrumbs = computed(() => {
