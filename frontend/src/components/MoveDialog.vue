@@ -268,6 +268,7 @@ const store = useStore()
 const route = useRoute()
 const in_home = store.state.breadcrumbs[0].name == "Home"
 const tabIndex = ref(in_home ? 0 : 1)
+console.log(route.params)
 const chosenTeam = ref(route.params.team || "")
 const tree = reactive({
   name: "",
