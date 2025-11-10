@@ -407,6 +407,7 @@ def ensure_path(team, fullpath, parent=None):
 
 
 @frappe.whitelist()
+@default_team
 def create_link(team, title, link, parent=None):
     home_folder = get_home_folder(team)
     parent = parent or home_folder.name
