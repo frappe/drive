@@ -57,7 +57,7 @@
         height="16"
         class="my-auto stroke-amber-500 fill-amber-500"
       />
-      <template v-if="!isLoggedIn">
+      <template v-if="!isLoggedIn && !inIframe">
         <Button
           variant="outline"
           @click="$router.push({ name: 'Login' })"
@@ -65,7 +65,6 @@
           Sign In
         </Button>
         <Button
-          v-if="!isLoggedIn"
           class="hidden md:block"
           variant="solid"
           label="Try out Drive"
@@ -358,4 +357,6 @@ const newEntityOptions = computed(() => [
     ],
   },
 ])
+
+const inIframe = inject("inIframe")
 </script>
