@@ -445,7 +445,7 @@ WHITELISTED_DOMAINS = [
 
 
 def after_request(request):
-    if request.path.startswith("/drive/"):
+    if request.path.startswith("/drive/") or request.path.startswith("/api/method/"):
         frappe.local.response_headers["Content-Security-Policy"] = (
             f"frame-ancestors {' '.join(WHITELISTED_DOMAINS)} 'self'"
         )
