@@ -136,7 +136,11 @@ watch(
   },
   { immediate: true }
 )
-watch(team, (v) => allUsers.fetch({ team: v }), { immediate: true })
+watch(
+  [team, () => props.getEntities.data?.[0]?.team],
+  ([v, v2]) => (v || v2) && allUsers.fetch({ team: v || v2 }),
+  { immediate: true }
+)
 const activeEntity = computed(() => store.state.activeEntity)
 
 const sortId = computed(

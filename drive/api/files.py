@@ -150,7 +150,7 @@ def upload_file(
     return drive_file
 
 
-@frappe.whitelist()
+@frappe.whitelist(allow_guest=True)
 def get_thumbnail(entity_name):
     drive_file = frappe.get_value(
         "Drive File",
