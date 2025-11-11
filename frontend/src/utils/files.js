@@ -193,13 +193,15 @@ export const prettyData = (entities) => {
 export const setBreadCrumbs = (entity) => {
   const breadcrumbs = entity.breadcrumbs
   const in_home = entity.in_home
-  let res = [
-    {
-      label: __("Shared"),
-      name: "Shared",
-      route: store.getters.isLoggedIn && "/shared",
-    },
-  ]
+  let res = store.getters.isLoggedIn
+    ? [
+        {
+          label: __("Shared"),
+          name: "Shared",
+          route: "/shared",
+        },
+      ]
+    : []
   const team = getTeams.data?.[breadcrumbs[0].team]
   if (team || in_home)
     res = [

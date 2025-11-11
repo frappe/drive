@@ -325,7 +325,8 @@ def remove_user(team, user_id):
     frappe.delete_doc("Drive Team Member", drive_team[user_id].name)
 
 
-@frappe.whitelist()
+# SECURITY: send user data with files
+@frappe.whitelist(allow_guest=True)
 @default_team
 def get_all_users(team):
     teams = [team] if team != "all" else get_teams()
@@ -347,6 +348,24 @@ def get_all_users(team):
     )
     for u in users:
         u["access_level"] = team_users[u["name"]]
+    return users
+
+
+@frappe.whitelist()
+def get_drive_users():
+    users = frappe.get_all(
+        doctype="User",
+        filters=[
+            ["user_type", "=", "Website User"],
+            ["enabled", "=", 1],
+        ],
+        fields=[
+            "name",
+            "email",
+            "full_name",
+            "user_image",
+        ],
+    )
     return users
 
 
@@ -417,10 +436,18 @@ def disk_settings(**kwargs):
     settings.save()
 
 
+WHITELISTED_DOMAINS = [
+    "https://gameplan.frappe.cloud",
+    "https://frappecloud.com",
+    "https://frappe.io",
+    "https://cloud.frappe.io",
+]
+
+
 def after_request(request):
-    if request.path.startswith("/drive/t/"):
+    if request.path.startswith("/drive/"):
         frappe.local.response_headers["Content-Security-Policy"] = (
-            "frame-ancestors https://gameplan.frappe.cloud 'self'"
+            f"frame-ancestors {' '.join(WHITELISTED_DOMAINS)} 'self'"
         )
         if "X-Frame-Options" in frappe.local.response_headers:
             del frappe.local.response_headers["X-Frame-Options"]
