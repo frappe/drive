@@ -533,7 +533,7 @@ def save_doc(entity_name, doc_name=None, content=None, yjs=None, comment=False):
             )
 
 
-@frappe.whitelist()
+@frappe.whitelist(allow_guest=True)
 def create_auth_token(entity_name):
     if not user_has_permission(entity_name, "read"):
         raise frappe.PermissionError("You do not have permission to view this file")
