@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: frappe\n"
 "Report-Msgid-Bugs-To: developers@frappe.io\n"
 "POT-Creation-Date: 2025-10-24 16:11+0000\n"
-"PO-Revision-Date: 2025-10-28 04:41\n"
+"PO-Revision-Date: 2025-11-11 11:59\n"
 "Last-Translator: developers@frappe.io\n"
 "Language-Team: French\n"
 "MIME-Version: 1.0\n"
@@ -67,7 +67,7 @@ msgstr "Type d&#39;action"
 #: frontend/src/components/Settings/UserListSettings.vue:449
 #: frontend/src/components/TagInput.vue:25
 msgid "Add"
-msgstr "Ajouter"
+msgstr ""
 
 #: frontend/src/components/Settings/ProfileSettings.vue:76
 msgid "Add Image"
@@ -92,7 +92,7 @@ msgstr ""
 #: drive/drive/doctype/drive_team/drive_team.json
 #: drive/drive/doctype/drive_user_invitation/drive_user_invitation.json
 msgid "All"
-msgstr "Tout"
+msgstr ""
 
 #. Label of the allow_download (Check) field in DocType 'Drive File'
 #: drive/drive/doctype/drive_file/drive_file.json
@@ -147,7 +147,7 @@ msgstr "Commentaire"
 #: drive/drive/doctype/drive_document/drive_document.json
 #: drive/drive/doctype/drive_file/drive_file.json
 msgid "Comments"
-msgstr "Commentaires"
+msgstr ""
 
 #: frontend/src/components/Settings/NewTagDialog.vue:30
 #: frontend/src/components/Settings/ProfileSettings.vue:30
@@ -180,7 +180,7 @@ msgstr ""
 #: frontend/src/components/GenericPage.vue:381
 #: frontend/src/components/Navbar.vue:285
 msgid "Delete"
-msgstr "Supprimer"
+msgstr ""
 
 #: frontend/src/components/InfoPopup.vue:157
 msgid "Developer"
@@ -217,7 +217,7 @@ msgstr ""
 #. Label of the notif_doctype (Link) field in DocType 'Drive Notification'
 #: drive/drive/doctype/drive_notification/drive_notification.json
 msgid "Document Type"
-msgstr "Type de Document"
+msgstr ""
 
 #: frontend/src/components/Sidebar.vue:125
 msgid "Documentation"
@@ -226,7 +226,7 @@ msgstr ""
 #: frontend/src/components/GenericPage.vue:305
 #: frontend/src/components/Navbar.vue:220
 msgid "Download"
-msgstr "Télécharger"
+msgstr ""
 
 #. Name of a Workspace
 #: drive/config/desktop.py:11 drive/drive/workspace/drive/drive.json
@@ -337,7 +337,7 @@ msgstr ""
 
 #: frontend/src/components/Settings/UserListSettings.vue:526
 msgid "Edit"
-msgstr "modifier"
+msgstr ""
 
 #: frontend/src/components/Settings/ProfileSettings.vue:26
 msgid "Edit Profile"
@@ -387,7 +387,7 @@ msgstr "Nom de l&#39;entité"
 #. Label of the entity_type (Data) field in DocType 'Drive Notification'
 #: drive/drive/doctype/drive_notification/drive_notification.json
 msgid "Entity Type"
-msgstr "Type d'entité"
+msgstr ""
 
 #. Description of the 'Endpoint URL' (Data) field in DocType 'Drive Disk
 #. Settings'
@@ -398,7 +398,7 @@ msgstr ""
 #. Option for the 'Status' (Select) field in DocType 'Drive User Invitation'
 #: drive/drive/doctype/drive_user_invitation/drive_user_invitation.json
 msgid "Expired"
-msgstr "Expiré"
+msgstr ""
 
 #: frontend/src/components/GenericPage.vue:342
 #: frontend/src/components/Navbar.vue:256
@@ -448,7 +448,7 @@ msgstr "Invité"
 
 #: frontend/src/utils/files.js:215
 msgid "Home"
-msgstr "Accueil"
+msgstr ""
 
 #. Label of the ip_address (Data) field in DocType 'Account Request'
 #: drive/drive/doctype/account_request/account_request.json
@@ -478,12 +478,12 @@ msgstr ""
 #. Label of the is_active (Int) field in DocType 'Drive File'
 #: drive/drive/doctype/drive_file/drive_file.json
 msgid "Is Active"
-msgstr "Est Active"
+msgstr ""
 
 #. Label of the is_group (Check) field in DocType 'Drive File'
 #: drive/drive/doctype/drive_file/drive_file.json
 msgid "Is Group"
-msgstr "Est un Groupe"
+msgstr ""
 
 #. Label of the is_link (Check) field in DocType 'Drive File'
 #: drive/drive/doctype/drive_file/drive_file.json
@@ -600,17 +600,17 @@ msgstr ""
 #: frontend/src/components/GenericPage.vue:321
 #: frontend/src/components/Navbar.vue:238
 msgid "Move"
-msgstr "mouvement"
+msgstr ""
 
 #: frontend/src/components/DriveToolBar.vue:243
 #: frontend/src/components/ListView.vue:131
 msgid "Name"
-msgstr "Nom"
+msgstr ""
 
 #: frontend/src/components/Settings/TagSettings.vue:12
 #: frontend/src/components/Settings/UserListSettings.vue:9
 msgid "New"
-msgstr "Nouveau"
+msgstr ""
 
 #: frontend/src/components/Settings/NewTagDialog.vue:4
 msgid "New Tag"
@@ -665,7 +665,7 @@ msgstr ""
 
 #: frontend/src/components/GenericPage.vue:291
 msgid "Open"
-msgstr "Ouvert"
+msgstr ""
 
 #: drive/drive/doctype/drive_file/drive_file.js:9
 #: drive/drive/doctype/drive_team/drive_team.js:6
@@ -695,7 +695,7 @@ msgstr "Chemin"
 #. Option for the 'Status' (Select) field in DocType 'Drive User Invitation'
 #: drive/drive/doctype/drive_user_invitation/drive_user_invitation.json
 msgid "Pending"
-msgstr "En Attente"
+msgstr ""
 
 #: drive/drive/doctype/drive_file/drive_file.js:6
 msgid "Permissions"
@@ -717,7 +717,7 @@ msgstr "Préfixe"
 
 #: frontend/src/components/GenericPage.vue:285
 msgid "Preview"
-msgstr "Aperçu"
+msgstr ""
 
 #. Label of the preview_size (Int) field in DocType 'Drive Disk Settings'
 #: drive/drive/doctype/drive_disk_settings/drive_disk_settings.json
@@ -782,7 +782,7 @@ msgstr ""
 #: frontend/src/components/GenericPage.vue:329
 #: frontend/src/components/Navbar.vue:244
 msgid "Rename"
-msgstr "Renommer"
+msgstr ""
 
 #. Label of the replies (Table) field in DocType 'Drive Comment'
 #: drive/drive/doctype/drive_comment/drive_comment.json
@@ -810,7 +810,7 @@ msgstr ""
 #: frontend/src/components/EmojiPicker.vue:22
 #: frontend/src/components/Sidebar.vue:183
 msgid "Search"
-msgstr "Rechercher"
+msgstr ""
 
 #: frontend/src/components/TagColorInput.vue:36
 msgid "Set Color"
@@ -821,7 +821,7 @@ msgstr "Définir la couleur"
 #: frontend/src/components/Settings/SettingsDialog.vue:16
 #: frontend/src/components/Sidebar.vue:146
 msgid "Settings"
-msgstr "Paramètres"
+msgstr ""
 
 #. Option for the 'Type' (Select) field in DocType 'Drive Notification'
 #. Label of the share (Check) field in DocType 'Drive Permission'
@@ -885,7 +885,7 @@ msgstr "Statistiques"
 #. Label of the status (Select) field in DocType 'Drive User Invitation'
 #: drive/drive/doctype/drive_user_invitation/drive_user_invitation.json
 msgid "Status"
-msgstr "Statut"
+msgstr ""
 
 #. Label of the storage (Int) field in DocType 'Drive Team'
 #: drive/drive/doctype/drive_team/drive_team.json
@@ -912,12 +912,12 @@ msgstr "Assistance/Support"
 #: drive/drive/doctype/drive_team/drive_team.json
 #: drive/drive/doctype/drive_user_invitation/drive_user_invitation.json
 msgid "System Manager"
-msgstr "Responsable Système"
+msgstr ""
 
 #. Label of the tag (Link) field in DocType 'Drive Entity Tag'
 #: drive/drive/doctype/drive_entity_tag/drive_entity_tag.json
 msgid "Tag"
-msgstr "Étiquette"
+msgstr ""
 
 #. Label of the tags (Table) field in DocType 'Drive File'
 #: drive/drive/doctype/drive_file/drive_file.json
@@ -973,7 +973,7 @@ msgstr ""
 #: drive/drive/doctype/drive_team/drive_team.json
 #: frontend/src/components/Settings/NewTagDialog.vue:19
 msgid "Title"
-msgstr "Titre"
+msgstr ""
 
 #. Label of the to_user (Link) field in DocType 'Drive Notification'
 #: drive/drive/doctype/drive_notification/drive_notification.json
@@ -1028,7 +1028,7 @@ msgstr ""
 #: drive/drive/doctype/drive_settings/drive_settings.json
 #: drive/drive/doctype/drive_team_member/drive_team_member.json
 msgid "User"
-msgstr "Utilisateur"
+msgstr ""
 
 #. Label of the users (Table) field in DocType 'Drive Team'
 #: drive/drive/doctype/drive_team/drive_team.json
