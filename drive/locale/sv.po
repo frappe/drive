@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: frappe\n"
 "Report-Msgid-Bugs-To: developers@frappe.io\n"
 "POT-Creation-Date: 2025-10-24 16:11+0000\n"
-"PO-Revision-Date: 2025-10-28 04:41\n"
+"PO-Revision-Date: 2025-11-11 11:59\n"
 "Last-Translator: developers@frappe.io\n"
 "Language-Team: Swedish\n"
 "MIME-Version: 1.0\n"
@@ -863,7 +863,7 @@ msgstr "Enkel Klick"
 #: frontend/src/components/InfoPopup.vue:33
 #: frontend/src/components/ListView.vue:186
 msgid "Size"
-msgstr "Storlek"
+msgstr "SStorlek"
 
 #: frontend/src/components/DriveToolBar.vue:271
 msgid "Smart"
