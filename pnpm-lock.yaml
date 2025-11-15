@@ -113,6 +113,9 @@ importers:
       '@vueuse/core':
         specifier: ^10.4.1
         version: 10.11.1(vue@3.5.21(typescript@5.9.2))
+      date-fns:
+        specifier: ^4.1.0
+        version: 4.1.0
       dayjs:
         specifier: ^1.11.13
         version: 1.11.18
@@ -138,8 +141,8 @@ importers:
         specifier: ^3.3.0
         version: 3.3.0
       lucide-static:
-        specifier: ^0.535.0
-        version: 0.535.0
+        specifier: ^0.543.0
+        version: 0.543.0
       marked:
         specifier: ^15.0.12
         version: 15.0.12
@@ -155,6 +158,9 @@ importers:
       reka-ui:
         specifier: ^2.5.0
         version: 2.5.0(typescript@5.9.2)(vue@3.5.21(typescript@5.9.2))
+      slugify:
+        specifier: ^1.6.6
+        version: 1.6.6
       socket.io-client:
         specifier: ^4.5.1
         version: 4.8.1
@@ -4499,8 +4505,8 @@ packages:
   lru-cache@5.1.1:
     resolution: {integrity: sha512-KpNARQA3Iwv+jTA0utUVVbrh+Jlrr1Fv0e56GGzAFOXN7dk/FviaDW8LHmK52DlcH4WP2n6gI8vN1aesBFgo9w==}
 
-  lucide-static@0.535.0:
-    resolution: {integrity: sha512-wlYTSPpeyMjLjQ5jgSAENQwVfURVf2XHV5TDp8YPCJBEyWz+FJGuGB5LYBgOFvWIDOMW+AIoiA8sNd8My/nxlw==}
+  lucide-static@0.543.0:
+    resolution: {integrity: sha512-k9HUQncNuOThizzuuqvgjpYPHaE3Hae89l/i+Y7BRgOvzWeqQ9Sbllin8m4NO5BP+JaaRHTzn29o4oZJJi/5uQ==}
 
   lucide-vue-next@0.543.0:
     resolution: {integrity: sha512-Az5kpNm/koKAwSNIKjsZ4uHV2tVfmlQlcHwFBygQ8gc5/jFg7An9OrxgDy/aE5m+HLx7VfLYqDxLr8gWecZbQA==}
@@ -11299,7 +11305,7 @@ snapshots:
     dependencies:
       yallist: 3.1.1
 
-  lucide-static@0.535.0: {}
+  lucide-static@0.543.0: {}
 
   lucide-vue-next@0.543.0(vue@3.5.21(typescript@5.9.2)):
     dependencies:

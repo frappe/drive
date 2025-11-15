@@ -4,6 +4,7 @@ from pathlib import Path
 import frappe
 from frappe.model.document import Document
 from frappe.utils import now
+from frappe.rate_limiter import rate_limit
 
 from drive.api.activity import create_new_activity_log
 from drive.api.files import get_new_title
@@ -330,6 +331,28 @@ class DriveFile(Document):
             )
             if perm_name:
                 frappe.delete_doc("Drive Permission", perm_name, ignore_permissions=True)
+
+    # Commenting
+    @frappe.whitelist(allow_guest=True)
+    @rate_limit(key="comment_create", limit=10, seconds=1)
+    def add_comment(self, id, content, is_reply, parent_name=None, anchor=None):
+        parent = frappe.get_doc("Drive Comment", parent_name) if is_reply else self
+        if not user_has_permission(self, "comment"):
+            frappe.throw("You don't have comment access")
+
+        comment = frappe.get_doc(
+            {
+                "doctype": "Drive Comment",
+                "name": id,
+                "content": content,
+                "anchor": anchor,
+            }
+        )
+        parent.append("replies" if is_reply else "comments", comment)
+        # Used to bypass child table restrictions
+        parent.save(ignore_permissions=True)
+        comment.insert(ignore_permissions=True)
+        return comment.name
 
 
 def on_doctype_update():

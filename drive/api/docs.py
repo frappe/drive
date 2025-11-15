@@ -3,8 +3,6 @@ from datetime import datetime, timedelta
 import frappe
 from frappe.rate_limiter import rate_limit
 
-from drive.utils import strip_comment_spans
-
 from .permissions import user_has_permission
 import mimemapper
 

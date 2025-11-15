@@ -257,6 +257,7 @@ const onSuccess = (data) => {
   rawContent.value = data.raw_content
   if (data.content) yjsContent.value = toUint8Array(data.content)
   lastFetched.value = Date.now()
+  console.log(data)
   setBreadCrumbs(data)
   if (data.mime_type === "frappe_doc") {
     docSettings = useDoc({

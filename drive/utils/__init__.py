@@ -307,7 +307,7 @@ def create_drive_file(
             "parent_entity": parent,
             "file_size": file_size,
             "mime_type": mime_type,
-            "document": document,
+            "doc": document,
             "is_group": is_group,
             "_modified": (datetime.fromtimestamp(last_modified) if last_modified else frappe.utils.now()),
         }
