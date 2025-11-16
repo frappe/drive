@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: frappe\n"
 "Report-Msgid-Bugs-To: developers@frappe.io\n"
 "POT-Creation-Date: 2025-10-24 16:11+0000\n"
-"PO-Revision-Date: 2025-11-11 11:59\n"
+"PO-Revision-Date: 2025-11-16 12:42\n"
 "Last-Translator: developers@frappe.io\n"
 "Language-Team: Turkish\n"
 "MIME-Version: 1.0\n"
@@ -421,7 +421,7 @@ msgstr "Adı"
 #. Label of the from_user (Link) field in DocType 'Drive Notification'
 #: drive/drive/doctype/drive_notification/drive_notification.json
 msgid "From User"
-msgstr "Kullanıcıdan"
+msgstr ""
 
 #. Label of the general_section (Section Break) field in DocType 'Drive Disk
 #. Settings'
