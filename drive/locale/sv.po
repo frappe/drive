@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: frappe\n"
 "Report-Msgid-Bugs-To: developers@frappe.io\n"
 "POT-Creation-Date: 2025-10-24 16:11+0000\n"
-"PO-Revision-Date: 2025-11-11 11:59\n"
+"PO-Revision-Date: 2025-11-16 12:42\n"
 "Last-Translator: developers@frappe.io\n"
 "Language-Team: Swedish\n"
 "MIME-Version: 1.0\n"
@@ -398,7 +398,7 @@ msgstr "Exempel format: https://s3.ap-south-1.amazonaws.com"
 #. Option for the 'Status' (Select) field in DocType 'Drive User Invitation'
 #: drive/drive/doctype/drive_user_invitation/drive_user_invitation.json
 msgid "Expired"
-msgstr "Utgången"
+msgstr "Utgått"
 
 #: frontend/src/components/GenericPage.vue:342
 #: frontend/src/components/Navbar.vue:256
@@ -990,7 +990,7 @@ msgstr "Till Användare"
 #: frontend/src/components/DriveToolBar.vue:259
 #: frontend/src/components/InfoPopup.vue:27
 msgid "Type"
-msgstr "Typ"
+msgstr "Typ "
 
 #. Label of the url_args (Code) field in DocType 'Account Request'
 #: drive/drive/doctype/account_request/account_request.json
