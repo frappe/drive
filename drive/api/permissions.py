@@ -289,3 +289,15 @@ def toggle_allow_download(entity, val):
     if not user_has_permission(entity, "share"):
         frappe.throw("You don't have permission for this action.", frappe.PermissionError)
     frappe.db.set_value("Drive File", entity, "allow_download", val)
+
+
+def requires(perm):
+    def wrapped(fn):
+        def inner(*args, **kwargs):
+            if not user_has_permission(args[0], perm):
+                frappe.throw("You don't have permission for this action.", ValueError)
+            fn(*args, **kwargs)
+
+        return inner
+
+    return wrapped

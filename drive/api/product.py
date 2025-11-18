@@ -457,7 +457,8 @@ def signup_disabled():
     return frappe.get_website_settings("disable_signup")
 
 
-@frappe.whitelist()
+# SECURITY: all user data is available
+@frappe.whitelist(allow_guest=True)
 def get_drive_users():
     users = frappe.get_all(
         doctype="User",

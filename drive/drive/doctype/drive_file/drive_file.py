@@ -354,6 +354,26 @@ class DriveFile(Document):
         comment.insert(ignore_permissions=True)
         return comment.name
 
+    @frappe.whitelist()
+    def toggle_favourite(self):
+        existing_doc = frappe.db.exists(
+            {
+                "doctype": "Drive Favourite",
+                "entity": self.name,
+                "user": frappe.session.user,
+            }
+        )
+        if existing_doc:
+            frappe.delete_doc("Drive Favourite", existing_doc)
+        else:
+            frappe.get_doc(
+                {
+                    "doctype": "Drive Favourite",
+                    "entity": self.name,
+                    "user": frappe.session.user,
+                }
+            ).insert()
+
 
 def on_doctype_update():
     frappe.db.add_index("Drive File", ["title"])
