@@ -3,7 +3,7 @@
     <TextEditorFixedMenu
       v-if="editor && editable && !settings.minimal && !current"
       class="w-full max-w-[100vw] overflow-x-auto border-b border-outline-gray-modals justify-start md:justify-center py-1.5 shrink-0"
-      :buttons="true"
+      :buttons="menuButtons"
     />
     <div
       v-if="current"
