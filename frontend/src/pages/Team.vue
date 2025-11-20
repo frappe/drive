@@ -42,7 +42,7 @@ const teamData = computed(
     getPublicTeams.data?.[route.params?.team]
 )
 watch(() => getPublicTeams.data, console.log)
-if (getPublicTeams.data) getPublicTeams.fetch()
+if (!getPublicTeams.data) getPublicTeams.fetch()
 watch(
   teamData,
   (t) =>
