@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: frappe\n"
 "Report-Msgid-Bugs-To: developers@frappe.io\n"
 "POT-Creation-Date: 2025-10-24 16:11+0000\n"
-"PO-Revision-Date: 2025-11-12 11:55\n"
+"PO-Revision-Date: 2025-11-20 14:24\n"
 "Last-Translator: developers@frappe.io\n"
 "Language-Team: Persian\n"
 "MIME-Version: 1.0\n"
@@ -507,7 +507,7 @@ msgstr "کلید JWT"
 
 #: frontend/src/components/ListView.vue:178
 msgid "Last Accessed"
-msgstr ""
+msgstr "آخرین دسترسی"
 
 #. Label of the last_interaction (Datetime) field in DocType 'Drive Entity Log'
 #: drive/drive/doctype/drive_entity_log/drive_entity_log.json
@@ -595,7 +595,7 @@ msgstr ""
 #: frontend/src/components/DriveToolBar.vue:251
 #: frontend/src/components/InfoPopup.vue:41
 msgid "Modified"
-msgstr ""
+msgstr "تغییر یافته"
 
 #: frontend/src/components/GenericPage.vue:321
 #: frontend/src/components/Navbar.vue:238
@@ -641,7 +641,7 @@ msgstr ""
 #. Label of the otp (Data) field in DocType 'Account Request'
 #: drive/drive/doctype/account_request/account_request.json
 msgid "OTP"
-msgstr ""
+msgstr "گذرواژه یک بار مصرف OTP"
 
 #. Label of the otp_generated_at (Datetime) field in DocType 'Account Request'
 #: drive/drive/doctype/account_request/account_request.json
