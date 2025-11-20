@@ -17,7 +17,7 @@
 
 <script setup>
 import GenericPage from "@/components/GenericPage.vue"
-import { getTeam, getTeams } from "@/resources/files"
+import { getTeam, getTeams, getPublicTeams } from "@/resources/files"
 import { allUsers } from "@/resources/permissions"
 import { useStore } from "vuex"
 import { useRoute } from "vue-router"
@@ -36,7 +36,13 @@ const write = computed(
     allUsers.data.find((k) => k.name === store.state.user.id)?.access_level > 0
 )
 const route = useRoute()
-const teamData = computed(() => getTeams.data?.[route.params?.team])
+const teamData = computed(
+  () =>
+    getTeams.data?.[route.params?.team] ||
+    getPublicTeams.data?.[route.params?.team]
+)
+watch(() => getPublicTeams.data, console.log)
+if (getPublicTeams.data) getPublicTeams.fetch()
 watch(
   teamData,
   (t) =>

@@ -16,7 +16,8 @@ def mark_as_viewed(entity):
 
     entity_log = frappe.db.get_value("Drive Entity Log", {"entity_name": entity.name, "user": frappe.session.user})
     if entity_log:
-        frappe.db.set_value("Drive Entity Log", entity_log, "last_interaction", now(), update_modified=False)
+        frappe.db.set_value("Drive Entity Log", entity_log, "last_interaction", now())
+        frappe.db.commit()
         return
     doc = frappe.new_doc("Drive Entity Log")
     doc.entity_name = entity.name

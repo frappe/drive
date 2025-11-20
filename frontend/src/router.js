@@ -114,6 +114,7 @@ const routes = [
   {
     path: "/t/:team/:letter/:entityName/:slug?",
     component: Dummy,
+
     beforeEnter: async (to) => {
       return {
         path: `/g/${to.params.entityName}`,
@@ -148,6 +149,7 @@ const routes = [
     component: () => import("@/pages/Team.vue"),
     beforeEnter: [setRootBreadCrumb],
     props: true,
+    meta: { allowGuest: true },
   },
   {
     path: "/f/:entityName/:slug?",
@@ -182,7 +184,7 @@ let router = createRouter({
 
 router.beforeEach(async (to, from, next) => {
   if (!store.getters.isLoggedIn && !to.meta.allowGuest) {
-    next("/login?redirect-to=/drive" + to.path)
+    // next("/login?redirect-to=/drive" + to.path)
   } else {
     if (to.params.team) localStorage.setItem("recentTeam", to.params.team)
     clearStore()

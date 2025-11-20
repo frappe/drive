@@ -67,6 +67,9 @@ def get_user_access(entity, user: str = None, team: bool = False):
     # Owners and team members of a file have access
     teams = get_teams(user)
 
+    if frappe.db.get_value("Drive Team", entity.team, "public"):
+        access["read"] = 1
+
     if user == entity.owner:
         access = {"read": 1, "comment": 1, "share": 1, "upload": 1, "write": 1, "type": "admin"}
     elif entity.team in teams:
@@ -74,7 +77,7 @@ def get_user_access(entity, user: str = None, team: bool = False):
         access = {
             "read": 1,
             "comment": 1,
-            "share": 1,
+            "share": 0,
             "upload": int(entity.is_group) and access_level,
             "write": int(access_level == 2 or entity.owner == user),
             "type": {2: "admin", 1: "user", 0: "guest"}[access_level],
@@ -84,7 +87,9 @@ def get_user_access(entity, user: str = None, team: bool = False):
     # Public access
     user_access = {k: v for k, v in path[-1].items() if k in access.keys()}
     if user == "Guest":
-        # broken: leaks parent breadcrumbs
+        # Special for public teams
+        if access["read"]:
+            user_access["read"] = 1
         return user_access
 
     # Gather all accesses, and award highest
@@ -132,6 +137,11 @@ def get_teams(user=None, details=None, exclude_personal=True):
         if exclude_personal:
             return {t: team for t, team in teams_info.items() if not team.personal}
     return teams
+
+
+@frappe.whitelist(allow_guest=True)
+def get_public_teams():
+    return frappe.get_all("Drive Team", fields=["name", "title"], filters=[["public", "=", 1]])
 
 
 @frappe.whitelist(allow_guest=True)

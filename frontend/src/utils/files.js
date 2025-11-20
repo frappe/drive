@@ -10,7 +10,7 @@ import {
   createPresentation,
   getDocuments,
 } from "@/resources/files"
-import { getTeams } from "@/resources/files"
+import { getTeams, getPublicTeams } from "@/resources/files"
 import { set } from "idb-keyval"
 import editorStyle from "@/components/DocEditor/styles/editor.css?inline"
 import globalStyle from "@/index.css?inline"
@@ -19,7 +19,7 @@ import { toast } from "@/utils/toasts.js"
 import { useFileUpload, toast as nToast } from "frappe-ui"
 import emitter from "@/emitter"
 import { createLowlight, common } from "lowlight"
-import { toHtml } from 'hast-util-to-html'
+import { toHtml } from "hast-util-to-html"
 
 export const openEntity = (entity, new_tab = false) => {
   if (!entity.is_group) {
@@ -64,15 +64,12 @@ export const openEntity = (entity, new_tab = false) => {
     )
       window.open(entity.path, "_blank")
   } else if (entity.mime_type === "frappe/slides") {
-    window.open("/slides/presentation/" + entity.path, "_blank")
+    window.location.href = "/slides/presentation/" + entity.path
   } else if (
     entity.mime_type === "frappe_doc" ||
     entity.mime_type === "text/markdown"
   ) {
-    router.push({
-      name: "Document",
-      params: { entityName: entity.name },
-    })
+    window.location.href = "/writer/w/" + entity.name
   } else {
     router.push({
       name: "File",
@@ -193,14 +190,18 @@ export const prettyData = (entities) => {
 export const setBreadCrumbs = (entity) => {
   const breadcrumbs = entity.breadcrumbs
   const in_home = entity.in_home
-  let res = [
-    {
-      label: __("Shared"),
-      name: "Shared",
-      route: store.getters.isLoggedIn && "/shared",
-    },
-  ]
-  const team = getTeams.data?.[breadcrumbs[0].team]
+  let res = store.getters.isLoggedIn
+    ? [
+        {
+          label: __("Shared"),
+          name: "Shared",
+          route: "/shared",
+        },
+      ]
+    : []
+  const team =
+    getTeams.data?.[breadcrumbs[0].team] ||
+    getPublicTeams.data?.[breadcrumbs[0].team]
   if (team || in_home)
     res = [
       {
@@ -367,18 +368,25 @@ function highlightCodeBlocks(html) {
     const result = lowlight.highlightAuto(block.textContent)
     block.innerHTML = toHtml(result)
   })
-  
+
   return doc.body.innerHTML
 }
 
 export function printDoc(html, settings = {}) {
   const highlightedHtml = highlightCodeBlocks(html)
   const fontMap = {
-  caveat: 'var(--font-caveat)', 'comic-sans': 'var(--font-comic-sans)',
-  comfortaa: 'var(--font-comfortaa)', 'eb-garamond': 'var(--font-eb-garamond)',
-  fantasy: 'fantasy', geist: 'var(--font-geist)', 'ibm-plex': 'var(--font-ibm-plex)',
-  inter: 'var(--font-inter)', jetbrains: 'var(--font-jetbrains)', lora: 'var(--font-lora)',
-  merriweather: 'var(--font-merriweather)', nunito: 'var(--font-nunito)'
+    caveat: "var(--font-caveat)",
+    "comic-sans": "var(--font-comic-sans)",
+    comfortaa: "var(--font-comfortaa)",
+    "eb-garamond": "var(--font-eb-garamond)",
+    fantasy: "fantasy",
+    geist: "var(--font-geist)",
+    "ibm-plex": "var(--font-ibm-plex)",
+    inter: "var(--font-inter)",
+    jetbrains: "var(--font-jetbrains)",
+    lora: "var(--font-lora)",
+    merriweather: "var(--font-merriweather)",
+    nunito: "var(--font-nunito)",
   }
   const fontFamily = fontMap[settings?.font_family]
   const content = `

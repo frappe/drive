@@ -1,110 +1,118 @@
 {
-  "actions": [],
-  "autoname": "hash",
-  "creation": "2025-01-23 12:12:04.979723",
-  "doctype": "DocType",
-  "engine": "InnoDB",
-  "field_order": [
-    "title",
-    "users",
-    "storage",
-    "quota",
-    "team_domain",
-    "icon",
-    "personal",
-    "s3_bucket",
-    "prefix"
-  ],
-  "fields": [
-    {
-      "fieldname": "title",
-      "fieldtype": "Small Text",
-      "label": "Title"
-    },
-    {
-      "fieldname": "users",
-      "fieldtype": "Table",
-      "label": "Users",
-      "options": "Drive Team Member"
-    },
-    {
-      "default": "5120",
-      "description": "In MB",
-      "fieldname": "storage",
-      "fieldtype": "Int",
-      "label": "Storage"
-    },
-    {
-      "default": "5120",
-      "description": "In MB",
-      "fieldname": "quota",
-      "fieldtype": "Int",
-      "label": "Quota"
-    },
-    {
-      "fieldname": "team_domain",
-      "fieldtype": "Data",
-      "label": "Team Domain"
-    },
-    {
-      "fieldname": "icon",
-      "fieldtype": "Data",
-      "label": "Icon"
-    },
-    {
-      "default": "0",
-      "fieldname": "personal",
-      "fieldtype": "Check",
-      "label": "Personal"
-    },
-    {
-      "description": "Only applies if S3 is turned on.",
-      "fieldname": "s3_bucket",
-      "fieldtype": "Data",
-      "label": "S3 Bucket"
-    },
-    {
-      "fieldname": "prefix",
-      "fieldtype": "Data",
-      "label": "Prefix"
-    }
-  ],
-  "index_web_pages_for_search": 1,
-  "links": [],
-  "modified": "2025-09-23 20:50:38.548021",
-  "modified_by": "Administrator",
-  "module": "Drive",
-  "name": "Drive Team",
-  "naming_rule": "Random",
-  "owner": "Administrator",
-  "permissions": [
-    {
-      "create": 1,
-      "delete": 1,
-      "email": 1,
-      "export": 1,
-      "print": 1,
-      "read": 1,
-      "report": 1,
-      "role": "System Manager",
-      "share": 1,
-      "write": 1
-    },
-    {
-      "create": 1,
-      "email": 1,
-      "export": 1,
-      "print": 1,
-      "read": 1,
-      "report": 1,
-      "role": "All",
-      "share": 1,
-      "write": 1
-    }
-  ],
-  "row_format": "Dynamic",
-  "sort_field": "creation",
-  "sort_order": "DESC",
-  "states": [],
-  "title_field": "title"
+ "actions": [],
+ "autoname": "hash",
+ "creation": "2025-01-23 12:12:04.979723",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "title",
+  "users",
+  "storage",
+  "quota",
+  "team_domain",
+  "icon",
+  "personal",
+  "s3_bucket",
+  "prefix",
+  "public"
+ ],
+ "fields": [
+  {
+   "fieldname": "title",
+   "fieldtype": "Small Text",
+   "label": "Title"
+  },
+  {
+   "fieldname": "users",
+   "fieldtype": "Table",
+   "label": "Users",
+   "options": "Drive Team Member"
+  },
+  {
+   "default": "5120",
+   "description": "In MB",
+   "fieldname": "storage",
+   "fieldtype": "Int",
+   "label": "Storage"
+  },
+  {
+   "default": "5120",
+   "description": "In MB",
+   "fieldname": "quota",
+   "fieldtype": "Int",
+   "label": "Quota"
+  },
+  {
+   "fieldname": "team_domain",
+   "fieldtype": "Data",
+   "label": "Team Domain"
+  },
+  {
+   "fieldname": "icon",
+   "fieldtype": "Data",
+   "label": "Icon"
+  },
+  {
+   "default": "0",
+   "fieldname": "personal",
+   "fieldtype": "Check",
+   "label": "Personal"
+  },
+  {
+   "description": "Only applies if S3 is turned on.",
+   "fieldname": "s3_bucket",
+   "fieldtype": "Data",
+   "label": "S3 Bucket"
+  },
+  {
+   "fieldname": "prefix",
+   "fieldtype": "Data",
+   "label": "Prefix"
+  },
+  {
+   "default": "0",
+   "description": "Allows all files to be seen in public",
+   "fieldname": "public",
+   "fieldtype": "Check",
+   "label": "Public"
+  }
+ ],
+ "index_web_pages_for_search": 1,
+ "links": [],
+ "modified": "2025-11-20 12:56:43.682845",
+ "modified_by": "safwan@frappe.io",
+ "module": "Drive",
+ "name": "Drive Team",
+ "naming_rule": "Random",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  },
+  {
+   "create": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "All",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "row_format": "Dynamic",
+ "sort_field": "creation",
+ "sort_order": "DESC",
+ "states": [],
+ "title_field": "title"
 }

@@ -143,13 +143,19 @@ const sortId = computed(
   () =>
     props.getEntities.params?.entity_name || props.getEntities.params?.personal
 )
-const sortOrder = ref(
-  store.state.sortOrder[sortId.value] || {
-    label: "Modified",
-    field: "modified",
-    ascending: false,
-  }
-)
+const inIframe = inject("inIframe")
+const DEFAULT_SORT = inIframe.value
+  ? {
+      label: "Name",
+      field: "name",
+      ascending: true,
+    }
+  : {
+      label: "Modified",
+      field: "modified",
+      ascending: false,
+    }
+const sortOrder = ref(store.state.sortOrder[sortId.value] || DEFAULT_SORT)
 const search = ref("")
 const filters = ref([])
 
@@ -238,7 +244,6 @@ watch(
 )
 emitter.on("refresh", refreshData)
 emitter.on("remove-file", (item) => {
-  console.log("alo")
   selections.value.clear()
   selections.value.add(item)
   dialog.value = "remove"
