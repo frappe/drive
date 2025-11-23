@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: frappe\n"
 "Report-Msgid-Bugs-To: developers@frappe.io\n"
 "POT-Creation-Date: 2025-10-24 16:11+0000\n"
-"PO-Revision-Date: 2025-11-20 14:24\n"
+"PO-Revision-Date: 2025-11-23 14:46\n"
 "Last-Translator: developers@frappe.io\n"
 "Language-Team: Persian\n"
 "MIME-Version: 1.0\n"
@@ -787,7 +787,7 @@ msgstr "تغییر نام"
 #. Label of the replies (Table) field in DocType 'Drive Comment'
 #: drive/drive/doctype/drive_comment/drive_comment.json
 msgid "Replies"
-msgstr "پاسخ می دهد"
+msgstr "پاسخ می‌دهد"
 
 #. Label of the request_key (Data) field in DocType 'Account Request'
 #: drive/drive/doctype/account_request/account_request.json
