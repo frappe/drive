@@ -56,10 +56,10 @@ watchEffect(() => {
     props.error.exc_type === "PermissionError" &&
     (!store.state.user.id || store.state.user.id === "Guest")
   ) {
-    // router.replace({
-    //   name: "Login",
-    //   query: { "redirect-to": "/drive" + router.currentRoute.value.path },
-    // })
+    router.replace({
+      name: "Login",
+      query: { "redirect-to": "/drive" + router.currentRoute.value.path },
+    })
   }
   store.commit("setBreadcrumbs", [])
 })
