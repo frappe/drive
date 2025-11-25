@@ -73,14 +73,8 @@ export const apps = createResource({
   url: "frappe.apps.get_apps",
   cache: "apps",
   transform: (data) => {
-    let apps = [
-      {
-        name: "frappe",
-        logo: "/assets/frappe/images/framework.png",
-        title: "Desk",
-        route: "/app",
-      },
-    ]
+    // Use apps from API directly (respects App Customization)
+    let apps = []
     data.map((app) => {
       if (app.name === "drive") return
       apps.push({
