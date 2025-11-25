@@ -150,44 +150,44 @@ def upload_file(
     return drive_file
 
 
+IMAGE_THUMBNAILS = ["Image", "Video", "PDF", "Presentation"]
+
+
+def _get_default_thumbnail(file_type: str) -> BytesIO:
+    file_path = frappe.get_app_path("drive", "public", "images", "icons", f"{file_type.lower()}.svg")
+    try:
+        with open(file_path, "rb") as f:
+            return BytesIO(f.read())
+    except FileNotFoundError as e:
+        print("is error", e)
+        return ""
+
+
 @frappe.whitelist(allow_guest=True)
-def get_thumbnail(entity_name):
-    drive_file = frappe.get_value(
+def get_thumbnail(entity_name, image=True):
+    drive_file = frappe.get_cached_doc(
         "Drive File",
         entity_name,
-        [
-            "is_group",
-            "path",
-            "title",
-            "mime_type",
-            "file_size",
-            "owner",
-            "team",
-            "document",
-            "name",
-        ],
-        as_dict=1,
-    )
-    if not drive_file or drive_file.is_group or drive_file.is_link:
+    ).as_dict()
+    if not drive_file or not user_has_permission(drive_file, "read"):
         return
-    if user_has_permission(drive_file, "read") is False:
-        return
-
     thumbnail_data = None
-    if frappe.cache().exists(entity_name):
-        try:
-            thumbnail_data = frappe.cache().get_value(entity_name)
-        except:
-            frappe.cache().delete_value(entity_name)
+    # if frappe.cache().exists(entity_name):
+    #     try:
+    #         thumbnail_data = frappe.cache().get_value(entity_name)
+    #     except:
+    #         frappe.cache().delete_value(entity_name)
+    default = False
     if not thumbnail_data:
+        file_type = get_file_type(dict(drive_file))
         manager = FileManager()
         try:
-            if drive_file.mime_type.startswith("text"):
+            if not image and drive_file.mime_type.startswith("text"):
                 with manager.get_file(drive_file) as f:
                     thumbnail_data = f.read()[:1000].decode("utf-8").replace("\n", "<br/>")
-            elif drive_file.mime_type == "frappe_doc":
+            elif not image and drive_file.mime_type == "frappe_doc":
                 html = frappe.get_value("Drive Document", drive_file.document, "raw_content")
-                thumbnail_data = html[:1000] if html else ""
+                thumbnail_data = html[:1000]
             elif drive_file.mime_type == "frappe/slides":
                 # Use this until the thumbnail method is whitelisted
                 thumbnails = frappe.call(
@@ -197,22 +197,26 @@ def get_thumbnail(entity_name):
                 frappe.local.response["type"] = "redirect"
                 frappe.local.response["location"] = thumbnails[0]
                 return
-            else:
+            elif file_type in IMAGE_THUMBNAILS:
                 thumbnail = manager.get_thumbnail(drive_file.team, entity_name)
                 thumbnail_data = BytesIO(thumbnail.read())
                 thumbnail.close()
-        except:
-            return ""
-
-    if thumbnail_data:
-        frappe.cache().set_value(entity_name, thumbnail_data, expires_in_sec=60 * 60)
-
+        finally:
+            if not thumbnail_data:
+                thumbnail_data = _get_default_thumbnail(file_type)
+                default = True
+            frappe.cache().set_value(entity_name, thumbnail_data, expires_in_sec=60 * 60)
+    print(thumbnail_data, isinstance(thumbnail_data, BytesIO))
     if isinstance(thumbnail_data, BytesIO):
         response = Response(
             wrap_file(frappe.request.environ, thumbnail_data),
             direct_passthrough=True,
         )
-        response.headers.set("Content-Type", "image/jpeg")
+        if default:
+            response.headers.set("Content-Type", "image/svg+xml")
+            response.headers.set("Cache-Control", "public, max-age=3600")
+        else:
+            response.headers.set("Content-Type", "image/jpeg")
         response.headers.set("Content-Disposition", "inline", filename=entity_name)
         return response
     else:

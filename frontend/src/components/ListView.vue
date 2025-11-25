@@ -135,9 +135,6 @@ const selectedColumns = [
         ? title
         : title.slice(0, title.lastIndexOf(".")),
     getTooltip: (e) => (e.is_group || e.document ? "" : e.title),
-    prefix: ({ row }) => {
-      return getThumbnailUrl(row)
-    },
     suffix: ({ row }) => {
       if (row.share_count === props.rootEntity?.share_count) return
       if (row.share_count === -2) return h(LucideGlobe2, { class: "size-4" })

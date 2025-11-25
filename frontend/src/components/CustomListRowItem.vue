@@ -10,18 +10,11 @@
       #prefix
     >
       <img
-        v-if="!imgLoaded"
-        loading="lazy"
-        class="h-[16px] w-[16px] rounded-sm"
-        :src="backupLink"
-        :draggable="false"
-      />
-      <img
-        v-show="imgLoaded"
         class="h-[16px] w-[16px] object-cover rounded-sm"
-        :src="src"
+        :src="
+          '/api/method/drive.api.files.get_thumbnail?entity_name=' + row.name
+        "
         :draggable="false"
-        @load="imgLoaded = true"
       />
     </template>
     <template #default="{ label }">
@@ -71,15 +64,4 @@ const props = defineProps({
   item: String,
   contextMenu: Function,
 })
-
-let src, imgLoaded, thumbnailLink, backupLink, _
-
-if (props.column.prefix && props.column.key === "title") {
-  ;[thumbnailLink, backupLink, _] = props.column.prefix({
-    row: props.row,
-  })
-
-  src = ref(thumbnailLink || backupLink)
-  imgLoaded = ref(false)
-}
 </script>
