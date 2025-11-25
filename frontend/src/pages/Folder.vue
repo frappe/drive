@@ -2,6 +2,8 @@
   <GenericPage
     :verify="currentFolder"
     :get-entities="getFolderContents"
+    v-model:order-by="orderBy"
+    :id="entityName"
     :empty="{
       icon: LucideFolderClosed,
       title: 'No files added yet',
@@ -11,9 +13,9 @@
 
 <script setup>
 import GenericPage from "@/components/GenericPage.vue"
-import { watch, computed } from "vue"
+import { watch, computed, ref } from "vue"
 import { useStore } from "vuex"
-import { createResource } from "frappe-ui"
+import { createResource, useList } from "frappe-ui"
 import { COMMON_OPTIONS } from "@/resources/files"
 import {
   setBreadCrumbs,
@@ -32,18 +34,26 @@ const props = defineProps({
 })
 store.commit("setCurrentFolder", { name: props.entityName })
 
-const getFolderContents = createResource({
+const orderBy = ref(
+  store.state.sortOrder[props.entityName] || {
+    label: "Modified",
+    field: "modified",
+    ascending: false,
+  }
+)
+const getFolderContents = useList({
   ...COMMON_OPTIONS,
-  url: "drive.api.list.files",
-  makeParams: (params) => ({
-    ...params,
-    entity_name: props.entityName,
-  }),
-  cache: ["folder", props.entityName],
+  url: "/api/method/drive.api.list.files",
+  parent: props.entityName,
+  orderBy: orderBy.value.field + (orderBy.value.ascending ? " 1" : " 0"),
+  immediate: false,
+  limit: 50,
+  // cacheKey: ["folder", props.entityName],
 })
-setCache(getFolderContents, ["folder", props.entityName])
+// setCache(getFolderContents, ["folder", props.entityName])
 
 const onSuccess = (entity) => {
+  console.log(store.state.sortOrder)
   if (router.currentRoute.value.params.entityName !== entity.name) return
   document.title = "Folder - " + entity.title
   setBreadCrumbs(entity)

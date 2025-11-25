@@ -27,10 +27,11 @@ Binary = CustomFunction("BINARY", ["expression"])
 def files(
     team,
     entity_name=None,
+    parent=None,
     order_by="modified 1",
     is_active=1,
     limit=20,
-    cursor=None,
+    start=0,
     favourites_only=0,
     recents_only=0,
     shared=None,
@@ -44,9 +45,13 @@ def files(
     field, ascending = order_by.replace("modified", "_modified").split(" ")
     is_active = int(is_active)
     only_parent = int(only_parent)
+    limit = int(limit)
+    start = int(start)
     folders = int(folders)
     favourites_only = int(favourites_only)
     ascending = int(ascending)
+    if not entity_name:
+        entity_name = parent
 
     all_teams = False
     if team == "all":
@@ -98,10 +103,6 @@ def files(
     query = query.select(*ENTITY_FIELDS, DrivePermission.user.as_("shared_team")).where(
         fn.Coalesce(DrivePermission.read, 1).as_("read") == 1
     )
-
-    # Cursor pagination
-    if cursor:
-        query = query.where((Binary(DriveFile[field]) > cursor if ascending else field < cursor)).limit(limit)
 
     # Cleaner way?
     if only_parent and (not recents_only and not favourites_only and not shared):
@@ -156,6 +157,7 @@ def files(
 
     if folders:
         query = query.where(DriveFile.is_group == 1)
+    query = query.limit(limit + 1).offset(start)
     res = query.run(as_dict=True)
 
     child_count_query = (
@@ -208,6 +210,18 @@ def files(
         else:
             r["share_count"] = default
         r |= get_user_access(r["name"])
+
+    # Check if there's a next page
+    has_next_page = len(res) > limit
+
+    # Remove the extra record if it exists
+    if has_next_page:
+        res = res[:limit]
+
+    # Return in the format useList expects
+    frappe.response["data"] = res
+    frappe.response["has_next_page"] = has_next_page
+
     return res
 
 

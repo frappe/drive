@@ -11,7 +11,7 @@ export const COMMON_OPTIONS = {
   method: "GET",
   debounce: 500,
   transform(data) {
-    return prettyData(data.filter((k) => !k.title.startsWith(".")))
+    return prettyData(data)
   },
 }
 

@@ -5,6 +5,7 @@
     row-key="name"
     :columns="selectedColumns"
     :rows="formattedRows"
+    :resource
     :options="{
       selectable: true,
       enableActive: true,
@@ -50,17 +51,14 @@
             />
           </ListGroupRows>
         </div>
-        <div
-          v-else
-          class="pb-8"
-        >
+        <ListRows v-else>
           <CustomListRow
             :rows="formattedRows"
             :context-menu="contextMenu"
             :selections
             @dropped="(...p) => $emit('dropped', ...p)"
           />
-        </div>
+        </ListRows>
       </div>
     </template>
   </FrappeListView>
@@ -76,6 +74,7 @@
 <script setup>
 import {
   ListHeader,
+  ListRows,
   ListGroupRows,
   ListGroupHeader,
   ListEmptyState,
@@ -83,7 +82,6 @@ import {
   ListView as FrappeListView,
   Avatar,
 } from "frappe-ui"
-import { getThumbnailUrl } from "@/utils/getIconUrl"
 import { useStore } from "vuex"
 import { useRoute } from "vue-router"
 import { computed, h, ref, watch, useTemplateRef } from "vue"
@@ -102,6 +100,7 @@ const store = useStore()
 const route = useRoute()
 const props = defineProps({
   folderContents: Object,
+  resource: Object,
   actionItems: Array,
   userData: Object,
   rootEntity: Object,

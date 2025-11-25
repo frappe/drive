@@ -42,6 +42,7 @@
       v-else-if="$store.state.view === 'list'"
       v-model="selections"
       :folder-contents="rows && grouper(rows)"
+      :resource="getEntities"
       :action-items="actionItems"
       :user-data="userData"
       :root-entity="verify?.data"
@@ -111,6 +112,7 @@ import LucideTrash from "~icons/lucide/trash"
 import { prettyData, sortEntities } from "@/utils/files"
 
 const props = defineProps({
+  id: String,
   grouper: { type: Function, default: (d) => d },
   showSort: { type: Boolean, default: true },
   verify: { type: Object, default: null },
@@ -147,13 +149,15 @@ const sortId = computed(
   () =>
     props.getEntities.params?.entity_name || props.getEntities.params?.personal
 )
-const sortOrder = ref(
-  store.state.sortOrder[sortId.value] || {
+const sortOrder = defineModel("orderBy")
+if (!sortOrder.value) {
+  sortOrder.value = store.state.sortOrder[sortId.value] || {
     label: "Modified",
     field: "modified",
     ascending: false,
   }
-)
+}
+
 const search = ref("")
 const filters = ref([])
 
@@ -167,8 +171,8 @@ watch(
   (order) => {
     rows.value = sortEntities([...rows.value], order)
     props.getEntities.setData(rows.value)
-    if (sortId.value) {
-      store.commit("setSortOrder", [sortId.value, order])
+    if (sortId.value || props.id) {
+      store.commit("setSortOrder", [sortId.value || props.id, order])
     }
   },
   { deep: true }
@@ -202,7 +206,7 @@ watch(
     if (!val) return
     rows.value = sortEntities([...val], sortOrder.value)
     store.commit("setCurrentFolder", {
-      entities: rows.value.filter?.((k) => k.title[0] !== "."),
+      entities: rows.value,
     })
   },
   { immediate: true, deep: true }

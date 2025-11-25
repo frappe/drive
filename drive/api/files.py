@@ -206,7 +206,7 @@ def get_thumbnail(entity_name, image=True):
                 thumbnail_data = _get_default_thumbnail(file_type)
                 default = True
             frappe.cache().set_value(entity_name, thumbnail_data, expires_in_sec=60 * 60)
-    print(thumbnail_data, isinstance(thumbnail_data, BytesIO))
+
     if isinstance(thumbnail_data, BytesIO):
         response = Response(
             wrap_file(frappe.request.environ, thumbnail_data),
