@@ -93,7 +93,7 @@ import { useStore } from "vuex"
 import { openEntity } from "@/utils/files"
 import { toast } from "@/utils/toasts"
 import { move } from "@/resources/files"
-import { LoadingIndicator } from "frappe-ui"
+import { createResource, debounce, LoadingIndicator } from "frappe-ui"
 import { settings } from "@/resources/permissions"
 import emitter from "@/emitter"
 
@@ -177,10 +177,34 @@ watch(
   },
   { deep: true }
 )
+const searchServer = createResource({
+  url: "drive.api.list.search",
+
+  makeParams: (params) => ({ ...params, parent: props.id, limit: 100 }),
+})
+
+const searchFunc = debounce(() => {
+  if (props.getEntities.data > 250 && !props.getEntities.hasNextPage) {
+    const query = new RegExp(search.value, "i")
+    rows.value = props.getEntities.data.filter((k) => query.test(k.title))
+  } else {
+    searchServer.fetch(
+      {
+        query: search.value,
+      },
+      {
+        onSuccess: (data) => {
+          rows.value = data
+        },
+      }
+    )
+  }
+}, 500)
 
 watch(search, (val) => {
-  const search = new RegExp(val, "i")
-  rows.value = props.getEntities.data.filter((k) => search.test(k.title))
+  if (!val) {
+    rows.value = props.getEntities.data
+  } else searchFunc()
 })
 
 watch(
@@ -233,7 +257,7 @@ const refreshData = () => {
   if (sortOrder.value)
     params.order_by =
       sortOrder.value.field + (sortOrder.value.ascending ? " 1" : " 0")
-  props.getEntities.fetch({ ...props.getEntities.params, ...params })
+  props.getEntities.fetch()
 }
 
 watch(

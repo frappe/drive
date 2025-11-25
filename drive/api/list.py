@@ -231,3 +231,8 @@ def get_transfers():
         "Drive Transfer", filters={"owner": frappe.session.user}, fields=["title", "file_size", "creation", "name"]
     )
     return transfers
+
+
+@frappe.whitelist(allow_guest=True)
+def search(query, parent=None, limit=None):
+    return files(parent=parent, limit=limit, search=query)

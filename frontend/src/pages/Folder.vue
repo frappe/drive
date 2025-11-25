@@ -47,7 +47,7 @@ const getFolderContents = useList({
   parent: props.entityName,
   orderBy: orderBy.value.field + (orderBy.value.ascending ? " 1" : " 0"),
   immediate: false,
-  limit: 50,
+  limit: 100,
   // cacheKey: ["folder", props.entityName],
 })
 // setCache(getFolderContents, ["folder", props.entityName])
