@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: frappe\n"
 "Report-Msgid-Bugs-To: developers@frappe.io\n"
 "POT-Creation-Date: 2025-10-24 16:11+0000\n"
-"PO-Revision-Date: 2025-11-16 12:42\n"
+"PO-Revision-Date: 2025-11-26 15:07\n"
 "Last-Translator: developers@frappe.io\n"
 "Language-Team: Bosnian\n"
 "MIME-Version: 1.0\n"
@@ -246,7 +246,7 @@ msgstr "Desktop Klijent"
 #. Name of a DocType
 #: drive/drive/doctype/drive_disk_settings/drive_disk_settings.json
 msgid "Drive Disk Settings"
-msgstr "Postavke Drive Diska"
+msgstr "Postavke"
 
 #. Name of a DocType
 #: drive/drive/doctype/drive_doc_version/drive_doc_version.json
@@ -266,17 +266,17 @@ msgstr "Verzija Dokumenta"
 #. Name of a DocType
 #: drive/drive/doctype/drive_entity_activity_log/drive_entity_activity_log.json
 msgid "Drive Entity Activity Log"
-msgstr "Zapisnik Aktivnosti Entiteta"
+msgstr "Zapisnik Aktivnosti"
 
 #. Name of a DocType
 #: drive/drive/doctype/drive_entity_log/drive_entity_log.json
 msgid "Drive Entity Log"
-msgstr "Entitet Zapisnik"
+msgstr "Zapisnik"
 
 #. Name of a DocType
 #: drive/drive/doctype/drive_entity_tag/drive_entity_tag.json
 msgid "Drive Entity Tag"
-msgstr "Entitet Oznaka"
+msgstr "Oznaka"
 
 #. Name of a DocType
 #: drive/drive/doctype/drive_favourite/drive_favourite.json
