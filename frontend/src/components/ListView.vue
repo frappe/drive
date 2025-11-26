@@ -129,12 +129,12 @@ const formattedRows = computed(() => {
 const selectedColumns = [
   {
     label: __("Name"),
-    key: "title",
-    getLabel: ({ row: { title, is_group, document } }) =>
-      title.lastIndexOf(".") === -1 || is_group || document
-        ? title
-        : title.slice(0, title.lastIndexOf(".")),
-    getTooltip: (e) => (e.is_group || e.document ? "" : e.title),
+    key: "file_name",
+    getLabel: ({ row: { file_name, is_group, document } }) =>
+      file_name.lastIndexOf(".") === -1 || is_group || document
+        ? file_name
+        : file_name.slice(0, file_name.lastIndexOf(".")),
+    getTooltip: (e) => (e.is_group || e.document ? "" : e.file_name),
     prefix: ({ row }) => {
       return getThumbnailUrl(row)
     },

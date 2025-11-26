@@ -200,3 +200,7 @@ after_request = "drive.api.product.after_request"
 
 
 signup_form_template = "templates/signup.html"
+
+override_doctype_class = {
+    "File": "drive.utils.controller.DriveFile",
+}

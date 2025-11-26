@@ -11,7 +11,7 @@ export const COMMON_OPTIONS = {
   method: "GET",
   debounce: 500,
   transform(data) {
-    return prettyData(data.filter((k) => !k.title.startsWith(".")))
+    return prettyData(data.filter((k) => !k.file_name.startsWith(".")))
   },
 }
 
@@ -47,10 +47,10 @@ export const getRecents = createResource({
 
 export const getPersonal = createResource({
   ...COMMON_OPTIONS,
-  url: "drive.api.list.files",
+  url: "drive.api.list.get_folder_contents",
   cache: "personal-folder-contents",
   makeParams: (params) => {
-    return { ...params, personal: 1 }
+    return { ...params, folder: "l09pnt9mcr" }
   },
 })
 

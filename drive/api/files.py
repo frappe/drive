@@ -19,6 +19,7 @@ from drive.api.notifications import notify_mentions
 from drive.api.storage import storage_bar_data
 from drive.utils import (
     create_drive_file,
+    create_file_record,
     default_team,
     extract_mentions,
     get_file_type,
@@ -49,10 +50,10 @@ def upload_embed(doc):
 @default_team
 def upload_file(
     team,
+    parent=None,
     total_file_size=0,
     last_modified=None,
     fullpath=None,
-    parent=None,
     embed=0,
     transfer=0,
 ):
@@ -122,7 +123,7 @@ def upload_file(
         entity.save()
         drive_file = frappe._dict(**entity.as_dict(), team=team, parent=parent)
     else:
-        drive_file = create_drive_file(
+        drive_file = create_file_record(
             team,
             title,
             parent,
@@ -145,7 +146,8 @@ def upload_file(
     if transfer:
         frappe.publish_realtime("transfer-add", {"file": drive_file})
     elif not embed:
-        frappe.publish_realtime("list-add", {"file": prettify_file(drive_file.as_dict())})
+        pass
+        # frappe.publish_realtime("list-add", {"file": prettify_file(drive_file.as_dict())})
 
     return drive_file
 

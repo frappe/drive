@@ -22,6 +22,7 @@ MIME_LIST_MAP = {
     "Text": [
         "text/plain",
     ],
+    "Link": ["frappe/link"],
     "XML Data": ["application/xml"],
     "Document": [
         "application/msword",
@@ -85,13 +86,11 @@ MIME_LIST_MAP = {
 
 
 def get_home_folder(team):
-    ls = (
-        frappe.qb.from_(DriveFile)
-        .where(((DriveFile.team == team) & DriveFile.parent_entity.isnull()))
-        .select(DriveFile.name, DriveFile.path)
-        .run(as_dict=True)
+    details = frappe.db.get_value(
+        "File", fieldname=["name", "path"], filters={"team": team, "folder": "Home"}, as_dict=True
     )
-    if not ls:
+    print()
+    if not details:
         error_msg = f"This team ({team}) doesn't exist - please create in Desk."
         team_names = frappe.get_all(
             "Drive Team Member",
@@ -106,39 +105,7 @@ def get_home_folder(team):
         if not team_names:
             error_msg += f"<br /><br />Please <a class='text-black' href='/drive/setup'>setup</a> an account."
         frappe.throw(error_msg, {"error": frappe.NotFound})
-    return ls[0]
-
-
-def get_ancestors_of(entity_name):
-    """
-    Return all parent nodes till the root node
-    """
-    # CONCAT_WS('/', t.title, gp.path),
-    entity_name = frappe.db.escape(entity_name)
-    result = frappe.db.sql(
-        f"""
-        WITH RECURSIVE generated_path as (
-        SELECT
-            `tabDrive File`.name,
-            `tabDrive File`.parent_entity
-        FROM `tabDrive File`
-        WHERE `tabDrive File`.name = {entity_name}
-
-        UNION ALL
-
-        SELECT
-            t.name,
-            t.parent_entity
-        FROM generated_path as gp
-        JOIN `tabDrive File` as t ON t.name = gp.parent_entity)
-        SELECT name FROM generated_path;
-    """,
-        as_dict=0,
-    )
-    # Match the output of frappe/nested.py get_ancestors_of
-    flattened_list = [item for sublist in result for item in sublist]
-    flattened_list.pop(0)
-    return flattened_list
+    return details
 
 
 def dribble_access(path):
@@ -178,33 +145,33 @@ def generate_upward_path(entity_name, user=None, team=0):
         f"""WITH RECURSIVE
             generated_path as (
                 SELECT
-                    `tabDrive File`.title,
-                    `tabDrive File`.name,
-                    `tabDrive File`.team,
-                    `tabDrive File`.parent_entity,
-                    `tabDrive File`.owner,
+                    `tabFile`.file_name,
+                    `tabFile`.name,
+                    `tabFile`.team,
+                    `tabFile`.folder,
+                    `tabFile`.owner,
                     0 AS level
                 FROM
-                    `tabDrive File`
+                    `tabFile`
                 WHERE
-                    `tabDrive File`.name = {entity}
+                    `tabFile`.name = {entity}
                 UNION ALL
                 SELECT
-                    t.title,
+                    t.file_name,
                     t.name,
                     t.team,
-                    t.parent_entity,
+                    t.folder,
                     t.owner,
                     gp.level + 1
                 FROM
                     generated_path as gp
-                    JOIN `tabDrive File` as t ON t.name = gp.parent_entity
+                    JOIN `tabFile` as t ON t.name = gp.folder
             )
         SELECT
-            gp.title,
+            gp.file_name,
             gp.name,
             gp.owner,
-            gp.parent_entity,
+            gp.folder,
             gp.team,
             p.read,
             p.upload,
@@ -246,10 +213,8 @@ def get_valid_breadcrumbs(entity_name, user_access):
 
 
 def get_file_type(r):
-    if r["is_group"]:
+    if r["is_folder"]:
         return "Folder"
-    elif r["is_link"]:
-        return "Link"
     else:
         try:
             return next(k for (k, v) in MIME_LIST_MAP.items() if r["mime_type"] in v)
@@ -320,6 +285,39 @@ def create_drive_file(
     if owner:
         drive_file.db_set("owner", owner, update_modified=False)
     return drive_file
+
+
+def create_file_record(
+    team,
+    title,
+    parent,
+    mime_type,
+    entity_path,
+    file_size=0,
+    last_modified=None,
+    document=None,
+    is_group=False,
+):
+    file = frappe.get_doc(
+        {
+            "doctype": "File",
+            "file_name": title,
+            "is_folder": is_group,
+            "is_private": 1,
+            "folder": parent,
+            "file_size": file_size,
+            "team": team,
+            "mime_type": mime_type,
+            "link": document,
+            "file_url": "/api/method/drive.api.get_file",
+            "_modified": datetime.fromtimestamp(last_modified) if last_modified else frappe.utils.now(),
+        }
+    )
+    file.insert()
+    file.file_url += "?key=" + file.name
+    file.path = str(entity_path(file) or "")
+    file.save()
+    return file
 
 
 def extract_mentions(content):

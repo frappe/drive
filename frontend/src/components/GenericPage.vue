@@ -176,7 +176,7 @@ watch(
 
 watch(search, (val) => {
   const search = new RegExp(val, "i")
-  rows.value = props.getEntities.data.filter((k) => search.test(k.title))
+  rows.value = props.getEntities.data.filter((k) => search.test(k.file_name))
 })
 
 watch(
@@ -202,7 +202,7 @@ watch(
     if (!val) return
     rows.value = sortEntities([...val], sortOrder.value)
     store.commit("setCurrentFolder", {
-      entities: rows.value.filter?.((k) => k.title[0] !== "."),
+      entities: rows.value.filter?.((k) => k.file_name[0] !== "."),
     })
   },
   { immediate: true, deep: true }
@@ -462,7 +462,7 @@ socket.on("list-remove", ({ parent, entity_name }) => {
 })
 socket.on("client-rename", ({ entity_name, title }) => {
   const file = props.getEntities.data.find((k) => k.name === entity_name)
-  file.title = title
+  file.file_name = title
 })
 </script>
 <style>

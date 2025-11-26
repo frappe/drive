@@ -28,6 +28,22 @@ ENTITY_FIELDS = [
     "allow_download",
 ]
 
+FILE_FIELDS = [
+    "name",
+    "file_name",
+    "folder",
+    "path",
+    Field("_modified").as_("modified"),
+    "creation",
+    "file_size",
+    "mime_type",
+    "link",
+    "owner",
+    "is_folder",
+    "team",
+    "settings",
+]
+
 
 NO_ACCESS = {
     "read": 0,
@@ -53,7 +69,8 @@ def get_user_access(entity, user: str = None, team: bool = False):
     Return the user specific permissions for an entity. Toggle `team` to check team permission.
     """
     if isinstance(entity, str):
-        entity = frappe.get_cached_doc("Drive File", entity)
+        entity = frappe.get_cached_doc("File", entity)
+
     access = NO_ACCESS.copy()
     if not user:
         if team:
@@ -61,8 +78,6 @@ def get_user_access(entity, user: str = None, team: bool = False):
             return get_team_access(entity)
         else:
             user = frappe.session.user
-    # if not team and user not in [frappe.session.user, "Guest"] and not is_admin(entity.team):
-    #     frappe.throw("You cannot check permissions of other users", PermissionError)
 
     # Owners and team members of a file have access
     teams = get_teams(user)
@@ -289,3 +304,15 @@ def toggle_allow_download(entity, val):
     if not user_has_permission(entity, "share"):
         frappe.throw("You don't have permission for this action.", frappe.PermissionError)
     frappe.db.set_value("Drive File", entity, "allow_download", val)
+
+
+def requires(perm):
+    def wrapped(fn):
+        def inner(*args, **kwargs):
+            if not user_has_permission(args[0], perm):
+                frappe.throw("You don't have permission for this action.", ValueError)
+            fn(*args, **kwargs)
+
+        return inner
+
+    return wrapped

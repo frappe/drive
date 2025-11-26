@@ -7,10 +7,11 @@ from pypika import functions as fn
 from drive.utils import MIME_LIST_MAP, default_team, get_file_type, get_home_folder
 from drive.utils.api import get_default_access
 
-from .permissions import ENTITY_FIELDS, get_user_access
+from .permissions import FILE_FIELDS, get_user_access
 
 DriveUser = frappe.qb.DocType("User")
 UserGroupMember = frappe.qb.DocType("User Group Member")
+File = frappe.qb.DocType("File")
 DriveFile = frappe.qb.DocType("Drive File")
 DrivePermission = frappe.qb.DocType("Drive Permission")
 Team = frappe.qb.DocType("Drive Team")
@@ -86,9 +87,6 @@ def files(
             )
         elif shared == "public":
             cond = (DrivePermission.entity == DriveFile.name) & (DrivePermission.user == "")
-        # if shared == "with":
-        #     teams = get_teams()
-        #     cond |= (DrivePermission.team == 1) & (DrivePermission.user.isin(teams))
         query = query.right_join(DrivePermission).on(cond)
     else:
         query = query.left_join(DrivePermission).on(
@@ -217,3 +215,121 @@ def get_transfers():
         "Drive Transfer", filters={"owner": frappe.session.user}, fields=["title", "file_size", "creation", "name"]
     )
     return transfers
+
+
+@frappe.whitelist(allow_guest=True)
+def get_folder_contents(
+    folder=None,
+    order_by="modified 1",
+    limit=20,
+):
+    order_field, ascending = order_by.replace("modified", "_modified").split(" ")
+    user = frappe.session.user
+    query = (
+        frappe.qb.from_(File)
+        .left_join(DrivePermission)
+        .on((DrivePermission.entity == File.name) & (DrivePermission.user == user))
+        .left_join(DriveFavourite)
+        .on((DriveFavourite.entity == File.name) & (DriveFavourite.user == user))
+        .left_join(Recents)
+        .on((Recents.entity_name == File.name) & (Recents.user == user))
+        .select(
+            *FILE_FIELDS,
+            DrivePermission.user.as_("shared_team"),
+            DriveFavourite.name.as_("is_favourite"),
+            Recents.last_interaction.as_("accessed"),
+        )
+        .where((File.folder == folder))
+        .orderby(File[order_field], order=Order.asc if ascending else Order.desc)
+        .limit(limit)
+    )
+    results = query.run(as_dict=True)
+    return _enrich_results(results, 0)
+
+
+def _enrich_results(res, default_access):
+    """Add computed fields to results"""
+    entity_names = [r["name"] for r in res]
+
+    child_counts = _get_child_counts(entity_names)
+    share_counts = _get_share_counts(entity_names)
+    public_files = _get_public_files(entity_names)
+    team_files = _get_team_files(entity_names)
+
+    for r in res:
+        r["children"] = child_counts.get(r["name"], 0)
+        r["file_type"] = get_file_type(r)
+        r["share_count"] = _calculate_share_count(r["name"], public_files, team_files, share_counts, default_access)
+        r.update(get_user_access(r["name"]))
+
+    return res
+
+
+def _get_child_counts(entity_names):
+    """Get child counts only for specific entities"""
+    if not entity_names:
+        return {}
+
+    query = (
+        frappe.qb.from_(DriveFile)
+        .where((DriveFile.parent_entity.isin(entity_names)) & (DriveFile.is_active == 1))
+        .select(DriveFile.parent_entity, fn.Count("*").as_("child_count"))
+        .groupby(DriveFile.parent_entity)
+    )
+    return dict(query.run())
+
+
+def _get_share_counts(entity_names):
+    """Get share counts only for specific entities"""
+    if not entity_names:
+        return {}
+
+    query = (
+        frappe.qb.from_(DrivePermission)
+        .where(
+            (DrivePermission.entity.isin(entity_names))
+            & (DrivePermission.user != "")
+            & (DrivePermission.user != "$TEAM")
+        )
+        .select(DrivePermission.entity, fn.Count("*").as_("share_count"))
+        .groupby(DrivePermission.entity)
+    )
+    return dict(query.run())
+
+
+def _get_public_files(entity_names):
+    """Get public files only for specific entities"""
+    if not entity_names:
+        return set()
+
+    query = (
+        frappe.qb.from_(DrivePermission)
+        .where((DrivePermission.entity.isin(entity_names)) & (DrivePermission.user == ""))
+        .select(DrivePermission.entity)
+    )
+    return set(row[0] for row in query.run())
+
+
+def _get_team_files(entity_names):
+    """Get team-shared files only for specific entities"""
+    if not entity_names:
+        return set()
+
+    query = (
+        frappe.qb.from_(DrivePermission)
+        .where((DrivePermission.entity.isin(entity_names)) & (DrivePermission.team == 1))
+        .select(DrivePermission.entity)
+    )
+    return set(row[0] for row in query.run())
+
+
+def _calculate_share_count(entity_name, public_files, team_files, share_counts, default_access):
+    """Calculate the share count for an entity based on its sharing status"""
+    if entity_name in public_files:
+        return -2  # Public file
+    elif default_access > -1 and entity_name in team_files:
+        return -1  # Team file
+    elif default_access == 0:
+        return share_counts.get(entity_name, default_access)
+    else:
+        return default_access

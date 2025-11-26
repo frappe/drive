@@ -187,13 +187,13 @@ class FileManager:
             # perf: stupidly complicated because we use this both with a real entity and a dict
             # broken: for docs, have to first create that folder
             parent = (
-                Path(frappe.get_value("Drive File", entity.parent_entity, "path") or "")
-                if not hasattr(entity, "parent_path")
+                Path(frappe.get_value("Drive File", entity.folder, "path") or "")
+                if not hasattr(entity, "parent_path") and not entity.get("parent_path")
                 else Path(entity.parent_path)
             )
             if embed:
-                return parent / ".embeds" / entity.title
-            return parent / entity.title
+                return parent / ".embeds" / entity.file_name
+            return parent / entity.file_name
 
     @__not_if_flat
     def create_folder(self, entity, root):

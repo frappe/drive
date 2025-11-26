@@ -5,9 +5,12 @@ import frappe
 from frappe.model.document import Document
 from frappe.utils import now
 
+from pypika import Order
+from pypika import functions as fn
+
 from drive.api.activity import create_new_activity_log
 from drive.api.files import get_new_title
-from drive.api.permissions import get_user_access, user_has_permission
+from drive.api.permissions import get_user_access, user_has_permission, requires, ENTITY_FIELDS
 from drive.api.product import invite_users
 from drive.utils import generate_upward_path, get_home_folder, update_file_size, update_clients
 from drive.utils.files import FileManager
@@ -50,9 +53,8 @@ class DriveFile(Document):
         if self.document:
             frappe.delete_doc("Drive Document", self.document)
 
-        # Don't delete files on disk
-        # if self.path:
-        #     self.manager.delete_file(self)
+        if self.path:
+            self.manager.delete_file(self)
 
     def on_rollback(self):
         if self.flags.file_created:
@@ -104,7 +106,7 @@ class DriveFile(Document):
         if new_team and not new_parent:
             new_parent = new_parent or get_home_folder(new_team).name
         elif new_parent and not new_team:
-            new_team = frappe.db.get_value('Drive File', new_parent, 'team')
+            new_team = frappe.db.get_value("Drive File", new_parent, "team")
         elif not new_parent and not new_team:
             new_team = self.team
             new_parent = new_parent or get_home_folder(new_team).name
@@ -202,17 +204,6 @@ class DriveFile(Document):
             if child.path and not not_in_disk:
                 child.recursive_path_move(child.path, str(Path(new) / Path(child.path).relative_to(old)))
         self.save()
-
-    @frappe.whitelist()
-    def change_color(self, new_color):
-        """
-        Change color of a folder
-
-        :param new_color: New color selected for folder
-        :raises InvalidColor: If the color is not a hex value string
-        :return: DriveEntity doc once it's updated
-        """
-        return frappe.db.set_value("Drive File", self.name, "color", new_color, update_modified=False)
 
     def permanent_delete(self):
         write_access = user_has_permission(self, "write")
@@ -335,6 +326,68 @@ class DriveFile(Document):
             )
             if perm_name:
                 frappe.delete_doc("Drive Permission", perm_name, ignore_permissions=True)
+
+    @frappe.whitelist(allow_guest=True)
+    @requires("read")
+    def list_children(
+        self,
+        order_by="modified 1",
+        start=0,
+        limit=20,
+    ):
+        order_field, ascending = order_by.replace("modified", "_modified").split(" ")
+        user = frappe.session.user
+        query = (
+            frappe.qb.from_(DriveFile)
+            .left_join(DrivePermission)
+            .on((DrivePermission.entity == DriveFile.name) & (DrivePermission.user == user))
+            .left_join(DriveFavourite)
+            .on((DriveFavourite.entity == DriveFile.name) & (DriveFavourite.user == user))
+            .left_join(Recents)
+            .on((Recents.entity_name == DriveFile.name) & (Recents.user == user))
+            .select(
+                *ENTITY_FIELDS,
+                DrivePermission.user.as_("shared_team"),
+                DriveFavourite.name.as_("is_favourite"),
+                Recents.last_interaction.as_("accessed"),
+            )
+            .where(
+                (DriveFile.parent_entity == self.name)
+                & (DriveFile.is_active == 1)
+                & (fn.Coalesce(DrivePermission.read, 1) == 1)
+            )
+            .orderby(DriveFile[order_field], order=Order.asc if ascending else Order.desc)
+            .limit(limit)
+        )
+
+        results = query.run(as_dict=True)
+
+        # Get child counts (for folders)
+        child_count_query = (
+            frappe.qb.from_(DriveFile)
+            .where((DriveFile.team == parent.team) & (DriveFile.is_active == 1))
+            .select(DriveFile.parent_entity, fn.Count("*").as_("child_count"))
+            .groupby(DriveFile.parent_entity)
+        )
+        child_counts = dict(child_count_query.run())
+
+        # Get share counts
+        share_query = (
+            frappe.qb.from_(DrivePermission)
+            .where((DrivePermission.user != "") & (DrivePermission.user != "$TEAM"))
+            .select(DrivePermission.entity, fn.Count("*").as_("share_count"))
+            .groupby(DrivePermission.entity)
+        )
+        share_counts = dict(share_query.run())
+
+        # Enrich results
+        for item in results:
+            item["children"] = child_counts.get(item["name"], 0)
+            item["file_type"] = get_file_type(item)
+            item["share_count"] = share_counts.get(item["name"], 0)
+            item.update(get_user_access(item["name"]))
+
+        return results
 
 
 def on_doctype_update():
