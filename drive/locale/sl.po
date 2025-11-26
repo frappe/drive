@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: frappe\n"
 "Report-Msgid-Bugs-To: developers@frappe.io\n"
 "POT-Creation-Date: 2025-10-24 16:11+0000\n"
-"PO-Revision-Date: 2025-11-22 14:45\n"
+"PO-Revision-Date: 2025-11-26 15:07\n"
 "Last-Translator: developers@frappe.io\n"
 "Language-Team: Slovenian\n"
 "MIME-Version: 1.0\n"
@@ -116,7 +116,7 @@ msgstr "Od"
 #. Activity Log'
 #: drive/drive/doctype/drive_entity_activity_log/drive_entity_activity_log.json
 msgid "Can contain whatever meta value needed for the access log. Ex: Used to store access level 1,2,3 etc on a DriveDocShare"
-msgstr ""
+msgstr "Lahko vsebuje katero koli meta vrednost, potrebno za dnevnik dostopa. Npr.: Uporablja se za shranjevanje ravni dostopa 1, 2, 3 itd. na DriveDocShare"
 
 #: frontend/src/components/InfoPopup.vue:77
 msgid "Characters"
@@ -195,7 +195,7 @@ msgstr "Disk"
 #. Label of the flat (Check) field in DocType 'Drive Disk Settings'
 #: drive/drive/doctype/drive_disk_settings/drive_disk_settings.json
 msgid "Do not mimic folder/file structure"
-msgstr ""
+msgstr "Ne posnemajte strukture map/datotek"
 
 #. Label of the notif_doctype_name (Dynamic Link) field in DocType 'Drive
 #. Notification'
@@ -241,17 +241,17 @@ msgstr "Komentar"
 #. Name of a DocType
 #: drive/drive/doctype/drive_desktop_client/drive_desktop_client.json
 msgid "Drive Desktop Client"
-msgstr ""
+msgstr "Namizni Odjemalec"
 
 #. Name of a DocType
 #: drive/drive/doctype/drive_disk_settings/drive_disk_settings.json
 msgid "Drive Disk Settings"
-msgstr ""
+msgstr "Nastavitve Diska"
 
 #. Name of a DocType
 #: drive/drive/doctype/drive_doc_version/drive_doc_version.json
 msgid "Drive Doc Version"
-msgstr ""
+msgstr "Različica Dokumenta"
 
 #. Name of a DocType
 #: drive/drive/doctype/drive_document/drive_document.json
@@ -261,27 +261,27 @@ msgstr "Dokument"
 #. Name of a DocType
 #: drive/drive/doctype/drive_document_version/drive_document_version.json
 msgid "Drive Document Version"
-msgstr ""
+msgstr "Različica Dokumenta"
 
 #. Name of a DocType
 #: drive/drive/doctype/drive_entity_activity_log/drive_entity_activity_log.json
 msgid "Drive Entity Activity Log"
-msgstr ""
+msgstr "Dnevnik Dejavnosti"
 
 #. Name of a DocType
 #: drive/drive/doctype/drive_entity_log/drive_entity_log.json
 msgid "Drive Entity Log"
-msgstr ""
+msgstr "Dnevnik"
 
 #. Name of a DocType
 #: drive/drive/doctype/drive_entity_tag/drive_entity_tag.json
 msgid "Drive Entity Tag"
-msgstr ""
+msgstr "Oznaka"
 
 #. Name of a DocType
 #: drive/drive/doctype/drive_favourite/drive_favourite.json
 msgid "Drive Favourite"
-msgstr ""
+msgstr "Priljubljeno"
 
 #. Label of the entity (Link) field in DocType 'Drive Favourite'
 #. Name of a DocType
@@ -293,7 +293,7 @@ msgstr "Datoteka"
 #. Name of a DocType
 #: drive/drive/doctype/drive_file_update/drive_file_update.json
 msgid "Drive File Update"
-msgstr ""
+msgstr "Posodobitev Datoteke"
 
 #. Label of the root_folder (Data) field in DocType 'Drive Disk Settings'
 #: drive/drive/doctype/drive_disk_settings/drive_disk_settings.json
@@ -529,7 +529,10 @@ msgid "Legacy option.\n"
 "<br>\n"
 "<br>\n"
 "By default, Drive stores files the way you see it. If this option is checked, the files are store flatly, with randomized names.\n"
-msgstr ""
+msgstr "Zapuščena možnost.\n"
+"<br>\n"
+"<br>\n"
+"Privzeto Drive shranjuje datoteke tako, kot jih vidite vi. Če je ta možnost označena, se datoteke shranjujejo pavšalno, z naključno izbranimi imeni.\n"
 
 #: drive/public/js/TreeNode.vue:52
 msgid "Load more"
@@ -561,7 +564,7 @@ msgstr "Upravljaj"
 #. Label of a shortcut in the Drive Workspace
 #: drive/drive/workspace/drive/drive.json
 msgid "Manage Disk Settings"
-msgstr ""
+msgstr "Nastavitve"
 
 #. Label of the manual (Check) field in DocType 'Drive Doc Version'
 #: drive/drive/doctype/drive_doc_version/drive_doc_version.json
@@ -631,7 +634,7 @@ msgstr "Brez Oznak"
 
 #: drive/public/js/ff_integration.bundle.js:29
 msgid "No teams available"
-msgstr ""
+msgstr "Ni ekip na voljo"
 
 #. Label of the oauth_signup (Check) field in DocType 'Account Request'
 #: drive/drive/doctype/account_request/account_request.json
@@ -661,7 +664,7 @@ msgstr "Stara vrednost"
 #. Description of the 'S3 Bucket' (Data) field in DocType 'Drive Team'
 #: drive/drive/doctype/drive_team/drive_team.json
 msgid "Only applies if S3 is turned on."
-msgstr ""
+msgstr "Velja samo, če je S3 vklopljen."
 
 #: frontend/src/components/GenericPage.vue:291
 msgid "Open"
@@ -757,32 +760,32 @@ msgstr "Preberi"
 
 #: frontend/src/components/InfoPopup.vue:85
 msgid "Reading time"
-msgstr ""
+msgstr "Čas branja"
 
 #. Label of the referral_source (Data) field in DocType 'Account Request'
 #: drive/drive/doctype/account_request/account_request.json
 msgid "Referral Source"
-msgstr ""
+msgstr "Vir napotitve"
 
 #. Label of the referrer_data (Section Break) field in DocType 'Account
 #. Request'
 #: drive/drive/doctype/account_request/account_request.json
 msgid "Referrer Data"
-msgstr ""
+msgstr "Podatki Napotitelja"
 
 #. Label of the referrer_id (Data) field in DocType 'Account Request'
 #: drive/drive/doctype/account_request/account_request.json
 msgid "Referrer ID"
-msgstr ""
+msgstr "ID Napotitelja"
 
 #: frontend/src/components/GenericPage.vue:368
 msgid "Remove from Recents"
-msgstr ""
+msgstr "Odstrani iz Nedavnih"
 
 #: frontend/src/components/GenericPage.vue:329
 #: frontend/src/components/Navbar.vue:244
 msgid "Rename"
-msgstr ""
+msgstr "Preimenuj"
 
 #. Label of the replies (Table) field in DocType 'Drive Comment'
 #: drive/drive/doctype/drive_comment/drive_comment.json
@@ -792,7 +795,7 @@ msgstr "Odgovori"
 #. Label of the request_key (Data) field in DocType 'Account Request'
 #: drive/drive/doctype/account_request/account_request.json
 msgid "Request Key"
-msgstr ""
+msgstr "Ključ Zahteva"
 
 #. Label of the s3_section (Section Break) field in DocType 'Drive Disk
 #. Settings'
@@ -871,12 +874,12 @@ msgstr "Pametno"
 #: drive/drive/doctype/drive_doc_version/drive_doc_version.json
 #: drive/drive/doctype/drive_document_version/drive_document_version.json
 msgid "Snapshot Data"
-msgstr ""
+msgstr "Posnetek Podatkov"
 
 #. Label of the snapshot_size (Int) field in DocType 'Drive Document Version'
 #: drive/drive/doctype/drive_document_version/drive_document_version.json
 msgid "Snapshot Size"
-msgstr ""
+msgstr "Velikost Posnetka"
 
 #: frontend/src/components/InfoPopup.vue:66
 msgid "Stats"
@@ -1013,7 +1016,7 @@ msgstr "Naloži"
 #. Settings'
 #: drive/drive/doctype/drive_disk_settings/drive_disk_settings.json
 msgid "Used to configure maximum file sizes of in-browser previews (in megabytes)."
-msgstr ""
+msgstr "Uporablja se za konfiguracijo največjih velikosti datotek predogledov v brskalniku (v megabajtih)."
 
 #. Label of the user (Link) field in DocType 'Drive Desktop Client'
 #. Label of the user (Link) field in DocType 'Drive Entity Log'
@@ -1146,29 +1149,29 @@ msgstr "izbran"
 #. Activity Log'
 #: drive/drive/doctype/drive_entity_activity_log/drive_entity_activity_log.json
 msgid "share_add"
-msgstr ""
+msgstr "deli_dodaj"
 
 #. Option for the 'Action Type' (Select) field in DocType 'Drive Entity
 #. Activity Log'
 #: drive/drive/doctype/drive_entity_activity_log/drive_entity_activity_log.json
 msgid "share_edit"
-msgstr ""
+msgstr "deli_uredi"
 
 #. Option for the 'Action Type' (Select) field in DocType 'Drive Entity
 #. Activity Log'
 #: drive/drive/doctype/drive_entity_activity_log/drive_entity_activity_log.json
 msgid "share_remove"
-msgstr ""
+msgstr "deli_odstrani"
 
 #. Option for the 'Team Prefix' (Select) field in DocType 'Drive Disk Settings'
 #: drive/drive/doctype/drive_disk_settings/drive_disk_settings.json
 msgid "team_id"
-msgstr ""
+msgstr "ekipa_id"
 
 #. Option for the 'Team Prefix' (Select) field in DocType 'Drive Disk Settings'
 #: drive/drive/doctype/drive_disk_settings/drive_disk_settings.json
 msgid "team_name"
-msgstr ""
+msgstr "ekipa_ime"
 
 #. Option for the 'Type' (Select) field in DocType 'Drive File Update'
 #: drive/drive/doctype/drive_file_update/drive_file_update.json
