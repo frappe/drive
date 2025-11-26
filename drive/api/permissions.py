@@ -155,9 +155,9 @@ def get_entity_with_permissions(entity_name):
     Return file data with permissions
     """
     entity = frappe.db.get_value(
-        "Drive File",
-        {"is_active": 1, "name": entity_name},
-        ENTITY_FIELDS,
+        "File",
+        {"active": 1, "name": entity_name},
+        FILE_FIELDS,
         as_dict=1,
     )
     if not entity:
@@ -245,7 +245,7 @@ def get_shared_with_list(entity):
         fields=["user", "read", "write", "comment", "upload", "share"],
     )
 
-    owner = frappe.db.get_value("Drive File", entity, "owner")
+    owner = frappe.db.get_value("File", entity, "owner")
     permissions.insert(
         0,
         frappe.db.get_value("User", owner, ["user_image", "full_name", "name as user"], as_dict=True),

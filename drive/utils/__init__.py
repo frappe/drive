@@ -296,13 +296,13 @@ def create_file_record(
     file_size=0,
     last_modified=None,
     document=None,
-    is_group=False,
+    is_folder=False,
 ):
     file = frappe.get_doc(
         {
             "doctype": "File",
             "file_name": title,
-            "is_folder": is_group,
+            "is_folder": is_folder,
             "is_private": 1,
             "folder": parent,
             "file_size": file_size,
@@ -313,6 +313,7 @@ def create_file_record(
             "_modified": datetime.fromtimestamp(last_modified) if last_modified else frappe.utils.now(),
         }
     )
+    file.flags.drive_file = True
     file.insert()
     file.file_url += "?key=" + file.name
     file.path = str(entity_path(file) or "")

@@ -58,14 +58,9 @@ const createFolder = createResource({
   url: "drive.api.files.create_folder",
   makeParams(title) {
     return {
-      title,
+      file_name: title,
       team: route.params.team,
       parent: props.parent,
-    }
-  },
-  validate(params) {
-    if (!params?.title) {
-      return "Folder name is required"
     }
   },
   onSuccess(data) {

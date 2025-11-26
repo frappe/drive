@@ -314,40 +314,22 @@ def get_upload_path(team_path, file_name):
 
 @frappe.whitelist()
 @default_team
-def create_folder(team, title, parent=None):
-    """
-    Create a new folder.
-
-    :param title: Folder name
-    :param parent: Document-name of the parent folder. Defaults to the user directory
-    :raises PermissionError: If the user does not have write access to the specified parent folder
-    :raises FileExistsError: If a folder with the same name already exists in the specified parent folder
-    :return: DriveEntity doc of the new folder
-    """
+def create_folder(team, file_name, parent=None):
     home_folder = get_home_folder(team)
     parent = parent or home_folder.name
-    team = frappe.db.get_value("Drive File", parent, "team")
+    team = frappe.db.get_value("File", parent, "team")
 
-    parent_doc = frappe.get_doc("Drive File", parent)
+    parent_doc = frappe.get_doc("File", parent)
     if not user_has_permission(parent_doc, "upload"):
         frappe.throw(
             "You don't have permissions for this.",
             frappe.PermissionError,
         )
-    entity_exists = frappe.db.exists(
-        {
-            "doctype": "Drive File",
-            "parent_entity": parent,
-            "is_group": 1,
-            "title": title,
-            "is_active": 1,
-        }
-    )
 
-    if entity_exists:
-        suggested_name = get_new_title(title, parent, folder=True)
+    suggested_name = get_new_title(file_name, parent, folder=True)
+    if suggested_name != file_name:
         frappe.throw(
-            f"Folder '{title}' already exists.\n Suggested: {suggested_name}",
+            f"Folder '{file_name}' already exists.\n Suggested: {suggested_name}",
             FileExistsError,
         )
 
@@ -355,7 +337,7 @@ def create_folder(team, title, parent=None):
     path = manager.create_folder(
         frappe._dict(
             {
-                "title": title,
+                "file_name": file_name,
                 "team": team,
                 "parent_path": Path(parent_doc.path or ""),
             }
@@ -363,13 +345,13 @@ def create_folder(team, title, parent=None):
         home_folder,
     )
 
-    drive_file = create_drive_file(
+    drive_file = create_file_record(
         team,
-        title,
+        file_name,
         parent,
-        "folder",
+        "frappe/folder",
         lambda _: path,
-        is_group=True,
+        is_folder=True,
     )
 
     return drive_file

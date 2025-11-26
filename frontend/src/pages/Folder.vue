@@ -34,10 +34,10 @@ store.commit("setCurrentFolder", { name: props.entityName })
 
 const getFolderContents = createResource({
   ...COMMON_OPTIONS,
-  url: "drive.api.list.files",
+  url: "drive.api.list.get_folder_contents",
   makeParams: (params) => ({
     ...params,
-    entity_name: props.entityName,
+    folder: props.entityName,
   }),
   cache: ["folder", props.entityName],
 })

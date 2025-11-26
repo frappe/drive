@@ -178,16 +178,16 @@ class FileManager:
         """
         Helper function to get path of a file
         """
-        if not root:
-            root = get_home_folder(entity.team)
 
         if self.flat:
+            if not root:
+                root = get_home_folder(entity.team)
             return Path(root["path"]) / (Path("embeds") / entity.name if embed else entity.name)
         else:
             # perf: stupidly complicated because we use this both with a real entity and a dict
             # broken: for docs, have to first create that folder
             parent = (
-                Path(frappe.get_value("Drive File", entity.folder, "path") or "")
+                Path(frappe.get_value("File", entity.folder, "path") or "")
                 if not hasattr(entity, "parent_path") and not entity.get("parent_path")
                 else Path(entity.parent_path)
             )

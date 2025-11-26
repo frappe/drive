@@ -22,7 +22,7 @@ import { createLowlight, common } from "lowlight"
 import { toHtml } from "hast-util-to-html"
 
 export const openEntity = (entity, new_tab = false) => {
-  if (!entity.is_group) {
+  if (!entity.is_folder) {
     if (!getRecents.data?.some?.((k) => k.name === entity.name))
       getRecents.setData((data) => [...(data || []), entity])
 
@@ -38,7 +38,7 @@ export const openEntity = (entity, new_tab = false) => {
 
   if (!entity.breadcrumbs?.length)
     store.state.breadcrumbs.push({
-      label: entity.title,
+      label: entity.file_name,
       name: entity.name,
       route: null,
     })
@@ -50,7 +50,7 @@ export const openEntity = (entity, new_tab = false) => {
       name: entity.is_private ? "Home" : "Team",
       params: { team },
     })
-  } else if (entity.is_group) {
+  } else if (entity.is_folder) {
     router.push({
       name: "Folder",
       params: { entityName: entity.name },
@@ -159,7 +159,7 @@ export const sortEntities = (rows, order) => {
   })
   if (order.smart) {
     rows.sort((a, b) => {
-      const [endA, endB] = trimCommonPrefix(a.title, b.title)
+      const [endA, endB] = trimCommonPrefix(a.file_name, b.file_name)
       if (!endA) return 0
       const numA = extractNum(endA)
       const numB = extractNum(endB)
@@ -177,8 +177,8 @@ export const sortEntities = (rows, order) => {
 
 export const groupByFolder = (entities) => {
   return {
-    Folders: entities.filter((x) => x.is_group === 1),
-    Files: entities.filter((x) => x.is_group === 0),
+    Folders: entities.filter((x) => x.is_folder === 1),
+    Files: entities.filter((x) => x.is_folder === 0),
   }
 }
 
@@ -214,14 +214,14 @@ export const setBreadCrumbs = (entity) => {
       },
     ]
 
-  if (!breadcrumbs[0].parent_entity) breadcrumbs.splice(0, 1)
+  if (!breadcrumbs[0].folder) breadcrumbs.splice(0, 1)
   const popBreadcrumbs = (item) => () =>
     res.splice(res.findIndex((k) => k.name === item.name) + 1)
 
   breadcrumbs.forEach((folder, idx) => {
     const final = idx === breadcrumbs.length - 1
     res.push({
-      label: folder.title,
+      label: folder.file_name,
       name: folder.name,
       onClick: final
         ? () => entity.write && emitter.emit("rename")
@@ -469,11 +469,11 @@ function getLinkStem(entity) {
   return `${
     {
       true: "f",
-      [new Boolean(entity.is_group)]: "d",
+      [new Boolean(entity.is_folder)]: "d",
       [new Boolean(entity.document || entity.mime_type === "text/markdown")]:
         "w",
     }[true]
-  }/${entity.name}/${slugger(entity.title)}`
+  }/${entity.name}/${slugger(entity.file_name)}`
 }
 
 const copyToClipboard = (str) => {
@@ -491,10 +491,10 @@ const copyToClipboard = (str) => {
   }
 }
 
-export async function updateURLSlug(title) {
+export async function updateURLSlug(file_name) {
   const route = router.currentRoute.value
   await nextTick()
-  const slug = slugger(title)
+  const slug = slugger(file_name)
   if (route.params.slug !== slug) {
     // Hacky, but we only want to update the URL - triggering a reload breaks a lot
     const base = window.location.pathname.split("/").slice(0, 4).join("/")
