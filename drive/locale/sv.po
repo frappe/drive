@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: frappe\n"
 "Report-Msgid-Bugs-To: developers@frappe.io\n"
 "POT-Creation-Date: 2025-10-24 16:11+0000\n"
-"PO-Revision-Date: 2025-11-16 12:42\n"
+"PO-Revision-Date: 2025-11-28 15:34\n"
 "Last-Translator: developers@frappe.io\n"
 "Language-Team: Swedish\n"
 "MIME-Version: 1.0\n"
@@ -75,7 +75,7 @@ msgstr "Lägg till bild"
 
 #: frontend/src/components/InfoPopup.vue:47
 msgid "Added"
-msgstr "Lagt till av"
+msgstr "Tillagd"
 
 #. Name of a role
 #: drive/drive/doctype/drive_desktop_client/drive_desktop_client.json
