@@ -153,7 +153,7 @@ function get_file_content(entity) {
   const fileUrl =
     entity.src ||
     "/api/method/" +
-      `drive.api.files.get_file_content?entity_name=${entity.name}`
+      `drive.api.files.get_file_content?entity_name=${entity.name}&trigger_download=1`
 
   return fetch(fileUrl).then((response) => {
     if (response.ok) {
