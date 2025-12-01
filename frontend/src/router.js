@@ -4,8 +4,6 @@ import { createResource } from "frappe-ui"
 import Dummy from "@/pages/Dummy.vue"
 import { getTeams, translate } from "@/resources/files"
 
-import { getTeams, translate } from "@/resources/files"
-
 function clearStore() {
   store.commit("setActiveEntity", null)
 }
@@ -167,7 +165,10 @@ const routes = [
     meta: { documentPage: true, allowGuest: true },
     component: () => import("@/pages/Document.vue"),
     props: true,
-    beforeEnter: [manageBreadcrumbs],
+    // beforeEnter: [manageBreadcrumbs],
+    beforeEnter: (props) => {
+      window.location.href = "/writer/w/" + props.params.entityName
+    },
   },
   // old redirects
   {
