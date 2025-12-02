@@ -289,7 +289,7 @@ let router = createRouter({
 
 router.beforeEach(async (to, from, next) => {
   if (!store.getters.isLoggedIn && !to.meta.allowGuest) {
-    // next("/login?redirect-to=/drive" + to.path)
+    next("/login?redirect-to=/drive" + to.path)
   } else {
     if (to.params.team) localStorage.setItem("recentTeam", to.params.team)
     clearStore()
