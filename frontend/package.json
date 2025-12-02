@@ -27,7 +27,7 @@
     "access-key-label-polyfill": "^1.0.0",
     "date-fns": "^4.1.0",
     "dropzone": "^6.0.0-beta.2",
-    "frappe-ui": "github:frappe/frappe-ui#1e473a611b7d7c900dac1ef575d99fb520b56807",
+    "frappe-ui": "github:frappe/frappe-ui#4249f401c420b515ca88f91dbeed738a7b6c4151",
     "hast-util-to-html": "^9.0.5",
     "html2pdf.js": "^0.10.3",
     "idb-keyval": "^6.2.1",
