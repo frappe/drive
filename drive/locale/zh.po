@@ -2,8 +2,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: frappe\n"
 "Report-Msgid-Bugs-To: developers@frappe.io\n"
-"POT-Creation-Date: 2025-10-24 16:11+0000\n"
-"PO-Revision-Date: 2025-11-03 06:54\n"
+"POT-Creation-Date: 2025-12-05 16:12+0000\n"
+"PO-Revision-Date: 2025-12-08 17:15\n"
 "Last-Translator: developers@frappe.io\n"
 "Language-Team: Chinese Simplified\n"
 "MIME-Version: 1.0\n"
@@ -64,7 +64,7 @@ msgstr "账户请求"
 msgid "Action Type"
 msgstr "操作类型"
 
-#: frontend/src/components/Settings/UserListSettings.vue:449
+#: frontend/src/components/Settings/UserListSettings.vue:456
 #: frontend/src/components/TagInput.vue:25
 msgid "Add"
 msgstr "添加"
@@ -99,14 +99,24 @@ msgstr "全部"
 msgid "Allow Download"
 msgstr "允许下载"
 
-#: frontend/src/components/Sidebar.vue:101
+#: frontend/src/components/Sidebar.vue:125
 msgid "Apps"
 msgstr "应用"
+
+#. Label of the as_guest (Check) field in DocType 'Drive User Invitation'
+#: drive/drive/doctype/drive_user_invitation/drive_user_invitation.json
+msgid "As Guest"
+msgstr ""
 
 #. Label of the auto_detect_links (Check) field in DocType 'Drive Settings'
 #: drive/drive/doctype/drive_settings/drive_settings.json
 msgid "Auto Detect Links"
 msgstr "自动检测链接"
+
+#. Option for the 'Status' (Select) field in DocType 'Drive User Invitation'
+#: drive/drive/doctype/drive_user_invitation/drive_user_invitation.json
+msgid "Automatic"
+msgstr "自动"
 
 #: frontend/src/components/DriveToolBar.vue:19
 msgid "By"
@@ -122,7 +132,7 @@ msgstr "可以包含访问日志所需的任何元数据值。例如：用于在
 msgid "Characters"
 msgstr "字符数"
 
-#: frontend/src/components/Navbar.vue:308
+#: frontend/src/components/Navbar.vue:301
 msgid "Clear"
 msgstr "清除"
 
@@ -161,8 +171,8 @@ msgstr "确认"
 msgid "Content"
 msgstr "内容"
 
-#: frontend/src/components/GenericPage.vue:314
-#: frontend/src/components/Navbar.vue:227
+#: frontend/src/components/GenericPage.vue:327
+#: frontend/src/components/Navbar.vue:220
 msgid "Copy Link"
 msgstr "复制链接"
 
@@ -177,8 +187,8 @@ msgstr "核心"
 msgid "Defaults to \"s3v4\". Some providers only support \"s3\"."
 msgstr "默认为 \"s3v4\"。一些提供商仅支持 \"s3\"。"
 
-#: frontend/src/components/GenericPage.vue:381
-#: frontend/src/components/Navbar.vue:285
+#: frontend/src/components/GenericPage.vue:394
+#: frontend/src/components/Navbar.vue:278
 msgid "Delete"
 msgstr "删除"
 
@@ -219,12 +229,12 @@ msgstr "文档字段"
 msgid "Document Type"
 msgstr "单据类型"
 
-#: frontend/src/components/Sidebar.vue:125
+#: frontend/src/components/Sidebar.vue:149
 msgid "Documentation"
 msgstr "用户操作手册"
 
-#: frontend/src/components/GenericPage.vue:305
-#: frontend/src/components/Navbar.vue:220
+#: frontend/src/components/GenericPage.vue:318
+#: frontend/src/components/Navbar.vue:213
 msgid "Download"
 msgstr "下载"
 
@@ -331,11 +341,16 @@ msgid "Drive Team Member"
 msgstr "云盘团队成员"
 
 #. Name of a DocType
+#: drive/drive/doctype/drive_transfer/drive_transfer.json
+msgid "Drive Transfer"
+msgstr ""
+
+#. Name of a DocType
 #: drive/drive/doctype/drive_user_invitation/drive_user_invitation.json
 msgid "Drive User Invitation"
 msgstr "云盘用户邀请"
 
-#: frontend/src/components/Settings/UserListSettings.vue:526
+#: frontend/src/components/Settings/UserListSettings.vue:533
 msgid "Edit"
 msgstr "编辑"
 
@@ -354,7 +369,7 @@ msgstr "编辑个人资料"
 msgid "Email"
 msgstr "邮件"
 
-#: frontend/src/components/Navbar.vue:314
+#: frontend/src/components/Navbar.vue:307
 msgid "Empty"
 msgstr "空"
 
@@ -400,8 +415,8 @@ msgstr "示例格式：https://s3.ap-south-1.amazonaws.com"
 msgid "Expired"
 msgstr "已过期"
 
-#: frontend/src/components/GenericPage.vue:342
-#: frontend/src/components/Navbar.vue:256
+#: frontend/src/components/GenericPage.vue:355
+#: frontend/src/components/Navbar.vue:249
 msgid "Favourite"
 msgstr "收藏"
 
@@ -409,6 +424,11 @@ msgstr "收藏"
 #: drive/drive/doctype/drive_file/drive_file.json
 msgid "File Size"
 msgstr "文件大小"
+
+#. Label of the file_size (Int) field in DocType 'Drive Transfer'
+#: drive/drive/doctype/drive_transfer/drive_transfer.json
+msgid "File size"
+msgstr ""
 
 #: frontend/src/components/DriveToolBar.vue:40
 msgid "Find"
@@ -443,10 +463,11 @@ msgstr "前往云盘"
 #. Name of a role
 #: drive/drive/doctype/drive_document/drive_document.json
 #: drive/drive/doctype/drive_file/drive_file.json
+#: drive/drive/doctype/drive_team/drive_team.json
 msgid "Guest"
 msgstr "访客"
 
-#: frontend/src/utils/files.js:215
+#: frontend/src/utils/files.js:209
 msgid "Home"
 msgstr "主页"
 
@@ -466,7 +487,7 @@ msgstr "图标"
 msgid "In MB"
 msgstr "单位：MB"
 
-#: frontend/src/components/Sidebar.vue:188
+#: frontend/src/components/Sidebar.vue:212
 msgid "Inbox"
 msgstr "收件箱"
 
@@ -539,7 +560,7 @@ msgstr "加载更多"
 msgid "Loading..."
 msgstr "载入中..."
 
-#: frontend/src/components/Sidebar.vue:151
+#: frontend/src/components/Sidebar.vue:175
 msgid "Log out"
 msgstr "退出系统"
 
@@ -554,7 +575,7 @@ msgid "MIME Type"
 msgstr "MIME 类型"
 
 #: frontend/src/components/InfoPopup.vue:106
-#: frontend/src/components/Sidebar.vue:96
+#: frontend/src/components/Sidebar.vue:120
 msgid "Manage"
 msgstr "管理"
 
@@ -597,8 +618,8 @@ msgstr "元数值"
 msgid "Modified"
 msgstr "修改时间"
 
-#: frontend/src/components/GenericPage.vue:321
-#: frontend/src/components/Navbar.vue:238
+#: frontend/src/components/GenericPage.vue:334
+#: frontend/src/components/Navbar.vue:231
 msgid "Move"
 msgstr "移动"
 
@@ -616,7 +637,7 @@ msgstr "新建"
 msgid "New Tag"
 msgstr "新标签"
 
-#: frontend/src/components/Settings/UserListSettings.vue:365
+#: frontend/src/components/Settings/UserListSettings.vue:372
 msgid "New Team"
 msgstr "新建团队"
 
@@ -663,7 +684,7 @@ msgstr "旧值"
 msgid "Only applies if S3 is turned on."
 msgstr "仅当S3服务启用时生效。"
 
-#: frontend/src/components/GenericPage.vue:291
+#: frontend/src/components/GenericPage.vue:304
 msgid "Open"
 msgstr "待处理"
 
@@ -672,7 +693,7 @@ msgstr "待处理"
 msgid "Open in Drive"
 msgstr "在云盘中打开"
 
-#: frontend/src/components/Sidebar.vue:141
+#: frontend/src/components/Sidebar.vue:165
 msgid "Others"
 msgstr "其他"
 
@@ -688,7 +709,9 @@ msgid "Parent Entity"
 msgstr "上级实体"
 
 #. Label of the path (Text) field in DocType 'Drive File'
+#. Label of the path (Data) field in DocType 'Drive Transfer'
 #: drive/drive/doctype/drive_file/drive_file.json
+#: drive/drive/doctype/drive_transfer/drive_transfer.json
 msgid "Path"
 msgstr "网址路径"
 
@@ -715,7 +738,7 @@ msgstr "偏好设置"
 msgid "Prefix"
 msgstr "前缀"
 
-#: frontend/src/components/GenericPage.vue:285
+#: frontend/src/components/GenericPage.vue:298
 msgid "Preview"
 msgstr "预览"
 
@@ -775,12 +798,12 @@ msgstr "推荐人数据"
 msgid "Referrer ID"
 msgstr "推荐人 ID"
 
-#: frontend/src/components/GenericPage.vue:368
+#: frontend/src/components/GenericPage.vue:381
 msgid "Remove from Recents"
 msgstr "从最近中移除"
 
-#: frontend/src/components/GenericPage.vue:329
-#: frontend/src/components/Navbar.vue:244
+#: frontend/src/components/GenericPage.vue:342
+#: frontend/src/components/Navbar.vue:237
 msgid "Rename"
 msgstr "修改单据编号(名称)"
 
@@ -808,7 +831,7 @@ msgid "S3 Bucket"
 msgstr "S3 存储桶"
 
 #: frontend/src/components/EmojiPicker.vue:22
-#: frontend/src/components/Sidebar.vue:183
+#: frontend/src/components/Sidebar.vue:207
 msgid "Search"
 msgstr "搜索"
 
@@ -819,7 +842,7 @@ msgstr "设置颜色"
 #. Label of the settings (JSON) field in DocType 'Drive Document'
 #: drive/drive/doctype/drive_document/drive_document.json
 #: frontend/src/components/Settings/SettingsDialog.vue:16
-#: frontend/src/components/Sidebar.vue:146
+#: frontend/src/components/Sidebar.vue:170
 msgid "Settings"
 msgstr "设置"
 
@@ -827,17 +850,17 @@ msgstr "设置"
 #. Label of the share (Check) field in DocType 'Drive Permission'
 #: drive/drive/doctype/drive_notification/drive_notification.json
 #: drive/drive/doctype/drive_permission/drive_permission.json
-#: frontend/src/components/GenericPage.vue:298
-#: frontend/src/components/Navbar.vue:212
+#: frontend/src/components/GenericPage.vue:311
+#: frontend/src/components/Navbar.vue:205
 msgid "Share"
 msgstr "分享"
 
-#: frontend/src/components/InfoPopup.vue:132 frontend/src/utils/files.js:206
+#: frontend/src/components/InfoPopup.vue:132 frontend/src/utils/files.js:199
 msgid "Shared"
 msgstr "共享文件"
 
-#: frontend/src/components/GenericPage.vue:335
-#: frontend/src/components/Navbar.vue:250
+#: frontend/src/components/GenericPage.vue:348
+#: frontend/src/components/Navbar.vue:243
 msgid "Show Info"
 msgstr "显示信息"
 
@@ -895,7 +918,7 @@ msgstr "状态"
 msgid "Storage"
 msgstr "存储"
 
-#: frontend/src/components/Sidebar.vue:130
+#: frontend/src/components/Sidebar.vue:154
 msgid "Support"
 msgstr "售后支持"
 
@@ -910,6 +933,7 @@ msgstr "售后支持"
 #: drive/drive/doctype/drive_permission/drive_permission.json
 #: drive/drive/doctype/drive_settings/drive_settings.json
 #: drive/drive/doctype/drive_team/drive_team.json
+#: drive/drive/doctype/drive_transfer/drive_transfer.json
 #: drive/drive/doctype/drive_user_invitation/drive_user_invitation.json
 msgid "System Manager"
 msgstr "系统管理员"
@@ -966,11 +990,13 @@ msgstr "缩略图前缀"
 #. Label of the title (Data) field in DocType 'Drive File'
 #. Label of the title (Data) field in DocType 'Drive Tag'
 #. Label of the title (Small Text) field in DocType 'Drive Team'
+#. Label of the title (Data) field in DocType 'Drive Transfer'
 #: drive/drive/doctype/drive_doc_version/drive_doc_version.json
 #: drive/drive/doctype/drive_document_version/drive_document_version.json
 #: drive/drive/doctype/drive_file/drive_file.json
 #: drive/drive/doctype/drive_tag/drive_tag.json
 #: drive/drive/doctype/drive_team/drive_team.json
+#: drive/drive/doctype/drive_transfer/drive_transfer.json
 #: frontend/src/components/Settings/NewTagDialog.vue:19
 msgid "Title"
 msgstr "标题"
@@ -994,8 +1020,8 @@ msgstr "类型"
 msgid "URL Args"
 msgstr "URL 参数"
 
-#: frontend/src/components/GenericPage.vue:355
-#: frontend/src/components/Navbar.vue:267
+#: frontend/src/components/GenericPage.vue:368
+#: frontend/src/components/Navbar.vue:260
 msgid "Unfavourite"
 msgstr "取消收藏"
 
