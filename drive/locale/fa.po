@@ -2,8 +2,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: frappe\n"
 "Report-Msgid-Bugs-To: developers@frappe.io\n"
-"POT-Creation-Date: 2025-10-24 16:11+0000\n"
-"PO-Revision-Date: 2025-12-02 16:41\n"
+"POT-Creation-Date: 2025-12-05 16:12+0000\n"
+"PO-Revision-Date: 2025-12-08 17:15\n"
 "Last-Translator: developers@frappe.io\n"
 "Language-Team: Persian\n"
 "MIME-Version: 1.0\n"
@@ -64,7 +64,7 @@ msgstr "درخواست حساب"
 msgid "Action Type"
 msgstr "نوع اقدام"
 
-#: frontend/src/components/Settings/UserListSettings.vue:449
+#: frontend/src/components/Settings/UserListSettings.vue:456
 #: frontend/src/components/TagInput.vue:25
 msgid "Add"
 msgstr "افزودن"
@@ -99,14 +99,24 @@ msgstr "همه"
 msgid "Allow Download"
 msgstr "اجازه دانلود"
 
-#: frontend/src/components/Sidebar.vue:101
+#: frontend/src/components/Sidebar.vue:125
 msgid "Apps"
 msgstr "برنامه‌ها"
+
+#. Label of the as_guest (Check) field in DocType 'Drive User Invitation'
+#: drive/drive/doctype/drive_user_invitation/drive_user_invitation.json
+msgid "As Guest"
+msgstr ""
 
 #. Label of the auto_detect_links (Check) field in DocType 'Drive Settings'
 #: drive/drive/doctype/drive_settings/drive_settings.json
 msgid "Auto Detect Links"
 msgstr "تشخیص خودکار لینک‌ها"
+
+#. Option for the 'Status' (Select) field in DocType 'Drive User Invitation'
+#: drive/drive/doctype/drive_user_invitation/drive_user_invitation.json
+msgid "Automatic"
+msgstr "خودکار"
 
 #: frontend/src/components/DriveToolBar.vue:19
 msgid "By"
@@ -122,7 +132,7 @@ msgstr ""
 msgid "Characters"
 msgstr "نویسه‌ها"
 
-#: frontend/src/components/Navbar.vue:308
+#: frontend/src/components/Navbar.vue:301
 msgid "Clear"
 msgstr "پاک کردن"
 
@@ -161,8 +171,8 @@ msgstr "تأیید"
 msgid "Content"
 msgstr "محتوا"
 
-#: frontend/src/components/GenericPage.vue:314
-#: frontend/src/components/Navbar.vue:227
+#: frontend/src/components/GenericPage.vue:327
+#: frontend/src/components/Navbar.vue:220
 msgid "Copy Link"
 msgstr "لینک را کپی کنید"
 
@@ -177,8 +187,8 @@ msgstr "هسته"
 msgid "Defaults to \"s3v4\". Some providers only support \"s3\"."
 msgstr "پیش‌فرض روی «s3v4» است. برخی از ارائه‌دهندگان فقط از «s3» پشتیبانی می‌کنند."
 
-#: frontend/src/components/GenericPage.vue:381
-#: frontend/src/components/Navbar.vue:285
+#: frontend/src/components/GenericPage.vue:394
+#: frontend/src/components/Navbar.vue:278
 msgid "Delete"
 msgstr "حذف"
 
@@ -219,12 +229,12 @@ msgstr "فیلد سند"
 msgid "Document Type"
 msgstr "نوع سند"
 
-#: frontend/src/components/Sidebar.vue:125
+#: frontend/src/components/Sidebar.vue:149
 msgid "Documentation"
 msgstr "مستندات"
 
-#: frontend/src/components/GenericPage.vue:305
-#: frontend/src/components/Navbar.vue:220
+#: frontend/src/components/GenericPage.vue:318
+#: frontend/src/components/Navbar.vue:213
 msgid "Download"
 msgstr "دانلود"
 
@@ -331,11 +341,16 @@ msgid "Drive Team Member"
 msgstr "عضو تیم درایو"
 
 #. Name of a DocType
+#: drive/drive/doctype/drive_transfer/drive_transfer.json
+msgid "Drive Transfer"
+msgstr ""
+
+#. Name of a DocType
 #: drive/drive/doctype/drive_user_invitation/drive_user_invitation.json
 msgid "Drive User Invitation"
 msgstr "دعوت کاربر درایو"
 
-#: frontend/src/components/Settings/UserListSettings.vue:526
+#: frontend/src/components/Settings/UserListSettings.vue:533
 msgid "Edit"
 msgstr "ویرایش"
 
@@ -354,7 +369,7 @@ msgstr "ویرایش نمایه"
 msgid "Email"
 msgstr "ایمیل"
 
-#: frontend/src/components/Navbar.vue:314
+#: frontend/src/components/Navbar.vue:307
 msgid "Empty"
 msgstr "خالی"
 
@@ -400,8 +415,8 @@ msgstr ""
 msgid "Expired"
 msgstr "منقضی شده"
 
-#: frontend/src/components/GenericPage.vue:342
-#: frontend/src/components/Navbar.vue:256
+#: frontend/src/components/GenericPage.vue:355
+#: frontend/src/components/Navbar.vue:249
 msgid "Favourite"
 msgstr "مورد علاقه"
 
@@ -409,6 +424,11 @@ msgstr "مورد علاقه"
 #: drive/drive/doctype/drive_file/drive_file.json
 msgid "File Size"
 msgstr "حجم فایل"
+
+#. Label of the file_size (Int) field in DocType 'Drive Transfer'
+#: drive/drive/doctype/drive_transfer/drive_transfer.json
+msgid "File size"
+msgstr ""
 
 #: frontend/src/components/DriveToolBar.vue:40
 msgid "Find"
@@ -443,10 +463,11 @@ msgstr "برو به Drive"
 #. Name of a role
 #: drive/drive/doctype/drive_document/drive_document.json
 #: drive/drive/doctype/drive_file/drive_file.json
+#: drive/drive/doctype/drive_team/drive_team.json
 msgid "Guest"
 msgstr "مهمان"
 
-#: frontend/src/utils/files.js:215
+#: frontend/src/utils/files.js:209
 msgid "Home"
 msgstr "صفحه اصلی"
 
@@ -466,7 +487,7 @@ msgstr "آیکون"
 msgid "In MB"
 msgstr "به مگابایت"
 
-#: frontend/src/components/Sidebar.vue:188
+#: frontend/src/components/Sidebar.vue:212
 msgid "Inbox"
 msgstr "صندوق ورودی"
 
@@ -539,7 +560,7 @@ msgstr "بارگذاری بیشتر"
 msgid "Loading..."
 msgstr "بارگذاری..."
 
-#: frontend/src/components/Sidebar.vue:151
+#: frontend/src/components/Sidebar.vue:175
 msgid "Log out"
 msgstr "خروج"
 
@@ -554,7 +575,7 @@ msgid "MIME Type"
 msgstr "MIME Type"
 
 #: frontend/src/components/InfoPopup.vue:106
-#: frontend/src/components/Sidebar.vue:96
+#: frontend/src/components/Sidebar.vue:120
 msgid "Manage"
 msgstr "مدیریت"
 
@@ -597,8 +618,8 @@ msgstr ""
 msgid "Modified"
 msgstr "تغییر یافته"
 
-#: frontend/src/components/GenericPage.vue:321
-#: frontend/src/components/Navbar.vue:238
+#: frontend/src/components/GenericPage.vue:334
+#: frontend/src/components/Navbar.vue:231
 msgid "Move"
 msgstr "حرکت"
 
@@ -616,7 +637,7 @@ msgstr "جدید"
 msgid "New Tag"
 msgstr ""
 
-#: frontend/src/components/Settings/UserListSettings.vue:365
+#: frontend/src/components/Settings/UserListSettings.vue:372
 msgid "New Team"
 msgstr "تیم جدید"
 
@@ -663,7 +684,7 @@ msgstr ""
 msgid "Only applies if S3 is turned on."
 msgstr "فقط در صورتی اعمال می‌شود که S3 روشن باشد."
 
-#: frontend/src/components/GenericPage.vue:291
+#: frontend/src/components/GenericPage.vue:304
 msgid "Open"
 msgstr "باز"
 
@@ -672,7 +693,7 @@ msgstr "باز"
 msgid "Open in Drive"
 msgstr ""
 
-#: frontend/src/components/Sidebar.vue:141
+#: frontend/src/components/Sidebar.vue:165
 msgid "Others"
 msgstr "سایر"
 
@@ -688,7 +709,9 @@ msgid "Parent Entity"
 msgstr ""
 
 #. Label of the path (Text) field in DocType 'Drive File'
+#. Label of the path (Data) field in DocType 'Drive Transfer'
 #: drive/drive/doctype/drive_file/drive_file.json
+#: drive/drive/doctype/drive_transfer/drive_transfer.json
 msgid "Path"
 msgstr "مسیر"
 
@@ -715,7 +738,7 @@ msgstr ""
 msgid "Prefix"
 msgstr "پیشوند"
 
-#: frontend/src/components/GenericPage.vue:285
+#: frontend/src/components/GenericPage.vue:298
 msgid "Preview"
 msgstr "پیش‌نمایش"
 
@@ -775,12 +798,12 @@ msgstr ""
 msgid "Referrer ID"
 msgstr ""
 
-#: frontend/src/components/GenericPage.vue:368
+#: frontend/src/components/GenericPage.vue:381
 msgid "Remove from Recents"
 msgstr ""
 
-#: frontend/src/components/GenericPage.vue:329
-#: frontend/src/components/Navbar.vue:244
+#: frontend/src/components/GenericPage.vue:342
+#: frontend/src/components/Navbar.vue:237
 msgid "Rename"
 msgstr "تغییر نام"
 
@@ -808,7 +831,7 @@ msgid "S3 Bucket"
 msgstr "باکت S3"
 
 #: frontend/src/components/EmojiPicker.vue:22
-#: frontend/src/components/Sidebar.vue:183
+#: frontend/src/components/Sidebar.vue:207
 msgid "Search"
 msgstr "جستجو"
 
@@ -819,7 +842,7 @@ msgstr "تنظیم رنگ"
 #. Label of the settings (JSON) field in DocType 'Drive Document'
 #: drive/drive/doctype/drive_document/drive_document.json
 #: frontend/src/components/Settings/SettingsDialog.vue:16
-#: frontend/src/components/Sidebar.vue:146
+#: frontend/src/components/Sidebar.vue:170
 msgid "Settings"
 msgstr "تنظیمات"
 
@@ -827,17 +850,17 @@ msgstr "تنظیمات"
 #. Label of the share (Check) field in DocType 'Drive Permission'
 #: drive/drive/doctype/drive_notification/drive_notification.json
 #: drive/drive/doctype/drive_permission/drive_permission.json
-#: frontend/src/components/GenericPage.vue:298
-#: frontend/src/components/Navbar.vue:212
+#: frontend/src/components/GenericPage.vue:311
+#: frontend/src/components/Navbar.vue:205
 msgid "Share"
 msgstr "اشتراک گذاری"
 
-#: frontend/src/components/InfoPopup.vue:132 frontend/src/utils/files.js:206
+#: frontend/src/components/InfoPopup.vue:132 frontend/src/utils/files.js:199
 msgid "Shared"
 msgstr "به اشتراک گذاشته شده است"
 
-#: frontend/src/components/GenericPage.vue:335
-#: frontend/src/components/Navbar.vue:250
+#: frontend/src/components/GenericPage.vue:348
+#: frontend/src/components/Navbar.vue:243
 msgid "Show Info"
 msgstr "نمایش اطلاعات"
 
@@ -895,7 +918,7 @@ msgstr "وضعیت"
 msgid "Storage"
 msgstr "ذخیره‌سازی"
 
-#: frontend/src/components/Sidebar.vue:130
+#: frontend/src/components/Sidebar.vue:154
 msgid "Support"
 msgstr "پشتیبانی"
 
@@ -910,6 +933,7 @@ msgstr "پشتیبانی"
 #: drive/drive/doctype/drive_permission/drive_permission.json
 #: drive/drive/doctype/drive_settings/drive_settings.json
 #: drive/drive/doctype/drive_team/drive_team.json
+#: drive/drive/doctype/drive_transfer/drive_transfer.json
 #: drive/drive/doctype/drive_user_invitation/drive_user_invitation.json
 msgid "System Manager"
 msgstr "مدیر سیستم"
@@ -966,11 +990,13 @@ msgstr ""
 #. Label of the title (Data) field in DocType 'Drive File'
 #. Label of the title (Data) field in DocType 'Drive Tag'
 #. Label of the title (Small Text) field in DocType 'Drive Team'
+#. Label of the title (Data) field in DocType 'Drive Transfer'
 #: drive/drive/doctype/drive_doc_version/drive_doc_version.json
 #: drive/drive/doctype/drive_document_version/drive_document_version.json
 #: drive/drive/doctype/drive_file/drive_file.json
 #: drive/drive/doctype/drive_tag/drive_tag.json
 #: drive/drive/doctype/drive_team/drive_team.json
+#: drive/drive/doctype/drive_transfer/drive_transfer.json
 #: frontend/src/components/Settings/NewTagDialog.vue:19
 msgid "Title"
 msgstr "عنوان"
@@ -994,8 +1020,8 @@ msgstr "نوع"
 msgid "URL Args"
 msgstr ""
 
-#: frontend/src/components/GenericPage.vue:355
-#: frontend/src/components/Navbar.vue:267
+#: frontend/src/components/GenericPage.vue:368
+#: frontend/src/components/Navbar.vue:260
 msgid "Unfavourite"
 msgstr ""
 
