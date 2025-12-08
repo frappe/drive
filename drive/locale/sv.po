@@ -2,8 +2,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: frappe\n"
 "Report-Msgid-Bugs-To: developers@frappe.io\n"
-"POT-Creation-Date: 2025-10-24 16:11+0000\n"
-"PO-Revision-Date: 2025-11-28 15:34\n"
+"POT-Creation-Date: 2025-12-05 16:12+0000\n"
+"PO-Revision-Date: 2025-12-08 17:15\n"
 "Last-Translator: developers@frappe.io\n"
 "Language-Team: Swedish\n"
 "MIME-Version: 1.0\n"
@@ -64,7 +64,7 @@ msgstr "Konto Begäran"
 msgid "Action Type"
 msgstr "Åtgärd Typ"
 
-#: frontend/src/components/Settings/UserListSettings.vue:449
+#: frontend/src/components/Settings/UserListSettings.vue:456
 #: frontend/src/components/TagInput.vue:25
 msgid "Add"
 msgstr "Lägg till"
@@ -99,14 +99,24 @@ msgstr "Alla"
 msgid "Allow Download"
 msgstr "Tillåt Nedladdning"
 
-#: frontend/src/components/Sidebar.vue:101
+#: frontend/src/components/Sidebar.vue:125
 msgid "Apps"
 msgstr "Appar"
+
+#. Label of the as_guest (Check) field in DocType 'Drive User Invitation'
+#: drive/drive/doctype/drive_user_invitation/drive_user_invitation.json
+msgid "As Guest"
+msgstr ""
 
 #. Label of the auto_detect_links (Check) field in DocType 'Drive Settings'
 #: drive/drive/doctype/drive_settings/drive_settings.json
 msgid "Auto Detect Links"
 msgstr "Automatisk länk identifiering"
+
+#. Option for the 'Status' (Select) field in DocType 'Drive User Invitation'
+#: drive/drive/doctype/drive_user_invitation/drive_user_invitation.json
+msgid "Automatic"
+msgstr "Automatisk"
 
 #: frontend/src/components/DriveToolBar.vue:19
 msgid "By"
@@ -122,7 +132,7 @@ msgstr "Kan innehålla vilket metavärde som helst som behövs för åtkomst log
 msgid "Characters"
 msgstr "Tecken"
 
-#: frontend/src/components/Navbar.vue:308
+#: frontend/src/components/Navbar.vue:301
 msgid "Clear"
 msgstr "Rensa"
 
@@ -161,8 +171,8 @@ msgstr "Bekräfta"
 msgid "Content"
 msgstr "Innehåll "
 
-#: frontend/src/components/GenericPage.vue:314
-#: frontend/src/components/Navbar.vue:227
+#: frontend/src/components/GenericPage.vue:327
+#: frontend/src/components/Navbar.vue:220
 msgid "Copy Link"
 msgstr "Kopiera Länk"
 
@@ -177,8 +187,8 @@ msgstr "System"
 msgid "Defaults to \"s3v4\". Some providers only support \"s3\"."
 msgstr "Standardvärdet är \"s3v4\". Vissa leverantörer stöder endast \"s3\"."
 
-#: frontend/src/components/GenericPage.vue:381
-#: frontend/src/components/Navbar.vue:285
+#: frontend/src/components/GenericPage.vue:394
+#: frontend/src/components/Navbar.vue:278
 msgid "Delete"
 msgstr "Ta bort"
 
@@ -219,12 +229,12 @@ msgstr "Dokument Fält"
 msgid "Document Type"
 msgstr "DocType"
 
-#: frontend/src/components/Sidebar.vue:125
+#: frontend/src/components/Sidebar.vue:149
 msgid "Documentation"
 msgstr "Dokumentation"
 
-#: frontend/src/components/GenericPage.vue:305
-#: frontend/src/components/Navbar.vue:220
+#: frontend/src/components/GenericPage.vue:318
+#: frontend/src/components/Navbar.vue:213
 msgid "Download"
 msgstr "Ladda ner"
 
@@ -331,11 +341,16 @@ msgid "Drive Team Member"
 msgstr "Team Medlem"
 
 #. Name of a DocType
+#: drive/drive/doctype/drive_transfer/drive_transfer.json
+msgid "Drive Transfer"
+msgstr ""
+
+#. Name of a DocType
 #: drive/drive/doctype/drive_user_invitation/drive_user_invitation.json
 msgid "Drive User Invitation"
 msgstr "Användarinbjudan"
 
-#: frontend/src/components/Settings/UserListSettings.vue:526
+#: frontend/src/components/Settings/UserListSettings.vue:533
 msgid "Edit"
 msgstr "Redigera"
 
@@ -354,7 +369,7 @@ msgstr "Redigera profil"
 msgid "Email"
 msgstr "E-post"
 
-#: frontend/src/components/Navbar.vue:314
+#: frontend/src/components/Navbar.vue:307
 msgid "Empty"
 msgstr "Tom"
 
@@ -400,8 +415,8 @@ msgstr "Exempel format: https://s3.ap-south-1.amazonaws.com"
 msgid "Expired"
 msgstr "Utgått"
 
-#: frontend/src/components/GenericPage.vue:342
-#: frontend/src/components/Navbar.vue:256
+#: frontend/src/components/GenericPage.vue:355
+#: frontend/src/components/Navbar.vue:249
 msgid "Favourite"
 msgstr "Favorit"
 
@@ -409,6 +424,11 @@ msgstr "Favorit"
 #: drive/drive/doctype/drive_file/drive_file.json
 msgid "File Size"
 msgstr "Filstorlek"
+
+#. Label of the file_size (Int) field in DocType 'Drive Transfer'
+#: drive/drive/doctype/drive_transfer/drive_transfer.json
+msgid "File size"
+msgstr ""
 
 #: frontend/src/components/DriveToolBar.vue:40
 msgid "Find"
@@ -443,10 +463,11 @@ msgstr "Gå till Drive"
 #. Name of a role
 #: drive/drive/doctype/drive_document/drive_document.json
 #: drive/drive/doctype/drive_file/drive_file.json
+#: drive/drive/doctype/drive_team/drive_team.json
 msgid "Guest"
 msgstr "Gäst"
 
-#: frontend/src/utils/files.js:215
+#: frontend/src/utils/files.js:209
 msgid "Home"
 msgstr "Hem"
 
@@ -466,7 +487,7 @@ msgstr "Ikon"
 msgid "In MB"
 msgstr "I MB"
 
-#: frontend/src/components/Sidebar.vue:188
+#: frontend/src/components/Sidebar.vue:212
 msgid "Inbox"
 msgstr "Inkorg"
 
@@ -542,7 +563,7 @@ msgstr "Läs in mer"
 msgid "Loading..."
 msgstr "Laddar..."
 
-#: frontend/src/components/Sidebar.vue:151
+#: frontend/src/components/Sidebar.vue:175
 msgid "Log out"
 msgstr "Logga Ut"
 
@@ -557,7 +578,7 @@ msgid "MIME Type"
 msgstr "MIME Typ"
 
 #: frontend/src/components/InfoPopup.vue:106
-#: frontend/src/components/Sidebar.vue:96
+#: frontend/src/components/Sidebar.vue:120
 msgid "Manage"
 msgstr "Hantera"
 
@@ -600,8 +621,8 @@ msgstr "Meta Värde"
 msgid "Modified"
 msgstr "Ändrad"
 
-#: frontend/src/components/GenericPage.vue:321
-#: frontend/src/components/Navbar.vue:238
+#: frontend/src/components/GenericPage.vue:334
+#: frontend/src/components/Navbar.vue:231
 msgid "Move"
 msgstr "Flytta"
 
@@ -619,7 +640,7 @@ msgstr "Ny"
 msgid "New Tag"
 msgstr "Ny Tagg"
 
-#: frontend/src/components/Settings/UserListSettings.vue:365
+#: frontend/src/components/Settings/UserListSettings.vue:372
 msgid "New Team"
 msgstr "Ny Team"
 
@@ -666,7 +687,7 @@ msgstr "Gammalt Värde"
 msgid "Only applies if S3 is turned on."
 msgstr "Gäller endast om S3 är aktiverad."
 
-#: frontend/src/components/GenericPage.vue:291
+#: frontend/src/components/GenericPage.vue:304
 msgid "Open"
 msgstr "Öppen"
 
@@ -675,7 +696,7 @@ msgstr "Öppen"
 msgid "Open in Drive"
 msgstr "Öppna i Drive"
 
-#: frontend/src/components/Sidebar.vue:141
+#: frontend/src/components/Sidebar.vue:165
 msgid "Others"
 msgstr "Övriga"
 
@@ -691,7 +712,9 @@ msgid "Parent Entity"
 msgstr "Överordnad Enhet"
 
 #. Label of the path (Text) field in DocType 'Drive File'
+#. Label of the path (Data) field in DocType 'Drive Transfer'
 #: drive/drive/doctype/drive_file/drive_file.json
+#: drive/drive/doctype/drive_transfer/drive_transfer.json
 msgid "Path"
 msgstr "Sökväg"
 
@@ -718,7 +741,7 @@ msgstr "Inställningar"
 msgid "Prefix"
 msgstr "Prefix"
 
-#: frontend/src/components/GenericPage.vue:285
+#: frontend/src/components/GenericPage.vue:298
 msgid "Preview"
 msgstr "Förhandsgranska"
 
@@ -778,12 +801,12 @@ msgstr "Referens Data"
 msgid "Referrer ID"
 msgstr "Referens"
 
-#: frontend/src/components/GenericPage.vue:368
+#: frontend/src/components/GenericPage.vue:381
 msgid "Remove from Recents"
 msgstr "Ta bort från Senaste"
 
-#: frontend/src/components/GenericPage.vue:329
-#: frontend/src/components/Navbar.vue:244
+#: frontend/src/components/GenericPage.vue:342
+#: frontend/src/components/Navbar.vue:237
 msgid "Rename"
 msgstr "Ändra Namn"
 
@@ -811,7 +834,7 @@ msgid "S3 Bucket"
 msgstr "S3 Skopa"
 
 #: frontend/src/components/EmojiPicker.vue:22
-#: frontend/src/components/Sidebar.vue:183
+#: frontend/src/components/Sidebar.vue:207
 msgid "Search"
 msgstr "Sök"
 
@@ -822,7 +845,7 @@ msgstr "Ange Färg"
 #. Label of the settings (JSON) field in DocType 'Drive Document'
 #: drive/drive/doctype/drive_document/drive_document.json
 #: frontend/src/components/Settings/SettingsDialog.vue:16
-#: frontend/src/components/Sidebar.vue:146
+#: frontend/src/components/Sidebar.vue:170
 msgid "Settings"
 msgstr "Inställningar"
 
@@ -830,17 +853,17 @@ msgstr "Inställningar"
 #. Label of the share (Check) field in DocType 'Drive Permission'
 #: drive/drive/doctype/drive_notification/drive_notification.json
 #: drive/drive/doctype/drive_permission/drive_permission.json
-#: frontend/src/components/GenericPage.vue:298
-#: frontend/src/components/Navbar.vue:212
+#: frontend/src/components/GenericPage.vue:311
+#: frontend/src/components/Navbar.vue:205
 msgid "Share"
 msgstr "Dela "
 
-#: frontend/src/components/InfoPopup.vue:132 frontend/src/utils/files.js:206
+#: frontend/src/components/InfoPopup.vue:132 frontend/src/utils/files.js:199
 msgid "Shared"
 msgstr "Delad"
 
-#: frontend/src/components/GenericPage.vue:335
-#: frontend/src/components/Navbar.vue:250
+#: frontend/src/components/GenericPage.vue:348
+#: frontend/src/components/Navbar.vue:243
 msgid "Show Info"
 msgstr "Visa Info"
 
@@ -898,7 +921,7 @@ msgstr "Status"
 msgid "Storage"
 msgstr "Lagring"
 
-#: frontend/src/components/Sidebar.vue:130
+#: frontend/src/components/Sidebar.vue:154
 msgid "Support"
 msgstr "Support"
 
@@ -913,6 +936,7 @@ msgstr "Support"
 #: drive/drive/doctype/drive_permission/drive_permission.json
 #: drive/drive/doctype/drive_settings/drive_settings.json
 #: drive/drive/doctype/drive_team/drive_team.json
+#: drive/drive/doctype/drive_transfer/drive_transfer.json
 #: drive/drive/doctype/drive_user_invitation/drive_user_invitation.json
 msgid "System Manager"
 msgstr "System Ansvarig"
@@ -969,11 +993,13 @@ msgstr "Miniatyrbild Prefix"
 #. Label of the title (Data) field in DocType 'Drive File'
 #. Label of the title (Data) field in DocType 'Drive Tag'
 #. Label of the title (Small Text) field in DocType 'Drive Team'
+#. Label of the title (Data) field in DocType 'Drive Transfer'
 #: drive/drive/doctype/drive_doc_version/drive_doc_version.json
 #: drive/drive/doctype/drive_document_version/drive_document_version.json
 #: drive/drive/doctype/drive_file/drive_file.json
 #: drive/drive/doctype/drive_tag/drive_tag.json
 #: drive/drive/doctype/drive_team/drive_team.json
+#: drive/drive/doctype/drive_transfer/drive_transfer.json
 #: frontend/src/components/Settings/NewTagDialog.vue:19
 msgid "Title"
 msgstr "Benämning"
@@ -997,8 +1023,8 @@ msgstr "Typ "
 msgid "URL Args"
 msgstr "URL Argument"
 
-#: frontend/src/components/GenericPage.vue:355
-#: frontend/src/components/Navbar.vue:267
+#: frontend/src/components/GenericPage.vue:368
+#: frontend/src/components/Navbar.vue:260
 msgid "Unfavourite"
 msgstr "Ta bort Favorit"
 
