@@ -1,12 +1,12 @@
 <div style="text-align: center; font-family: Arial, sans-serif; padding: 20px">
   <h2 style="margin-bottom: 10px">
-    You've been invited to join <br />{{ team_name ? team_name + ' on ' : '' }}Frappe Drive!
+    You've been invited to join <br />{% if team_name %}{{ team_name }} on {% endif %}Frappe Drive!
   </h2>
 
   <p
     style="font-size: 14px; color: #444; max-width: 400px; margin: 0 auto 20px"
   >
-    {{ user }} has invited to you to join <strong>{{ team_name ? team_name + ' on ' : '' }}</strong>Frappe Drive. Click below to get started.
+    {{ user }} has invited you to join {% if team_name %}<strong>{{ team_name }}</strong> on {% endif %}Frappe Drive. Click below to get started.
   </p>
 
   <p>
