@@ -439,13 +439,15 @@ if (settings.data?.auto_detect_links) {
 
 const socket = inject("socket")
 socket.on("list-add", ({ file }) => {
-  if (
-    file.parent_entity === props.getEntities.params.entity_name &&
-    !props.getEntities.data.find((k) => k.name === file.name)
-  ) {
-    props.getEntities.data.push(...prettyData([file]))
-    props.getEntities.setData(props.getEntities.data)
-  }
+  refreshData()
+
+  // if (
+  //   file.parent_entity === props.getEntities.params.entity_name &&
+  //   !props.getEntities.data.find((k) => k.name === file.name)
+  // ) {
+  //   props.getEntities.data.push(...prettyData([file]))
+  //   props.getEntities.setData(props.getEntities.data)
+  // }
 })
 socket.on("list-update", ({ file }) => {
   if (file.parent_entity !== props.getEntities.params.entity_name) return
