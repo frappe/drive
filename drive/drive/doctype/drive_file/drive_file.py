@@ -118,6 +118,7 @@ class DriveFile(Document):
         if not (
             frappe.db.get_value("Drive File", new_parent, "is_group")
             or frappe.db.get_value("Drive File", new_parent, "document")
+            or frappe.db.get_value("Drive File", new_parent, "doc")
         ):
             frappe.throw(
                 "Can only move into folders",
