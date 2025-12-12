@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: frappe\n"
 "Report-Msgid-Bugs-To: developers@frappe.io\n"
 "POT-Creation-Date: 2025-12-05 16:12+0000\n"
-"PO-Revision-Date: 2025-12-08 17:16\n"
+"PO-Revision-Date: 2025-12-12 17:53\n"
 "Last-Translator: developers@frappe.io\n"
 "Language-Team: Slovenian\n"
 "MIME-Version: 1.0\n"
@@ -106,7 +106,7 @@ msgstr "Aplikacije"
 #. Label of the as_guest (Check) field in DocType 'Drive User Invitation'
 #: drive/drive/doctype/drive_user_invitation/drive_user_invitation.json
 msgid "As Guest"
-msgstr ""
+msgstr "Kot Gost"
 
 #. Label of the auto_detect_links (Check) field in DocType 'Drive Settings'
 #: drive/drive/doctype/drive_settings/drive_settings.json
@@ -343,7 +343,7 @@ msgstr "Član Ekipe"
 #. Name of a DocType
 #: drive/drive/doctype/drive_transfer/drive_transfer.json
 msgid "Drive Transfer"
-msgstr ""
+msgstr "Prenos"
 
 #. Name of a DocType
 #: drive/drive/doctype/drive_user_invitation/drive_user_invitation.json
@@ -428,7 +428,7 @@ msgstr "Velikost Datoteke"
 #. Label of the file_size (Int) field in DocType 'Drive Transfer'
 #: drive/drive/doctype/drive_transfer/drive_transfer.json
 msgid "File size"
-msgstr ""
+msgstr "Velikost datoteke"
 
 #: frontend/src/components/DriveToolBar.vue:40
 msgid "Find"
