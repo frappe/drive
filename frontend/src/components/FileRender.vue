@@ -1,10 +1,10 @@
 <template>
   <div
     v-if="error"
-    class="max-w-[450px] h-fit self-center p-10 bg-surface-white rounded-md text-neutral-100 text-xl text-center font-medium shadow-xl flex flex-col justify-center items-center gap-4"
+    class="max-w-[450px] h-fit self-center p-10 dark:border dark:border-ink-white bg-surface-white rounded-md text-neutral-100 text-xl text-center font-medium shadow-xl flex flex-col justify-center items-center gap-4"
   >
-    <LucideAlertCircle class="size-10" />
-    <span>Cannot open file</span>
+    <LucideAlertCircle class="size-8 text-ink-gray-8" />
+    <span class="text-ink-gray-9">Cannot open file</span>
     <span class="text-base text-center text-ink-gray-7">
       {{ error }}
     </span>

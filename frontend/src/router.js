@@ -165,7 +165,6 @@ const routes = [
     meta: { documentPage: true, allowGuest: true },
     component: () => import("@/pages/Document.vue"),
     props: true,
-    // beforeEnter: [manageBreadcrumbs],
     beforeEnter: (props) => {
       window.location.href = "/writer/w/" + props.params.entityName
     },

@@ -839,9 +839,13 @@ def remove_recents(entity_names=[], clear_all=False):
 
 
 @frappe.whitelist()
-def does_entity_exist(name=None, parent_entity=None):
+@default_team
+def does_entity_exist(name=None, parent_entity=None, team=None):
+    if not parent_entity:
+        home_folder = get_home_folder(team)
+        parent_entity = home_folder.name
     result = frappe.db.exists("Drive File", {"parent_entity": parent_entity, "title": name})
-    return bool(result)
+    return result
 
 
 def auto_delete_from_trash():
@@ -977,10 +981,10 @@ def get_entity_type(entity_name):
     entity = frappe.db.get_value(
         "Drive File",
         {"is_active": 1, "name": entity_name},
-        ["team", "name", "mime_type", "is_group", "document"],
+        ["team", "name", "mime_type", "is_group", "doc"],
         as_dict=1,
     )
-    if entity.document or entity.mime_type == "text/markdown":
+    if entity.doc or entity.mime_type == "text/markdown":
         entity["type"] = "document"
     elif entity.is_group:
         entity["type"] = "folder"
