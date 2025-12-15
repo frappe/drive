@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: frappe\n"
 "Report-Msgid-Bugs-To: developers@frappe.io\n"
 "POT-Creation-Date: 2025-12-05 16:12+0000\n"
-"PO-Revision-Date: 2025-12-13 17:49\n"
+"PO-Revision-Date: 2025-12-15 18:18\n"
 "Last-Translator: developers@frappe.io\n"
 "Language-Team: Hungarian\n"
 "MIME-Version: 1.0\n"
@@ -67,7 +67,7 @@ msgstr "Művelet Típusa"
 #: frontend/src/components/Settings/UserListSettings.vue:456
 #: frontend/src/components/TagInput.vue:25
 msgid "Add"
-msgstr ""
+msgstr "Hozzáadás"
 
 #: frontend/src/components/Settings/ProfileSettings.vue:76
 msgid "Add Image"
@@ -75,7 +75,7 @@ msgstr "Kép Hozzáadása"
 
 #: frontend/src/components/InfoPopup.vue:47
 msgid "Added"
-msgstr ""
+msgstr "Hozzáadva"
 
 #. Name of a role
 #: drive/drive/doctype/drive_desktop_client/drive_desktop_client.json
@@ -92,7 +92,7 @@ msgstr ""
 #: drive/drive/doctype/drive_team/drive_team.json
 #: drive/drive/doctype/drive_user_invitation/drive_user_invitation.json
 msgid "All"
-msgstr ""
+msgstr "Összes"
 
 #. Label of the allow_download (Check) field in DocType 'Drive File'
 #: drive/drive/doctype/drive_file/drive_file.json
@@ -157,7 +157,7 @@ msgstr "Megjegyzés"
 #: drive/drive/doctype/drive_document/drive_document.json
 #: drive/drive/doctype/drive_file/drive_file.json
 msgid "Comments"
-msgstr ""
+msgstr "Hozzászólások"
 
 #: frontend/src/components/Settings/NewTagDialog.vue:30
 #: frontend/src/components/Settings/ProfileSettings.vue:30
@@ -190,7 +190,7 @@ msgstr ""
 #: frontend/src/components/GenericPage.vue:394
 #: frontend/src/components/Navbar.vue:278
 msgid "Delete"
-msgstr ""
+msgstr "Törlés"
 
 #: frontend/src/components/InfoPopup.vue:157
 msgid "Developer"
@@ -227,7 +227,7 @@ msgstr ""
 #. Label of the notif_doctype (Link) field in DocType 'Drive Notification'
 #: drive/drive/doctype/drive_notification/drive_notification.json
 msgid "Document Type"
-msgstr ""
+msgstr "Dokumentum Típus"
 
 #: frontend/src/components/Sidebar.vue:149
 msgid "Documentation"
@@ -236,7 +236,7 @@ msgstr ""
 #: frontend/src/components/GenericPage.vue:318
 #: frontend/src/components/Navbar.vue:213
 msgid "Download"
-msgstr ""
+msgstr "Letöltés"
 
 #. Name of a Workspace
 #: drive/config/desktop.py:11 drive/drive/workspace/drive/drive.json
@@ -352,7 +352,7 @@ msgstr ""
 
 #: frontend/src/components/Settings/UserListSettings.vue:533
 msgid "Edit"
-msgstr ""
+msgstr "Szerkeszt"
 
 #: frontend/src/components/Settings/ProfileSettings.vue:26
 msgid "Edit Profile"
@@ -402,7 +402,7 @@ msgstr "Jogi alany neve"
 #. Label of the entity_type (Data) field in DocType 'Drive Notification'
 #: drive/drive/doctype/drive_notification/drive_notification.json
 msgid "Entity Type"
-msgstr ""
+msgstr "Jogalany Típusa"
 
 #. Description of the 'Endpoint URL' (Data) field in DocType 'Drive Disk
 #. Settings'
@@ -413,7 +413,7 @@ msgstr ""
 #. Option for the 'Status' (Select) field in DocType 'Drive User Invitation'
 #: drive/drive/doctype/drive_user_invitation/drive_user_invitation.json
 msgid "Expired"
-msgstr ""
+msgstr "Lejárt"
 
 #: frontend/src/components/GenericPage.vue:355
 #: frontend/src/components/Navbar.vue:249
@@ -469,7 +469,7 @@ msgstr ""
 
 #: frontend/src/utils/files.js:209
 msgid "Home"
-msgstr ""
+msgstr "Kezdőlap"
 
 #. Label of the ip_address (Data) field in DocType 'Account Request'
 #: drive/drive/doctype/account_request/account_request.json
@@ -499,7 +499,7 @@ msgstr ""
 #. Label of the is_active (Int) field in DocType 'Drive File'
 #: drive/drive/doctype/drive_file/drive_file.json
 msgid "Is Active"
-msgstr ""
+msgstr "Aktív"
 
 #. Label of the is_group (Check) field in DocType 'Drive File'
 #: drive/drive/doctype/drive_file/drive_file.json
@@ -621,17 +621,17 @@ msgstr ""
 #: frontend/src/components/GenericPage.vue:334
 #: frontend/src/components/Navbar.vue:231
 msgid "Move"
-msgstr ""
+msgstr "Áthelyezés"
 
 #: frontend/src/components/DriveToolBar.vue:243
 #: frontend/src/components/ListView.vue:131
 msgid "Name"
-msgstr ""
+msgstr "Név"
 
 #: frontend/src/components/Settings/TagSettings.vue:12
 #: frontend/src/components/Settings/UserListSettings.vue:9
 msgid "New"
-msgstr ""
+msgstr "Új"
 
 #: frontend/src/components/Settings/NewTagDialog.vue:4
 msgid "New Tag"
@@ -686,7 +686,7 @@ msgstr ""
 
 #: frontend/src/components/GenericPage.vue:304
 msgid "Open"
-msgstr ""
+msgstr "Nyitott"
 
 #: drive/drive/doctype/drive_file/drive_file.js:9
 #: drive/drive/doctype/drive_team/drive_team.js:6
@@ -718,7 +718,7 @@ msgstr "Útvonal"
 #. Option for the 'Status' (Select) field in DocType 'Drive User Invitation'
 #: drive/drive/doctype/drive_user_invitation/drive_user_invitation.json
 msgid "Pending"
-msgstr ""
+msgstr "Függő"
 
 #: drive/drive/doctype/drive_file/drive_file.js:6
 msgid "Permissions"
@@ -736,11 +736,11 @@ msgstr ""
 #. Label of the prefix (Data) field in DocType 'Drive Team'
 #: drive/drive/doctype/drive_team/drive_team.json
 msgid "Prefix"
-msgstr ""
+msgstr "Előtag"
 
 #: frontend/src/components/GenericPage.vue:298
 msgid "Preview"
-msgstr ""
+msgstr "Előnézet"
 
 #. Label of the preview_size (Int) field in DocType 'Drive Disk Settings'
 #: drive/drive/doctype/drive_disk_settings/drive_disk_settings.json
@@ -805,7 +805,7 @@ msgstr ""
 #: frontend/src/components/GenericPage.vue:342
 #: frontend/src/components/Navbar.vue:237
 msgid "Rename"
-msgstr ""
+msgstr "Átnevezés"
 
 #. Label of the replies (Table) field in DocType 'Drive Comment'
 #: drive/drive/doctype/drive_comment/drive_comment.json
@@ -833,7 +833,7 @@ msgstr ""
 #: frontend/src/components/EmojiPicker.vue:22
 #: frontend/src/components/Sidebar.vue:207
 msgid "Search"
-msgstr ""
+msgstr "Keresés"
 
 #: frontend/src/components/TagColorInput.vue:36
 msgid "Set Color"
@@ -844,7 +844,7 @@ msgstr ""
 #: frontend/src/components/Settings/SettingsDialog.vue:16
 #: frontend/src/components/Sidebar.vue:170
 msgid "Settings"
-msgstr ""
+msgstr "Beállítások"
 
 #. Option for the 'Type' (Select) field in DocType 'Drive Notification'
 #. Label of the share (Check) field in DocType 'Drive Permission'
@@ -883,7 +883,7 @@ msgstr ""
 #: frontend/src/components/InfoPopup.vue:33
 #: frontend/src/components/ListView.vue:186
 msgid "Size"
-msgstr ""
+msgstr "Méret"
 
 #: frontend/src/components/DriveToolBar.vue:271
 msgid "Smart"
@@ -908,7 +908,7 @@ msgstr "Statisztika"
 #. Label of the status (Select) field in DocType 'Drive User Invitation'
 #: drive/drive/doctype/drive_user_invitation/drive_user_invitation.json
 msgid "Status"
-msgstr ""
+msgstr "Állapot"
 
 #. Label of the storage (Int) field in DocType 'Drive Team'
 #: drive/drive/doctype/drive_team/drive_team.json
@@ -941,7 +941,7 @@ msgstr "Rendszergazda"
 #. Label of the tag (Link) field in DocType 'Drive Entity Tag'
 #: drive/drive/doctype/drive_entity_tag/drive_entity_tag.json
 msgid "Tag"
-msgstr ""
+msgstr "Címke"
 
 #. Label of the tags (Table) field in DocType 'Drive File'
 #: drive/drive/doctype/drive_file/drive_file.json
@@ -999,7 +999,7 @@ msgstr ""
 #: drive/drive/doctype/drive_transfer/drive_transfer.json
 #: frontend/src/components/Settings/NewTagDialog.vue:19
 msgid "Title"
-msgstr ""
+msgstr "Cím"
 
 #. Label of the to_user (Link) field in DocType 'Drive Notification'
 #: drive/drive/doctype/drive_notification/drive_notification.json
@@ -1013,7 +1013,7 @@ msgstr "Felhasználónak"
 #: frontend/src/components/DriveToolBar.vue:259
 #: frontend/src/components/InfoPopup.vue:27
 msgid "Type"
-msgstr ""
+msgstr "Típus"
 
 #. Label of the url_args (Code) field in DocType 'Account Request'
 #: drive/drive/doctype/account_request/account_request.json
@@ -1054,7 +1054,7 @@ msgstr ""
 #: drive/drive/doctype/drive_settings/drive_settings.json
 #: drive/drive/doctype/drive_team_member/drive_team_member.json
 msgid "User"
-msgstr ""
+msgstr "Felhasználó"
 
 #. Label of the users (Table) field in DocType 'Drive Team'
 #: drive/drive/doctype/drive_team/drive_team.json
