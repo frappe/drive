@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: frappe\n"
 "Report-Msgid-Bugs-To: developers@frappe.io\n"
 "POT-Creation-Date: 2025-12-05 16:12+0000\n"
-"PO-Revision-Date: 2025-12-08 17:15\n"
+"PO-Revision-Date: 2025-12-15 18:18\n"
 "Last-Translator: developers@frappe.io\n"
 "Language-Team: Spanish\n"
 "MIME-Version: 1.0\n"
@@ -75,7 +75,7 @@ msgstr ""
 
 #: frontend/src/components/InfoPopup.vue:47
 msgid "Added"
-msgstr ""
+msgstr "Añadido"
 
 #. Name of a role
 #: drive/drive/doctype/drive_desktop_client/drive_desktop_client.json
@@ -157,7 +157,7 @@ msgstr "Comentario"
 #: drive/drive/doctype/drive_document/drive_document.json
 #: drive/drive/doctype/drive_file/drive_file.json
 msgid "Comments"
-msgstr ""
+msgstr "Comentarios"
 
 #: frontend/src/components/Settings/NewTagDialog.vue:30
 #: frontend/src/components/Settings/ProfileSettings.vue:30
@@ -190,7 +190,7 @@ msgstr ""
 #: frontend/src/components/GenericPage.vue:394
 #: frontend/src/components/Navbar.vue:278
 msgid "Delete"
-msgstr ""
+msgstr "Eliminar"
 
 #: frontend/src/components/InfoPopup.vue:157
 msgid "Developer"
@@ -227,7 +227,7 @@ msgstr ""
 #. Label of the notif_doctype (Link) field in DocType 'Drive Notification'
 #: drive/drive/doctype/drive_notification/drive_notification.json
 msgid "Document Type"
-msgstr ""
+msgstr "Tipo de Documento"
 
 #: frontend/src/components/Sidebar.vue:149
 msgid "Documentation"
@@ -236,7 +236,7 @@ msgstr "Documentación"
 #: frontend/src/components/GenericPage.vue:318
 #: frontend/src/components/Navbar.vue:213
 msgid "Download"
-msgstr ""
+msgstr "Descargar"
 
 #. Name of a Workspace
 #: drive/config/desktop.py:11 drive/drive/workspace/drive/drive.json
