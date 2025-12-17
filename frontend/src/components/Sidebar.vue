@@ -214,6 +214,7 @@ const sidebarItems = computed(() => {
           to: "/inbox",
           isActive: first.name === "Inbox",
           accessKey: "i",
+          suffix: notifCount.data,
         },
       ],
     },

@@ -81,7 +81,7 @@ import Navbar from "@/components/Navbar.vue"
 import NoFilesSection from "@/components/NoFilesSection.vue"
 import UploadTracker from "@/components/UploadTracker.vue"
 import ErrorPage from "@/components/ErrorPage.vue"
-import { getLink, pasteObj } from "@/utils/files"
+import { pasteObj } from "@/utils/files"
 import { toggleFav, clearRecent } from "@/resources/files"
 import { allUsers } from "@/resources/permissions"
 import { entitiesDownload } from "@/utils/download"
@@ -95,6 +95,7 @@ import { move } from "@/resources/files"
 import { LoadingIndicator } from "frappe-ui"
 import { settings } from "@/resources/permissions"
 import emitter from "@/emitter"
+import { getFileLink } from "frappe-ui/frappe/drive/js/utils"
 
 import LucideClock from "~icons/lucide/clock"
 import LucideDownload from "~icons/lucide/download"
@@ -331,7 +332,7 @@ const actionItems = computed(() => {
       {
         label: __("Copy Link"),
         icon: LucideLink2,
-        action: ([entity]) => getLink(entity),
+        action: ([entity]) => getFileLink(entity),
         important: true,
       },
       { divider: true, isEnabled: (e) => !e.external },

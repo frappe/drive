@@ -118,6 +118,10 @@ onKeyStroke("ArrowRight", (e) => {
 })
 
 const onSuccess = async (entity) => {
+  // temporary hack: #475
+  if (entity.doc) {
+    window.location.href = "/writer/w/" + entity.name
+  }
   document.title = entity.title
   setBreadCrumbs(entity)
   updateURLSlug(entity.title)

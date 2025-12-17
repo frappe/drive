@@ -3,7 +3,9 @@ from pypika import Order
 
 
 def get_link(entity):
-    type_ = {True: "f", bool(entity.is_group): "d", bool(entity.document): "w"}
+    if entity.doc:
+        return "/writer/w/" + entity.name
+    type_ = {True: "f", bool(entity.is_group): "d"}
     return entity.path if entity.is_link else f"/drive/{type_.get(True)}/{entity.name}/"
 
 
@@ -68,7 +70,7 @@ def mark_as_read(name=None, all=False):
     return
 
 
-def notify_mentions(entity_name, mentions):
+def notify_mentions(entity_name, mentions, comment=False):
     """
     Create a mention notification for each user mentioned
     :param entity_name: ID of entity
@@ -81,7 +83,7 @@ def notify_mentions(entity_name, mentions):
             mention,
             "Mention",
             entity,
-            f"You were mentioned in a document: {entity.title}",
+            f"You were mentioned in a {'comment in' if comment else 'document:'} {entity.title}",
         )
 
 
@@ -95,7 +97,7 @@ def notify_share(entity_name, docperm_name):
     docshare = frappe.get_doc("Drive Permission", docperm_name)
 
     author_full_name = frappe.db.get_value("User", {"name": docshare.owner}, ["full_name"])
-    entity_type = "document" if entity.document else "folder" if entity.is_group else "file"
+    entity_type = "document" if entity.doc else "folder" if entity.is_group else "file"
     link = get_link(entity)
     message = f'{author_full_name} shared a {entity_type} with you: "{entity.title}"'
     if not frappe.db.exists("User", docshare.user):
@@ -121,7 +123,7 @@ def create_notification(from_user, to_user, type, entity, message=None):
     if user_access.get("read") == 0:
         return
 
-    entity_type = "Document" if entity.document else "Folder" if entity.is_group else "File"
+    entity_type = "Document" if entity.doc else "Folder" if entity.is_group else "File"
     details = {
         "from_user": from_user,
         "to_user": to_user,

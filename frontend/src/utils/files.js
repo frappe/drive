@@ -3,6 +3,7 @@ import store from "@/store"
 import { formatSize } from "@/utils/format"
 import { nextTick } from "vue"
 import { useTimeAgo } from "@vueuse/core"
+import { getFileLink } from "frappe-ui/frappe/drive/js/utils"
 import {
   getRecents,
   mutate,
@@ -33,7 +34,7 @@ export const openEntity = (entity, new_tab = false) => {
   }
 
   if (new_tab) {
-    return window.open(getLink(entity, false), "_blank")
+    return window.open(getFileLink(entity, false), "_blank")
   }
 
   if (!entity.breadcrumbs?.length)
@@ -469,8 +470,7 @@ function getLinkStem(entity) {
     {
       true: "f",
       [new Boolean(entity.is_group)]: "d",
-      [new Boolean(entity.document || entity.mime_type === "text/markdown")]:
-        "w",
+      [new Boolean(entity.doc || entity.mime_type === "text/markdown")]: "w",
     }[true]
   }/${entity.name}/${slugger(entity.title)}`
 }

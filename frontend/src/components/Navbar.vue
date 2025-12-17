@@ -137,7 +137,8 @@ import { entitiesDownload } from "@/utils/download"
 import { getRecents, getTrash, toggleFav } from "@/resources/files"
 import { apps } from "@/resources/permissions"
 import { useRoute } from "vue-router"
-import { getLink, newExternal, dynamicList } from "@/utils/files"
+import { newExternal, dynamicList } from "@/utils/files"
+import { getFileLink } from "frappe-ui/frappe/drive/js/utils"
 
 import LucideClock from "~icons/lucide/clock"
 import LucideHome from "~icons/lucide/home"
@@ -219,7 +220,7 @@ const defaultActions = computed(() => {
         {
           label: __("Copy Link"),
           icon: LucideLink,
-          onClick: () => getLink(rootEntity.value),
+          onClick: () => getFileLink(rootEntity.value),
         },
       ],
     },
