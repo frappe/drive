@@ -22,6 +22,7 @@ ENTITY_FIELDS = [
     "mime_type",
     "color",
     "document",
+    "doc",
     "owner",
     "parent_entity",
     "team",
@@ -73,7 +74,7 @@ def get_user_access(entity, user: str = None, team: bool = False):
     if user == entity.owner:
         access = {"read": 1, "comment": 1, "share": 1, "upload": 1, "write": 1, "type": "admin"}
     elif entity.team in teams:
-        access_level = get_access_level(entity.team)
+        access_level = get_access_level(entity.team, user)
         access = {
             "read": 1,
             "comment": 1,
@@ -114,9 +115,11 @@ def is_admin(team):
     return drive_team[frappe.session.user].access_level == 2
 
 
-def get_access_level(team):
+def get_access_level(team, user=None):
+    if not user:
+        user = frappe.session.user
     drive_team = {k.user: k for k in frappe.get_doc("Drive Team", team).users}
-    return drive_team[frappe.session.user].access_level
+    return drive_team[user].access_level
 
 
 @frappe.whitelist()
@@ -199,24 +202,6 @@ def get_entity_with_permissions(entity_name):
             default = -1
     return_obj["share_count"] = default
 
-    if entity.document:
-        k = frappe.get_doc("Drive Document", entity.document)
-        entity_doc_content = k.as_dict()
-        entity_doc_content.pop("name")
-        comments = frappe.get_all(
-            "Drive Comment",
-            filters={"parenttype": "Drive File", "parent": entity.name},
-            fields=["content", "owner", "creation", "name", "resolved"],
-        )
-
-        for k in comments:
-            k["replies"] = frappe.get_all(
-                "Drive Comment",
-                filters={"parenttype": "Drive Comment", "parent": k["name"]},
-                fields=["content", "owner", "creation", "name"],
-            )
-
-        return_obj |= entity_doc_content | {"comments": comments, "modified": entity.modified}
     return return_obj
 
 
