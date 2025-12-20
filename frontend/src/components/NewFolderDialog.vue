@@ -2,11 +2,11 @@
   <Dialog
     v-model="open"
     :options="{
-      title: 'Create a Folder',
+      title: __('Create a Folder'),
       size: 'xs',
       actions: [
         {
-          label: 'Create',
+          label: __('Create'),
           variant: 'solid',
           disabled: folderName.length === 0,
           loading: createFolder.loading,
@@ -20,7 +20,7 @@
       <FormControl
         v-model="folderName"
         v-focus
-        label="Name:"
+        :label="__('Name:')"
         @keyup.enter="submit"
         @keydown="createFolder.error = null"
       >
@@ -65,7 +65,7 @@ const createFolder = createResource({
   },
   validate(params) {
     if (!params?.title) {
-      return "Folder name is required"
+      return __("Folder name is required")
     }
   },
   onSuccess(data) {

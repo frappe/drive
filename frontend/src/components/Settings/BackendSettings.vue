@@ -4,7 +4,7 @@
       {{ __("Storage") }}
     </h1>
     <Button
-      label="Sync"
+      :label="__('Sync')"
       class="ml-auto mr-4"
       @click="confirmSync"
     />
@@ -20,74 +20,74 @@
     >
       <FormControl
         v-model="generalSettings.root_folder"
-        label="Root Folder Name"
+        :label="__('Root Folder Name')"
         placeholder="/"
-        description="Where to store Drive files, defaults to the root folder."
+        :description="__('Where to store Drive files, defaults to the root folder.')"
       />
       <FormControl
         v-model="generalSettings.team_prefix"
         type="select"
-        label="Team Prefix"
+        :label="__('Team Prefix')"
         :options="[
-          { label: 'Team ID', value: 'team_id' },
-          { label: 'Team Name', value: 'team_name' },
-          { label: 'None', value: 'none' },
+          { label: __('Team ID'), value: 'team_id' },
+          { label: __('Team Name'), value: 'team_name' },
+          { label: __('None'), value: 'none' },
         ]"
-        description="The folder name for each team, defaults to the team name."
+        :description="__('The folder name for each team, defaults to the team name.')"
       />
 
       <FormControl
         v-model="generalSettings.backend_type"
         type="select"
-        label="Backend Type"
+        :label="__('Backend Type')"
         :options="[
-          { label: 'Disk', value: 'disk' },
-          { label: 'S3', value: 's3' },
+          { label: __('Disk'), value: 'disk' },
+          { label: __('S3'), value: 's3' },
         ]"
-        description="Whether to store on disk or on an S3 bucket."
+        :description="__('Whether to store on disk or on an S3 bucket.')"
       />
       <div
         v-if="generalSettings.backend_type === 's3'"
         class="flex flex-col gap-4 mt-2"
       >
         <h3 class="font-semibold text-md">
-          S3 Settings
+          {{ __("S3 Settings") }}
         </h3>
         <FormControl
           v-model="s3Settings.aws_key"
-          label="AWS Key"
+          :label="__('AWS Key')"
           required
-          placeholder="Enter AWS Key"
+          :placeholder="__('Enter AWS Key')"
         />
         <FormControl
           v-model="s3Settings.aws_secret"
-          label="AWS Secret"
+          :label="__('AWS Secret')"
           required
-          placeholder="Enter AWS Secret"
-          description="This isn't shown after you submit it."
+          :placeholder="__('Enter AWS Secret')"
+          :description="__('This is not shown after you submit it.')"
           type="password"
         />
         <FormControl
           v-model="s3Settings.bucket"
           required
-          label="S3 Bucket"
+          :label="__('S3 Bucket')"
           placeholder="bucket.example"
         />
         <FormControl
           v-model="s3Settings.endpoint_url"
-          label="Endpoint URL"
-          placeholder="Enter Endpoint URL"
-          description="Optional, only if using a custom endpoint."
+          :label="__('Endpoint URL')"
+          :placeholder="__('Enter Endpoint URL')"
+          :description="__('Optional, only if using a custom endpoint.')"
         />
         <FormControl
           v-model="s3Settings.signature_version"
-          label="Signature Version"
+          :label="__('Signature Version')"
           placeholder="s3v4"
-          description="Optional. Some providers only support 's3'."
+          :description="__('Optional. Some providers only support s3.')"
         />
       </div>
       <Button
-        label="Update"
+        :label="__('Update')"
         variant="solid"
         :disabled="!edited"
         :loading="updateSettings.isLoading"
@@ -140,7 +140,7 @@ watch(
 
 function confirmSync() {
   createDialog({
-    title: "Sync files from S3",
+    title: __("Sync files from S3"),
     component: markRaw(SyncBreakdown),
   })
 }
@@ -163,7 +163,7 @@ const updateSettings = createResource({
   onSuccess() {
     edited.value = false
     toast({
-      title: "S3 settings updated successfully",
+      title: __("S3 settings updated successfully"),
     })
   },
 })

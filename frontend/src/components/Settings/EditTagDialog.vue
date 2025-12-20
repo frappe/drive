@@ -1,7 +1,7 @@
 <template>
   <Dialog
     v-model="open"
-    :options="{ title: 'Edit Tag', size: 'sm' }"
+    :options="{ title: __('Edit Tag'), size: 'sm' }"
   >
     <template #body-content>
       <div class="flex flex-col items-stretch justify- gap-y-4">
@@ -16,7 +16,7 @@
           type="text"
           class="w-full"
           :placeholder="props.tag.title"
-          label="Title"
+          :label="__('Title')"
           @keyup.enter="submitTag"
         />
       </div>
@@ -31,7 +31,7 @@
         class="w-full"
         @click="submitTag"
       >
-        Confirm
+        {{ __("Confirm") }}
       </Button>
     </template>
   </Dialog>

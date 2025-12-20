@@ -11,7 +11,7 @@
         v-model="tab"
         class="w-full"
         as="div"
-        :tabs="[{ label: 'Automatic' }, { label: 'Manual' }]"
+        :tabs="[{ label: __('Automatic') }, { label: __('Manual') }]"
       />
       <Button
         :icon="LucideX"
@@ -29,7 +29,7 @@
         @click="
           clearSnapshot(),
           createDialog({
-            title: 'Create Version',
+            title: __('Create Version'),
             size: 'sm',
             component: h(NewVersionDialog),
             props: { editor },
@@ -43,7 +43,7 @@
         "
         class="text-ink-gray-5 text-sm text-center mt-1"
       >
-        None yet.
+        {{ __("None yet.") }}
       </div>
       <div
         v-for="[title, group] in Object.entries(groupedVersions)"
@@ -130,13 +130,13 @@ watch(tab, () => clearSnapshot(false))
 
 emitter.on("restore-snapshot", (details) => {
   createDialog({
-    title: "Are you sure?",
+    title: __("Are you sure?"),
     message: details.manual
-      ? `You are restoring to a previous version: ${details.title}.`
-      : `You are restoring the document to how it was at ${details.title}.`,
+      ? __("You are restoring to a previous version:") + ` ${details.title}.`
+      : __("You are restoring the document to how it was at") + ` ${details.title}.`,
     actions: [
       {
-        label: "Confirm",
+        label: __("Confirm"),
         variant: "solid",
         onClick: () => {
           const view = props.editor.view

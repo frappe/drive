@@ -34,14 +34,14 @@
           placement="right"
           :options="[
             {
-              label: 'Edit',
+              label: __('Edit'),
               icon: 'edit-2',
               onClick: () => {
                 showEditDialog = true
               },
             },
             {
-              label: 'Delete',
+              label: __('Delete'),
               theme: 'red',
               icon: 'trash-2',
               onClick: () => {
@@ -64,7 +64,7 @@
       class="h-full w-full flex flex-col items-center justify-center my-auto"
     >
       <LucideTag class="h-7 stroke-1 text-ink-gray-5" />
-      <span class="text-ink-gray-8 text-sm mt-2">No Tags</span>
+      <span class="text-ink-gray-8 text-sm mt-2">{{ __("No Tags") }}</span>
     </div>
   </div>
   <NewTagDialog
@@ -82,12 +82,12 @@
     v-if="showDeleteDialog"
     v-model="showDeleteDialog"
     :options="{
-      title: 'Delete Tag',
-      message: `Are you sure you want to delete the tag ${selectedTag.title}? This action cannot be undone`,
+      title: __('Delete Tag'),
+      message: __('Are you sure you want to delete this tag? This action cannot be undone'),
       size: 'sm',
       actions: [
         {
-          label: 'Confirm',
+          label: __('Confirm'),
           variant: 'subtle',
           theme: 'red',
           onClick: () => {

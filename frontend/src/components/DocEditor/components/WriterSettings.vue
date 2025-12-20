@@ -2,7 +2,7 @@
   <Dialog
     v-model="open"
     :options="{
-      title: 'Settings',
+      title: __('Settings'),
     }"
     @close="model = false"
   >
@@ -16,53 +16,49 @@
             <Form>
               <template #default="{ dirty, setDirty, error }">
                 <h3 class="text-sm font-medium text-ink-gray-7 mb-3">
-                  Configuration
+                  {{ __("Configuration") }}
                 </h3>
                 <div class="flex flex-col gap-4 pb-5 pr-5">
                   <FormControl
                     v-model="settings.versioning"
                     type="number"
                     min="1"
-                    label="Versioning Frequency"
-                    placeholder="Default"
+                    :label="__('Versioning Frequency')"
+                    :placeholder="__('Default')"
                     :options="[]"
                     :validate="
                       (k) =>
                         k >= 1
                           ? true
-                          : 'Please give a positive whole number for versioning frequency.'
+                          : __('Please give a positive whole number for versioning frequency.')
                     "
-                    :description="`How often to take automated versions for ${
-                      tabIndex === 1 ? 'this document' : 'new documents'
-                    } (minutes).`"
+                    :description="tabIndex === 1 ? __('How often to take automated versions for this document (minutes).') : __('How often to take automated versions for new documents (minutes).')"
                   />
                 </div>
                 <h3 class="text-sm font-medium text-ink-gray-7 mb-3">
-                  Styles
+                  {{ __("Styles") }}
                 </h3>
                 <div class="flex flex-col gap-4 pb-5 pr-5">
                   <FormControl
                     v-model="settings.font_family"
                     type="select"
-                    label="Font Family"
+                    :label="__('Font Family')"
                     :options="fontOptions"
-                    :description="`Choose the default font family for ${
-                      tabIndex === 1 ? 'this document' : 'new documents'
-                    }.`"
+                    :description="tabIndex === 1 ? __('Choose the default font family for this document.') : __('Choose the default font family for new documents.')"
                   />
                   <FormControl
                     v-model="settings.font_size"
                     type="select"
-                    label="Font Size"
+                    :label="__('Font Size')"
                     :options="fontSizeOptions"
-                    :description="'Set the font size  of the editor (px).'"
+                    :description="__('Set the font size of the editor (px).')"
                   />
                   <FormControl
                     v-model="settings.line_height"
                     type="select"
-                    label="Line Height"
+                    :label="__('Line Height')"
                     :options="lineHeightOptions"
-                    description="Set the line height of the editor."
+                    :description="__('Set the line height of the editor.')"
                   />
                   <!-- <FormControl
                     label="Custom Classes"
@@ -79,7 +75,7 @@
                       {{ error }}
                     </div>
                     <Button
-                      label="Update"
+                      :label="__('Update')"
                       variant="solid"
                       class="w-full mt-3"
                       :disabled="!dirty || error"
@@ -115,15 +111,15 @@ const props = defineProps({
   editable: Boolean,
 })
 const tabs = dynamicList([
-  { label: "Everywhere", icon: LucideGlobe2 },
-  { label: "This document", icon: LucideFileText },
+  { label: __("Everywhere"), icon: LucideGlobe2 },
+  { label: __("This document"), icon: LucideFileText },
 ])
 const tabIndex = ref(props.editable ? 1 : 0)
 
 const fontOptions = computed(() =>
   dynamicList([
     {
-      label: "Automatic",
+      label: __("Automatic"),
       value: "global",
       cond: tabIndex.value === 1,
     },
@@ -133,7 +129,7 @@ const fontOptions = computed(() =>
 const fontSizeOptions = computed(() =>
   dynamicList([
     {
-      label: "Automatic",
+      label: __("Automatic"),
       value: "global",
       cond: tabIndex.value === 1,
     },
@@ -149,7 +145,7 @@ const fontSizeOptions = computed(() =>
 const lineHeightOptions = computed(() =>
   dynamicList([
     {
-      label: "Automatic",
+      label: __("Automatic"),
       value: "global",
       cond: tabIndex.value === 1,
     },

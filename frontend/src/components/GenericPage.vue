@@ -149,7 +149,7 @@ const sortId = computed(
 )
 const sortOrder = ref(
   store.state.sortOrder[sortId.value] || {
-    label: "Modified",
+    label: __("Modified"),
     field: "modified",
     ascending: false,
   }
@@ -277,14 +277,14 @@ const actionItems = computed(() => {
   if (route.name === "Trash") {
     return [
       {
-        label: "Restore",
+        label: __("Restore"),
         icon: LucideRotateCcw,
         action: () => (dialog.value = "restore"),
         multi: true,
         important: true,
       },
       {
-        label: "Delete forever",
+        label: __("Delete forever"),
         icon: LucideTrash,
         action: () => (dialog.value = "d"),
         isEnabled: () => route.name === "Trash",
@@ -416,11 +416,11 @@ async function newLink() {
     const url = new URL(text)
     if (url.host)
       toast({
-        title: "Link detected",
+        title: __("Link detected"),
         text,
         buttons: [
           {
-            label: "Add",
+            label: __("Add"),
             onClick: () => {
               dialog.value = "l"
             },

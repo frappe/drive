@@ -14,23 +14,23 @@
           <span class="font-medium">{{ current.title }}</span>
         </div>
         <div v-else>
-          This is a automatic snapshot of this document from
+          {{ __("This is a automatic snapshot of this document from") }}
           {{ formatDate(current.title) }}.
         </div>
         <div class="text-xs text-ink-gray-5">
-          Editing is disabled until you exit this preview.
+          {{ __("Editing is disabled until you exit this preview.") }}
         </div>
       </div>
       <div class="flex gap-2">
         <Button
           variant="ghost"
-          label="Exit"
+          :label="__('Exit')"
           class="hover:!bg-surface-gray-2 hover:underline"
           @click="emitter.emit('clear-snapshot')"
         />
         <Button
           variant="solid"
-          label="Restore"
+          :label="__('Restore')"
           @click="emitter.emit('restore-snapshot', current)"
         />
       </div>
@@ -77,7 +77,7 @@
             }
           "
           :mentions="{ mentions: users, selectable: false }"
-          placeholder="Start writing here..."
+          :placeholder="__('Start writing here...')"
           :bubble-menu="settings.minimal && menuButtons"
           :extensions="editorExtensions"
           :autofocus="true"
@@ -247,7 +247,7 @@ watch(
   () => props.currentVersion,
   (val) => {
     if (!val) return
-    toast("Changing version")
+    toast(__("Changing version"))
     const { view } = editor.value
     view.dispatch(
       view.state.tr.setMeta(ySyncPluginKey, {
@@ -580,7 +580,7 @@ onKeyDown("s", (e) => {
   e.preventDefault()
   emit("saveDocument")
   toast({
-    title: "Saving document",
+    title: __("Saving document"),
   })
 })
 

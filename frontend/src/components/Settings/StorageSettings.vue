@@ -4,9 +4,9 @@
   </h1>
 
   <div class="flex items-center justify-between w-full mb-2">
-    <span class="text-base font-medium text-ink-gray-8">{{ showFileStorage ? "You have" : "Your team has" }} used
-      {{ formatSize(usedSpace) ? formatSize(usedSpace) + " out" : "none" }} of
-      {{ showFileStorage ? "your" : "" }} {{ base2BlockSize(spaceLimit) }} ({{
+    <span class="text-base font-medium text-ink-gray-8">{{ showFileStorage ? __("You have") : __("Your team has") }} {{ __("used") }}
+      {{ formatSize(usedSpace) ? formatSize(usedSpace) + " " + __("out of") : __("none of") }}
+      {{ base2BlockSize(spaceLimit) }} ({{
         formatPercent((usedSpace / spaceLimit) * 100)
       }})</span>
     <div
@@ -78,14 +78,14 @@
     class="w-full flex flex-col items-center justify-center my-10"
   >
     <LucideCloud class="h-7 stroke-1 text-ink-gray-5" />
-    <span class="text-ink-gray-8 text-sm mt-2">No Storage Used</span>
+    <span class="text-ink-gray-8 text-sm mt-2">{{ __("No Storage Used") }}</span>
   </div>
   <div
     v-if="storageBreakdown.data?.entities?.length"
     class="mt-1 text-ink-gray-8 font-medium text-base py-2"
     :class="storageBreakdown.data?.entities?.length ? 'border-b' : ''"
   >
-    Large Files:
+    {{ __("Large Files:") }}
   </div>
   <div
     class="flex flex-col items-start justify-start w-full rounded full px-1.5 overflow-y-auto"

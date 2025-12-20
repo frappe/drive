@@ -9,10 +9,10 @@
         <div class="flex w-full justify-between gap-x-15 mb-4">
           <div class="font-semibold text-2xl flex text-nowrap overflow-hidden">
             <template v-if="props.entities.length > 1">
-              Moving {{ props.entities.length }} items
+              {{ __("Moving {0} items").replace("{0}", props.entities.length) }}
             </template>
             <template v-else>
-              Moving "
+              {{ __("Moving") }} "
               <div class="truncate max-w-[80%]">
                 {{ props.entities[0].title }}
               </div>
@@ -120,7 +120,7 @@
                         <span
                           v-if="entities[0].parent_entity === node.value"
                           class="text-ink-gray-5"
-                          >(current)</span
+                          >({{ __("current") }})</span
                         ></span
                       >
                       <Button
@@ -133,7 +133,7 @@
                             let obj = {
                               parent: node.value,
                               value: null,
-                              label: 'New folder',
+                              label: __('New folder'),
                             }
                             node.children.push(obj)
                             if (isCollapsed) toggleCollapsed(e)
@@ -160,7 +160,7 @@
                   class="self-center text-sm text-ink-gray-6 flex flex-col gap-2"
                 >
                   <LucideFolderClosed class="size-5 self-center" />
-                  No folders found
+                  {{ __("No folders found") }}
                 </div>
               </div>
             </div>
@@ -168,7 +168,7 @@
         </Tabs>
         <div class="flex items-center justify-between pt-4">
           <div class="flex items-center my-auto justify-start">
-            <p class="text-sm pr-0.5">Moving to:</p>
+            <p class="text-sm pr-0.5">{{ __("Moving to:") }}</p>
             <Dropdown
               v-if="dropDownBreadcrumbs.length"
               class="h-7"
@@ -220,7 +220,7 @@
             <template #prefix>
               <LucideArrowLeftRight class="size-4" />
             </template>
-            Move
+            {{ __("Move") }}
           </Button>
         </div>
       </div>

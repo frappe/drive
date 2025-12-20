@@ -9,7 +9,7 @@
         <!-- Header -->
         <div class="flex w-full justify-between gap-x-2 mb-4">
           <div class="font-semibold text-2xl flex text-nowrap overflow-hidden">
-            Sharing "
+            {{ __("Sharing") }} "
             <div class="truncate max-w-[80%]">
               {{ entity?.title }}
             </div>
@@ -29,7 +29,7 @@
           <!-- General section -->
           <div class="mb-4 border-b pb-4">
             <div class="mb-2 text-ink-gray-5 font-medium text-base">
-              General Access
+              {{ __("General Access") }}
             </div>
             <div class="flex justify-between mt-3">
               <div class="flex flex-col gap-2">
@@ -69,7 +69,7 @@
             </div>
           </div>
           <!-- Members section -->
-          <div class="text-ink-gray-5 font-medium text-base mb-2">Members</div>
+          <div class="text-ink-gray-5 font-medium text-base mb-2">{{ __("Members") }}</div>
           <div class="flex gap-3">
             <div class="flex-grow">
               <Combobox
@@ -107,7 +107,7 @@
                       <ComboboxInput
                         ref="queryInput"
                         v-focus
-                        placeholder="Add people..."
+                        :placeholder="__('Add people...')"
                         class="text-base px-1.5 p-1 flex-shrink min-w-24 grow basis-0 border-none bg-transparent 1 text-ink-gray-8 placeholder-ink-gray-4 focus:ring-0"
                         autocomplete="off"
                         @change="query = $event.target.value"
@@ -237,9 +237,9 @@
                   v-if="user.user === entity.owner"
                   class="flex gap-1"
                 >
-                  Owner (you)
+                  {{ __("Owner (you)") }}
                 </div>
-                <template v-else>You</template>
+                <template v-else>{{ __("You") }}</template>
               </span>
               <AccessButton
                 v-else-if="user.user !== entity.owner"
@@ -267,7 +267,7 @@
                 v-else
                 class="ml-auto flex items-center gap-1 text-ink-gray-5"
               >
-                Owner
+                {{ __("Owner") }}
                 <LucideDiamond class="size-3" />
               </span>
             </div>
@@ -283,7 +283,7 @@
               <Button
                 class="text-sm"
                 variant="ghost"
-                label="Advanced"
+                :label="__('Advanced')"
                 :icon-left="h(LucideSettings, { class: 'size-4' })"
                 @click="advanced = true"
               />
@@ -297,11 +297,11 @@
                 <template #prefix>
                   <LucideLink2 class="w-4 text-ink-gray-6" />
                 </template>
-                Copy Link
+                {{ __("Copy Link") }}
               </Button>
               <Button
                 v-if="sharedUsers.length"
-                label="Invite"
+                :label="__('Invite')"
                 variant="solid"
                 @click="addShares"
               />
@@ -311,16 +311,16 @@
         <div v-else>
           <div
             class="flex text-sm gap-1 items-center mb-3 cursor-pointer"
-            label="Back"
+            :label="__('Back')"
             @click="advanced = false"
           >
             <LucideArrowLeft class="size-4" />
-            Back
+            {{ __("Back") }}
           </div>
 
           <Switch
             v-model="allowDownload"
-            label="Allow download"
+            :label="__('Allow download')"
           />
         </div>
       </div>
@@ -384,29 +384,29 @@ allUsers.fetch({ team: "all" })
 
 const levelOptions = [
   {
-    label: "Accessible to invited members",
+    label: __("Accessible to invited members"),
     value: "restricted",
     icon: markRaw(LucideLock),
   },
   {
-    label: "Accessible to a team",
+    label: __("Accessible to a team"),
     value: "team",
     icon: markRaw(LucideBuilding2),
   },
-  { label: "Accessible to all", value: "public", icon: markRaw(LucideGlobe2) },
+  { label: __("Accessible to all"), value: "public", icon: markRaw(LucideGlobe2) },
 ]
 const accessOptions = computed(() =>
   dynamicList([
-    { value: "reader", label: "Can view", icon: LucideEye },
+    { value: "reader", label: __("Can view"), icon: LucideEye },
     {
       value: "upload",
-      label: "Can upload",
+      label: __("Can upload"),
       cond: props.entity.is_group && props.entity.upload,
       icon: LucideUpload,
     },
     {
       value: "editor",
-      label: "Can edit",
+      label: __("Can edit"),
       cond: props.entity.write,
       icon: LucidePencil,
     },

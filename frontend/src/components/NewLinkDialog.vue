@@ -2,11 +2,11 @@
   <Dialog
     v-model="open"
     :options="{
-      title: 'New Link',
+      title: __('New Link'),
       size: 'xs',
       actions: [
         {
-          label: 'Create',
+          label: __('Create'),
           variant: 'solid',
           loading: createLink.loading,
           onClick: createLink.submit,
@@ -20,13 +20,13 @@
         <FormControl
           v-model="title"
           v-focus
-          label="Link name"
+          :label="__('Link name')"
           type="text"
           @keydown="createLink.error = null"
         />
         <FormControl
           v-model="link"
-          label="URL"
+          :label="__('URL')"
           type="url"
           @keydown.enter="createLink.submit"
           @keydown="createLink.error = null"
@@ -70,7 +70,7 @@ const createLink = createResource({
   }),
   validate(params) {
     if (!params?.title) {
-      return "Link name is required"
+      return __("Link name is required")
     }
   },
   onSuccess(data) {

@@ -2,7 +2,7 @@
   <FormControl
     v-model="versionName"
     v-focus
-    label="Name:"
+    :label="__('Name:')"
   >
     <template #prefix>
       <LucideVersion class="size-4" />
@@ -10,7 +10,7 @@
   </FormControl>
   <Button
     type="submit"
-    label="Create"
+    :label="__('Create')"
     variant="solid"
     class="w-full mt-4"
     :disabled="!versionName"

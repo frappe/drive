@@ -10,7 +10,7 @@
           <template v-if="props.entities.length">
             {{
               props.entities.length > 1
-                ? "These items "
+                ? __("These items ")
                 : `"${props.entities[0].title}" `
             }}
           </template>
@@ -53,15 +53,13 @@ const open = ref(true)
 
 const dialogData = computed(() => {
   const itemString =
-    props.entities.length === 1 ? "an item" : `${props.entities.length} items`
+    props.entities.length === 1 ? __("an item") : __("{0} items").replace("{0}", props.entities.length)
   const MAP = {
     restore: {
-      title: `Restore ${itemString}`,
-      message: `will be restored to ${
-        props.entities.length === 1
-          ? "its original location"
-          : "their original locations"
-      }.`,
+      title: __("Restore {0}").replace("{0}", itemString),
+      message: props.entities.length === 1
+        ? __("will be restored to its original location.")
+        : __("will be restored to their original locations."),
       url: "drive.api.files.remove_or_restore",
       onSuccess: () => {
         getTrash.setData((d) =>
@@ -70,18 +68,18 @@ const dialogData = computed(() => {
       },
       button: {
         variant: "solid",
-        label: "Restore",
+        label: __("Restore"),
         iconLeft: LucideRotateCcw,
       },
-      toastMessage: `Restored ${itemString}.`,
+      toastMessage: __("Restored {0}.").replace("{0}", itemString),
     },
     remove: {
-      title: `Move ${itemString} to Trash`,
+      title: __("Move {0} to Trash").replace("{0}", itemString),
       message:
-        "will be moved to Trash.<br/><br/> Items in trash are deleted forever after 30 days.",
+        __("will be moved to Trash.") + "<br/><br/>" + __("Items in trash are deleted forever after 30 days."),
       url: "drive.api.files.remove_or_restore",
       button: {
-        label: "Move to Trash",
+        label: __("Move to Trash"),
         theme: "red",
         variant: "subtle",
       },
@@ -97,38 +95,38 @@ const dialogData = computed(() => {
           ])
         )
       },
-      toastMessage: `Moved ${itemString} to Trash.`,
+      toastMessage: __("Moved {0} to Trash.").replace("{0}", itemString),
     },
     d: {
-      title: `Delete ${itemString}`,
+      title: __("Delete {0}").replace("{0}", itemString),
       url: "drive.api.files.delete_entities",
       message:
-        " will be deleted - you can no longer access it.<br/><br/> <span class=font-semibold>This is an irreversible action.<span>",
+        __("will be deleted - you can no longer access it.") + "<br/><br/> <span class=font-semibold>" + __("This is an irreversible action.") + "<span>",
       button: {
-        label: "Delete — forever.",
+        label: __("Delete — forever."),
         theme: "red",
         iconLeft: LucideTrash,
         variant: "solid",
       },
-      toastMessage: `Deleted ${itemString}.`,
+      toastMessage: __("Deleted {0}.").replace("{0}", itemString),
     },
     "cta-recents": {
-      title: "Are you sure?",
-      message: "All your recently viewed files will be cleared.",
-      button: { label: "Clear" },
+      title: __("Are you sure?"),
+      message: __("All your recently viewed files will be cleared."),
+      button: { label: __("Clear") },
       resource: clearRecent,
     },
     "cta-favourites": {
-      title: "Are you sure?",
-      message: "All your favourite items will be cleared.",
-      button: { label: "Clear" },
+      title: __("Are you sure?"),
+      message: __("All your favourite items will be cleared."),
+      button: { label: __("Clear") },
       resource: toggleFav,
     },
     "cta-trash": {
-      title: "Clear your Trash",
+      title: __("Clear your Trash"),
       message:
-        "All items in your Trash will be deleted forever. <br/><br/> <span class=font-semibold>This is an irreversible process.</span>",
-      button: { label: "Delete", variant: "solid", iconLeft: LucideTrash },
+        __("All items in your Trash will be deleted forever.") + " <br/><br/> <span class=font-semibold>" + __("This is an irreversible process.") + "</span>",
+      button: { label: __("Delete"), variant: "solid", iconLeft: LucideTrash },
       resource: clearTrash,
     },
   }

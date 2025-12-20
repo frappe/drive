@@ -2,11 +2,11 @@
   <Dialog
     v-model="open"
     :options="{
-      title: 'Rename',
+      title: __('Rename'),
       size: 'xs',
       actions: [
         {
-          label: 'Confirm',
+          label: __('Confirm'),
           variant: 'solid',
           disabled: !newTitle || newTitle === entity.title,
           onClick: submit,

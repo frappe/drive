@@ -45,7 +45,7 @@ export default {
       const first = this.$store.state.breadcrumbs[0] || {}
       return [
         {
-          label: "Home",
+          label: this.__("Home"),
           route: "/",
           icon: LucideHome,
           highlight: () => {
@@ -53,7 +53,7 @@ export default {
           },
         },
         {
-          label: "Team",
+          label: this.__("Team"),
           route: "/teams",
           icon: LucideBuilding2,
           highlight: () => {
@@ -61,7 +61,7 @@ export default {
           },
         },
         {
-          label: "Recents",
+          label: this.__("Recents"),
           route: "/recents",
           icon: LucideClock,
           highlight: () => {
@@ -70,7 +70,7 @@ export default {
         },
 
         {
-          label: "Shared",
+          label: this.__("Shared"),
           route: "/shared",
           icon: LucideUsers,
           highlight: () => {
@@ -78,7 +78,7 @@ export default {
           },
         },
         {
-          label: "Favourites",
+          label: this.__("Favourites"),
           route: "/favourites",
           icon: LucideStar,
           highlight: () => {

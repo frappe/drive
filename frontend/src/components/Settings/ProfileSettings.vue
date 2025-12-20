@@ -36,7 +36,7 @@
   >
     <template #body-content>
       <div class="flex flex-col items-start justify-start gap-y-2">
-        <span class="text-base text-ink-gray-5">Profile Photo</span>
+        <span class="text-base text-ink-gray-5">{{ __("Profile Photo") }}</span>
         <div class="flex items-center justify-between w-full">
           <Avatar
             :image="newImageUrl"
@@ -96,12 +96,12 @@
 
   <Switch
     v-model="singleClick"
-    label="Single click to open files and folders"
+    :label="__('Single click to open files and folders')"
     class="!px-0 hover:!bg-inherit"
   />
   <Switch
     v-model="detectLinks"
-    label="Automatically detect links"
+    :label="__('Automatically detect links')"
     class="!px-0 hover:!bg-inherit"
   />
 </template>

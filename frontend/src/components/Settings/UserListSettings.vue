@@ -57,9 +57,8 @@
     </template>
     <div class="py-1 flex justify-between">
       <div>
-        You have an invite to join
-        <span class="font-medium">{{ invite.team_name }}</span
-        >.
+        {{ __("You have an invite to join") }}
+        <span class="font-medium">{{ invite.team_name }}</span>.
       </div>
     </div>
   </Alert>
@@ -77,23 +76,23 @@
       :options="
         dynamicList([
           {
-            label: 'Edit',
+            label: __('Edit'),
             icon: LucidePencil,
             onClick: () => (showEditTeam = true),
             cond: isAdmin.data,
           },
           {
-            label: 'Sync',
+            label: __('Sync'),
             icon: LucideRefreshCcw,
             cond: isAdmin.data && teamData.s3_bucket,
             onClick: () =>
               createDialog({
-                title: 'Sync files from S3',
+                title: __('Sync files from S3'),
                 component: h(SyncBreakdown, { team }),
               }),
           },
           {
-            label: 'Leave',
+            label: __('Leave'),
             icon: LucideLogOut,
             onClick: () => leaveTeam.submit({ team }),
           },
@@ -101,7 +100,7 @@
       "
     />
     <Button
-      label="Invite"
+      :label="__('Invite')"
       :icon-left="h(LucideMail, { class: 'size-4' })"
       class="ml-auto"
       @click="showInvite = true"
@@ -111,7 +110,7 @@
     v-else
     class="text-ink-gray-8 text-center text-p-sm py-4"
   >
-    No teams yet. Create one to get started.
+    {{ __("No teams yet. Create one to get started.") }}
   </div>
   <Tabs
     v-if="team"
@@ -186,7 +185,7 @@
                 )
               }}
               <template v-if="user.name === $store.state.user.id"
-                >(you)</template
+                >({{ __("you") }})</template
               >
             </span>
           </div>
@@ -197,7 +196,7 @@
           v-if="!invites?.data || !invites.data.length"
           class="text-ink-gray-8 text-center text-p-sm py-4"
         >
-          No invites found.
+          {{ __("No invites found.") }}
         </div>
         <div
           v-for="(invite, index) in invites?.data"
@@ -214,7 +213,7 @@
                   invite.email
                 }}</span>
                 <span class="text-xs text-ink-gray-5"
-                  >Invited by
+                  >{{ __("Invited by") }}
                   <UserTooltip :email="invite.owner" />
                 </span>
               </div>
@@ -222,8 +221,8 @@
                 <Tooltip
                   :text="
                     invite.status === 'Proposed'
-                      ? 'A person from your domain has joined Drive.'
-                      : 'This invite was sent from your team.'
+                      ? __('A person from your domain has joined Drive.')
+                      : __('This invite was sent from your team.')
                   "
                 >
                   <Badge
@@ -280,7 +279,7 @@
   <Dialog
     v-model="showInvite"
     :options="{
-      title: 'Invite people to ' + teamData.title,
+      title: __('Invite people to') + ' ' + teamData.title,
       size: 'lg',
     }"
   >
@@ -307,7 +306,7 @@
               v-model="emailInput"
               type="text"
               autocomplete="off"
-              placeholder="Enter email address"
+              :placeholder="__('Enter email address')"
               class="h-7 w-full rounded border-none bg-surface-gray-2 py-1.5 pl-2 pr-2 text-base text-ink-gray-8 placeholder-ink-gray-4 transition-colors focus:outline-none focus:ring-0 focus-visible:outline-none focus-visible:ring-0"
               @keydown="isValidEmail"
               @keydown.enter.capture.stop="extractEmails"
@@ -319,12 +318,12 @@
       <Checkbox
         v-model="inviteAsGuest"
         class="mt-4 mb-2"
-        label="Invite as guest"
+        :label="__('Invite as guest')"
       />
       <Button
         class="w-full"
         variant="solid"
-        label="Send Invitation"
+        :label="__('Send Invitation')"
         :disabled="!emailTest().length && !invited.length"
         :loading="inviteUsers.loading"
         @click="
@@ -345,15 +344,15 @@
     v-if="showRemove"
     v-model="showRemove"
     :options="{
-      title: 'Are you sure?',
+      title: __('Are you sure?'),
       size: 'md',
-      message: `Removing ${selectedUser.full_name} will completely revoke their access to your team. You can always add them back using the same email ID.`,
+      message: __('Removing this user will completely revoke their access to your team. You can always add them back using the same email ID.'),
       actions: [
         {
           variant: 'solid',
           theme: 'red',
           label:
-            'I confirm that I want to remove ' + selectedUser.full_name + '.',
+            __('I confirm that I want to remove this user'),
           loading: removeUser.loading,
           onClick: () => {
             removeUser.submit({
@@ -375,7 +374,7 @@
       <div class="flex flex-col gap-4">
         <div>
           <FormLabel
-            label="Team Name:"
+            :label="__('Team Name:')"
             required
           />
           <div class="flex gap-1.5 mt-1.5">
@@ -406,15 +405,15 @@
           <FormControl
             v-model="s3Bucket"
             type="text"
-            label="S3 Bucket"
-            description="Optional - allows you to use a different bucket for this team."
+            :label="__('S3 Bucket')"
+            :description="__('Optional - allows you to use a different bucket for this team.')"
           />
           <FormControl
             v-model="prefix"
             :disabled="!s3Bucket"
             type="text"
-            label="Folder"
-            description="Optional - allows you to use a specific folder inside the bucket."
+            :label="__('Folder')"
+            :description="__('Optional - allows you to use a specific folder inside the bucket.')"
           />
         </template>
       </div>
@@ -460,13 +459,13 @@
   </Dialog>
   <Dialog
     v-model="showEditTeam"
-    :options="{ title: __('Settings - ' + teamData.title), size: 'sm' }"
+    :options="{ title: __('Settings') + ' - ' + teamData.title, size: 'sm' }"
   >
     <template #body-content>
       <div class="flex flex-col gap-4">
         <div>
           <FormLabel
-            label="Team Name:"
+            :label="__('Team Name:')"
             required
           />
           <div class="flex gap-1 mt-1.5">
@@ -496,13 +495,13 @@
             v-model="s3Bucket"
             :disabled="true"
             type="text"
-            label="S3 Bucket"
+            :label="__('S3 Bucket')"
           />
           <FormControl
             v-model="prefix"
             :disabled="true"
             type="text"
-            label="Folder"
+            :label="__('Folder')"
           />
         </template>
       </div>
@@ -644,17 +643,17 @@ const leaveTeam = createResource({
         else router.push({ name: "Home" })
       },
     })
-    toast("You have left the team.")
+    toast(__("You have left the team."))
   },
 })
 
 const tabs = [
   {
-    label: "Members",
+    label: __("Members"),
     icon: h(LucideUsers, { class: "size-4" }),
   },
   {
-    label: "Invites",
+    label: __("Invites"),
     icon: h(LucideMail, { class: "size-4" }),
   },
 ]
@@ -669,19 +668,19 @@ const updateAccess = (level) => {
 }
 const accessOptions = [
   {
-    label: "Manager",
+    label: __("Manager"),
     onClick: () => updateAccess(2),
   },
   {
-    label: "User",
+    label: __("User"),
     onClick: () => updateAccess(1),
   },
   {
-    label: "Guest",
+    label: __("Guest"),
     onClick: () => updateAccess(0),
   },
   {
-    label: "Remove",
+    label: __("Remove"),
     class: "text-ink-red-3",
     component: () =>
       h(
@@ -692,7 +691,7 @@ const accessOptions = [
           ],
           onClick: () => (showRemove.value = true),
         },
-        "Remove"
+        __("Remove")
       ),
   },
 ]
@@ -715,7 +714,7 @@ const inviteUsers = createResource({
   url: "drive.api.product.invite_users",
   onSuccess: () => {
     invites.fetch()
-    toast("Invite sent!")
+    toast(__("Invite sent!"))
   },
 })
 

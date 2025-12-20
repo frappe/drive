@@ -1,7 +1,7 @@
 <template>
   <Dialog
     v-model="open"
-    :options="{ title: 'Settings', size: '5xl' }"
+    :options="{ title: __('Settings'), size: '5xl' }"
   >
     <template #body>
       <div

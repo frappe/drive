@@ -4,7 +4,7 @@
     v-model:collapsed="isCollapsed"
     class="hidden sm:flex"
     :header="{
-      title: 'Drive',
+      title: __('Drive'),
       subtitle: $store.state.user.fullName,
       menuItems: settingsItems,
       logo: FrappeDriveLogo,
@@ -156,7 +156,7 @@ const settingsItems = computed(() => [
       },
       {
         icon: LucideMoon,
-        label: "Toggle theme",
+        label: __("Toggle theme"),
         onClick: toggleTheme,
       },
     ],
@@ -218,31 +218,31 @@ const sidebarItems = computed(() => {
       ],
     },
     {
-      label: "Drive",
+      label: __("Drive"),
       items: [
         {
-          label: "Home",
+          label: __("Home"),
           to: `/`,
           icon: LucideHome,
           isActive: first.name == "Home",
           accessKey: "h",
         },
         {
-          label: "Recents",
+          label: __("Recents"),
           to: `/recents`,
           icon: LucideClock,
           isActive: first.name == "Recents",
           accessKey: "r",
         },
         {
-          label: "Shared",
+          label: __("Shared"),
           to: `/shared`,
           icon: LucideUsers,
           isActive: first.name == "Shared",
           accessKey: "s",
         },
         {
-          label: "Trash",
+          label: __("Trash"),
           to: `/trash`,
           icon: LucideTrash,
           isActive: first.name == "Trash",
@@ -250,7 +250,7 @@ const sidebarItems = computed(() => {
       ],
     },
     {
-      label: "Teams",
+      label: __("Teams"),
       cond: getTeams.data && Object.keys(getTeams.data).length > 0,
       collapsible: true,
       items:
@@ -264,25 +264,25 @@ const sidebarItems = computed(() => {
         })),
     },
     {
-      label: "Views",
+      label: __("Views"),
       collapsible: true,
       items: dynamicList([
         {
-          label: "Favourites",
+          label: __("Favourites"),
           to: `/favourites`,
           icon: LucideStar,
           isActive: first.name == "Favourites",
           accessKey: "f",
         },
         {
-          label: "Documents",
+          label: __("Documents"),
           to: `/documents`,
           icon: LucideFileText,
           isActive: first.name == "Documents",
           accessKey: "d",
         },
         {
-          label: "Slides",
+          label: __("Slides"),
           to: `/presentations`,
           icon: LucideGalleryVerticalEnd,
           isActive: first.name == "Slides",
