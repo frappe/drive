@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: frappe\n"
 "Report-Msgid-Bugs-To: developers@frappe.io\n"
 "POT-Creation-Date: 2025-12-05 16:12+0000\n"
-"PO-Revision-Date: 2025-12-09 17:14\n"
+"PO-Revision-Date: 2025-12-21 19:07\n"
 "Last-Translator: developers@frappe.io\n"
 "Language-Team: Swedish\n"
 "MIME-Version: 1.0\n"
@@ -557,7 +557,7 @@ msgstr "Äldre alternativ.\n"
 
 #: drive/public/js/TreeNode.vue:52
 msgid "Load more"
-msgstr "Läs in mer"
+msgstr "Ladda mer"
 
 #: drive/public/js/TreeNode.vue:52
 msgid "Loading..."
