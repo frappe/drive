@@ -30,6 +30,11 @@ jobs:
         working-directory: frontend
         run: yarn install --frozen-lockfile
 
+      - name: Create Frappe config stub
+        run: |
+          mkdir -p sites
+          echo '{"default_site": "site1.local", "socketio_port": 9000}' > sites/common_site_config.json
+
       - name: Build assets
         working-directory: frontend
         run: yarn build:force
