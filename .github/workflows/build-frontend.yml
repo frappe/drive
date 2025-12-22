@@ -9,6 +9,9 @@ on:
       - 'frontend/vite.config.js'
       - 'frontend/tailwind.config.js'
 
+permissions:
+  contents: write
+
 jobs:
   build:
     runs-on: ubuntu-latest
