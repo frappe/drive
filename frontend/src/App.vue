@@ -1,4 +1,3 @@
-<!-- GitHub Actions auto-build test -->
 <template>
   <FrappeUIProvider>
     <div
