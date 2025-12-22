@@ -259,3 +259,12 @@ defineExpose({
   min-height: 600px;
 }
 </style>
+
+<style>
+/* Style for the back button in Drive's File.vue when Collabora editor is active */
+#renderContainer:has(.collabora-editor-container) > button.absolute.top-4.left-4 {
+  margin-top: 27px;
+  margin-left: 27px;
+  background-color: #f8f8f8;
+}
+</style>
