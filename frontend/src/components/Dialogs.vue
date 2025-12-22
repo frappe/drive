@@ -18,6 +18,20 @@
     :parent="$route.params.entityName"
     @success="(data) => addToList(data, 'Link')"
   />
+  <NewOfficeFileDialog
+    v-else-if="dialog === 'word'"
+    v-model="dialog"
+    :parent="$route.params.entityName"
+    file-type="docx"
+    @success="(data) => addToList(data, 'Document')"
+  />
+  <NewOfficeFileDialog
+    v-else-if="dialog === 'excel'"
+    v-model="dialog"
+    :parent="$route.params.entityName"
+    file-type="xlsx"
+    @success="(data) => addToList(data, 'Spreadsheet')"
+  />
 
   <!-- Mutation dialogs -->
   <RenameDialog
@@ -87,6 +101,7 @@ import emitter from "@/emitter"
 import NewFolderDialog from "@/components/NewFolderDialog.vue"
 import NewPresentationDialog from "@/components/NewPresentationDialog.vue"
 import NewLinkDialog from "@/components/NewLinkDialog.vue"
+import NewOfficeFileDialog from "@/components/NewOfficeFileDialog.vue"
 import RenameDialog from "@/components/RenameDialog.vue"
 import ShareDialog from "@/components/ShareDialog/ShareDialog.vue"
 import ConfirmDialog from "@/components/ConfirmDialog.vue"

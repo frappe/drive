@@ -90,6 +90,7 @@ declare module 'vue' {
     Navbar: typeof import('./src/components/Navbar.vue')['default']
     NewFolderDialog: typeof import('./src/components/NewFolderDialog.vue')['default']
     NewLinkDialog: typeof import('./src/components/NewLinkDialog.vue')['default']
+    NewOfficeFileDialog: typeof import('./src/components/NewOfficeFileDialog.vue')['default']
     NewPresentationDialog: typeof import('./src/components/NewPresentationDialog.vue')['default']
     NewTagDialog: typeof import('./src/components/Settings/NewTagDialog.vue')['default']
     NewVersionDialog: typeof import('./src/components/DocEditor/components/NewVersionDialog.vue')['default']
