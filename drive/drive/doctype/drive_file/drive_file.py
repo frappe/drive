@@ -192,7 +192,6 @@ class DriveFile(Document):
             self.recursive_path_move(self.path, path)
 
         self.save()
-        return self
 
     def recursive_path_move(self, old, new):
         if new:
