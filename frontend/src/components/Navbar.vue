@@ -143,8 +143,9 @@ import { ref, computed, inject, h } from "vue"
 import { entitiesDownload } from "@/utils/download"
 import { getRecents, getTrash, toggleFav } from "@/resources/files"
 import { apps } from "@/resources/permissions"
-import { useRoute } from "vue-router"
+import { useRoute, useRouter } from "vue-router"
 import { getLink, newExternal, dynamicList } from "@/utils/files"
+import { createResource } from "frappe-ui"
 
 import LucideClock from "~icons/lucide/clock"
 import LucideHome from "~icons/lucide/home"
@@ -165,6 +166,8 @@ import LucideFolderUp from "~icons/lucide/folder-up"
 import LucideFilePlus2 from "~icons/lucide/file-plus-2"
 import LucideGalleryVerticalEnd from "~icons/lucide/gallery-vertical-end"
 import LucideFolderPlus from "~icons/lucide/folder-plus"
+import LucideFileSpreadsheet from "~icons/lucide/file-spreadsheet"
+import LucideFileText from "~icons/lucide/file-text"
 
 const COMPONENT_MAP = {
   Home: LucideHome,
@@ -176,8 +179,25 @@ const COMPONENT_MAP = {
 }
 const store = useStore()
 const route = useRoute()
+const router = useRouter()
 const open = (url) => {
   window.open(url, "_blank")
+}
+
+// Create Office file and open in Collabora
+const createOfficeFile = createResource({
+  url: "drive_wopi.api.editor.create_office_file",
+  onSuccess(data) {
+    if (data.file_id) {
+      router.push({ name: "File", params: { entityName: data.file_id } })
+    }
+  },
+})
+
+const newOfficeFile = (fileType) => {
+  const title = fileType === "docx" ? __("Untitled Document") : __("Untitled Spreadsheet")
+  const parent = route.params.entityName || null
+  createOfficeFile.submit({ file_type: fileType, title, parent })
 }
 
 const props = defineProps({
@@ -329,6 +349,16 @@ const newEntityOptions = [
         label: "Document",
         icon: LucideFilePlus2,
         onClick: () => newExternal("Document"),
+      },
+      {
+        label: "Word",
+        icon: LucideFileText,
+        onClick: () => newOfficeFile("docx"),
+      },
+      {
+        label: "Excel",
+        icon: LucideFileSpreadsheet,
+        onClick: () => newOfficeFile("xlsx"),
       },
       {
         label: "Presentation",
