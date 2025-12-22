@@ -4,18 +4,20 @@
 *.swp
 tags
 drive/docs/current
-drive/public/
 node_modules
 frontend/node_modules
-drive/public/node_modules
-drive/www/drive.html
 .yarn-integrity
 **/__pycache__
 node_modules/
 experiments/*
-drive/public/dist
 *.sql
 *log.json
 .env
 dist/
 build/
+
+# Ignore public folder EXCEPT frontend (pre-built assets)
+drive/public/*
+!drive/public/frontend/
+!drive/public/js/
+!drive/public/.gitkeep
