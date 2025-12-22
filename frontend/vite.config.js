@@ -37,6 +37,10 @@ export default defineConfig(async ({ mode }) => {
       commonjsOptions: {
         include: [/tailwind.config.js/, /node_modules/],
       },
+      rollupOptions: {
+        // Ignore Frappe bench-specific imports that don't exist in standalone builds
+        external: [/common_site_config\.json/],
+      },
     },
     server: {
       allowedHosts: ["drive.localhost"],
