@@ -32,8 +32,10 @@ jobs:
 
       - name: Create Frappe config stub
         run: |
-          mkdir -p sites
-          echo '{"default_site": "site1.local", "socketio_port": 9000}' > sites/common_site_config.json
+          # Path is ../../../../sites/ from frontend/src/socket.js
+          # So we need: repo_root/../sites/ which is ../sites from repo root
+          mkdir -p ../sites
+          echo '{"default_site": "site1.local", "socketio_port": 9000}' > ../sites/common_site_config.json
 
       - name: Build assets
         working-directory: frontend
