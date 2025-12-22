@@ -18,7 +18,18 @@
     This is an embedded Microsoft Office document, powered by Office Online.
   </iframe>
 
-  <!-- Choice Dialog -->
+  <!-- Loading state when checking Collabora -->
+  <div
+    v-else-if="checkingCollabora"
+    class="flex items-center justify-center h-full"
+  >
+    <div class="text-center">
+      <LucideLoader2 class="size-8 animate-spin mx-auto mb-4 text-ink-gray-5" />
+      <span class="text-ink-gray-7">{{ __("Loading...") }}</span>
+    </div>
+  </div>
+
+  <!-- Choice Dialog (only shown if Collabora NOT available) -->
   <div
     v-else
     class="max-w-[450px] h-fit self-center p-10 bg-surface-white rounded-md text-neutral-100 text-xl text-center font-medium shadow-xl flex flex-col justify-center items-center gap-4"
@@ -104,6 +115,11 @@ const collaboraStatus = createResource({
   onSuccess(data) {
     collaboraAvailable.value = data.available === true
     checkingCollabora.value = false
+
+    // Auto-open Collabora if available
+    if (data.available === true) {
+      showCollaboraEditor.value = true
+    }
   },
   onError() {
     collaboraAvailable.value = false

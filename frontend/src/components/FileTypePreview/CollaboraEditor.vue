@@ -1,149 +1,261 @@
 <template>
-  <div class="collabora-editor-container w-full h-full">
-    <!-- Hidden form to POST the access token to Collabora -->
+  <div class="collabora-editor-container">
+    <!-- Hidden form to submit token via POST -->
     <form
-      ref="collaboraForm"
+      ref="wopiForm"
       :action="editorUrl"
       method="POST"
       target="collabora-frame"
       class="hidden"
     >
       <input type="hidden" name="access_token" :value="accessToken" />
+      <input type="hidden" name="access_token_ttl" :value="accessTokenTtl" />
     </form>
 
-    <!-- Collabora iframe -->
-    <iframe
-      v-if="editorUrl && accessToken"
-      ref="collaboraFrame"
-      name="collabora-frame"
-      class="w-full h-full border-0"
-      :title="fileName"
-      allow="clipboard-read; clipboard-write"
-      allowfullscreen
-    ></iframe>
-
     <!-- Loading state -->
-    <div
-      v-else
-      class="flex items-center justify-center h-full"
-    >
-      <div class="text-center">
-        <LucideLoader2 class="size-8 animate-spin mx-auto mb-4 text-ink-gray-5" />
-        <span class="text-ink-gray-7">{{ __("Loading editor...") }}</span>
+    <div v-if="loading" class="loading-container">
+      <div class="loading-content">
+        <div class="spinner"></div>
+        <p class="loading-text">{{ __('Loading editor...') }}</p>
       </div>
     </div>
+
+    <!-- Error state -->
+    <div v-else-if="error" class="error-container">
+      <div class="error-content">
+        <p class="error-title">{{ __('Loading error') }}</p>
+        <p class="error-message">{{ error }}</p>
+        <button @click="loadEditor" class="retry-button">
+          {{ __('Retry') }}
+        </button>
+      </div>
+    </div>
+
+    <!-- Editor iframe -->
+    <iframe
+      v-show="!loading && !error"
+      ref="editorFrame"
+      name="collabora-frame"
+      class="editor-frame"
+      :title="fileName"
+      sandbox="allow-scripts allow-same-origin allow-forms allow-popups allow-popups-to-escape-sandbox"
+      allow="clipboard-read; clipboard-write"
+      @load="onFrameLoad"
+    />
   </div>
 </template>
 
 <script setup>
-import { ref, onMounted, onUnmounted, watch, nextTick } from "vue"
-import { createResource } from "frappe-ui"
+import { ref, onMounted, onUnmounted, nextTick } from 'vue'
+import { createResource } from 'frappe-ui'
 
 const props = defineProps({
   fileId: {
     type: String,
-    required: true,
-  },
-  fileName: {
-    type: String,
-    default: "Document",
-  },
+    required: true
+  }
 })
 
-const emit = defineEmits(["close", "saved"])
+const emit = defineEmits(['close', 'save', 'error', 'loaded'])
 
-const editorUrl = ref(null)
-const accessToken = ref(null)
-const collaboraForm = ref(null)
-const collaboraFrame = ref(null)
+// State
+const loading = ref(true)
+const error = ref(null)
+const editorUrl = ref('')
+const accessToken = ref('')
+const accessTokenTtl = ref(0)
+const fileName = ref('')
 
-// Resource to get editor configuration
-const editorConfig = createResource({
-  url: "drive_wopi.wopi.discovery.get_editor_config",
-  makeParams() {
-    return { file_id: props.fileId }
-  },
+// Refs
+const wopiForm = ref(null)
+const editorFrame = ref(null)
+
+// Translation helper
+const __ = (text) => {
+  if (window.__ && typeof window.__ === 'function') {
+    return window.__(text)
+  }
+  return text
+}
+
+// API Resource
+const editorConfigResource = createResource({
+  url: 'drive_wopi.wopi.discovery.get_editor_config',
   onSuccess(data) {
-    if (data.editor_url && data.access_token) {
-      editorUrl.value = data.editor_url
-      accessToken.value = data.access_token
+    editorUrl.value = data.editor_url
+    accessToken.value = data.access_token
+    accessTokenTtl.value = data.access_token_ttl
+    fileName.value = data.file_name
 
-      // Submit the form after setting values
-      nextTick(() => {
-        if (collaboraForm.value) {
-          collaboraForm.value.submit()
-        }
-      })
-    }
+    // Submit form after next render
+    nextTick(() => {
+      if (wopiForm.value) {
+        wopiForm.value.submit()
+      }
+    })
   },
-  onError(error) {
-    console.error("Failed to get editor config:", error)
-  },
+  onError(err) {
+    error.value = err.message || __('Unable to load editor')
+    loading.value = false
+    emit('error', err)
+  }
 })
+
+// Load editor
+async function loadEditor() {
+  loading.value = true
+  error.value = null
+
+  await editorConfigResource.submit({
+    file_id: props.fileId
+  })
+}
+
+// Handle iframe load
+function onFrameLoad() {
+  loading.value = false
+  emit('loaded')
+}
 
 // Handle PostMessage from Collabora
 function handlePostMessage(event) {
-  // Verify origin if needed
   const data = event.data
 
-  if (typeof data === "string") {
-    try {
-      const parsed = JSON.parse(data)
-      handleCollaboraMessage(parsed)
-    } catch (e) {
-      // Not JSON, ignore
+  if (typeof data === 'object' && data.MessageId) {
+    switch (data.MessageId) {
+      case 'UI_Close':
+        emit('close')
+        break
+      case 'Action_Save':
+      case 'Doc_ModifiedStatus':
+        if (data.Values?.Modified === false) {
+          emit('save')
+        }
+        break
+      case 'App_LoadingStatus':
+        if (data.Values?.Status === 'Document_Loaded') {
+          loading.value = false
+          emit('loaded')
+        }
+        break
     }
-  } else if (typeof data === "object") {
-    handleCollaboraMessage(data)
   }
 }
 
-function handleCollaboraMessage(message) {
-  const messageId = message.MessageId || message.message_id
-
-  switch (messageId) {
-    case "UI_Close":
-    case "close":
-      emit("close")
-      break
-    case "Doc_ModifiedStatus":
-      // Document modification status changed
-      if (message.Values && message.Values.Modified === false) {
-        emit("saved")
-      }
-      break
-    case "Action_Save_Resp":
-      // Save response
-      if (message.Values && message.Values.success) {
-        emit("saved")
-      }
-      break
+// Send command to Collabora
+function sendCommand(command) {
+  if (editorFrame.value && editorFrame.value.contentWindow) {
+    editorFrame.value.contentWindow.postMessage(
+      JSON.stringify(command),
+      '*'
+    )
   }
 }
 
+// Force save
+function save() {
+  sendCommand({
+    MessageId: 'Action_Save',
+    Values: { DontTerminateEdit: true }
+  })
+}
+
+// Lifecycle
 onMounted(() => {
-  // Load editor configuration
-  editorConfig.fetch()
-
-  // Listen for PostMessage from Collabora
-  window.addEventListener("message", handlePostMessage)
+  window.addEventListener('message', handlePostMessage)
+  loadEditor()
 })
 
 onUnmounted(() => {
-  window.removeEventListener("message", handlePostMessage)
+  window.removeEventListener('message', handlePostMessage)
 })
 
-// Watch for fileId changes
-watch(
-  () => props.fileId,
-  () => {
-    editorConfig.fetch()
-  }
-)
+// Expose methods to parent
+defineExpose({
+  reload: loadEditor,
+  save
+})
 </script>
 
 <style scoped>
 .collabora-editor-container {
-  min-height: 500px;
+  width: 100%;
+  height: 100%;
+  min-height: 600px;
+  position: relative;
+  background-color: #f5f5f5;
+}
+
+.hidden {
+  display: none;
+}
+
+.loading-container,
+.error-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  min-height: 400px;
+}
+
+.loading-content,
+.error-content {
+  text-align: center;
+}
+
+.spinner {
+  width: 32px;
+  height: 32px;
+  border: 3px solid #e5e7eb;
+  border-top-color: #3b82f6;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  margin: 0 auto 12px;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.loading-text {
+  color: #6b7280;
+  font-size: 14px;
+}
+
+.error-title {
+  color: #dc2626;
+  font-weight: 500;
+  margin-bottom: 4px;
+}
+
+.error-message {
+  color: #6b7280;
+  font-size: 14px;
+  margin-bottom: 12px;
+}
+
+.retry-button {
+  padding: 8px 16px;
+  background-color: #3b82f6;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 14px;
+  transition: background-color 0.2s;
+}
+
+.retry-button:hover {
+  background-color: #2563eb;
+}
+
+.editor-frame {
+  width: 100%;
+  height: 100%;
+  border: none;
+  min-height: 600px;
 }
 </style>
