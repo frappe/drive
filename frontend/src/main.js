@@ -56,4 +56,3 @@ app.component("FormControl", FormControl)
 app.component("Button", Button)
 
 app.mount("#app")
-// Build trigger 1766405515
