@@ -1,2 +1,0 @@
-import{_ as t}from"./GenericPage-b5bc6a62.js";import{c as r,k as e,o as s,a8 as a,Y as i}from"./index-58a6299a.js";import"./ListView-e9d3383f.js";import"./ErrorPage-d172bc0a.js";import"./folder-open-dot-5ae1fe40.js";const u={__name:"Trash",setup(o){return(p,c)=>(s(),r(t,{"get-entities":e(a),empty:{icon:e(i),title:"Trash is empty",description:"Trashed files will show up here - you can restore them."}},null,8,["get-entities","empty"]))}};export{u as default};
-//# sourceMappingURL=Trash-1e0f94d6.js.map

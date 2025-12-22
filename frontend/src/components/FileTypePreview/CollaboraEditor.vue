@@ -261,10 +261,15 @@ defineExpose({
 </style>
 
 <style>
+/* Remove padding from renderContainer when Collabora is active */
+#renderContainer:has(.collabora-editor-container) {
+  padding: 0;
+}
+
 /* Style for the back button in Drive's File.vue when Collabora editor is active */
 #renderContainer:has(.collabora-editor-container) > button.absolute.top-4.left-4 {
-  margin-top: 27px;
-  margin-left: 27px;
+  margin-top: -13px;
+  margin-left: -12px;
   background-color: #f8f8f8;
 }
 </style>
