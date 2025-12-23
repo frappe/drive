@@ -44,6 +44,7 @@ import { Dialog, FormControl, createResource } from "frappe-ui"
 import { useRoute, useRouter } from "vue-router"
 import LucideFileText from "~icons/lucide/file-text"
 import LucideFileSpreadsheet from "~icons/lucide/file-spreadsheet"
+import LucidePresentation from "~icons/lucide/presentation"
 
 const route = useRoute()
 const router = useRouter()
@@ -53,7 +54,7 @@ const props = defineProps({
   fileType: {
     type: String,
     required: true,
-    validator: (value) => ["docx", "xlsx"].includes(value),
+    validator: (value) => ["docx", "xlsx", "pptx"].includes(value),
   },
 })
 const emit = defineEmits(["success"])
@@ -64,13 +65,21 @@ const open = ref(true)
 const fileName = ref("")
 
 const dialogTitle = computed(() => {
-  return props.fileType === "docx"
-    ? __("Create a Word Document")
-    : __("Create a Spreadsheet")
+  const titles = {
+    docx: __("Create a Word Document"),
+    xlsx: __("Create a Spreadsheet"),
+    pptx: __("Create a Presentation"),
+  }
+  return titles[props.fileType] || __("Create a Document")
 })
 
 const fileIcon = computed(() => {
-  return props.fileType === "docx" ? LucideFileText : LucideFileSpreadsheet
+  const icons = {
+    docx: LucideFileText,
+    xlsx: LucideFileSpreadsheet,
+    pptx: LucidePresentation,
+  }
+  return icons[props.fileType] || LucideFileText
 })
 
 const createFile = createResource({

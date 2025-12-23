@@ -32,6 +32,13 @@
     file-type="xlsx"
     @success="(data) => addToList(data, 'Spreadsheet')"
   />
+  <NewOfficeFileDialog
+    v-else-if="dialog === 'powerpoint'"
+    v-model="dialog"
+    :parent="$route.params.entityName"
+    file-type="pptx"
+    @success="(data) => addToList(data, 'Presentation')"
+  />
 
   <!-- Mutation dialogs -->
   <RenameDialog

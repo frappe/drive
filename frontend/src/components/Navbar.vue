@@ -167,6 +167,7 @@ import LucideGalleryVerticalEnd from "~icons/lucide/gallery-vertical-end"
 import LucideFolderPlus from "~icons/lucide/folder-plus"
 import LucideFileSpreadsheet from "~icons/lucide/file-spreadsheet"
 import LucideFileText from "~icons/lucide/file-text"
+import LucidePresentation from "~icons/lucide/presentation"
 
 const COMPONENT_MAP = {
   Home: LucideHome,
@@ -341,6 +342,11 @@ const newEntityOptions = [
         label: "Excel",
         icon: LucideFileSpreadsheet,
         onClick: () => (dialog.value = "excel"),
+      },
+      {
+        label: "PowerPoint",
+        icon: LucidePresentation,
+        onClick: () => (dialog.value = "powerpoint"),
       },
       {
         label: "Presentation",
