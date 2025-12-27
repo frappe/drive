@@ -83,7 +83,7 @@ def notify_mentions(entity_name, mentions, comment=False):
             mention,
             "Mention",
             entity,
-            f"You were mentioned in a {'comment in' if comment else 'document:'} {entity.title}",
+            f"You were mentioned in a {'comment in:' if comment else 'document:'} {entity.title}",
         )
 
 

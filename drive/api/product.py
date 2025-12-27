@@ -407,7 +407,7 @@ def check_is_admin():
     return {"is_admin": "Drive Admin" in frappe.get_roles()}
 
 
-@frappe.whitelist()
+@frappe.whitelist(allow_guest=True)
 def disk_settings(**kwargs):
     settings = frappe.get_single("Drive Disk Settings")
     if not check_is_admin()["is_admin"]:

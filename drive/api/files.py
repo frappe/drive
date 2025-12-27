@@ -935,10 +935,10 @@ def search(query):
         return {"error": str(e)}
 
 
-@frappe.whitelist()
+@frappe.whitelist(allow_guest=True)
 def get_translate():
     return {
-        l["old_name"]: l["name"] for l in frappe.get_list("Drive File", fields=["old_name", "name"]) if l["old_name"]
+        l["old_name"]: l["name"] for l in frappe.get_all("Drive File", fields=["old_name", "name"]) if l["old_name"]
     }
 
 

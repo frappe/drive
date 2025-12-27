@@ -46,7 +46,7 @@ const props = defineProps({
   },
 })
 
-if (!diskSettings.data && store.getters.isLoggedIn) diskSettings.fetch()
+if (!diskSettings.data) diskSettings.fetch()
 const error = computed(() => {
   const limit = diskSettings.data?.preview_size || 100
   if (!Object.keys(RENDERS).includes(props.previewEntity.file_type))
