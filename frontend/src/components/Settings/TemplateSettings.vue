@@ -82,6 +82,7 @@
             type="text"
             variant="outline"
             v-model="formData.title"
+            autocomplete="off"
             :placeholder="__('Enter template title')"
             label="Title"
             :required="true"
@@ -95,7 +96,7 @@
               ref="textEditor"
               :content="formData.content"
               :editable="true"
-              editor-class="prose-sm max-w-none min-h-[300px] px-3 py-2 border rounded"
+              editor-class="prose-sm max-w-none min-h-[300px] max-h-[300px] overflow-y-auto px-3 py-2 border rounded"
             />
           </div>
         </div>
