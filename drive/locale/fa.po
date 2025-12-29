@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: frappe\n"
 "Report-Msgid-Bugs-To: developers@frappe.io\n"
 "POT-Creation-Date: 2025-12-05 16:12+0000\n"
-"PO-Revision-Date: 2025-12-21 19:07\n"
+"PO-Revision-Date: 2025-12-29 20:09\n"
 "Last-Translator: developers@frappe.io\n"
 "Language-Team: Persian\n"
 "MIME-Version: 1.0\n"
@@ -106,7 +106,7 @@ msgstr "برنامه‌ها"
 #. Label of the as_guest (Check) field in DocType 'Drive User Invitation'
 #: drive/drive/doctype/drive_user_invitation/drive_user_invitation.json
 msgid "As Guest"
-msgstr ""
+msgstr "به عنوان مهمان"
 
 #. Label of the auto_detect_links (Check) field in DocType 'Drive Settings'
 #: drive/drive/doctype/drive_settings/drive_settings.json
@@ -408,7 +408,7 @@ msgstr "نوع موجودیت"
 #. Settings'
 #: drive/drive/doctype/drive_disk_settings/drive_disk_settings.json
 msgid "Example format: https://s3.ap-south-1.amazonaws.com"
-msgstr ""
+msgstr "قالب نمونه: https://s3.ap-south-1.amazonaws.com"
 
 #. Option for the 'Status' (Select) field in DocType 'Drive User Invitation'
 #: drive/drive/doctype/drive_user_invitation/drive_user_invitation.json
@@ -428,11 +428,11 @@ msgstr "حجم فایل"
 #. Label of the file_size (Int) field in DocType 'Drive Transfer'
 #: drive/drive/doctype/drive_transfer/drive_transfer.json
 msgid "File size"
-msgstr ""
+msgstr "حجم فایل"
 
 #: frontend/src/components/DriveToolBar.vue:40
 msgid "Find"
-msgstr ""
+msgstr "پیدا کردن"
 
 #: frontend/src/components/Settings/ProfileSettings.vue:82
 msgid "First Name"
@@ -509,7 +509,7 @@ msgstr "گروه است"
 #. Label of the is_link (Check) field in DocType 'Drive File'
 #: drive/drive/doctype/drive_file/drive_file.json
 msgid "Is Link"
-msgstr ""
+msgstr "لینک است"
 
 #. Label of the is_private (Check) field in DocType 'Drive File'
 #: drive/drive/doctype/drive_file/drive_file.json
@@ -519,7 +519,7 @@ msgstr "خصوصی است"
 #. Label of the resolved (Check) field in DocType 'Drive Comment'
 #: drive/drive/doctype/drive_comment/drive_comment.json
 msgid "Is Resolved"
-msgstr ""
+msgstr "حل شده است"
 
 #. Label of the jwt_key (Data) field in DocType 'Drive Disk Settings'
 #: drive/drive/doctype/drive_disk_settings/drive_disk_settings.json
@@ -533,7 +533,7 @@ msgstr "آخرین دسترسی"
 #. Label of the last_interaction (Datetime) field in DocType 'Drive Entity Log'
 #: drive/drive/doctype/drive_entity_log/drive_entity_log.json
 msgid "Last Interaction"
-msgstr ""
+msgstr "آخرین تعامل"
 
 #: frontend/src/components/ListView.vue:170
 msgid "Last Modified"
@@ -550,7 +550,10 @@ msgid "Legacy option.\n"
 "<br>\n"
 "<br>\n"
 "By default, Drive stores files the way you see it. If this option is checked, the files are store flatly, with randomized names.\n"
-msgstr ""
+msgstr "گزینه‌ی قدیمی.\n"
+"<br>\n"
+"<br>\n"
+"به طور پیش‌فرض، درایو فایل‌ها را به روشی که می‌بینید ذخیره می‌کند. اگر این گزینه علامت زده شود، فایل‌ها به صورت تخت (flat) و با نام‌های تصادفی ذخیره می‌شوند.\n"
 
 #: drive/public/js/TreeNode.vue:52
 msgid "Load more"
@@ -567,7 +570,7 @@ msgstr "خروج"
 #. Label of the login_count (Int) field in DocType 'Account Request'
 #: drive/drive/doctype/account_request/account_request.json
 msgid "Login Count"
-msgstr ""
+msgstr "تعداد ورود"
 
 #. Label of the mime_type (Data) field in DocType 'Drive File'
 #: drive/drive/doctype/drive_file/drive_file.json
@@ -635,7 +638,7 @@ msgstr "جدید"
 
 #: frontend/src/components/Settings/NewTagDialog.vue:4
 msgid "New Tag"
-msgstr ""
+msgstr "تگ جدید"
 
 #: frontend/src/components/Settings/UserListSettings.vue:372
 msgid "New Team"
@@ -652,7 +655,7 @@ msgstr "بدون برچسب"
 
 #: drive/public/js/ff_integration.bundle.js:29
 msgid "No teams available"
-msgstr ""
+msgstr "هیچ تیمی در دسترس نیست"
 
 #. Label of the oauth_signup (Check) field in DocType 'Account Request'
 #: drive/drive/doctype/account_request/account_request.json
@@ -677,7 +680,7 @@ msgstr "نام قدیمی"
 #. Label of the old_value (Data) field in DocType 'Drive Entity Activity Log'
 #: drive/drive/doctype/drive_entity_activity_log/drive_entity_activity_log.json
 msgid "Old Value"
-msgstr ""
+msgstr "مقدار قدیمی"
 
 #. Description of the 'S3 Bucket' (Data) field in DocType 'Drive Team'
 #: drive/drive/doctype/drive_team/drive_team.json
@@ -691,7 +694,7 @@ msgstr "باز"
 #: drive/drive/doctype/drive_file/drive_file.js:9
 #: drive/drive/doctype/drive_team/drive_team.js:6
 msgid "Open in Drive"
-msgstr ""
+msgstr "باز کردن در درایو"
 
 #: frontend/src/components/Sidebar.vue:165
 msgid "Others"
@@ -764,12 +767,12 @@ msgstr "صفی برای تمام تغییرات اعمال نشده در دسک�
 #. Label of the quota (Int) field in DocType 'Drive Team'
 #: drive/drive/doctype/drive_team/drive_team.json
 msgid "Quota"
-msgstr ""
+msgstr "سهمیه"
 
 #. Label of the raw_content (Long Text) field in DocType 'Drive Document'
 #: drive/drive/doctype/drive_document/drive_document.json
 msgid "Raw Content"
-msgstr ""
+msgstr "محتوای خام"
 
 #. Label of the read (Check) field in DocType 'Drive Notification'
 #. Label of the read (Check) field in DocType 'Drive Permission'
@@ -780,7 +783,7 @@ msgstr "خواندن"
 
 #: frontend/src/components/InfoPopup.vue:85
 msgid "Reading time"
-msgstr ""
+msgstr "زمان خواندن"
 
 #. Label of the referral_source (Data) field in DocType 'Account Request'
 #: drive/drive/doctype/account_request/account_request.json
@@ -800,7 +803,7 @@ msgstr ""
 
 #: frontend/src/components/GenericPage.vue:381
 msgid "Remove from Recents"
-msgstr ""
+msgstr "حذف از موارد اخیر"
 
 #: frontend/src/components/GenericPage.vue:342
 #: frontend/src/components/Navbar.vue:237
@@ -815,7 +818,7 @@ msgstr "پاسخ می‌دهد"
 #. Label of the request_key (Data) field in DocType 'Account Request'
 #: drive/drive/doctype/account_request/account_request.json
 msgid "Request Key"
-msgstr ""
+msgstr "درخواست کلید"
 
 #. Label of the s3_section (Section Break) field in DocType 'Drive Disk
 #. Settings'
@@ -867,7 +870,7 @@ msgstr "نمایش اطلاعات"
 #. Label of the signature_version (Data) field in DocType 'Drive Disk Settings'
 #: drive/drive/doctype/drive_disk_settings/drive_disk_settings.json
 msgid "Signature Version"
-msgstr ""
+msgstr "نسخه امضا"
 
 #. Label of the signed_up (Check) field in DocType 'Account Request'
 #: drive/drive/doctype/account_request/account_request.json
@@ -967,7 +970,7 @@ msgstr "تیم"
 #. Label of the team_domain (Data) field in DocType 'Drive Team'
 #: drive/drive/doctype/drive_team/drive_team.json
 msgid "Team Domain"
-msgstr ""
+msgstr "دامنه تیم"
 
 #. Label of the team_prefix (Select) field in DocType 'Drive Disk Settings'
 #: drive/drive/doctype/drive_disk_settings/drive_disk_settings.json
@@ -983,7 +986,7 @@ msgstr "تیم‌ها"
 #. Label of the thumbnail_prefix (Data) field in DocType 'Drive Disk Settings'
 #: drive/drive/doctype/drive_disk_settings/drive_disk_settings.json
 msgid "Thumbnail prefix"
-msgstr ""
+msgstr "پیشوند تصویر بندانگشتی"
 
 #. Label of the title (Data) field in DocType 'Drive Doc Version'
 #. Label of the title (Data) field in DocType 'Drive Document Version'
@@ -1039,7 +1042,7 @@ msgstr "آپلود"
 #. Settings'
 #: drive/drive/doctype/drive_disk_settings/drive_disk_settings.json
 msgid "Used to configure maximum file sizes of in-browser previews (in megabytes)."
-msgstr ""
+msgstr "برای پیکربندی حداکثر اندازه فایل‌های پیش‌نمایش درون مرورگر (برحسب مگابایت) استفاده می‌شود."
 
 #. Label of the user (Link) field in DocType 'Drive Desktop Client'
 #. Label of the user (Link) field in DocType 'Drive Entity Log'
@@ -1073,7 +1076,7 @@ msgstr "نسخه‌ها"
 
 #: frontend/src/components/DriveToolBar.vue:26
 msgid "With you"
-msgstr ""
+msgstr "با تو"
 
 #: frontend/src/components/InfoPopup.vue:69
 msgid "Words"
@@ -1093,7 +1096,7 @@ msgstr "نویسنده"
 #. Label of the writer_settings (JSON) field in DocType 'Drive Settings'
 #: drive/drive/doctype/drive_settings/drive_settings.json
 msgid "Writer Settings"
-msgstr ""
+msgstr "تنظیمات نویسنده"
 
 #: frontend/src/components/Settings/StorageSettings.vue:19
 msgid "You"
@@ -1150,7 +1153,7 @@ msgstr "هیچ کدام"
 
 #: frontend/src/components/InfoPopup.vue:141
 msgid "people"
-msgstr ""
+msgstr "مردم"
 
 #: frontend/src/components/InfoPopup.vue:141
 msgid "person"
@@ -1166,7 +1169,7 @@ msgstr "تغییر نام"
 
 #: frontend/src/components/DriveToolBar.vue:9
 msgid "selected"
-msgstr ""
+msgstr "انتخاب شده"
 
 #. Option for the 'Action Type' (Select) field in DocType 'Drive Entity
 #. Activity Log'
