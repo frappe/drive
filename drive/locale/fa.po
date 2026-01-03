@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: frappe\n"
 "Report-Msgid-Bugs-To: developers@frappe.io\n"
 "POT-Creation-Date: 2025-12-05 16:12+0000\n"
-"PO-Revision-Date: 2025-12-29 20:09\n"
+"PO-Revision-Date: 2026-01-03 20:24\n"
 "Last-Translator: developers@frappe.io\n"
 "Language-Team: Persian\n"
 "MIME-Version: 1.0\n"
@@ -1112,7 +1112,7 @@ msgstr "comment"
 #. Activity Log'
 #: drive/drive/doctype/drive_entity_activity_log/drive_entity_activity_log.json
 msgid "create"
-msgstr "ایجاد كردن"
+msgstr "ایجاد کردن"
 
 #. Option for the 'Action Type' (Select) field in DocType 'Drive Entity
 #. Activity Log'
