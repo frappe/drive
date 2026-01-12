@@ -200,3 +200,46 @@ after_request = "drive.api.product.after_request"
 
 
 signup_form_template = "templates/signup.html"
+ALLOWED_PATHS = [
+    "/api/method/create-site-migration",
+    "/api/method/find-my-sites",
+    "/api/method/frappe.realtime.get_user_info",
+    "/api/method/frappe.realtime.can_subscribe_doc",
+    "/api/method/frappe.realtime.can_subscribe_doctype",
+    "/api/method/frappe.realtime.has_permission",
+    "/api/method/frappe.www.login.login_via_frappe",
+    "/api/method/frappe.integrations.oauth2.authorize",
+    "/api/method/frappe.integrations.oauth2.approve",
+    "/api/method/frappe.integrations.oauth2.get_token",
+    "/api/method/frappe.integrations.oauth2.openid_profile",
+    "/api/method/frappe.integrations.oauth2_logins.login_via_frappe",
+    "/api/method/frappe.website.doctype.web_page_view.web_page_view.make_view_log",
+    "/api/method/ping",
+    "/api/method/login",
+    "/api/method/logout",
+    "/api/method/press.press.doctype.razorpay_webhook_log.razorpay_webhook_log.razorpay_webhook_handler",
+    "/api/method/press.press.doctype.razorpay_webhook_log.razorpay_webhook_log.razorpay_authorized_payment_handler",
+    "/api/method/press.press.doctype.stripe_webhook_log.stripe_webhook_log.stripe_webhook_handler",
+    "/api/method/press.press.doctype.drip_email.drip_email.unsubscribe",
+    "/api/method/upload_file",
+    "/api/method/frappe.search.web_search",
+    "/api/method/frappe.email.queue.unsubscribe",
+    "/api/method/press.utils.telemetry.capture_read_event",
+    "/api/method/validate_plan_change",
+    "/api/method/marketplace-apps",
+    "/api/method/press.www.dashboard.get_context_for_dev",
+    "/api/method/frappe.website.doctype.web_form.web_form.accept",
+    "/api/method/frappe.core.doctype.user.user.test_password_strength",
+    "/api/method/frappe.core.doctype.user.user.update_password",
+]
+
+ALLOWED_WILDCARD_PATHS = [
+    "/api/method/drive.api.",
+    "/api/method/frappe.integrations.oauth2_logins.",
+]
+
+DENIED_PATHS = []
+
+DENIED_WILDCARD_PATHS = [
+    "/api/",
+]
