@@ -137,7 +137,10 @@ def get_teams(user=None, details=None, exclude_personal=True):
 @frappe.whitelist(allow_guest=True)
 def get_entity_with_permissions(entity_name):
     """
-    Return file data with permissions
+    Return file data with permissions. Validates that the request path matches
+    the entity type and returns redirect information if there's a mismatch.
+    
+    :param entity_name: Name of the entity to fetch
     """
     entity = frappe.db.get_value(
         "Drive File",
@@ -147,6 +150,45 @@ def get_entity_with_permissions(entity_name):
     )
     if not entity:
         frappe.throw("We couldn't find what you're looking for.", {"error": frappe.NotFound})
+
+    # Determine actual entity type using get_file_type
+    file_type = get_file_type(entity)
+    
+    # Map file_type to route type (Document, Folder, or anything else is file)
+    if file_type == "Folder":
+        actual_type = "folder"
+    elif file_type in ["Document", "Frappe Document"]:
+        actual_type = "document"
+    else:
+        actual_type = "file"
+    
+    request_path = frappe.request.path
+    expected_type = None
+    
+    if "/w/" in request_path:
+        expected_type = "document"
+    elif "/d/" in request_path:
+        expected_type = "folder"
+    elif "/f/" in request_path:
+        expected_type = "file"
+    
+    # Check if type matches expected type and return redirect if mismatch
+    if expected_type and expected_type != actual_type:
+        route_map = {
+            "folder": f"/d/{entity_name}",
+            "document": f"/w/{entity_name}",
+            "file": f"/f/{entity_name}",
+        }
+        correct_route = route_map.get(actual_type)
+        if correct_route:
+            return {
+                "redirect": True,
+                "route": correct_route,
+                "entity_type": actual_type,
+                "expected_type": expected_type
+            }
+        # If no valid route found, throw error
+        frappe.throw("Invalid entity type.", frappe.ValidationError)
 
     entity["in_home"] = entity.team == get_default_team()
     user_access = get_user_access(entity)

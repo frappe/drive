@@ -297,7 +297,13 @@ const document = createResource({
   params: {
     entity_name: props.entityName,
   },
-  onSuccess,
+  onSuccess(data) {
+    if (data.redirect) {
+      router.push(data.route)
+      return
+    }
+    onSuccess(data)
+  },
 })
 store.commit("setCurrentResource", document)
 

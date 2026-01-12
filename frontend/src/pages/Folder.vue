@@ -53,10 +53,15 @@ const onSuccess = (entity) => {
 const e = computed(() => props.entityName)
 const currentFolder = createResource({
   url: "drive.api.permissions.get_entity_with_permissions",
-  transform(entity) {
-    return prettyData([entity])[0]
+  onSuccess(data) {
+    if (data.redirect) {
+      router.push(data.route)
+      return
+    }
+    const prettyEntity = prettyData([data])[0]
+    currentFolder.setData(prettyEntity)
+    onSuccess(prettyEntity)
   },
-  onSuccess,
 })
 store.commit("setCurrentResource", currentFolder)
 watch(e, (v) => currentFolder.fetch({ entity_name: v }), { immediate: true })
