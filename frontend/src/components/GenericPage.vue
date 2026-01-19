@@ -26,7 +26,7 @@
       :get-entities="getEntities || { data: [] }"
     />
     <div
-      v-if="!props.getEntities.data"
+      v-if="props.getEntities.loading"
       class="m-auto"
       style="transform: translate(0, -88.5px)"
     >
@@ -264,13 +264,13 @@ watchEffect(() => {
   if (verifyAccess.value?.write) useEventListener("paste", pasteObj)
 })
 
-const refreshData = () => {
+const refreshData = debounce(() => {
   const params = { team: team.value === "home" ? "" : team.value || "" }
   if (sortOrder.value)
     params.order_by =
       sortOrder.value.field + (sortOrder.value.ascending ? " 1" : " 0")
   props.getEntities.fetch()
-}
+}, 100)
 
 watch(
   [verifyAccess, team],

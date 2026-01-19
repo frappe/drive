@@ -160,6 +160,12 @@ def files(
     query = query.limit(limit + 1).offset(start)
     res = query.run(as_dict=True)
 
+    # Check if there's a next page
+    has_next_page = len(res) > limit
+
+    # Remove the extra record if it exists
+    if has_next_page:
+        res = res[:limit]
     child_count_query = (
         frappe.qb.from_(DriveFile)
         .where((DriveFile.team == team) & (DriveFile.is_active == 1))
@@ -210,13 +216,6 @@ def files(
         else:
             r["share_count"] = default
         r |= get_user_access(r["name"])
-
-    # Check if there's a next page
-    has_next_page = len(res) > limit
-
-    # Remove the extra record if it exists
-    if has_next_page:
-        res = res[:limit]
 
     # Return in the format useList expects
     frappe.response["data"] = res

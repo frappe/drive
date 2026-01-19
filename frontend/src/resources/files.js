@@ -10,6 +10,7 @@ import { updateURLSlug } from "@/utils/files"
 export const COMMON_OPTIONS = {
   method: "GET",
   debounce: 500,
+  limit: 100,
   transform(data) {
     return prettyData(data)
   },
@@ -51,7 +52,7 @@ export const getPersonal = useList({
   params: {
     personal: 1,
   },
-  limit: 100,
+  immediate: false,
   cacheKey: "personal-folder-contents",
 })
 
@@ -91,14 +92,20 @@ export const getSlides = createResource({
   },
 })
 
-export const getShared = createResource({
+export const getSharedBy = useList({
   ...COMMON_OPTIONS,
-  url: "drive.api.list.files",
-  cache: "shared-folder-contents",
+  url: "/api/method/drive.api.list.files",
+  cacheKey: "shared-by-folder-contents",
   params: { shared: "by" },
-  makeParams: (params) => {
-    return { ...params }
-  },
+  immediate: false,
+})
+
+export const getSharedWith = useList({
+  ...COMMON_OPTIONS,
+  url: "/api/method/drive.api.list.files",
+  cacheKey: "shared-with-folder-contents",
+  params: { shared: "with" },
+  immediate: false,
 })
 
 export const getTrash = createResource({
@@ -111,13 +118,7 @@ export const getTrash = createResource({
 })
 
 // SETTERS
-export const LISTS = [
-  getPersonal,
-  getTeam,
-  getRecents,
-  getShared,
-  getFavourites,
-]
+export const LISTS = [getPersonal, getTeam, getRecents, getFavourites]
 export const mutate = (entities, func) => {
   LISTS.forEach((l) =>
     l.setData((d) => {
@@ -339,7 +340,6 @@ export const storageBar = createResource({
 })
 
 setCache(getTeam, "home-folder-contents")
-setCache(getShared, "shared-folder-contents")
 setCache(getRecents, "recents-folder-contents")
 setCache(getFavourites, "favourite-folder-contents")
 setCache(getPersonal, "personal-folder-contents")
