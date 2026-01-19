@@ -1,7 +1,7 @@
 <template>
   <FrappeListView
     ref="container"
-    class="relative select-none p-5 md:pb-15"
+    :class="['relative select-none p-5 md:pb-15', $attrs.class]"
     row-key="name"
     :columns="selectedColumns"
     :rows="formattedRows"
@@ -51,7 +51,10 @@
             />
           </ListGroupRows>
         </div>
-        <ListRows v-else>
+        <ListRows
+          v-else
+          id="scroll-zone"
+        >
           <CustomListRow
             :rows="formattedRows"
             :context-menu="contextMenu"

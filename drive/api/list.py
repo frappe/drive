@@ -30,7 +30,7 @@ def files(
     parent=None,
     order_by="modified 1",
     is_active=1,
-    limit=20,
+    limit=1000,
     start=0,
     favourites_only=0,
     recents_only=0,

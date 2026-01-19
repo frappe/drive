@@ -1,4 +1,4 @@
-import { createResource } from "frappe-ui"
+import { createResource, useList } from "frappe-ui"
 import { toast } from "@/utils/toasts"
 import { openEntity, setTitle } from "@/utils/files"
 import store from "@/store"
@@ -45,13 +45,14 @@ export const getRecents = createResource({
   },
 })
 
-export const getPersonal = createResource({
+export const getPersonal = useList({
   ...COMMON_OPTIONS,
-  url: "drive.api.list.files",
-  cache: "personal-folder-contents",
-  makeParams: (params) => {
-    return { ...params, personal: 1 }
+  url: "/api/method/drive.api.list.files",
+  params: {
+    personal: 1,
   },
+  limit: 100,
+  cacheKey: "personal-folder-contents",
 })
 
 export const getFavourites = createResource({

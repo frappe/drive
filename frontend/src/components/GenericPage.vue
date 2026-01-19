@@ -25,7 +25,6 @@
       :selections="selectedEntitities"
       :get-entities="getEntities || { data: [] }"
     />
-
     <div
       v-if="!props.getEntities.data"
       class="m-auto"
@@ -40,6 +39,7 @@
     />
     <ListView
       v-else-if="$store.state.view === 'list'"
+      :class="searchServer.loading && 'opacity-60'"
       v-model="selections"
       :folder-contents="rows && grouper(rows)"
       :resource="getEntities"
@@ -86,7 +86,15 @@ import { getLink, pasteObj } from "@/utils/files"
 import { toggleFav, clearRecent } from "@/resources/files"
 import { allUsers } from "@/resources/permissions"
 import { entitiesDownload } from "@/utils/download"
-import { ref, computed, watch, watchEffect, provide, inject } from "vue"
+import {
+  ref,
+  computed,
+  watch,
+  watchEffect,
+  provide,
+  inject,
+  onMounted,
+} from "vue"
 import { useRoute } from "vue-router"
 import { useEventListener } from "@vueuse/core"
 import { useStore } from "vuex"
@@ -96,6 +104,7 @@ import { move } from "@/resources/files"
 import { createResource, debounce, LoadingIndicator } from "frappe-ui"
 import { settings } from "@/resources/permissions"
 import emitter from "@/emitter"
+import { useInfiniteScroll } from "@vueuse/core"
 
 import LucideClock from "~icons/lucide/clock"
 import LucideDownload from "~icons/lucide/download"
@@ -179,11 +188,10 @@ watch(
 )
 const searchServer = createResource({
   url: "drive.api.list.search",
-
   makeParams: (params) => ({ ...params, parent: props.id, limit: 100 }),
 })
 
-const searchFunc = debounce(() => {
+const searchFunc = () => {
   if (props.getEntities.data > 250 && !props.getEntities.hasNextPage) {
     const query = new RegExp(search.value, "i")
     rows.value = props.getEntities.data.filter((k) => query.test(k.title))
@@ -194,17 +202,21 @@ const searchFunc = debounce(() => {
       },
       {
         onSuccess: (data) => {
-          rows.value = data
+          rows.value = prettyData(data)
+          console.log("HAHAHAHAHH")
+          props.getEntities._hasNextPage = props.getEntities.hasNextPage
+          console.log("hyy", props.getEntities.hasNextPage)
         },
       }
     )
   }
-}, 500)
+}
+const searchDebounced = debounce(searchFunc, 300)
 
 watch(search, (val) => {
   if (!val) {
     rows.value = props.getEntities.data
-  } else searchFunc()
+  } else searchDebounced()
 })
 
 watch(
@@ -491,6 +503,19 @@ socket.on("list-remove", ({ parent, entity_name }) => {
 socket.on("client-rename", ({ entity_name, title }) => {
   const file = props.getEntities.data.find((k) => k.name === entity_name)
   file.title = title
+})
+
+onMounted(() => {
+  useInfiniteScroll(
+    document.querySelector("#scroll-zone"),
+    () => {
+      if (!props.getEntities.loading) props.getEntities.next()
+    },
+    {
+      distance: 100,
+      canLoadMore: () => !search.value && props.getEntities.hasNextPage,
+    }
+  )
 })
 </script>
 <style>

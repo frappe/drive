@@ -2,28 +2,17 @@
   <div
     class="h-[65%] flex items-center justify-center rounded-t-[calc(theme(borderRadius.lg)-1px)] overflow-hidden"
   >
-    <template v-if="is_image || !getThumbnail?.data">
-      <img
-        v-show="!imgLoaded"
-        loading="lazy"
-        :class="'h-10 w-auto'"
-        :src="backupLink"
-        :draggable="false"
-      >
-      <img
-        v-show="imgLoaded"
-        :class="
-          src === backupLink
-            ? 'h-10 w-auto'
-            : 'h-full min-w-full object-cover rounded-t-[calc(theme(borderRadius.lg)-1px)]'
-        "
-        :src="src"
-        :draggable="false"
-        @load="imgLoaded = true"
-      >
-    </template>
+    <img
+      :class="
+        default_
+          ? 'h-10 w-auto'
+          : 'h-full min-w-full object-cover rounded-t-[calc(theme(borderRadius.lg)-1px)]'
+      "
+      :src
+      :draggable="false"
+    />
     <!-- Direct padding doesn't work -->
-    <div
+    <!-- <div
       v-else
       class="overflow-hidden text-ellipsis whitespace-nowrap h-full w-[calc(100%-1rem)] object-cover rounded-t-[calc(theme(borderRadius.lg)-1px)] py-2"
     >
@@ -31,7 +20,7 @@
         class="prose prose-sm pointer-events-none scale-[.39] ml-0 origin-top-left"
         v-html="getThumbnail.data"
       />
-    </div>
+    </div> -->
   </div>
   <div
     class="p-2 h-[35%] border-t border-gray-100 flex flex-col justify-evenly"
@@ -44,14 +33,14 @@
         <img
           v-if="
             file.file_type !== 'Unknown' &&
-              !file.is_group &&
-              ((imgLoaded && src !== backupLink) || !is_image)
+            !file.is_group &&
+            ((imgLoaded && src !== backupLink) || !is_image)
           "
           loading="lazy"
           class="h-4 w-auto"
           :src="getIconUrl(file.file_type) || '/drive'"
           :draggable="false"
-        >
+        />
         <p class="truncate">
           {{ file.is_group ? childrenSentence + "∙" : "" }}
           {{ file.file_type !== "Unknown" ? file.file_type + "∙" : "" }}
@@ -71,17 +60,21 @@ import { ref, computed } from "vue"
 const props = defineProps({ file: Object })
 
 const [thumbnailLink, backupLink, is_image] = getThumbnailUrl(props.file)
-const src = ref(thumbnailLink || backupLink)
+const src = ref()
+const default_ = ref()
 const imgLoaded = ref(false)
 
-let getThumbnail
-if (!is_image) {
-  getThumbnail = createResource({
-    url: thumbnailLink,
-    cache: ["thumbnail", props.file.name],
-    auto: true,
-  })
+async function loadThumbnail() {
+  if (!thumbnailLink) return
+
+  const res = await fetch(thumbnailLink, { credentials: "include" })
+  const blob = await res.blob()
+  default_.value = +res.headers.get("X-Thumbnail-Default")
+  if (!default_.value)
+    console.log(thumbnailLink, res.headers.get("X-Thumbnail-Default"))
+  src.value = URL.createObjectURL(blob)
 }
+loadThumbnail()
 
 const childrenSentence = computed(() => {
   if (!props.file.children) return "Empty"
