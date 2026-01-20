@@ -278,7 +278,7 @@ export const rename = createResource({
 
 export const createDocument = createResource({
   method: "POST",
-  url: "writer.api.docs.create_document_entity",
+  url: "writer.api.docs.create_document",
   makeParams: (params) => params,
 })
 

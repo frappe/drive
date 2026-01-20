@@ -7,7 +7,6 @@ import {
   frappeRequest,
   Button,
 } from "frappe-ui"
-import { translation } from "frappe-ui/frappe"
 
 import store from "./store"
 import router from "./router"
@@ -16,6 +15,7 @@ import emitter from "@/emitter"
 import "./index.css"
 import { initSocket } from "./socket"
 import focusDirective from "./utils/focus"
+import translation from "./translation"
 import { allUsers } from "@/resources/permissions"
 
 const app = createApp(App)
