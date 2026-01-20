@@ -3,7 +3,7 @@
   <div
     v-if="rows?.length"
     class="grid-container gap-5 p-5 pb-[60px] overflow-y-auto select-none"
-    id="scroll-zone"
+    ref="scrollEl"
   >
     <div
       v-for="file in rows"
@@ -75,7 +75,7 @@
 import GridItem from "@/components/GridItem.vue"
 import emitter from "@/emitter"
 import { Button } from "frappe-ui"
-import { ref, computed } from "vue"
+import { ref, computed, useTemplateRef } from "vue"
 import { openEntity } from "@/utils/files"
 import { useRoute } from "vue-router"
 import { useStore } from "vuex"
@@ -91,6 +91,11 @@ defineEmits(["dropped"])
 const route = useRoute()
 const store = useStore()
 const selections = defineModel(new Set())
+
+const scrollEl = useTemplateRef("scrollEl")
+defineExpose({
+  scrollEl,
+})
 
 const rows = computed(() => props.folderContents)
 const action = settings.data?.single_click === 0 ? "dblclick" : "click"

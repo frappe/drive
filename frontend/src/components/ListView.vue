@@ -53,7 +53,7 @@
         </div>
         <ListRows
           v-else
-          id="scroll-zone"
+          ref="scrollEl"
         >
           <CustomListRow
             :rows="formattedRows"
@@ -111,6 +111,10 @@ const props = defineProps({
 const emit = defineEmits(["dropped"])
 
 const container = useTemplateRef("container")
+const scrollEl = useTemplateRef("scrollEl")
+defineExpose({
+  scrollEl,
+})
 const selections = defineModel(new Set())
 const selectedRow = ref(null)
 

@@ -51,7 +51,13 @@
 <script setup>
 import { ref, h, watch } from "vue"
 import { formatTimeAgo } from "@vueuse/core"
-import { createResource, Avatar, ListView, TabButtons } from "frappe-ui"
+import {
+  createResource,
+  Avatar,
+  ListView,
+  TabButtons,
+  useList,
+} from "frappe-ui"
 import { useStore } from "vuex"
 import { formatDate } from "@/utils/format"
 import emitter from "@/emitter"
@@ -111,8 +117,8 @@ watch(onlyUnread, (newValue) => {
   })
 })
 
-const notifications = createResource({
-  url: "drive.api.notifications.get_notifications",
+const notifications = useList({
+  url: "/api/method/drive.api.notifications.get_notifications",
   auto: true,
   params: {
     only_unread: onlyUnread.value,

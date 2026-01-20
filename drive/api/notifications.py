@@ -8,14 +8,19 @@ def get_link(entity):
 
 
 @frappe.whitelist()
-def get_notifications(only_unread):
+def get_notifications(only_unread, limit=20, offset=0):
     """
-    Get notifications for current user
+    Get notifications for current user (paged)
+    :param limit: page size
+    :param offset: offset for pagination
+    """
 
-    :param only_unread: only get notifications where read is False
-    """
+    limit = int(limit)
+    offset = int(offset)
+
     User = frappe.qb.DocType("User")
     Notification = frappe.qb.DocType("Drive Notification")
+
     fields = [
         Notification.name,
         Notification.to_user,
@@ -30,19 +35,28 @@ def get_notifications(only_unread):
         User.user_image,
         User.full_name,
     ]
+
     query = (
         frappe.qb.from_(Notification)
         .left_join(User)
         .on(Notification.from_user == User.name)
         .select(*fields)
+        .where(Notification.to_user == frappe.session.user)
         .orderby(Notification.creation, order=Order.desc)
+        .limit(limit + 1)
+        .offset(offset)
     )
 
     if only_unread:
         query = query.where(Notification.read == 0)
-    query = query.where(Notification.to_user == frappe.session.user)
-    result = query.run(as_dict=True)
-    return result
+
+    rows = query.run(as_dict=True)
+
+    has_next_page = len(rows) > limit
+    res = rows[:limit]
+
+    frappe.response["data"] = res
+    frappe.response["has_next_page"] = has_next_page
 
 
 @frappe.whitelist()

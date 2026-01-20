@@ -37,13 +37,12 @@ export const getTeams = createResource({
   cache: "teams",
 })
 
-export const getRecents = createResource({
+export const getRecents = useList({
   ...COMMON_OPTIONS,
-  url: "drive.api.list.files",
-  cache: "recents-folder-contents",
-  makeParams: (params) => {
-    return { ...params, recents_only: true }
-  },
+  url: "/api/method/drive.api.list.files",
+  cacheKey: "recents-folder-contents",
+  immediate: false,
+  params: { recents_only: 1 },
 })
 
 export const getPersonal = useList({
@@ -56,13 +55,12 @@ export const getPersonal = useList({
   cacheKey: "personal-folder-contents",
 })
 
-export const getFavourites = createResource({
+export const getFavourites = useList({
   ...COMMON_OPTIONS,
-  url: "drive.api.list.files",
-  cache: "favourite-folder-contents",
-  makeParams: (params) => {
-    return { ...params, favourites_only: 1 }
-  },
+  url: "/api/method/drive.api.list.files",
+  cacheKey: "favourite-folder-contents",
+  immediate: false,
+  params: { favourites_only: 1 },
 })
 
 export const getDocuments = createResource({

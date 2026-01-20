@@ -26,7 +26,7 @@
       :get-entities="getEntities || { data: [] }"
     />
     <div
-      v-if="props.getEntities.loading"
+      v-if="!props.getEntities.data"
       class="m-auto"
       style="transform: translate(0, -88.5px)"
     >
@@ -39,6 +39,7 @@
     />
     <ListView
       v-else-if="$store.state.view === 'list'"
+      ref="viewEl"
       :class="searchServer.loading && 'opacity-60'"
       v-model="selections"
       :folder-contents="rows && grouper(rows)"
@@ -50,6 +51,7 @@
     />
     <GridView
       v-else
+      ref="viewEl"
       v-model="selections"
       :folder-contents="rows"
       :action-items="actionItems"
@@ -93,7 +95,7 @@ import {
   watchEffect,
   provide,
   inject,
-  onMounted,
+  useTemplateRef,
 } from "vue"
 import { useRoute } from "vue-router"
 import { useEventListener } from "@vueuse/core"
@@ -203,9 +205,6 @@ const searchFunc = () => {
       {
         onSuccess: (data) => {
           rows.value = prettyData(data)
-          console.log("HAHAHAHAHH")
-          props.getEntities._hasNextPage = props.getEntities.hasNextPage
-          console.log("hyy", props.getEntities.hasNextPage)
         },
       }
     )
@@ -505,18 +504,20 @@ socket.on("client-rename", ({ entity_name, title }) => {
   file.title = title
 })
 
-onMounted(() => {
-  useInfiniteScroll(
-    document.querySelector("#scroll-zone"),
-    () => {
-      if (!props.getEntities.loading) props.getEntities.next()
+const viewEl = useTemplateRef("viewEl")
+const scrollEl = computed(() => viewEl.value?.scrollEl)
+useInfiniteScroll(
+  scrollEl,
+  () => {
+    if (!props.getEntities.loading) props.getEntities.next()
+  },
+  {
+    distance: 100,
+    canLoadMore: () => {
+      return !search.value && props.getEntities.hasNextPage
     },
-    {
-      distance: 100,
-      canLoadMore: () => !search.value && props.getEntities.hasNextPage,
-    }
-  )
-})
+  }
+)
 </script>
 <style>
 .file-drag #drop-area {
