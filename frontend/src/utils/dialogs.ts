@@ -1,7 +1,6 @@
 import { ref, reactive } from "vue"
-import type { DialogProps } from "frappe-ui/src/components/Dialog/types"
 
-interface DialogOptions extends DialogProps {
+interface DialogOptions {
   key: string
   modelValue: boolean
 }

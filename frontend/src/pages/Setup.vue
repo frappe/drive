@@ -104,12 +104,11 @@
 </template>
 
 <script setup>
-import { createResource, FormControl } from "frappe-ui"
+import { createResource, FormControl, LoadingIndicator } from "frappe-ui"
 import { ref, computed } from "vue"
 import FrappeDriveLogo from "@/components/FrappeDriveLogo.vue"
 import { useRoute } from "vue-router"
 import { useStore } from "vuex"
-import LoadingIndicator from "frappe-ui/src/components/LoadingIndicator.vue"
 import { createTeam } from "@/resources/permissions"
 
 const store = useStore()

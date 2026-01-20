@@ -3,7 +3,7 @@ import store from "@/store"
 import { formatSize } from "@/utils/format"
 import { nextTick } from "vue"
 import { useTimeAgo } from "@vueuse/core"
-import { getFileLink } from "frappe-ui/frappe/drive/js/utils"
+import { getFileLink } from "frappe-ui/drive/js/utils"
 import {
   getRecents,
   mutate,

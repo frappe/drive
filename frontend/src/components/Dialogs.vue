@@ -88,7 +88,7 @@ import NewFolderDialog from "@/components/NewFolderDialog.vue"
 import NewPresentationDialog from "@/components/NewPresentationDialog.vue"
 import NewLinkDialog from "@/components/NewLinkDialog.vue"
 import RenameDialog from "@/components/RenameDialog.vue"
-import { ShareDialog } from "frappe-ui/frappe/drive"
+import { ShareDialog } from "frappe-ui/drive"
 import ConfirmDialog from "@/components/ConfirmDialog.vue"
 import MoveDialog from "@/components/MoveDialog.vue"
 

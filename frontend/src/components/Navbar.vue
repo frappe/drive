@@ -138,7 +138,7 @@ import { getRecents, getTrash, toggleFav } from "@/resources/files"
 import { apps } from "@/resources/permissions"
 import { useRoute } from "vue-router"
 import { newExternal, dynamicList } from "@/utils/files"
-import { getFileLink } from "frappe-ui/frappe/drive/js/utils"
+import { getFileLink } from "frappe-ui/drive/js/utils"
 
 import LucideClock from "~icons/lucide/clock"
 import LucideHome from "~icons/lucide/home"
