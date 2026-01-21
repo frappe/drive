@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: frappe\n"
 "Report-Msgid-Bugs-To: developers@frappe.io\n"
 "POT-Creation-Date: 2025-12-05 16:12+0000\n"
-"PO-Revision-Date: 2025-12-08 17:15\n"
+"PO-Revision-Date: 2026-01-21 11:10\n"
 "Last-Translator: developers@frappe.io\n"
 "Language-Team: Vietnamese\n"
 "MIME-Version: 1.0\n"
@@ -465,7 +465,7 @@ msgstr ""
 #: drive/drive/doctype/drive_file/drive_file.json
 #: drive/drive/doctype/drive_team/drive_team.json
 msgid "Guest"
-msgstr ""
+msgstr "Khách"
 
 #: frontend/src/utils/files.js:209
 msgid "Home"
@@ -639,7 +639,7 @@ msgstr ""
 
 #: frontend/src/components/Settings/UserListSettings.vue:372
 msgid "New Team"
-msgstr ""
+msgstr "Nhóm mới"
 
 #. Label of the new_value (Data) field in DocType 'Drive Entity Activity Log'
 #: drive/drive/doctype/drive_entity_activity_log/drive_entity_activity_log.json
