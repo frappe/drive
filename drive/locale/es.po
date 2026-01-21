@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: frappe\n"
 "Report-Msgid-Bugs-To: developers@frappe.io\n"
 "POT-Creation-Date: 2025-12-05 16:12+0000\n"
-"PO-Revision-Date: 2025-12-15 18:18\n"
+"PO-Revision-Date: 2026-01-21 11:10\n"
 "Last-Translator: developers@frappe.io\n"
 "Language-Team: Spanish\n"
 "MIME-Version: 1.0\n"
@@ -423,7 +423,7 @@ msgstr ""
 #. Label of the file_size (Int) field in DocType 'Drive File'
 #: drive/drive/doctype/drive_file/drive_file.json
 msgid "File Size"
-msgstr "Tamaño de archivo"
+msgstr ""
 
 #. Label of the file_size (Int) field in DocType 'Drive Transfer'
 #: drive/drive/doctype/drive_transfer/drive_transfer.json
@@ -474,7 +474,7 @@ msgstr ""
 #. Label of the ip_address (Data) field in DocType 'Account Request'
 #: drive/drive/doctype/account_request/account_request.json
 msgid "IP Address"
-msgstr "Dirección IP"
+msgstr ""
 
 #. Label of the icon (Data) field in DocType 'Drive Team'
 #: drive/drive/doctype/drive_team/drive_team.json
@@ -514,7 +514,7 @@ msgstr ""
 #. Label of the is_private (Check) field in DocType 'Drive File'
 #: drive/drive/doctype/drive_file/drive_file.json
 msgid "Is Private"
-msgstr "Es privado"
+msgstr ""
 
 #. Label of the resolved (Check) field in DocType 'Drive Comment'
 #: drive/drive/doctype/drive_comment/drive_comment.json
@@ -592,12 +592,12 @@ msgstr "Manual"
 #. Option for the 'Type' (Select) field in DocType 'Drive Notification'
 #: drive/drive/doctype/drive_notification/drive_notification.json
 msgid "Mention"
-msgstr "Mencionar"
+msgstr ""
 
 #. Label of the mentions (JSON) field in DocType 'Drive Document'
 #: drive/drive/doctype/drive_document/drive_document.json
 msgid "Mentions"
-msgstr "Menciones"
+msgstr ""
 
 #. Label of the message (Data) field in DocType 'Drive Entity Activity Log'
 #. Label of the message (Text) field in DocType 'Drive Notification'
@@ -727,7 +727,7 @@ msgstr "Permisos"
 #. Label of the personal (Check) field in DocType 'Drive Team'
 #: drive/drive/doctype/drive_team/drive_team.json
 msgid "Personal"
-msgstr "Personal"
+msgstr ""
 
 #: frontend/src/components/Settings/ProfileSettings.vue:94
 msgid "Preferences"
@@ -736,7 +736,7 @@ msgstr ""
 #. Label of the prefix (Data) field in DocType 'Drive Team'
 #: drive/drive/doctype/drive_team/drive_team.json
 msgid "Prefix"
-msgstr "Prefijo"
+msgstr ""
 
 #: frontend/src/components/GenericPage.vue:298
 msgid "Preview"
@@ -749,7 +749,7 @@ msgstr ""
 
 #: frontend/src/components/Settings/ProfileSettings.vue:3
 msgid "Profile"
-msgstr "Perfil"
+msgstr ""
 
 #. Option for the 'Status' (Select) field in DocType 'Drive User Invitation'
 #: drive/drive/doctype/drive_user_invitation/drive_user_invitation.json
@@ -857,7 +857,7 @@ msgstr "Compartir"
 
 #: frontend/src/components/InfoPopup.vue:132 frontend/src/utils/files.js:199
 msgid "Shared"
-msgstr "Compartido"
+msgstr ""
 
 #: frontend/src/components/GenericPage.vue:348
 #: frontend/src/components/Navbar.vue:243
@@ -1082,7 +1082,7 @@ msgstr ""
 #. Label of the write (Check) field in DocType 'Drive Permission'
 #: drive/drive/doctype/drive_permission/drive_permission.json
 msgid "Write"
-msgstr "Escribir"
+msgstr ""
 
 #. Label of the writer_section (Section Break) field in DocType 'Drive
 #. Settings'
@@ -1109,7 +1109,7 @@ msgstr "comentario"
 #. Activity Log'
 #: drive/drive/doctype/drive_entity_activity_log/drive_entity_activity_log.json
 msgid "create"
-msgstr "crear"
+msgstr ""
 
 #. Option for the 'Action Type' (Select) field in DocType 'Drive Entity
 #. Activity Log'
@@ -1117,7 +1117,7 @@ msgstr "crear"
 #: drive/drive/doctype/drive_entity_activity_log/drive_entity_activity_log.json
 #: drive/drive/doctype/drive_file_update/drive_file_update.json
 msgid "delete"
-msgstr "eliminar"
+msgstr ""
 
 #. Option for the 'Action Type' (Select) field in DocType 'Drive Entity
 #. Activity Log'
