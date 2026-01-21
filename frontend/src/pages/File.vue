@@ -83,11 +83,13 @@ const props = defineProps({
 
 const currentEntity = ref(props.entityName)
 
-const filteredEntities = computed(() =>
-  store.state.currentFolder.entities.filter(
-    (item) => !item.is_group && !item.document && !item.is_link
-  )
-)
+// const filteredEntities = computed(() =>
+//   store.state.currentFolder.entities.filter(
+//     (item) => !item.is_group && !item.document && !item.is_link
+//   )
+// )
+// FIX: redo with server fetch
+const filteredEntities = computed(() => [])
 
 const index = computed(() => {
   return filteredEntities.value.findIndex(
