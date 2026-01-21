@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: frappe\n"
 "Report-Msgid-Bugs-To: developers@frappe.io\n"
 "POT-Creation-Date: 2025-12-05 16:12+0000\n"
-"PO-Revision-Date: 2026-01-05 20:57\n"
+"PO-Revision-Date: 2026-01-21 11:10\n"
 "Last-Translator: developers@frappe.io\n"
 "Language-Team: Dutch\n"
 "MIME-Version: 1.0\n"
@@ -837,7 +837,7 @@ msgstr "Zoek"
 
 #: frontend/src/components/TagColorInput.vue:36
 msgid "Set Color"
-msgstr ""
+msgstr "Kleur instellen"
 
 #. Label of the settings (JSON) field in DocType 'Drive Document'
 #: drive/drive/doctype/drive_document/drive_document.json
@@ -1154,7 +1154,7 @@ msgstr ""
 
 #: frontend/src/components/InfoPopup.vue:141
 msgid "person"
-msgstr ""
+msgstr "persoon"
 
 #. Option for the 'Action Type' (Select) field in DocType 'Drive Entity
 #. Activity Log'
