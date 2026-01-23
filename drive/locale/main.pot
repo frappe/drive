@@ -1,14 +1,14 @@
 # Translations template for Frappe Drive.
-# Copyright (C) 2025 Frappe Technologies Pvt. Ltd.
+# Copyright (C) 2026 Frappe Technologies Pvt. Ltd.
 # This file is distributed under the same license as the Frappe Drive project.
-# FIRST AUTHOR <EMAIL@ADDRESS>, 2025.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2026.
 #
 msgid ""
 msgstr ""
 "Project-Id-Version: Frappe Drive VERSION\n"
 "Report-Msgid-Bugs-To: developers@frappe.io\n"
-"POT-Creation-Date: 2025-12-19 16:12+0000\n"
-"PO-Revision-Date: 2025-12-19 16:12+0000\n"
+"POT-Creation-Date: 2026-01-23 16:13+0000\n"
+"PO-Revision-Date: 2026-01-23 16:13+0000\n"
 "Last-Translator: developers@frappe.io\n"
 "Language-Team: developers@frappe.io\n"
 "MIME-Version: 1.0\n"
