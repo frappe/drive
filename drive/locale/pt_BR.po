@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: frappe\n"
 "Report-Msgid-Bugs-To: developers@frappe.io\n"
 "POT-Creation-Date: 2025-12-05 16:12+0000\n"
-"PO-Revision-Date: 2026-01-21 11:10\n"
+"PO-Revision-Date: 2026-01-24 11:51\n"
 "Last-Translator: developers@frappe.io\n"
 "Language-Team: Portuguese, Brazilian\n"
 "MIME-Version: 1.0\n"
@@ -31,12 +31,12 @@ msgstr ""
 #. Label of the aws_key (Data) field in DocType 'Drive Disk Settings'
 #: drive/drive/doctype/drive_disk_settings/drive_disk_settings.json
 msgid "AWS Key"
-msgstr ""
+msgstr "Chave da AWS"
 
 #. Label of the aws_secret (Password) field in DocType 'Drive Disk Settings'
 #: drive/drive/doctype/drive_disk_settings/drive_disk_settings.json
 msgid "AWS Secret"
-msgstr ""
+msgstr "Segredo da AWS"
 
 #. Option for the 'Status' (Select) field in DocType 'Drive User Invitation'
 #: drive/drive/doctype/drive_user_invitation/drive_user_invitation.json
@@ -465,7 +465,7 @@ msgstr ""
 #: drive/drive/doctype/drive_file/drive_file.json
 #: drive/drive/doctype/drive_team/drive_team.json
 msgid "Guest"
-msgstr ""
+msgstr "Convidado"
 
 #: frontend/src/utils/files.js:209
 msgid "Home"
