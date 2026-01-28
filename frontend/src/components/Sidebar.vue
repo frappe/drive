@@ -55,8 +55,7 @@
 import FrappeDriveLogo from "@/components/FrappeDriveLogo.vue"
 
 import StorageBar from "./StorageBar.vue"
-import { Sidebar, createResource } from "frappe-ui"
-import SidebarItem from "frappe-ui/src/components/Sidebar/SidebarItem.vue"
+import { Sidebar, SidebarItem, createResource } from "frappe-ui"
 import { notifCount, apps } from "@/resources/permissions"
 import { getTeams } from "@/resources/files"
 import { dynamicList } from "@/utils/files"
@@ -214,6 +213,7 @@ const sidebarItems = computed(() => {
           to: "/inbox",
           isActive: first.name === "Inbox",
           accessKey: "i",
+          suffix: notifCount.data,
         },
       ],
     },

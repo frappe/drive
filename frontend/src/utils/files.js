@@ -3,6 +3,7 @@ import store from "@/store"
 import { formatSize } from "@/utils/format"
 import { nextTick } from "vue"
 import { useTimeAgo } from "@vueuse/core"
+import { getFileLink } from "frappe-ui/drive/js/utils"
 import {
   getRecents,
   mutate,
@@ -10,7 +11,7 @@ import {
   createPresentation,
   getDocuments,
 } from "@/resources/files"
-import { getTeams } from "@/resources/files"
+import { getTeams, getPublicTeams } from "@/resources/files"
 import { set } from "idb-keyval"
 import editorStyle from "@/components/DocEditor/styles/editor.css?inline"
 import globalStyle from "@/index.css?inline"
@@ -33,7 +34,7 @@ export const openEntity = (entity, new_tab = false) => {
   }
 
   if (new_tab) {
-    return window.open(getLink(entity, false), "_blank")
+    return window.open(getFileLink(entity, false), "_blank")
   }
 
   if (!entity.breadcrumbs?.length)
@@ -64,15 +65,12 @@ export const openEntity = (entity, new_tab = false) => {
     )
       window.open(entity.path, "_blank")
   } else if (entity.mime_type === "frappe/slides") {
-    window.open("/slides/presentation/" + entity.path, "_blank")
+    window.location.href = "/slides/presentation/" + entity.path
   } else if (
     entity.mime_type === "frappe_doc" ||
     entity.mime_type === "text/markdown"
   ) {
-    router.push({
-      name: "Document",
-      params: { entityName: entity.name },
-    })
+    window.location.href = "/writer/w/" + entity.name
   } else {
     router.push({
       name: "File",
@@ -202,7 +200,9 @@ export const setBreadCrumbs = (entity) => {
         },
       ]
     : []
-  const team = getTeams.data?.[breadcrumbs[0].team]
+  const team =
+    getTeams.data?.[breadcrumbs[0].team] ||
+    getPublicTeams.data?.[breadcrumbs[0].team]
   if (team || in_home)
     res = [
       {
@@ -470,8 +470,7 @@ function getLinkStem(entity) {
     {
       true: "f",
       [new Boolean(entity.is_group)]: "d",
-      [new Boolean(entity.document || entity.mime_type === "text/markdown")]:
-        "w",
+      [new Boolean(entity.doc || entity.mime_type === "text/markdown")]: "w",
     }[true]
   }/${entity.name}/${slugger(entity.title)}`
 }

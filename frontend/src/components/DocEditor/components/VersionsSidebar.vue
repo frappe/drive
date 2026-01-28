@@ -74,7 +74,7 @@
 </template>
 <script setup>
 import * as Y from "yjs"
-import { ySyncPluginKey } from "y-prosemirror"
+import { ySyncPluginKey } from "@tiptap/y-tiptap"
 import { toUint8Array } from "js-base64"
 import LucideX from "~icons/lucide/x"
 import LucidePlus from "~icons/lucide/plus"

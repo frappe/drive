@@ -407,7 +407,7 @@ def check_is_admin():
     return {"is_admin": "Drive Admin" in frappe.get_roles()}
 
 
-@frappe.whitelist()
+@frappe.whitelist(allow_guest=True)
 def disk_settings(**kwargs):
     settings = frappe.get_single("Drive Disk Settings")
     if not check_is_admin()["is_admin"]:
@@ -485,3 +485,21 @@ def pop_update(name):
 @frappe.whitelist(allow_guest=True)
 def signup_disabled():
     return frappe.get_website_settings("disable_signup")
+
+
+# SECURITY: all user data is available
+@frappe.whitelist(allow_guest=True)
+def get_drive_users():
+    users = frappe.get_all(
+        doctype="User",
+        filters=[
+            ["enabled", "=", 1],
+        ],
+        fields=[
+            "name",
+            "email",
+            "full_name",
+            "user_image",
+        ],
+    )
+    return users

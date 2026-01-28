@@ -1,164 +1,172 @@
 {
-  "actions": [],
-  "autoname": "hash",
-  "creation": "2025-02-13 15:03:22.655245",
-  "default_view": "List",
-  "doctype": "DocType",
-  "editable_grid": 1,
-  "engine": "InnoDB",
-  "field_order": [
-    "title",
-    "team",
-    "is_group",
-    "is_link",
-    "parent_entity",
-    "path",
-    "color",
-    "mime_type",
-    "file_size",
-    "tags",
-    "is_active",
-    "document",
-    "is_private",
-    "old_name",
-    "comments",
-    "_modified",
-    "allow_download"
-  ],
-  "fields": [
-    {
-      "fieldname": "title",
-      "fieldtype": "Data",
-      "in_list_view": 1,
-      "label": "Title",
-      "reqd": 1
-    },
-    {
-      "fieldname": "team",
-      "fieldtype": "Link",
-      "label": "Team",
-      "options": "Drive Team",
-      "reqd": 1
-    },
-    {
-      "default": "0",
-      "fieldname": "is_group",
-      "fieldtype": "Check",
-      "label": "Is Group"
-    },
-    {
-      "fieldname": "parent_entity",
-      "fieldtype": "Link",
-      "label": "Parent Entity",
-      "options": "Drive File"
-    },
-    {
-      "fieldname": "path",
-      "fieldtype": "Text",
-      "label": "Path"
-    },
-    {
-      "fieldname": "color",
-      "fieldtype": "Data",
-      "label": "Color"
-    },
-    {
-      "fieldname": "mime_type",
-      "fieldtype": "Data",
-      "label": "MIME Type"
-    },
-    {
-      "fieldname": "file_size",
-      "fieldtype": "Int",
-      "label": "File Size",
-      "length": 12
-    },
-    {
-      "fieldname": "tags",
-      "fieldtype": "Table",
-      "label": "Tags",
-      "options": "Drive Entity Tag"
-    },
-    {
-      "default": "1",
-      "fieldname": "is_active",
-      "fieldtype": "Int",
-      "label": "Is Active"
-    },
-    {
-      "fieldname": "document",
-      "fieldtype": "Link",
-      "label": "Document",
-      "options": "Drive Document"
-    },
-    {
-      "default": "0",
-      "fieldname": "is_private",
-      "fieldtype": "Check",
-      "label": "Is Private"
-    },
-    {
-      "fieldname": "old_name",
-      "fieldtype": "Data",
-      "label": "Old Name"
-    },
-    {
-      "default": "0",
-      "fieldname": "is_link",
-      "fieldtype": "Check",
-      "label": "Is Link"
-    },
-    {
-      "fieldname": "comments",
-      "fieldtype": "Table",
-      "label": "Comments",
-      "options": "Drive Comment"
-    },
-    {
-      "fieldname": "_modified",
-      "fieldtype": "Datetime",
-      "label": "Modified"
-    },
-    {
-      "default": "1",
-      "fieldname": "allow_download",
-      "fieldtype": "Check",
-      "label": "Allow Download"
-    }
-  ],
-  "links": [],
-  "modified": "2025-09-22 13:41:35.517139",
-  "modified_by": "Administrator",
-  "module": "Drive",
-  "name": "Drive File",
-  "naming_rule": "Set by user",
-  "owner": "Administrator",
-  "permissions": [
-    {
-      "create": 1,
-      "delete": 1,
-      "email": 1,
-      "export": 1,
-      "print": 1,
-      "read": 1,
-      "report": 1,
-      "role": "All",
-      "share": 1,
-      "write": 1
-    },
-    {
-      "email": 1,
-      "export": 1,
-      "print": 1,
-      "read": 1,
-      "report": 1,
-      "role": "Guest",
-      "share": 1
-    }
-  ],
-  "row_format": "Dynamic",
-  "sort_field": "creation",
-  "sort_order": "DESC",
-  "states": [],
-  "title_field": "title"
+ "actions": [],
+ "autoname": "hash",
+ "creation": "2025-02-13 15:03:22.655245",
+ "default_view": "List",
+ "doctype": "DocType",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "field_order": [
+  "title",
+  "team",
+  "is_group",
+  "is_link",
+  "parent_entity",
+  "path",
+  "color",
+  "mime_type",
+  "file_size",
+  "tags",
+  "is_active",
+  "document",
+  "doc",
+  "is_private",
+  "old_name",
+  "comments",
+  "_modified",
+  "allow_download"
+ ],
+ "fields": [
+  {
+   "fieldname": "title",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Title",
+   "reqd": 1
+  },
+  {
+   "fieldname": "team",
+   "fieldtype": "Link",
+   "label": "Team",
+   "options": "Drive Team",
+   "reqd": 1
+  },
+  {
+   "default": "0",
+   "fieldname": "is_group",
+   "fieldtype": "Check",
+   "label": "Is Group"
+  },
+  {
+   "fieldname": "parent_entity",
+   "fieldtype": "Link",
+   "label": "Parent Entity",
+   "options": "Drive File"
+  },
+  {
+   "fieldname": "path",
+   "fieldtype": "Text",
+   "label": "Path"
+  },
+  {
+   "fieldname": "color",
+   "fieldtype": "Data",
+   "label": "Color"
+  },
+  {
+   "fieldname": "mime_type",
+   "fieldtype": "Data",
+   "label": "MIME Type"
+  },
+  {
+   "fieldname": "file_size",
+   "fieldtype": "Int",
+   "label": "File Size",
+   "length": 12
+  },
+  {
+   "fieldname": "tags",
+   "fieldtype": "Table",
+   "label": "Tags",
+   "options": "Drive Entity Tag"
+  },
+  {
+   "default": "1",
+   "fieldname": "is_active",
+   "fieldtype": "Int",
+   "label": "Is Active"
+  },
+  {
+   "fieldname": "document",
+   "fieldtype": "Link",
+   "label": "Document",
+   "options": "Drive Document"
+  },
+  {
+   "default": "0",
+   "fieldname": "is_private",
+   "fieldtype": "Check",
+   "label": "Is Private"
+  },
+  {
+   "fieldname": "old_name",
+   "fieldtype": "Data",
+   "label": "Old Name"
+  },
+  {
+   "default": "0",
+   "fieldname": "is_link",
+   "fieldtype": "Check",
+   "label": "Is Link"
+  },
+  {
+   "fieldname": "comments",
+   "fieldtype": "Table",
+   "label": "Comments",
+   "options": "Drive Comment"
+  },
+  {
+   "fieldname": "_modified",
+   "fieldtype": "Datetime",
+   "label": "Modified"
+  },
+  {
+   "default": "1",
+   "fieldname": "allow_download",
+   "fieldtype": "Check",
+   "label": "Allow Download"
+  },
+  {
+   "fieldname": "doc",
+   "fieldtype": "Link",
+   "label": "Document (Writer)",
+   "options": "Writer Document"
+  }
+ ],
+ "links": [],
+ "modified": "2025-11-17 16:32:05.168651",
+ "modified_by": "Administrator",
+ "module": "Drive",
+ "name": "Drive File",
+ "naming_rule": "Set by user",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "All",
+   "share": 1,
+   "write": 1
+  },
+  {
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "Guest",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "row_format": "Dynamic",
+ "sort_field": "creation",
+ "sort_order": "DESC",
+ "states": [],
+ "title_field": "title"
 }

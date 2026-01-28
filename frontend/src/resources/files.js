@@ -36,6 +36,15 @@ export const getTeams = createResource({
   cache: "teams",
 })
 
+export const getPublicTeams = createResource({
+  url: "drive.api.permissions.get_public_teams",
+  method: "GET",
+  cache: "public-teams",
+  transform: (d) => {
+    return d.reduce((acc, k) => ({ ...acc, [k.name]: k }), {})
+  },
+})
+
 export const getRecents = createResource({
   ...COMMON_OPTIONS,
   url: "drive.api.list.files",
@@ -269,7 +278,7 @@ export const rename = createResource({
 
 export const createDocument = createResource({
   method: "POST",
-  url: "drive.api.files.create_document_entity",
+  url: "writer.api.docs.create_document",
   makeParams: (params) => params,
 })
 

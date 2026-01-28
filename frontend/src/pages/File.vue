@@ -83,11 +83,13 @@ const props = defineProps({
 
 const currentEntity = ref(props.entityName)
 
-const filteredEntities = computed(() =>
-  store.state.currentFolder.entities.filter(
-    (item) => !item.is_group && !item.document && !item.is_link
-  )
-)
+// const filteredEntities = computed(() =>
+//   store.state.currentFolder.entities.filter(
+//     (item) => !item.is_group && !item.document && !item.is_link
+//   )
+// )
+// FIX: redo with server fetch
+const filteredEntities = computed(() => [])
 
 const index = computed(() => {
   return filteredEntities.value.findIndex(
@@ -118,6 +120,10 @@ onKeyStroke("ArrowRight", (e) => {
 })
 
 const onSuccess = async (entity) => {
+  // temporary hack: #475
+  if (entity.doc) {
+    window.location.href = "/writer/w/" + entity.name
+  }
   document.title = entity.title
   setBreadCrumbs(entity)
   updateURLSlug(entity.title)

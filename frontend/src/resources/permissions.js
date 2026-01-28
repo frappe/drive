@@ -2,7 +2,7 @@ import { createResource } from "frappe-ui"
 import { toast } from "@/utils/toasts"
 import store from "@/store"
 
-export const getUsersWithAccess = createResource({
+export const usersWithAccess = createResource({
   url: "drive.api.permissions.get_shared_with_list",
   makeParams: (params) => params,
 })

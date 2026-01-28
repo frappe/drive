@@ -597,7 +597,11 @@ def get_file_content(entity_name, trigger_download=0, jwt_token=None, transfer=F
 
 
 def get_file_internal(file, trigger_download=0):
-    if not trigger_download and get_file_type(file.as_dict() if file.as_dict else dict(file)) == "Video":
+    if (
+        not trigger_download
+        and get_file_type(file.as_dict() if file.as_dict else dict(file)) == "Video"
+        and frappe.request.headers.get("Range")
+    ):
         return stream_file_content(file.name)
     if file.document:
         frappe.local.response["type"] = "redirect"
@@ -835,9 +839,13 @@ def remove_recents(entity_names=[], clear_all=False):
 
 
 @frappe.whitelist()
-def does_entity_exist(name=None, parent_entity=None):
+@default_team
+def does_entity_exist(name=None, parent_entity=None, team=None):
+    if not parent_entity:
+        home_folder = get_home_folder(team)
+        parent_entity = home_folder.name
     result = frappe.db.exists("Drive File", {"parent_entity": parent_entity, "title": name})
-    return bool(result)
+    return result
 
 
 def auto_delete_from_trash():
@@ -927,10 +935,10 @@ def search(query):
         return {"error": str(e)}
 
 
-@frappe.whitelist()
+@frappe.whitelist(allow_guest=True)
 def get_translate():
     return {
-        l["old_name"]: l["name"] for l in frappe.get_list("Drive File", fields=["old_name", "name"]) if l["old_name"]
+        l["old_name"]: l["name"] for l in frappe.get_all("Drive File", fields=["old_name", "name"]) if l["old_name"]
     }
 
 
@@ -973,10 +981,10 @@ def get_entity_type(entity_name):
     entity = frappe.db.get_value(
         "Drive File",
         {"is_active": 1, "name": entity_name},
-        ["team", "name", "mime_type", "is_group", "document"],
+        ["team", "name", "mime_type", "is_group", "doc"],
         as_dict=1,
     )
-    if entity.document or entity.mime_type == "text/markdown":
+    if entity.doc or entity.mime_type == "text/markdown":
         entity["type"] = "document"
     elif entity.is_group:
         entity["type"] = "folder"

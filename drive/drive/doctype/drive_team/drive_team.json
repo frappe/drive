@@ -13,7 +13,8 @@
   "icon",
   "personal",
   "s3_bucket",
-  "prefix"
+  "prefix",
+  "public"
  ],
  "fields": [
   {
@@ -67,11 +68,17 @@
    "fieldname": "prefix",
    "fieldtype": "Data",
    "label": "Prefix"
+  },
+  {
+   "default": "0",
+   "fieldname": "public",
+   "fieldtype": "Check",
+   "label": "Public"
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2025-11-11 11:49:01.260534",
+ "modified": "2025-11-20 13:52:48.013478",
  "modified_by": "Administrator",
  "module": "Drive",
  "name": "Drive Team",

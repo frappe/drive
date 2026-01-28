@@ -21,7 +21,7 @@ ENTITY_FIELDS = [
     "file_size",
     "mime_type",
     "color",
-    "document",
+    "doc",
     "owner",
     "parent_entity",
     "team",
@@ -67,14 +67,17 @@ def get_user_access(entity, user: str = None, team: bool = False):
     # Owners and team members of a file have access
     teams = get_teams(user)
 
+    if frappe.db.get_value("Drive Team", entity.team, "public"):
+        access["read"] = 1
+
     if user == entity.owner:
         access = {"read": 1, "comment": 1, "share": 1, "upload": 1, "write": 1, "type": "admin"}
     elif entity.team in teams:
-        access_level = get_access_level(entity.team)
+        access_level = get_access_level(entity.team, user)
         access = {
             "read": 1,
             "comment": 1,
-            "share": 1,
+            "share": 0,
             "upload": int(entity.is_group) and access_level,
             "write": int(access_level == 2 or entity.owner == user),
             "type": {2: "admin", 1: "user", 0: "guest"}[access_level],
@@ -84,7 +87,9 @@ def get_user_access(entity, user: str = None, team: bool = False):
     # Public access
     user_access = {k: v for k, v in path[-1].items() if k in access.keys()}
     if user == "Guest":
-        # broken: leaks parent breadcrumbs
+        # Special for public teams
+        if access["read"]:
+            user_access["read"] = 1
         return user_access
 
     # Gather all accesses, and award highest
@@ -109,9 +114,11 @@ def is_admin(team):
     return drive_team[frappe.session.user].access_level == 2
 
 
-def get_access_level(team):
+def get_access_level(team, user=None):
+    if not user:
+        user = frappe.session.user
     drive_team = {k.user: k for k in frappe.get_doc("Drive Team", team).users}
-    return drive_team[frappe.session.user].access_level
+    return drive_team[user].access_level
 
 
 @frappe.whitelist()
@@ -132,6 +139,11 @@ def get_teams(user=None, details=None, exclude_personal=True):
         if exclude_personal:
             return {t: team for t, team in teams_info.items() if not team.personal}
     return teams
+
+
+@frappe.whitelist(allow_guest=True)
+def get_public_teams():
+    return frappe.get_all("Drive Team", fields=["name", "title"], filters=[["public", "=", 1]])
 
 
 @frappe.whitelist(allow_guest=True)
@@ -189,24 +201,6 @@ def get_entity_with_permissions(entity_name):
             default = -1
     return_obj["share_count"] = default
 
-    if entity.document:
-        k = frappe.get_doc("Drive Document", entity.document)
-        entity_doc_content = k.as_dict()
-        entity_doc_content.pop("name")
-        comments = frappe.get_all(
-            "Drive Comment",
-            filters={"parenttype": "Drive File", "parent": entity.name},
-            fields=["content", "owner", "creation", "name", "resolved"],
-        )
-
-        for k in comments:
-            k["replies"] = frappe.get_all(
-                "Drive Comment",
-                filters={"parenttype": "Drive Comment", "parent": k["name"]},
-                fields=["content", "owner", "creation", "name"],
-            )
-
-        return_obj |= entity_doc_content | {"comments": comments, "modified": entity.modified}
     return return_obj
 
 
@@ -289,3 +283,15 @@ def toggle_allow_download(entity, val):
     if not user_has_permission(entity, "share"):
         frappe.throw("You don't have permission for this action.", frappe.PermissionError)
     frappe.db.set_value("Drive File", entity, "allow_download", val)
+
+
+def requires(perm):
+    def wrapped(fn):
+        def inner(*args, **kwargs):
+            if not user_has_permission(args[0], perm):
+                frappe.throw("You don't have permission for this action.", ValueError)
+            fn(*args, **kwargs)
+
+        return inner
+
+    return wrapped
