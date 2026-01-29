@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: frappe\n"
 "Report-Msgid-Bugs-To: developers@frappe.io\n"
 "POT-Creation-Date: 2025-12-05 16:12+0000\n"
-"PO-Revision-Date: 2026-01-21 11:10\n"
+"PO-Revision-Date: 2026-01-29 13:47\n"
 "Last-Translator: developers@frappe.io\n"
 "Language-Team: Italian\n"
 "MIME-Version: 1.0\n"
@@ -116,7 +116,7 @@ msgstr ""
 #. Option for the 'Status' (Select) field in DocType 'Drive User Invitation'
 #: drive/drive/doctype/drive_user_invitation/drive_user_invitation.json
 msgid "Automatic"
-msgstr ""
+msgstr "Automatico"
 
 #: frontend/src/components/DriveToolBar.vue:19
 msgid "By"
@@ -157,7 +157,7 @@ msgstr ""
 #: drive/drive/doctype/drive_document/drive_document.json
 #: drive/drive/doctype/drive_file/drive_file.json
 msgid "Comments"
-msgstr ""
+msgstr "Commenti"
 
 #: frontend/src/components/Settings/NewTagDialog.vue:30
 #: frontend/src/components/Settings/ProfileSettings.vue:30
@@ -216,7 +216,7 @@ msgstr ""
 #. Label of the document (Link) field in DocType 'Drive File'
 #: drive/drive/doctype/drive_file/drive_file.json
 msgid "Document"
-msgstr ""
+msgstr "Documento"
 
 #. Label of the document_field (Data) field in DocType 'Drive Entity Activity
 #. Log'
