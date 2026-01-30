@@ -45,6 +45,6 @@ packages = [
 frappe = ">=16.0.0-dev,<=17.0.0-dev"
 
 [tool.bench.assets]
-out_dir = ../drive/public/frontent
-index_html_path = ../drive/www/drive.html
+out_dir = "../drive/public/frontent"
+index_html_path = "../drive/www/drive.html"
 
