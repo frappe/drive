@@ -40,3 +40,11 @@ ensure_newline_before_comments = true
 packages = [
     "ffmpeg",
 ]
+
+[tool.bench.frappe-dependencies.frappe]
+frappe = ">=16.0.0-dev,<=17.0.0-dev"
+
+[tool.bench.assets]
+out_dir = ../drive/public/frontent
+index_html_path = ../drive/www/drive.html
+
