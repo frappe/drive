@@ -33,7 +33,7 @@ def files(
     cursor: str | None = None,
     favourites_only: bool = False,
     recents_only: bool = False,
-    shared: "with" | "by" | None = None,
+    shared: str | None = None,
     tag_list: list[str] = [],
     file_kinds: list[str] = [],
     folders: bool = False,

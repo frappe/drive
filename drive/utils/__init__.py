@@ -348,7 +348,7 @@ def strip_comment_spans(html: str) -> str:
 
 
 @frappe.whitelist()
-def get_default_team(with_file=False):
+def get_default_team(with_file: bool = False):
     default_team = frappe.get_value("Drive Team", {"owner": frappe.session.user, "personal": 1}, "name")
     if with_file:
         file = get_home_folder(default_team)

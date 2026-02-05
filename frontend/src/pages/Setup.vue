@@ -23,78 +23,9 @@
               </p>
             </div>
 
-            <div
-              v-if="domainTeams.loading"
-              class="flex justify-center py-8"
-            >
-              <div
-                class="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-primary-600"
-              />
-            </div>
-            <div
-              v-else-if="!domainTeams.data"
-              class="flex flex-col py-5 gap-3"
-            >
+            <div class="flex flex-col py-5 gap-3">
               <LoadingIndicator class="size-5 self-center" />
               <div class="text-sm text-center">Just a minute...</div>
-            </div>
-            <div
-              v-else-if="domainTeams.data.length"
-              class="flex flex-col text-md gap-2"
-            >
-              <p>
-                We noticed that you are on a
-                <strong>corporate domain</strong>.
-              </p>
-              <p v-if="domainTeams.data.length">
-                Do you want to create a personal account, or request to join the
-                team (<strong>{{ domainTeams.data[0].title }}</strong
-                >) associated with your domain?
-              </p>
-              <p v-else>
-                Do you want to create a personal account, or create a team with
-                your domain?
-              </p>
-              <FormControl
-                v-if="typeof team_name === 'string'"
-                v-model="team_name"
-                label="Team Name"
-                class="py-2"
-                type="text"
-                required
-              />
-              <div class="flex justify-between mt-3">
-                <Button
-                  variant="subtle"
-                  class="w-100"
-                  @click="createTeam.submit()"
-                >
-                  Create Personal
-                </Button>
-                <Button
-                  v-if="domainTeams.data.length"
-                  variant="solid"
-                  @click="
-                    requestInvite.submit({
-                      team: domainTeams.data[0].name,
-                    }),
-                      $router.replace({ path: '/drive/teams' })
-                  "
-                >
-                  Join {{ domainTeams.data[0].title }}
-                </Button>
-                <Button
-                  v-else
-                  variant="solid"
-                  @click="
-                    typeof team_name === 'string'
-                      ? createTeam.submit({ team_name, email })
-                      : (team_name = '')
-                  "
-                >
-                  Create Team
-                </Button>
-              </div>
             </div>
           </div>
         </div>
@@ -111,39 +42,17 @@ import { useRoute } from "vue-router"
 import { useStore } from "vuex"
 import { createTeam } from "@/resources/permissions"
 
-const store = useStore()
-const team_name = ref(null)
-const email = computed(() => store.state.user.id)
 const route = useRoute()
 
-const domainTeams = createResource({
-  url: "drive.api.product.get_domain_teams",
-  auto: true,
-  params: {
-    domain: email.value.split("@").slice(-1)[0],
-  },
-  onSuccess(data) {
-    if (data === false)
-      createTeam.submit(
-        { personal: 1 },
-        {
-          onSuccess,
-        }
-      )
-  },
-})
-
+createTeam.submit(
+  { personal: 1 },
+  {
+    onSuccess,
+  }
+)
 const onSuccess = (data) => {
   if (data) {
-    console.log(route.query["redirect-to"], "/drive")
     window.location.replace(route.query["redirect-to"] || "/drive")
   }
 }
-
-const requestInvite = createResource({
-  url: "drive.api.product.request_invite",
-  onSuccess: () => {
-    window.location.replace("/drive/teams")
-  },
-})
 </script>

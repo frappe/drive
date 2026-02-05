@@ -20,11 +20,9 @@ from drive.api.storage import storage_bar_data
 from drive.utils import (
     create_drive_file,
     default_team,
-    extract_mentions,
     get_file_type,
     get_home_folder,
     update_clients,
-    strip_comment_spans,
     update_file_size,
     get_default_team,
 )
