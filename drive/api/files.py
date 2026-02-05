@@ -35,17 +35,6 @@ from .permissions import get_teams, user_has_permission
 
 
 @frappe.whitelist(allow_guest=True)
-def upload_embed(doc):
-    doc = frappe.get_doc("Drive File", doc)
-    file = frappe.request.files["file"]
-    file.filename = "Embed - " + doc.name
-    embed = upload_file(doc.team, parent=doc.name, embed=1)
-    return {
-        "file_url": f"/api/method/drive.api.embed.get_file_content?embed_name={embed.name}&parent_entity_name={doc.name}"
-    }
-
-
-@frappe.whitelist(allow_guest=True)
 @default_team
 def upload_file(
     team,
@@ -53,7 +42,6 @@ def upload_file(
     last_modified=None,
     fullpath=None,
     parent=None,
-    embed=0,
     transfer=0,
 ):
     """
@@ -70,10 +58,8 @@ def upload_file(
 
     home_folder = get_home_folder(team)
     parent = parent or home_folder["name"]
-    embed = int(embed)
 
-    # Get again for non-root folders
-    if not embed and not user_has_permission(parent, "upload"):
+    if not user_has_permission(parent, "upload"):
         frappe.throw("Ask the folder owner for upload access.", frappe.PermissionError)
 
     team = frappe.db.get_value("Drive File", parent, "team")
@@ -470,67 +456,6 @@ def edit_file_content(entity_name, client=None):
     frappe.publish_realtime("list-update", {"file": prettify_file(entity.as_dict())})
     entity.save(ignore_permissions=True)
 
-
-@frappe.whitelist(allow_guest=True)
-def save_doc(entity_name, doc_name=None, content=None, yjs=None, comment=False):
-    # SECURITY: commenting also gives edit access in collab documents
-    can_write = (
-        user_has_permission(entity_name, "write")
-        if not yjs
-        else user_has_permission(entity_name, "comment" if comment else "write")
-    )
-    if comment and not can_write:
-        old_content = frappe.db.get_value("Drive Document", doc_name, "raw_content")
-        if not strip_comment_spans(old_content) == strip_comment_spans(content):
-            raise frappe.PermissionError("You cannot edit file while commenting.")
-        return frappe.db.set_value("Drive Document", doc_name, "raw_content", content)
-    elif not can_write:
-        raise frappe.PermissionError("You do not have permission to edit this file")
-
-    if doc_name:
-        try:
-            if content:
-                frappe.db.set_value("Drive Document", doc_name, "raw_content", content)
-            if yjs:
-                frappe.db.set_value("Drive Document", doc_name, "content", yjs)
-                file = frappe.get_doc("Drive File", entity_name)
-                file._modified = frappe.utils.now()
-                file.file_size = len(yjs.encode("utf-8"))
-                file.save(ignore_permissions=True)
-        except (frappe.exceptions.QueryDeadlockError, frappe.exceptions.TimestampMismatchError):
-            if yjs:
-                # Pass if there's a deadlock, as CRDT is supposed to take care of it.
-                frappe.log_error(f"There was a collision, not storing data - {entity_name}, {frappe.session.user}")
-            else:
-                frappe.throw("This schema doesn't support collaboration - you will likely lose data.")
-    else:
-        # Text based files
-        # BROKEN - should reparse markdown files.
-        h = html2text.HTML2Text()
-        h.body_width = 0
-        md_content = h.handle(content)
-        path = frappe.db.get_value("Drive File", entity_name, "path")
-        FileManager().write_file(path, md_content)
-
-    if not yjs:
-        file = frappe.get_doc("Drive File", entity_name)
-        file._modified = frappe.utils.now()
-        if content:
-            file.file_size = len(content.encode("utf-8"))
-
-        file.save()
-
-    if content:
-        mentions = extract_mentions(content)
-        if mentions:
-            frappe.enqueue(
-                notify_mentions,
-                job_id=f"doc_{entity_name}",
-                now=True,
-                deduplicate=True,
-                entity_name=entity_name,
-                mentions=mentions,
-            )
 
 
 @frappe.whitelist(allow_guest=True)
