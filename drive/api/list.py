@@ -25,28 +25,22 @@ Binary = CustomFunction("BINARY", ["expression"])
 @frappe.whitelist(allow_guest=True)
 @default_team
 def files(
-    team,
-    entity_name=None,
-    order_by="modified 1",
-    is_active=1,
-    limit=20,
-    cursor=None,
-    favourites_only=0,
-    recents_only=0,
-    shared=None,
-    tag_list=[],
-    file_kinds=[],
-    folders=0,
-    only_parent=1,
-    search=None,
+    team: str,
+    entity_name: str | None = None,
+    order_by: str = "modified 1",
+    is_active: bool = True,
+    limit: int = 20,
+    cursor: str | None = None,
+    favourites_only: bool = False,
+    recents_only: bool = False,
+    shared: "with" | "by" | None = None,
+    tag_list: list[str] = [],
+    file_kinds: list[str] = [],
+    folders: bool = False,
+    only_parent: bool = True,
+    search: str = None,
 ):
-    # Clean params
     field, ascending = order_by.replace("modified", "_modified").split(" ")
-    is_active = int(is_active)
-    only_parent = int(only_parent)
-    folders = int(folders)
-    favourites_only = int(favourites_only)
-    ascending = int(ascending)
 
     all_teams = False
     if team == "all":

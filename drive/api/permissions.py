@@ -1,3 +1,4 @@
+from frappe.model.document import Document
 import io
 
 import frappe
@@ -48,7 +49,7 @@ def get_team_access(entity):
 
 
 @frappe.whitelist(allow_guest=True)
-def get_user_access(entity, user: str = None, team: bool = False):
+def get_user_access(entity: str | Document, user: str = None, team: bool = False):
     """
     Return the user specific permissions for an entity. Toggle `team` to check team permission.
     """
@@ -107,7 +108,7 @@ def get_user_access(entity, user: str = None, team: bool = False):
 
 
 @frappe.whitelist()
-def is_admin(team):
+def is_admin(team: str):
     if frappe.session.user == "Administrator":
         return True
     drive_team = {k.user: k for k in frappe.get_doc("Drive Team", team).users}
@@ -122,7 +123,7 @@ def get_access_level(team, user=None):
 
 
 @frappe.whitelist()
-def get_teams(user=None, details=None, exclude_personal=True):
+def get_teams(user: str = None, details: bool = False, exclude_personal: bool = True):
     """
     Returns all the teams that the current user is part of.
     """
@@ -147,7 +148,7 @@ def get_public_teams():
 
 
 @frappe.whitelist(allow_guest=True)
-def get_entity_with_permissions(entity_name):
+def get_entity_with_permissions(entity_name: str):
     """
     Return file data with permissions
     """
@@ -205,7 +206,7 @@ def get_entity_with_permissions(entity_name):
 
 
 @frappe.whitelist()
-def get_shared_with_list(entity):
+def get_shared_with_list(entity: str):
     """
     Return the list of users with whom this file or folder has been shared
 
@@ -279,7 +280,7 @@ def user_has_permission_doc(doc, ptype, user=None):
 
 
 @frappe.whitelist()
-def toggle_allow_download(entity, val):
+def toggle_allow_download(entity: str, val: bool):
     if not user_has_permission(entity, "share"):
         frappe.throw("You don't have permission for this action.", frappe.PermissionError)
     frappe.db.set_value("Drive File", entity, "allow_download", val)
