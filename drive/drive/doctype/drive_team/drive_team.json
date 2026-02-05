@@ -78,7 +78,7 @@
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2025-11-20 13:52:48.013478",
+ "modified": "2026-02-05 15:54:03.437373",
  "modified_by": "Administrator",
  "module": "Drive",
  "name": "Drive Team",
@@ -104,18 +104,9 @@
    "print": 1,
    "read": 1,
    "report": 1,
-   "role": "All",
+   "role": "Drive User",
    "share": 1,
    "write": 1
-  },
-  {
-   "email": 1,
-   "export": 1,
-   "print": 1,
-   "read": 1,
-   "report": 1,
-   "role": "Guest",
-   "share": 1
   }
  ],
  "row_format": "Dynamic",
