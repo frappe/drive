@@ -8,7 +8,7 @@ export const usersWithAccess = createResource({
 })
 
 export const updateAccess = createResource({
-  url: "drive.api.files.call_controller_method",
+  url: "drive.api.files.share",
   makeParams: (params) => ({ ...params, method: params.method || "share" }),
   onError: (error) => toast({ type: "error", title: error.messages[0] }),
 })

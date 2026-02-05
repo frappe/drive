@@ -266,7 +266,7 @@ class DriveFile(Document):
             permission = frappe.get_doc("Drive Permission", permission)
 
         # Create user
-        if not frappe.db.exists("User", user):
+        if user and not frappe.db.exists("User", user):
             invite_users(user, auto=True)
 
         levels = [
@@ -281,7 +281,7 @@ class DriveFile(Document):
         permission.save(ignore_permissions=True)
 
     @frappe.whitelist()
-    def unshare(self, user: str = None):
+    def unshare(self, user: str | None = None):
         """Unshare this file or folder with the specified user
         :param user: User or group with whom this is to be shared
         :param user_type:

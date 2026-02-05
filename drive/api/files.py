@@ -667,23 +667,25 @@ def delete_entities(entity_names: list[str] | None = None, clear_all: bool = Fal
         frappe.get_doc("Drive File", entity).permanent_delete()
 
 
-@frappe.whitelist(allow_guest=True)
-def call_controller_method():
-    """
-    Call a whitelisted Drive File controller method
-
-    :param entity_name: Document-name of the document on which the controller method is to be called
-    :param method: The controller method to be called
-    :raises ValueError: If the entity does not exist
-    :return: The result of the controller method
-    """
-    method = frappe.local.form_dict.pop("method")
-    entity_name = frappe.local.form_dict.pop("entity_name")
-    frappe.local.form_dict.pop("cmd")
+@frappe.whitelist()
+def rename(entity_name: str, new_title: str):
     drive_file = frappe.get_doc("Drive File", entity_name)
     if not drive_file:
         frappe.throw("Entity does not exist", ValueError)
-    return drive_file.run_method(method, **frappe.local.form_dict)
+    return drive_file.rename(new_title)
+
+
+# Will be replaced after new JS composables refactor
+@frappe.whitelist()
+def update_access(entity_name: str, method: str, **kwargs):
+    drive_file = frappe.get_doc("Drive File", entity_name)
+    kwargs.pop("cmd")
+    if not drive_file:
+        frappe.throw("Entity does not exist", ValueError)
+    if method == "share":
+        return drive_file.share(**kwargs)
+    elif method == "unshare":
+        return drive_file.unshare(user=kwargs.get("user"))
 
 
 @frappe.whitelist()

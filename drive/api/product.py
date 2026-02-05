@@ -270,7 +270,7 @@ def set_settings(updates: dict):
 
 
 @frappe.whitelist()
-def invite_users(emails: list[str], team: str = None, as_guest: bool = False, auto: bool = False):
+def invite_users(emails: str, team: str = None, as_guest: bool = False, auto: bool = False):
     if not emails:
         return
 

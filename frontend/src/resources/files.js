@@ -248,11 +248,10 @@ export const clearTrash = createResource({
 })
 
 export const rename = createResource({
-  url: "drive.api.files.call_controller_method",
+  url: "drive.api.files.rename",
   method: "POST",
   makeParams: (data) => {
     return {
-      method: "rename",
       ...data,
     }
   },
