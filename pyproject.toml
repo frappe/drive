@@ -41,7 +41,7 @@ packages = [
     "ffmpeg",
 ]
 
-[tool.bench.frappe-dependencies.frappe]
+[tool.bench.frappe-dependencies]
 frappe = ">=15.0.0-dev,<=17.0.0-dev"
 
 [tool.bench.assets]
