@@ -221,7 +221,7 @@ def get_thumbnail(entity_name):
 
 @frappe.whitelist()
 @default_team
-def create_presentation(team, title=None, parent=None):
+def create_presentation(team, title="Untitled", parent=None):
     home_directory = get_home_folder(team)
     parent = parent or home_directory.name
     team = frappe.db.get_value("Drive File", parent, "team")
