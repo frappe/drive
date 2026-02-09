@@ -2,8 +2,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: frappe\n"
 "Report-Msgid-Bugs-To: developers@frappe.io\n"
-"POT-Creation-Date: 2025-12-05 16:12+0000\n"
-"PO-Revision-Date: 2025-12-08 17:16\n"
+"POT-Creation-Date: 2026-02-06 16:22+0000\n"
+"PO-Revision-Date: 2026-02-09 17:37\n"
 "Last-Translator: developers@frappe.io\n"
 "Language-Team: Esperanto\n"
 "MIME-Version: 1.0\n"
@@ -64,6 +64,7 @@ msgstr "crwdns156806:0crwdne156806:0"
 msgid "Action Type"
 msgstr "crwdns156808:0crwdne156808:0"
 
+#: frontend/src/components/Settings/TemplateSettings.vue:70
 #: frontend/src/components/Settings/UserListSettings.vue:456
 #: frontend/src/components/TagInput.vue:25
 msgid "Add"
@@ -72,6 +73,11 @@ msgstr "crwdns159992:0crwdne159992:0"
 #: frontend/src/components/Settings/ProfileSettings.vue:76
 msgid "Add Image"
 msgstr "crwdns156812:0crwdne156812:0"
+
+#: frontend/src/components/Settings/TemplateSettings.vue:11
+#: frontend/src/components/Settings/TemplateSettings.vue:66
+msgid "Add Template"
+msgstr "crwdns195746:0crwdne195746:0"
 
 #: frontend/src/components/InfoPopup.vue:47
 msgid "Added"
@@ -99,7 +105,7 @@ msgstr "crwdns156816:0crwdne156816:0"
 msgid "Allow Download"
 msgstr "crwdns160138:0crwdne160138:0"
 
-#: frontend/src/components/Sidebar.vue:125
+#: frontend/src/components/Sidebar.vue:124
 msgid "Apps"
 msgstr "crwdns158562:0crwdne158562:0"
 
@@ -132,7 +138,7 @@ msgstr "crwdns156822:0crwdne156822:0"
 msgid "Characters"
 msgstr "crwdns158566:0crwdne158566:0"
 
-#: frontend/src/components/Navbar.vue:301
+#: frontend/src/components/Navbar.vue:302
 msgid "Clear"
 msgstr "crwdns156824:0crwdne156824:0"
 
@@ -168,11 +174,12 @@ msgstr "crwdns156832:0crwdne156832:0"
 #. Label of the content (Long Text) field in DocType 'Drive Document'
 #: drive/drive/doctype/drive_comment/drive_comment.json
 #: drive/drive/doctype/drive_document/drive_document.json
+#: frontend/src/components/Settings/TemplateSettings.vue:92
 msgid "Content"
 msgstr "crwdns156834:0crwdne156834:0"
 
-#: frontend/src/components/GenericPage.vue:327
-#: frontend/src/components/Navbar.vue:220
+#: frontend/src/components/GenericPage.vue:336
+#: frontend/src/components/Navbar.vue:221
 msgid "Copy Link"
 msgstr "crwdns156836:0crwdne156836:0"
 
@@ -187,10 +194,14 @@ msgstr "crwdns156838:0crwdne156838:0"
 msgid "Defaults to \"s3v4\". Some providers only support \"s3\"."
 msgstr "crwdns156842:0crwdne156842:0"
 
-#: frontend/src/components/GenericPage.vue:394
-#: frontend/src/components/Navbar.vue:278
+#: frontend/src/components/GenericPage.vue:403
+#: frontend/src/components/Navbar.vue:279
 msgid "Delete"
 msgstr "crwdns156844:0crwdne156844:0"
+
+#: frontend/src/components/Settings/TemplateSettings.vue:110
+msgid "Delete Template"
+msgstr "crwdns195748:0crwdne195748:0"
 
 #: frontend/src/components/InfoPopup.vue:157
 msgid "Developer"
@@ -218,6 +229,11 @@ msgstr "crwdns156846:0crwdne156846:0"
 msgid "Document"
 msgstr "crwdns156848:0crwdne156848:0"
 
+#. Label of the doc (Link) field in DocType 'Drive File'
+#: drive/drive/doctype/drive_file/drive_file.json
+msgid "Document (Writer)"
+msgstr "crwdns195750:0crwdne195750:0"
+
 #. Label of the document_field (Data) field in DocType 'Drive Entity Activity
 #. Log'
 #: drive/drive/doctype/drive_entity_activity_log/drive_entity_activity_log.json
@@ -229,12 +245,12 @@ msgstr "crwdns156850:0crwdne156850:0"
 msgid "Document Type"
 msgstr "crwdns156852:0crwdne156852:0"
 
-#: frontend/src/components/Sidebar.vue:149
+#: frontend/src/components/Sidebar.vue:148
 msgid "Documentation"
 msgstr "crwdns156854:0crwdne156854:0"
 
-#: frontend/src/components/GenericPage.vue:318
-#: frontend/src/components/Navbar.vue:213
+#: frontend/src/components/GenericPage.vue:324
+#: frontend/src/components/Navbar.vue:214
 msgid "Download"
 msgstr "crwdns156856:0crwdne156856:0"
 
@@ -358,6 +374,10 @@ msgstr "crwdns159996:0crwdne159996:0"
 msgid "Edit Profile"
 msgstr "crwdns156894:0crwdne156894:0"
 
+#: frontend/src/components/Settings/TemplateSettings.vue:66
+msgid "Edit Template"
+msgstr "crwdns195752:0crwdne195752:0"
+
 #: frontend/src/components/Settings/ProfileSettings.vue:20
 msgid "Edit profile"
 msgstr "crwdns156896:0crwdne156896:0"
@@ -369,7 +389,7 @@ msgstr "crwdns156896:0crwdne156896:0"
 msgid "Email"
 msgstr "crwdns156898:0crwdne156898:0"
 
-#: frontend/src/components/Navbar.vue:307
+#: frontend/src/components/Navbar.vue:308
 msgid "Empty"
 msgstr "crwdns156900:0crwdne156900:0"
 
@@ -382,6 +402,10 @@ msgstr "crwdns156902:0crwdne156902:0"
 #: drive/drive/doctype/drive_disk_settings/drive_disk_settings.json
 msgid "Endpoint URL"
 msgstr "crwdns156904:0crwdne156904:0"
+
+#: frontend/src/components/Settings/TemplateSettings.vue:86
+msgid "Enter template title"
+msgstr "crwdns195754:0crwdne195754:0"
 
 #. Label of the entity (Link) field in DocType 'Drive Document Version'
 #. Label of the entity (Link) field in DocType 'Drive Entity Activity Log'
@@ -415,8 +439,8 @@ msgstr "crwdns156912:0crwdne156912:0"
 msgid "Expired"
 msgstr "crwdns156914:0crwdne156914:0"
 
-#: frontend/src/components/GenericPage.vue:355
-#: frontend/src/components/Navbar.vue:249
+#: frontend/src/components/GenericPage.vue:364
+#: frontend/src/components/Navbar.vue:250
 msgid "Favourite"
 msgstr "crwdns156916:0crwdne156916:0"
 
@@ -487,7 +511,7 @@ msgstr "crwdns159184:0crwdne159184:0"
 msgid "In MB"
 msgstr "crwdns156940:0crwdne156940:0"
 
-#: frontend/src/components/Sidebar.vue:212
+#: frontend/src/components/Sidebar.vue:211
 msgid "Inbox"
 msgstr "crwdns158582:0crwdne158582:0"
 
@@ -560,7 +584,7 @@ msgstr "crwdns159186:0crwdne159186:0"
 msgid "Loading..."
 msgstr "crwdns159188:0crwdne159188:0"
 
-#: frontend/src/components/Sidebar.vue:175
+#: frontend/src/components/Sidebar.vue:174
 msgid "Log out"
 msgstr "crwdns156968:0crwdne156968:0"
 
@@ -575,7 +599,7 @@ msgid "MIME Type"
 msgstr "crwdns156972:0crwdne156972:0"
 
 #: frontend/src/components/InfoPopup.vue:106
-#: frontend/src/components/Sidebar.vue:120
+#: frontend/src/components/Sidebar.vue:119
 msgid "Manage"
 msgstr "crwdns156974:0crwdne156974:0"
 
@@ -618,8 +642,8 @@ msgstr "crwdns156982:0crwdne156982:0"
 msgid "Modified"
 msgstr "crwdns156984:0crwdne156984:0"
 
-#: frontend/src/components/GenericPage.vue:334
-#: frontend/src/components/Navbar.vue:231
+#: frontend/src/components/GenericPage.vue:343
+#: frontend/src/components/Navbar.vue:232
 msgid "Move"
 msgstr "crwdns156986:0crwdne156986:0"
 
@@ -684,7 +708,7 @@ msgstr "crwdns157006:0crwdne157006:0"
 msgid "Only applies if S3 is turned on."
 msgstr "crwdns160144:0crwdne160144:0"
 
-#: frontend/src/components/GenericPage.vue:304
+#: frontend/src/components/GenericPage.vue:310
 msgid "Open"
 msgstr "crwdns157008:0crwdne157008:0"
 
@@ -693,7 +717,7 @@ msgstr "crwdns157008:0crwdne157008:0"
 msgid "Open in Drive"
 msgstr "crwdns159192:0crwdne159192:0"
 
-#: frontend/src/components/Sidebar.vue:165
+#: frontend/src/components/Sidebar.vue:164
 msgid "Others"
 msgstr "crwdns157010:0crwdne157010:0"
 
@@ -738,7 +762,7 @@ msgstr "crwdns157022:0crwdne157022:0"
 msgid "Prefix"
 msgstr "crwdns160146:0crwdne160146:0"
 
-#: frontend/src/components/GenericPage.vue:298
+#: frontend/src/components/GenericPage.vue:304
 msgid "Preview"
 msgstr "crwdns157024:0crwdne157024:0"
 
@@ -755,6 +779,11 @@ msgstr "crwdns157026:0crwdne157026:0"
 #: drive/drive/doctype/drive_user_invitation/drive_user_invitation.json
 msgid "Proposed"
 msgstr "crwdns157030:0crwdne157030:0"
+
+#. Label of the public (Check) field in DocType 'Drive Team'
+#: drive/drive/doctype/drive_team/drive_team.json
+msgid "Public"
+msgstr "crwdns195756:0crwdne195756:0"
 
 #. Description of the 'Updates' (Table) field in DocType 'Drive Desktop Client'
 #: drive/drive/doctype/drive_desktop_client/drive_desktop_client.json
@@ -798,12 +827,12 @@ msgstr "crwdns157040:0crwdne157040:0"
 msgid "Referrer ID"
 msgstr "crwdns157042:0crwdne157042:0"
 
-#: frontend/src/components/GenericPage.vue:381
+#: frontend/src/components/GenericPage.vue:390
 msgid "Remove from Recents"
 msgstr "crwdns157044:0crwdne157044:0"
 
-#: frontend/src/components/GenericPage.vue:342
-#: frontend/src/components/Navbar.vue:237
+#: frontend/src/components/GenericPage.vue:351
+#: frontend/src/components/Navbar.vue:238
 msgid "Rename"
 msgstr "crwdns157046:0crwdne157046:0"
 
@@ -831,7 +860,7 @@ msgid "S3 Bucket"
 msgstr "crwdns157052:0crwdne157052:0"
 
 #: frontend/src/components/EmojiPicker.vue:22
-#: frontend/src/components/Sidebar.vue:207
+#: frontend/src/components/Sidebar.vue:206
 msgid "Search"
 msgstr "crwdns157054:0crwdne157054:0"
 
@@ -842,7 +871,7 @@ msgstr "crwdns157056:0crwdne157056:0"
 #. Label of the settings (JSON) field in DocType 'Drive Document'
 #: drive/drive/doctype/drive_document/drive_document.json
 #: frontend/src/components/Settings/SettingsDialog.vue:16
-#: frontend/src/components/Sidebar.vue:170
+#: frontend/src/components/Sidebar.vue:169
 msgid "Settings"
 msgstr "crwdns157058:0crwdne157058:0"
 
@@ -850,17 +879,17 @@ msgstr "crwdns157058:0crwdne157058:0"
 #. Label of the share (Check) field in DocType 'Drive Permission'
 #: drive/drive/doctype/drive_notification/drive_notification.json
 #: drive/drive/doctype/drive_permission/drive_permission.json
-#: frontend/src/components/GenericPage.vue:311
-#: frontend/src/components/Navbar.vue:205
+#: frontend/src/components/GenericPage.vue:317
+#: frontend/src/components/Navbar.vue:206
 msgid "Share"
 msgstr "crwdns157062:0crwdne157062:0"
 
-#: frontend/src/components/InfoPopup.vue:132 frontend/src/utils/files.js:199
+#: frontend/src/components/InfoPopup.vue:132 frontend/src/utils/files.js:197
 msgid "Shared"
 msgstr "crwdns157064:0crwdne157064:0"
 
-#: frontend/src/components/GenericPage.vue:348
-#: frontend/src/components/Navbar.vue:243
+#: frontend/src/components/GenericPage.vue:357
+#: frontend/src/components/Navbar.vue:244
 msgid "Show Info"
 msgstr "crwdns157066:0crwdne157066:0"
 
@@ -918,7 +947,7 @@ msgstr "crwdns157082:0crwdne157082:0"
 msgid "Storage"
 msgstr "crwdns157084:0crwdne157084:0"
 
-#: frontend/src/components/Sidebar.vue:154
+#: frontend/src/components/Sidebar.vue:153
 msgid "Support"
 msgstr "crwdns157086:0crwdne157086:0"
 
@@ -980,6 +1009,10 @@ msgstr "crwdns158606:0crwdne158606:0"
 msgid "Teams"
 msgstr "crwdns158608:0crwdne158608:0"
 
+#: frontend/src/components/Settings/TemplateSettings.vue:5
+msgid "Templates"
+msgstr "crwdns195758:0crwdne195758:0"
+
 #. Label of the thumbnail_prefix (Data) field in DocType 'Drive Disk Settings'
 #: drive/drive/doctype/drive_disk_settings/drive_disk_settings.json
 msgid "Thumbnail prefix"
@@ -1020,10 +1053,14 @@ msgstr "crwdns157102:0crwdne157102:0"
 msgid "URL Args"
 msgstr "crwdns157104:0crwdne157104:0"
 
-#: frontend/src/components/GenericPage.vue:368
-#: frontend/src/components/Navbar.vue:260
+#: frontend/src/components/GenericPage.vue:377
+#: frontend/src/components/Navbar.vue:261
 msgid "Unfavourite"
 msgstr "crwdns157106:0crwdne157106:0"
+
+#: frontend/src/components/Settings/TemplateSettings.vue:70
+msgid "Update"
+msgstr "crwdns195760:0crwdne195760:0"
 
 #. Label of the updates (Table) field in DocType 'Drive Desktop Client'
 #: drive/drive/doctype/drive_desktop_client/drive_desktop_client.json
