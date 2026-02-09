@@ -1,14 +1,14 @@
 # Translations template for Frappe Drive.
-# Copyright (C) 2025 Frappe Technologies Pvt. Ltd.
+# Copyright (C) 2026 Frappe Technologies Pvt. Ltd.
 # This file is distributed under the same license as the Frappe Drive project.
-# FIRST AUTHOR <EMAIL@ADDRESS>, 2025.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2026.
 #
 msgid ""
 msgstr ""
 "Project-Id-Version: Frappe Drive VERSION\n"
 "Report-Msgid-Bugs-To: developers@frappe.io\n"
-"POT-Creation-Date: 2025-12-19 16:12+0000\n"
-"PO-Revision-Date: 2025-12-19 16:12+0000\n"
+"POT-Creation-Date: 2026-02-06 16:22+0000\n"
+"PO-Revision-Date: 2026-02-06 16:22+0000\n"
 "Last-Translator: developers@frappe.io\n"
 "Language-Team: developers@frappe.io\n"
 "MIME-Version: 1.0\n"
@@ -62,6 +62,7 @@ msgstr ""
 msgid "Action Type"
 msgstr ""
 
+#: frontend/src/components/Settings/TemplateSettings.vue:70
 #: frontend/src/components/Settings/UserListSettings.vue:456
 #: frontend/src/components/TagInput.vue:25
 msgid "Add"
@@ -69,6 +70,11 @@ msgstr ""
 
 #: frontend/src/components/Settings/ProfileSettings.vue:76
 msgid "Add Image"
+msgstr ""
+
+#: frontend/src/components/Settings/TemplateSettings.vue:11
+#: frontend/src/components/Settings/TemplateSettings.vue:66
+msgid "Add Template"
 msgstr ""
 
 #: frontend/src/components/InfoPopup.vue:47
@@ -97,7 +103,7 @@ msgstr ""
 msgid "Allow Download"
 msgstr ""
 
-#: frontend/src/components/Sidebar.vue:125
+#: frontend/src/components/Sidebar.vue:124
 msgid "Apps"
 msgstr ""
 
@@ -130,7 +136,7 @@ msgstr ""
 msgid "Characters"
 msgstr ""
 
-#: frontend/src/components/Navbar.vue:301
+#: frontend/src/components/Navbar.vue:302
 msgid "Clear"
 msgstr ""
 
@@ -166,11 +172,12 @@ msgstr ""
 #. Label of the content (Long Text) field in DocType 'Drive Document'
 #: drive/drive/doctype/drive_comment/drive_comment.json
 #: drive/drive/doctype/drive_document/drive_document.json
+#: frontend/src/components/Settings/TemplateSettings.vue:92
 msgid "Content"
 msgstr ""
 
-#: frontend/src/components/GenericPage.vue:327
-#: frontend/src/components/Navbar.vue:220
+#: frontend/src/components/GenericPage.vue:336
+#: frontend/src/components/Navbar.vue:221
 msgid "Copy Link"
 msgstr ""
 
@@ -185,9 +192,13 @@ msgstr ""
 msgid "Defaults to \"s3v4\". Some providers only support \"s3\"."
 msgstr ""
 
-#: frontend/src/components/GenericPage.vue:394
-#: frontend/src/components/Navbar.vue:278
+#: frontend/src/components/GenericPage.vue:403
+#: frontend/src/components/Navbar.vue:279
 msgid "Delete"
+msgstr ""
+
+#: frontend/src/components/Settings/TemplateSettings.vue:110
+msgid "Delete Template"
 msgstr ""
 
 #: frontend/src/components/InfoPopup.vue:157
@@ -216,6 +227,11 @@ msgstr ""
 msgid "Document"
 msgstr ""
 
+#. Label of the doc (Link) field in DocType 'Drive File'
+#: drive/drive/doctype/drive_file/drive_file.json
+msgid "Document (Writer)"
+msgstr ""
+
 #. Label of the document_field (Data) field in DocType 'Drive Entity Activity
 #. Log'
 #: drive/drive/doctype/drive_entity_activity_log/drive_entity_activity_log.json
@@ -227,12 +243,12 @@ msgstr ""
 msgid "Document Type"
 msgstr ""
 
-#: frontend/src/components/Sidebar.vue:149
+#: frontend/src/components/Sidebar.vue:148
 msgid "Documentation"
 msgstr ""
 
-#: frontend/src/components/GenericPage.vue:318
-#: frontend/src/components/Navbar.vue:213
+#: frontend/src/components/GenericPage.vue:324
+#: frontend/src/components/Navbar.vue:214
 msgid "Download"
 msgstr ""
 
@@ -356,6 +372,10 @@ msgstr ""
 msgid "Edit Profile"
 msgstr ""
 
+#: frontend/src/components/Settings/TemplateSettings.vue:66
+msgid "Edit Template"
+msgstr ""
+
 #: frontend/src/components/Settings/ProfileSettings.vue:20
 msgid "Edit profile"
 msgstr ""
@@ -367,7 +387,7 @@ msgstr ""
 msgid "Email"
 msgstr ""
 
-#: frontend/src/components/Navbar.vue:307
+#: frontend/src/components/Navbar.vue:308
 msgid "Empty"
 msgstr ""
 
@@ -379,6 +399,10 @@ msgstr ""
 #. Label of the endpoint_url (Data) field in DocType 'Drive Disk Settings'
 #: drive/drive/doctype/drive_disk_settings/drive_disk_settings.json
 msgid "Endpoint URL"
+msgstr ""
+
+#: frontend/src/components/Settings/TemplateSettings.vue:86
+msgid "Enter template title"
 msgstr ""
 
 #. Label of the entity (Link) field in DocType 'Drive Document Version'
@@ -413,8 +437,8 @@ msgstr ""
 msgid "Expired"
 msgstr ""
 
-#: frontend/src/components/GenericPage.vue:355
-#: frontend/src/components/Navbar.vue:249
+#: frontend/src/components/GenericPage.vue:364
+#: frontend/src/components/Navbar.vue:250
 msgid "Favourite"
 msgstr ""
 
@@ -485,7 +509,7 @@ msgstr ""
 msgid "In MB"
 msgstr ""
 
-#: frontend/src/components/Sidebar.vue:212
+#: frontend/src/components/Sidebar.vue:211
 msgid "Inbox"
 msgstr ""
 
@@ -559,7 +583,7 @@ msgstr ""
 msgid "Loading..."
 msgstr ""
 
-#: frontend/src/components/Sidebar.vue:175
+#: frontend/src/components/Sidebar.vue:174
 msgid "Log out"
 msgstr ""
 
@@ -574,7 +598,7 @@ msgid "MIME Type"
 msgstr ""
 
 #: frontend/src/components/InfoPopup.vue:106
-#: frontend/src/components/Sidebar.vue:120
+#: frontend/src/components/Sidebar.vue:119
 msgid "Manage"
 msgstr ""
 
@@ -617,8 +641,8 @@ msgstr ""
 msgid "Modified"
 msgstr ""
 
-#: frontend/src/components/GenericPage.vue:334
-#: frontend/src/components/Navbar.vue:231
+#: frontend/src/components/GenericPage.vue:343
+#: frontend/src/components/Navbar.vue:232
 msgid "Move"
 msgstr ""
 
@@ -683,7 +707,7 @@ msgstr ""
 msgid "Only applies if S3 is turned on."
 msgstr ""
 
-#: frontend/src/components/GenericPage.vue:304
+#: frontend/src/components/GenericPage.vue:310
 msgid "Open"
 msgstr ""
 
@@ -692,7 +716,7 @@ msgstr ""
 msgid "Open in Drive"
 msgstr ""
 
-#: frontend/src/components/Sidebar.vue:165
+#: frontend/src/components/Sidebar.vue:164
 msgid "Others"
 msgstr ""
 
@@ -737,7 +761,7 @@ msgstr ""
 msgid "Prefix"
 msgstr ""
 
-#: frontend/src/components/GenericPage.vue:298
+#: frontend/src/components/GenericPage.vue:304
 msgid "Preview"
 msgstr ""
 
@@ -753,6 +777,11 @@ msgstr ""
 #. Option for the 'Status' (Select) field in DocType 'Drive User Invitation'
 #: drive/drive/doctype/drive_user_invitation/drive_user_invitation.json
 msgid "Proposed"
+msgstr ""
+
+#. Label of the public (Check) field in DocType 'Drive Team'
+#: drive/drive/doctype/drive_team/drive_team.json
+msgid "Public"
 msgstr ""
 
 #. Description of the 'Updates' (Table) field in DocType 'Drive Desktop Client'
@@ -797,12 +826,12 @@ msgstr ""
 msgid "Referrer ID"
 msgstr ""
 
-#: frontend/src/components/GenericPage.vue:381
+#: frontend/src/components/GenericPage.vue:390
 msgid "Remove from Recents"
 msgstr ""
 
-#: frontend/src/components/GenericPage.vue:342
-#: frontend/src/components/Navbar.vue:237
+#: frontend/src/components/GenericPage.vue:351
+#: frontend/src/components/Navbar.vue:238
 msgid "Rename"
 msgstr ""
 
@@ -830,7 +859,7 @@ msgid "S3 Bucket"
 msgstr ""
 
 #: frontend/src/components/EmojiPicker.vue:22
-#: frontend/src/components/Sidebar.vue:207
+#: frontend/src/components/Sidebar.vue:206
 msgid "Search"
 msgstr ""
 
@@ -841,7 +870,7 @@ msgstr ""
 #. Label of the settings (JSON) field in DocType 'Drive Document'
 #: drive/drive/doctype/drive_document/drive_document.json
 #: frontend/src/components/Settings/SettingsDialog.vue:16
-#: frontend/src/components/Sidebar.vue:170
+#: frontend/src/components/Sidebar.vue:169
 msgid "Settings"
 msgstr ""
 
@@ -849,17 +878,17 @@ msgstr ""
 #. Label of the share (Check) field in DocType 'Drive Permission'
 #: drive/drive/doctype/drive_notification/drive_notification.json
 #: drive/drive/doctype/drive_permission/drive_permission.json
-#: frontend/src/components/GenericPage.vue:311
-#: frontend/src/components/Navbar.vue:205
+#: frontend/src/components/GenericPage.vue:317
+#: frontend/src/components/Navbar.vue:206
 msgid "Share"
 msgstr ""
 
-#: frontend/src/components/InfoPopup.vue:132 frontend/src/utils/files.js:199
+#: frontend/src/components/InfoPopup.vue:132 frontend/src/utils/files.js:197
 msgid "Shared"
 msgstr ""
 
-#: frontend/src/components/GenericPage.vue:348
-#: frontend/src/components/Navbar.vue:243
+#: frontend/src/components/GenericPage.vue:357
+#: frontend/src/components/Navbar.vue:244
 msgid "Show Info"
 msgstr ""
 
@@ -917,7 +946,7 @@ msgstr ""
 msgid "Storage"
 msgstr ""
 
-#: frontend/src/components/Sidebar.vue:154
+#: frontend/src/components/Sidebar.vue:153
 msgid "Support"
 msgstr ""
 
@@ -979,6 +1008,10 @@ msgstr ""
 msgid "Teams"
 msgstr ""
 
+#: frontend/src/components/Settings/TemplateSettings.vue:5
+msgid "Templates"
+msgstr ""
+
 #. Label of the thumbnail_prefix (Data) field in DocType 'Drive Disk Settings'
 #: drive/drive/doctype/drive_disk_settings/drive_disk_settings.json
 msgid "Thumbnail prefix"
@@ -1019,9 +1052,13 @@ msgstr ""
 msgid "URL Args"
 msgstr ""
 
-#: frontend/src/components/GenericPage.vue:368
-#: frontend/src/components/Navbar.vue:260
+#: frontend/src/components/GenericPage.vue:377
+#: frontend/src/components/Navbar.vue:261
 msgid "Unfavourite"
+msgstr ""
+
+#: frontend/src/components/Settings/TemplateSettings.vue:70
+msgid "Update"
 msgstr ""
 
 #. Label of the updates (Table) field in DocType 'Drive Desktop Client'
