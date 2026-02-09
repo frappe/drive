@@ -327,7 +327,7 @@ const newEntityOptions = computed(() => [
       {
         label: "Presentation",
         icon: LucideGalleryVerticalEnd,
-        onClick: () => (dialog.value = "p"),
+        onClick: () => newExternal("Presentation"),
         cond: isPrivate.value && apps.data?.find?.((k) => k.name === "slides"),
       },
       {
