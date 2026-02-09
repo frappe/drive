@@ -49,3 +49,8 @@ build_dir = "./frontend"
 out_dir = "../drive/public/frontend"
 index_html_path = "../drive/www/drive.html"
 
+[project.urls]
+Homepage = "https://frappe.io/drive"
+Documentation = "https://docs.frappe.io/drive"
+Repository = "https://github.com/frappe/drive.git"
+"Bug Reports" = "https://github.com/frappe/drive/issues"
