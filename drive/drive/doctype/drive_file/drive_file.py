@@ -105,7 +105,7 @@ class DriveFile(Document):
         if new_team and not new_parent:
             new_parent = new_parent or get_home_folder(new_team).name
         elif new_parent and not new_team:
-            new_team = frappe.db.get_value('Drive File', new_parent, 'team')
+            new_team = frappe.db.get_value("Drive File", new_parent, "team")
         elif not new_parent and not new_team:
             new_team = self.team
             new_parent = new_parent or get_home_folder(new_team).name
@@ -156,7 +156,7 @@ class DriveFile(Document):
 
     @frappe.whitelist()
     @__update_modified
-    def rename(self, new_title):
+    def rename(self, new_title: str):
         """
         Rename file or folder
 
@@ -204,7 +204,7 @@ class DriveFile(Document):
         self.save()
 
     @frappe.whitelist()
-    def change_color(self, new_color):
+    def change_color(self, new_color: str):
         """
         Change color of a folder
 
@@ -230,13 +230,13 @@ class DriveFile(Document):
     @frappe.whitelist()
     def share(
         self,
-        user=None,
-        read=None,
-        comment=None,
-        share=None,
-        upload=None,
-        write=None,
-        team=False,
+        user: str = None,
+        read: bool | None = None,
+        comment: bool | None = None,
+        share: bool | None = None,
+        upload: bool | None = None,
+        write: bool | None = None,
+        team: bool = False,
     ):
         if not user_has_permission(self, "share"):
             frappe.throw("Not permitted to share", frappe.PermissionError)
@@ -266,7 +266,7 @@ class DriveFile(Document):
             permission = frappe.get_doc("Drive Permission", permission)
 
         # Create user
-        if not frappe.db.exists("User", user):
+        if user and not frappe.db.exists("User", user):
             invite_users(user, auto=True)
 
         levels = [
@@ -281,7 +281,7 @@ class DriveFile(Document):
         permission.save(ignore_permissions=True)
 
     @frappe.whitelist()
-    def unshare(self, user=None):
+    def unshare(self, user: str | None = None):
         """Unshare this file or folder with the specified user
         :param user: User or group with whom this is to be shared
         :param user_type:
@@ -335,28 +335,6 @@ class DriveFile(Document):
             )
             if perm_name:
                 frappe.delete_doc("Drive Permission", perm_name, ignore_permissions=True)
-
-    # Commenting
-    @frappe.whitelist(allow_guest=True)
-    @rate_limit(key="comment_create", limit=10, seconds=1)
-    def add_comment(self, id, content, is_reply, parent_name=None, anchor=None):
-        parent = frappe.get_doc("Drive Comment", parent_name) if is_reply else self
-        if not user_has_permission(self, "comment"):
-            frappe.throw("You don't have comment access")
-
-        comment = frappe.get_doc(
-            {
-                "doctype": "Drive Comment",
-                "name": id,
-                "content": content,
-                "anchor": anchor,
-            }
-        )
-        parent.append("replies" if is_reply else "comments", comment)
-        # Used to bypass child table restrictions
-        parent.save(ignore_permissions=True)
-        comment.insert(ignore_permissions=True)
-        return comment.name
 
     @frappe.whitelist()
     def toggle_favourite(self):

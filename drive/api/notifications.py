@@ -1,5 +1,6 @@
 import frappe
 from pypika import Order
+from frappe.model.document import Document
 
 
 def get_link(entity):
@@ -10,12 +11,7 @@ def get_link(entity):
 
 
 @frappe.whitelist()
-def get_notifications(only_unread):
-    """
-    Get notifications for current user
-
-    :param only_unread: only get notifications where read is False
-    """
+def get_notifications(only_unread: bool = False):
     User = frappe.qb.DocType("User")
     Notification = frappe.qb.DocType("Drive Notification")
     fields = [
@@ -56,13 +52,7 @@ def get_unread_count():
 
 
 @frappe.whitelist()
-def mark_as_read(name=None, all=False):
-    """
-    Mark notification for current user as read
-
-    :param name: ID of notification record
-    :param all: Will mark all unread notifications as read
-    """
+def mark_as_read(name: str | None = None, all: bool = False):
     if all:
         frappe.db.set_value("Drive Notification", {"to_user": frappe.session.user, "read": False}, "read", True)
         return
@@ -108,15 +98,7 @@ def notify_share(entity_name, docperm_name):
     send_share_email(docshare.user, message, link, entity.team, entity_type)
 
 
-def create_notification(from_user, to_user, type, entity, message=None):
-    """
-    Create a notification
-    :param from_user: notification owner user email
-    :param to_user: notification receiver user email
-    :param type: subject of notification
-    :param entity: drive_file name
-    :param message: notification message
-    """
+def create_notification(from_user: str, to_user: str, type: str, entity: str, message: str | None = None):
     from drive.api.permissions import get_user_access
 
     user_access = get_user_access(entity.name, to_user)

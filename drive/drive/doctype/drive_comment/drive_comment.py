@@ -9,11 +9,6 @@ from drive.utils import extract_mentions
 
 
 class DriveComment(Document):
-    @frappe.whitelist()
-    def edit(self, content):
-        self.content = content
-        self.save()
-
     def after_insert(self):
         """
         Does not create a notification until it's mentioned

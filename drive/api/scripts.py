@@ -7,10 +7,9 @@ from drive.utils.files import FileManager
 
 @frappe.whitelist()
 @default_team
-def sync_preview(team, json=True):
+def sync_preview(team: str, json: bool = True):
     manager = FileManager()
     files = manager.fetch_new_files(team)
-    root_folder = manager.get_prefix(team)
     sorted_files = sorted(files.items(), key=lambda p: len(p[0].parts))
     # For just checking, strip the root folder
     if json:
@@ -20,7 +19,7 @@ def sync_preview(team, json=True):
 
 @frappe.whitelist()
 @default_team
-def sync_from_disk(team):
+def sync_from_disk(team: str):
     """
     One-way sync from disk to Drive. Ignores hidden files.
     """

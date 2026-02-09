@@ -22,7 +22,7 @@
     }
   ],
   "links": [],
-  "modified": "2025-03-05 17:10:23.811211",
+  "modified": "2026-02-05 15:54:03.437373",
   "modified_by": "Administrator",
   "module": "Drive",
   "name": "Drive Tag",
@@ -32,7 +32,7 @@
       "create": 1,
       "export": 1,
       "read": 1,
-      "role": "All",
+      "role": "Drive User",
       "share": 1,
       "write": 1
     }

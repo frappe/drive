@@ -2,7 +2,7 @@ import frappe
 
 
 @frappe.whitelist()
-def create_tag(title, color="gray"):
+def create_tag(title: str, color: str = "gray"):
     """
     Create new tag for entity
 
@@ -26,7 +26,7 @@ def create_tag(title, color="gray"):
 
 
 @frappe.whitelist()
-def add_tag(entity, tag):
+def add_tag(entity: str, tag: str):
     """
     Add tag to entity
 
@@ -39,7 +39,7 @@ def add_tag(entity, tag):
 
 
 @frappe.whitelist()
-def get_entity_tags(entity):
+def get_entity_tags(entity: str):
     """
     Returns all tags of given entity
 
@@ -58,7 +58,6 @@ def get_entity_tags(entity):
 def get_user_tags():
     """
     Returns all tags created by current user
-
     """
     return frappe.db.get_list(
         "Drive Tag",
@@ -80,7 +79,7 @@ def get_tags_with_owner():
 
 
 @frappe.whitelist()
-def edit_tag(tag, title, color):
+def edit_tag(tag: str, title: str, color: str):
     """
     Update color for givent tag
 
@@ -94,7 +93,7 @@ def edit_tag(tag, title, color):
 
 
 @frappe.whitelist()
-def remove_tag(entity, tag=None, all=False):
+def remove_tag(entity: str, tag: str = None, all: bool = False):
     """
     Remove tag from entity
 
@@ -109,7 +108,7 @@ def remove_tag(entity, tag=None, all=False):
 
 
 @frappe.whitelist()
-def delete_tag(tag):
+def delete_tag(tag: str):
     """
     Delete tag
 

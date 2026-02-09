@@ -26,28 +26,6 @@ def mark_as_viewed(entity):
     return doc
 
 
-@frappe.whitelist()
-@rate_limit(key="reference_name", limit=10, seconds=60 * 60)
-def add_comment(reference_name: str, content: str, comment_email: str, comment_by: str):
-    """Allow logged user with permission to read document to add a comment"""
-    exists = frappe.db.exists("Drive File", reference_name)
-    if not exists:
-        frappe.throw("Entity does not exist", frappe.NotFound)
-    comment = frappe.new_doc("Comment")
-    comment.update(
-        {
-            "comment_type": "Comment",
-            "reference_doctype": "Drive File",
-            "reference_name": reference_name,
-            "comment_email": comment_email,
-            "comment_by": comment_by,
-            "content": content,
-        }
-    )
-    comment.insert(ignore_permissions=True)
-    return comment
-
-
 def generate_otp():
     """Generates a cryptographically secure random OTP"""
 

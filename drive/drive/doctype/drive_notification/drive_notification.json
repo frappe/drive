@@ -1,7 +1,7 @@
 {
  "actions": [],
  "autoname": "hash",
- "creation": "2024-06-27 12:47:40.078303",
+ "creation": "2026-02-05 15:54:03.437373",
  "doctype": "DocType",
  "engine": "InnoDB",
  "field_order": [
@@ -92,7 +92,7 @@
    "print": 1,
    "read": 1,
    "report": 1,
-   "role": "All",
+   "role": "Drive User",
    "share": 1,
    "write": 1
   }

@@ -27,7 +27,7 @@
   }
  ],
  "links": [],
- "modified": "2025-07-29 09:51:16.128807",
+ "modified": "2026-02-05 15:54:03.437373",
  "modified_by": "Administrator",
  "module": "Drive",
  "name": "Drive Favourite",
@@ -42,7 +42,7 @@
    "print": 1,
    "read": 1,
    "report": 1,
-   "role": "All",
+   "role": "Drive User",
    "share": 1,
    "write": 1
   }

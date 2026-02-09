@@ -8,7 +8,7 @@ export const usersWithAccess = createResource({
 })
 
 export const updateAccess = createResource({
-  url: "drive.api.files.call_controller_method",
+  url: "drive.api.files.share",
   makeParams: (params) => ({ ...params, method: params.method || "share" }),
   onError: (error) => toast({ type: "error", title: error.messages[0] }),
 })
@@ -53,7 +53,7 @@ export const allUsers = createResource({
 })
 
 export const getInvites = createResource({
-  url: "drive.api.product.get_invites",
+  url: "drive.api.product.get_my_invites",
 })
 
 export const acceptInvite = createResource({
@@ -66,7 +66,7 @@ export const rejectInvite = createResource({
 })
 
 export const isAdmin = createResource({
-  url: "drive.api.product.check_is_admin",
+  url: "drive.api.product.is_site_admin",
 })
 
 export const apps = createResource({
