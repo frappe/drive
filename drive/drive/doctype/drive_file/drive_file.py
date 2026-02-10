@@ -66,7 +66,7 @@ class DriveFile(Document):
             yield frappe.get_doc(self.doctype, name)
 
     def __update_modified(func):
-        def decorator(self, *args, **kwargs):
+        def decorator(self: DriveFile, *args, **kwargs):
             client = kwargs.pop("client", None)
             old_parent = self.parent_entity
             res = func(self, *args, **kwargs)
@@ -156,7 +156,7 @@ class DriveFile(Document):
 
     @frappe.whitelist()
     @__update_modified
-    def rename(self, new_title: str):
+    def rename(self: DriveFile, new_title: str):
         """
         Rename file or folder
 
@@ -204,7 +204,7 @@ class DriveFile(Document):
         self.save()
 
     @frappe.whitelist()
-    def change_color(self, new_color: str):
+    def change_color(self: DriveFile, new_color: str):
         """
         Change color of a folder
 
@@ -229,7 +229,7 @@ class DriveFile(Document):
 
     @frappe.whitelist()
     def share(
-        self,
+        self: DriveFile,
         user: str = None,
         read: bool | None = None,
         comment: bool | None = None,
@@ -281,7 +281,7 @@ class DriveFile(Document):
         permission.save(ignore_permissions=True)
 
     @frappe.whitelist()
-    def unshare(self, user: str | None = None):
+    def unshare(self: DriveFile, user: str | None = None):
         """Unshare this file or folder with the specified user
         :param user: User or group with whom this is to be shared
         :param user_type:
@@ -337,7 +337,7 @@ class DriveFile(Document):
                 frappe.delete_doc("Drive Permission", perm_name, ignore_permissions=True)
 
     @frappe.whitelist()
-    def toggle_favourite(self):
+    def toggle_favourite(self: DriveFile):
         existing_doc = frappe.db.exists(
             {
                 "doctype": "Drive Favourite",

@@ -41,6 +41,7 @@ def upload_file(
     fullpath: str = None,
     parent: str = None,
     transfer: int = 0,
+    embed: int = 0,
 ):
     """
     Accept chunked file contents via a multipart upload.

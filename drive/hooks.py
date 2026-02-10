@@ -243,3 +243,4 @@ DENIED_PATHS = []
 DENIED_WILDCARD_PATHS = [
     "/api/",
 ]
+require_type_annotated_api_methods = True

@@ -49,7 +49,7 @@ def get_team_access(entity):
 
 
 @frappe.whitelist(allow_guest=True)
-def get_user_access(entity: str | Document, user: str = None, team: bool = False):
+def get_user_access(entity: str | Document | frappe._dict, user: str = None, team: bool = False):
     """
     Return the user specific permissions for an entity. Toggle `team` to check team permission.
     """
