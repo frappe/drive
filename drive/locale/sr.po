@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: frappe\n"
 "Report-Msgid-Bugs-To: developers@frappe.io\n"
 "POT-Creation-Date: 2026-02-06 16:22+0000\n"
-"PO-Revision-Date: 2026-02-09 17:37\n"
+"PO-Revision-Date: 2026-02-11 17:38\n"
 "Last-Translator: developers@frappe.io\n"
 "Language-Team: Serbian (Cyrillic)\n"
 "MIME-Version: 1.0\n"
@@ -201,7 +201,7 @@ msgstr "Обриши"
 
 #: frontend/src/components/Settings/TemplateSettings.vue:110
 msgid "Delete Template"
-msgstr ""
+msgstr "Обриши шаблон"
 
 #: frontend/src/components/InfoPopup.vue:157
 msgid "Developer"
@@ -232,7 +232,7 @@ msgstr "Документ"
 #. Label of the doc (Link) field in DocType 'Drive File'
 #: drive/drive/doctype/drive_file/drive_file.json
 msgid "Document (Writer)"
-msgstr ""
+msgstr "Документ (Уређивач)"
 
 #. Label of the document_field (Data) field in DocType 'Drive Entity Activity
 #. Log'
@@ -376,7 +376,7 @@ msgstr "Уреди профил"
 
 #: frontend/src/components/Settings/TemplateSettings.vue:66
 msgid "Edit Template"
-msgstr ""
+msgstr "Уреди шаблон"
 
 #: frontend/src/components/Settings/ProfileSettings.vue:20
 msgid "Edit profile"
@@ -405,7 +405,7 @@ msgstr "Endpoint URL"
 
 #: frontend/src/components/Settings/TemplateSettings.vue:86
 msgid "Enter template title"
-msgstr ""
+msgstr "Унесите назив шаблона"
 
 #. Label of the entity (Link) field in DocType 'Drive Document Version'
 #. Label of the entity (Link) field in DocType 'Drive Entity Activity Log'
