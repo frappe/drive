@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: frappe\n"
 "Report-Msgid-Bugs-To: developers@frappe.io\n"
 "POT-Creation-Date: 2026-02-06 16:22+0000\n"
-"PO-Revision-Date: 2026-02-09 17:37\n"
+"PO-Revision-Date: 2026-02-12 18:12\n"
 "Last-Translator: developers@frappe.io\n"
 "Language-Team: Spanish\n"
 "MIME-Version: 1.0\n"
@@ -387,7 +387,7 @@ msgstr "Editar perfil"
 #: drive/drive/doctype/account_request/account_request.json
 #: drive/drive/doctype/drive_user_invitation/drive_user_invitation.json
 msgid "Email"
-msgstr ""
+msgstr "Correo electrónico"
 
 #: frontend/src/components/Navbar.vue:308
 msgid "Empty"
@@ -862,7 +862,7 @@ msgstr "Cubo S3"
 #: frontend/src/components/EmojiPicker.vue:22
 #: frontend/src/components/Sidebar.vue:206
 msgid "Search"
-msgstr ""
+msgstr "Buscar"
 
 #: frontend/src/components/TagColorInput.vue:36
 msgid "Set Color"
@@ -965,7 +965,7 @@ msgstr "Soporte"
 #: drive/drive/doctype/drive_transfer/drive_transfer.json
 #: drive/drive/doctype/drive_user_invitation/drive_user_invitation.json
 msgid "System Manager"
-msgstr ""
+msgstr "Administrador del sistema"
 
 #. Label of the tag (Link) field in DocType 'Drive Entity Tag'
 #: drive/drive/doctype/drive_entity_tag/drive_entity_tag.json
