@@ -814,10 +814,8 @@ def search(query: str):
 
 
 @frappe.whitelist(allow_guest=True)
-def get_translate():
-    return {
-        l["old_name"]: l["name"] for l in frappe.get_all("Drive File", fields=["old_name", "name"]) if l["old_name"]
-    }
+def translate_old_name(old_name: str):
+    return frappe.get_value("Drive File", {"old_name": old_name}, "name")
 
 
 @frappe.whitelist()

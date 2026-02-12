@@ -335,8 +335,7 @@ export const allFolders = createResource({
 
 export const translate = createResource({
   method: "GET",
-  url: "/api/method/drive.api.files.get_translate",
-  cache: "translate",
+  url: "/api/method/drive.api.files.translate_old_name",
 })
 
 export const storageBar = createResource({

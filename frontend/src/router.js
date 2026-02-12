@@ -175,12 +175,11 @@ const routes = [
     meta: { allowGuest: true },
     component: () => null,
     beforeEnter: async (to) => {
-      if (!translate.data?.[to.params.entityName]) await translate.fetch()
+      await translate.fetch({ old_name: to.params.entityName })
       return {
         name: "Folder",
         params: {
-          entityName:
-            translate.data[to.params.entityName] || to.params.entityName,
+          entityName: translate.data,
         },
       }
     },
@@ -189,12 +188,11 @@ const routes = [
     path: "/document/:entityName",
     component: () => null,
     beforeEnter: async (to) => {
-      if (!translate.data?.[to.params.entityName]) await translate.fetch()
+      await translate.fetch({ old_name: to.params.entityName })
       return {
         name: "Document",
         params: {
-          entityName:
-            translate.data[to.params.entityName] || to.params.entityName,
+          entityName: translate.data,
         },
       }
     },
@@ -204,13 +202,11 @@ const routes = [
     component: () => null,
     meta: { allowGuest: true },
     beforeEnter: async (to) => {
-      if (!translate.data?.[to.params.entityName]) await translate.fetch()
-      console.log(translate.data)
+      await translate.fetch({ old_name: to.params.entityName })
       return {
         name: "File",
         params: {
-          entityName:
-            translate.data[to.params.entityName] || to.params.entityName,
+          entityName: translate.data,
         },
       }
     },
