@@ -2,8 +2,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: frappe\n"
 "Report-Msgid-Bugs-To: developers@frappe.io\n"
-"POT-Creation-Date: 2025-12-05 16:12+0000\n"
-"PO-Revision-Date: 2026-01-21 11:10\n"
+"POT-Creation-Date: 2026-02-06 16:22+0000\n"
+"PO-Revision-Date: 2026-02-12 18:12\n"
 "Last-Translator: developers@frappe.io\n"
 "Language-Team: Russian\n"
 "MIME-Version: 1.0\n"
@@ -64,6 +64,7 @@ msgstr "Запрос учётной записи"
 msgid "Action Type"
 msgstr "Тип действия"
 
+#: frontend/src/components/Settings/TemplateSettings.vue:70
 #: frontend/src/components/Settings/UserListSettings.vue:456
 #: frontend/src/components/TagInput.vue:25
 msgid "Add"
@@ -72,6 +73,11 @@ msgstr "Добавить"
 #: frontend/src/components/Settings/ProfileSettings.vue:76
 msgid "Add Image"
 msgstr "Добавить изображение"
+
+#: frontend/src/components/Settings/TemplateSettings.vue:11
+#: frontend/src/components/Settings/TemplateSettings.vue:66
+msgid "Add Template"
+msgstr "Добавить шаблон"
 
 #: frontend/src/components/InfoPopup.vue:47
 msgid "Added"
@@ -99,7 +105,7 @@ msgstr "Все"
 msgid "Allow Download"
 msgstr "Разрешить скачивание"
 
-#: frontend/src/components/Sidebar.vue:125
+#: frontend/src/components/Sidebar.vue:124
 msgid "Apps"
 msgstr "Приложения"
 
@@ -132,7 +138,7 @@ msgstr "Может содержать любые метаданные, необ�
 msgid "Characters"
 msgstr "Символы"
 
-#: frontend/src/components/Navbar.vue:301
+#: frontend/src/components/Navbar.vue:302
 msgid "Clear"
 msgstr "Очистить"
 
@@ -168,11 +174,12 @@ msgstr "Подтвердите"
 #. Label of the content (Long Text) field in DocType 'Drive Document'
 #: drive/drive/doctype/drive_comment/drive_comment.json
 #: drive/drive/doctype/drive_document/drive_document.json
+#: frontend/src/components/Settings/TemplateSettings.vue:92
 msgid "Content"
 msgstr "Содержимое"
 
-#: frontend/src/components/GenericPage.vue:327
-#: frontend/src/components/Navbar.vue:220
+#: frontend/src/components/GenericPage.vue:336
+#: frontend/src/components/Navbar.vue:221
 msgid "Copy Link"
 msgstr "Скопировать ссылку"
 
@@ -187,10 +194,14 @@ msgstr "Основной"
 msgid "Defaults to \"s3v4\". Some providers only support \"s3\"."
 msgstr "По умолчанию используется \"s3v4\". Некоторые провайдеры поддерживают только \"s3\"."
 
-#: frontend/src/components/GenericPage.vue:394
-#: frontend/src/components/Navbar.vue:278
+#: frontend/src/components/GenericPage.vue:403
+#: frontend/src/components/Navbar.vue:279
 msgid "Delete"
 msgstr "Удалить"
+
+#: frontend/src/components/Settings/TemplateSettings.vue:110
+msgid "Delete Template"
+msgstr ""
 
 #: frontend/src/components/InfoPopup.vue:157
 msgid "Developer"
@@ -218,6 +229,11 @@ msgstr "Имя DocType"
 msgid "Document"
 msgstr "Документ"
 
+#. Label of the doc (Link) field in DocType 'Drive File'
+#: drive/drive/doctype/drive_file/drive_file.json
+msgid "Document (Writer)"
+msgstr ""
+
 #. Label of the document_field (Data) field in DocType 'Drive Entity Activity
 #. Log'
 #: drive/drive/doctype/drive_entity_activity_log/drive_entity_activity_log.json
@@ -229,12 +245,12 @@ msgstr "Заголовок документа"
 msgid "Document Type"
 msgstr "Тип документа"
 
-#: frontend/src/components/Sidebar.vue:149
+#: frontend/src/components/Sidebar.vue:148
 msgid "Documentation"
 msgstr "Документация"
 
-#: frontend/src/components/GenericPage.vue:318
-#: frontend/src/components/Navbar.vue:213
+#: frontend/src/components/GenericPage.vue:324
+#: frontend/src/components/Navbar.vue:214
 msgid "Download"
 msgstr "Скачать"
 
@@ -358,6 +374,10 @@ msgstr "Редактировать"
 msgid "Edit Profile"
 msgstr "Изменить профиль"
 
+#: frontend/src/components/Settings/TemplateSettings.vue:66
+msgid "Edit Template"
+msgstr ""
+
 #: frontend/src/components/Settings/ProfileSettings.vue:20
 msgid "Edit profile"
 msgstr "Изменить профиль"
@@ -369,7 +389,7 @@ msgstr "Изменить профиль"
 msgid "Email"
 msgstr "Email"
 
-#: frontend/src/components/Navbar.vue:307
+#: frontend/src/components/Navbar.vue:308
 msgid "Empty"
 msgstr "Пустой"
 
@@ -382,6 +402,10 @@ msgstr "Включено"
 #: drive/drive/doctype/drive_disk_settings/drive_disk_settings.json
 msgid "Endpoint URL"
 msgstr "URL конечной точки"
+
+#: frontend/src/components/Settings/TemplateSettings.vue:86
+msgid "Enter template title"
+msgstr ""
 
 #. Label of the entity (Link) field in DocType 'Drive Document Version'
 #. Label of the entity (Link) field in DocType 'Drive Entity Activity Log'
@@ -415,8 +439,8 @@ msgstr "Пример формата: https://s3.ap-south-1.amazonaws.com"
 msgid "Expired"
 msgstr "Истек срок действия"
 
-#: frontend/src/components/GenericPage.vue:355
-#: frontend/src/components/Navbar.vue:249
+#: frontend/src/components/GenericPage.vue:364
+#: frontend/src/components/Navbar.vue:250
 msgid "Favourite"
 msgstr "Избранное"
 
@@ -487,7 +511,7 @@ msgstr "Икона"
 msgid "In MB"
 msgstr "В МБ"
 
-#: frontend/src/components/Sidebar.vue:212
+#: frontend/src/components/Sidebar.vue:211
 msgid "Inbox"
 msgstr "Входящие"
 
@@ -563,7 +587,7 @@ msgstr "Загрузить больше"
 msgid "Loading..."
 msgstr "Загрузка..."
 
-#: frontend/src/components/Sidebar.vue:175
+#: frontend/src/components/Sidebar.vue:174
 msgid "Log out"
 msgstr "Выйти"
 
@@ -578,7 +602,7 @@ msgid "MIME Type"
 msgstr "Тип MIME"
 
 #: frontend/src/components/InfoPopup.vue:106
-#: frontend/src/components/Sidebar.vue:120
+#: frontend/src/components/Sidebar.vue:119
 msgid "Manage"
 msgstr "Управлять"
 
@@ -621,8 +645,8 @@ msgstr "Meta значение"
 msgid "Modified"
 msgstr "Изменено"
 
-#: frontend/src/components/GenericPage.vue:334
-#: frontend/src/components/Navbar.vue:231
+#: frontend/src/components/GenericPage.vue:343
+#: frontend/src/components/Navbar.vue:232
 msgid "Move"
 msgstr "Переместить"
 
@@ -687,7 +711,7 @@ msgstr "Старое значение"
 msgid "Only applies if S3 is turned on."
 msgstr "Применяется только если включен S3."
 
-#: frontend/src/components/GenericPage.vue:304
+#: frontend/src/components/GenericPage.vue:310
 msgid "Open"
 msgstr "Открыт"
 
@@ -696,7 +720,7 @@ msgstr "Открыт"
 msgid "Open in Drive"
 msgstr "Открыть в Drive"
 
-#: frontend/src/components/Sidebar.vue:165
+#: frontend/src/components/Sidebar.vue:164
 msgid "Others"
 msgstr "Другие"
 
@@ -730,7 +754,7 @@ msgstr "Разрешения"
 #. Label of the personal (Check) field in DocType 'Drive Team'
 #: drive/drive/doctype/drive_team/drive_team.json
 msgid "Personal"
-msgstr ""
+msgstr "Личный"
 
 #: frontend/src/components/Settings/ProfileSettings.vue:94
 msgid "Preferences"
@@ -741,7 +765,7 @@ msgstr "Предпочтения"
 msgid "Prefix"
 msgstr ""
 
-#: frontend/src/components/GenericPage.vue:298
+#: frontend/src/components/GenericPage.vue:304
 msgid "Preview"
 msgstr "Просмотр"
 
@@ -752,12 +776,17 @@ msgstr "Размер просмотра"
 
 #: frontend/src/components/Settings/ProfileSettings.vue:3
 msgid "Profile"
-msgstr ""
+msgstr "Профиль"
 
 #. Option for the 'Status' (Select) field in DocType 'Drive User Invitation'
 #: drive/drive/doctype/drive_user_invitation/drive_user_invitation.json
 msgid "Proposed"
 msgstr "Предложенные"
+
+#. Label of the public (Check) field in DocType 'Drive Team'
+#: drive/drive/doctype/drive_team/drive_team.json
+msgid "Public"
+msgstr "Публичный"
 
 #. Description of the 'Updates' (Table) field in DocType 'Drive Desktop Client'
 #: drive/drive/doctype/drive_desktop_client/drive_desktop_client.json
@@ -801,12 +830,12 @@ msgstr "Данные рекомендации"
 msgid "Referrer ID"
 msgstr "ID рекомендации"
 
-#: frontend/src/components/GenericPage.vue:381
+#: frontend/src/components/GenericPage.vue:390
 msgid "Remove from Recents"
 msgstr "Удалить из Недавних"
 
-#: frontend/src/components/GenericPage.vue:342
-#: frontend/src/components/Navbar.vue:237
+#: frontend/src/components/GenericPage.vue:351
+#: frontend/src/components/Navbar.vue:238
 msgid "Rename"
 msgstr "Переименовать"
 
@@ -834,7 +863,7 @@ msgid "S3 Bucket"
 msgstr "S3 Bucket"
 
 #: frontend/src/components/EmojiPicker.vue:22
-#: frontend/src/components/Sidebar.vue:207
+#: frontend/src/components/Sidebar.vue:206
 msgid "Search"
 msgstr "Поиск"
 
@@ -845,7 +874,7 @@ msgstr "Выбрать цвет"
 #. Label of the settings (JSON) field in DocType 'Drive Document'
 #: drive/drive/doctype/drive_document/drive_document.json
 #: frontend/src/components/Settings/SettingsDialog.vue:16
-#: frontend/src/components/Sidebar.vue:170
+#: frontend/src/components/Sidebar.vue:169
 msgid "Settings"
 msgstr "Настройки"
 
@@ -853,17 +882,17 @@ msgstr "Настройки"
 #. Label of the share (Check) field in DocType 'Drive Permission'
 #: drive/drive/doctype/drive_notification/drive_notification.json
 #: drive/drive/doctype/drive_permission/drive_permission.json
-#: frontend/src/components/GenericPage.vue:311
-#: frontend/src/components/Navbar.vue:205
+#: frontend/src/components/GenericPage.vue:317
+#: frontend/src/components/Navbar.vue:206
 msgid "Share"
 msgstr "Поделиться"
 
-#: frontend/src/components/InfoPopup.vue:132 frontend/src/utils/files.js:199
+#: frontend/src/components/InfoPopup.vue:132 frontend/src/utils/files.js:197
 msgid "Shared"
 msgstr ""
 
-#: frontend/src/components/GenericPage.vue:348
-#: frontend/src/components/Navbar.vue:243
+#: frontend/src/components/GenericPage.vue:357
+#: frontend/src/components/Navbar.vue:244
 msgid "Show Info"
 msgstr "Показать информацию"
 
@@ -921,7 +950,7 @@ msgstr "Статус"
 msgid "Storage"
 msgstr "Хранилище"
 
-#: frontend/src/components/Sidebar.vue:154
+#: frontend/src/components/Sidebar.vue:153
 msgid "Support"
 msgstr "Поддержка"
 
@@ -983,6 +1012,10 @@ msgstr "Префикс команды"
 msgid "Teams"
 msgstr "Команда"
 
+#: frontend/src/components/Settings/TemplateSettings.vue:5
+msgid "Templates"
+msgstr "Шаблоны"
+
 #. Label of the thumbnail_prefix (Data) field in DocType 'Drive Disk Settings'
 #: drive/drive/doctype/drive_disk_settings/drive_disk_settings.json
 msgid "Thumbnail prefix"
@@ -1023,10 +1056,14 @@ msgstr "Тип"
 msgid "URL Args"
 msgstr "URL-аргументы"
 
-#: frontend/src/components/GenericPage.vue:368
-#: frontend/src/components/Navbar.vue:260
+#: frontend/src/components/GenericPage.vue:377
+#: frontend/src/components/Navbar.vue:261
 msgid "Unfavourite"
 msgstr "Убрать из избранного"
+
+#: frontend/src/components/Settings/TemplateSettings.vue:70
+msgid "Update"
+msgstr "Обновить"
 
 #. Label of the updates (Table) field in DocType 'Drive Desktop Client'
 #: drive/drive/doctype/drive_desktop_client/drive_desktop_client.json

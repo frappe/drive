@@ -2,8 +2,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: frappe\n"
 "Report-Msgid-Bugs-To: developers@frappe.io\n"
-"POT-Creation-Date: 2025-12-05 16:12+0000\n"
-"PO-Revision-Date: 2025-12-08 17:15\n"
+"POT-Creation-Date: 2026-02-06 16:22+0000\n"
+"PO-Revision-Date: 2026-02-09 17:37\n"
 "Last-Translator: developers@frappe.io\n"
 "Language-Team: Norwegian Bokmal\n"
 "MIME-Version: 1.0\n"
@@ -64,6 +64,7 @@ msgstr "Konto Forespørsel"
 msgid "Action Type"
 msgstr "Aktivitet Type"
 
+#: frontend/src/components/Settings/TemplateSettings.vue:70
 #: frontend/src/components/Settings/UserListSettings.vue:456
 #: frontend/src/components/TagInput.vue:25
 msgid "Add"
@@ -72,6 +73,11 @@ msgstr "Legg til"
 #: frontend/src/components/Settings/ProfileSettings.vue:76
 msgid "Add Image"
 msgstr "Legg til Bilde"
+
+#: frontend/src/components/Settings/TemplateSettings.vue:11
+#: frontend/src/components/Settings/TemplateSettings.vue:66
+msgid "Add Template"
+msgstr "Legg til mal"
 
 #: frontend/src/components/InfoPopup.vue:47
 msgid "Added"
@@ -99,7 +105,7 @@ msgstr "Alle"
 msgid "Allow Download"
 msgstr "Tillat Nedlasting"
 
-#: frontend/src/components/Sidebar.vue:125
+#: frontend/src/components/Sidebar.vue:124
 msgid "Apps"
 msgstr "Apper"
 
@@ -132,7 +138,7 @@ msgstr "Kan inneholde hvilken som helst metaverdi som trengs for tilgangsloggen.
 msgid "Characters"
 msgstr "Tegn"
 
-#: frontend/src/components/Navbar.vue:301
+#: frontend/src/components/Navbar.vue:302
 msgid "Clear"
 msgstr "Tøm"
 
@@ -168,11 +174,12 @@ msgstr "Bekreft"
 #. Label of the content (Long Text) field in DocType 'Drive Document'
 #: drive/drive/doctype/drive_comment/drive_comment.json
 #: drive/drive/doctype/drive_document/drive_document.json
+#: frontend/src/components/Settings/TemplateSettings.vue:92
 msgid "Content"
 msgstr "Innhold"
 
-#: frontend/src/components/GenericPage.vue:327
-#: frontend/src/components/Navbar.vue:220
+#: frontend/src/components/GenericPage.vue:336
+#: frontend/src/components/Navbar.vue:221
 msgid "Copy Link"
 msgstr "Kopier Lenke"
 
@@ -187,10 +194,14 @@ msgstr "Kjerne"
 msgid "Defaults to \"s3v4\". Some providers only support \"s3\"."
 msgstr "Standardinnstillingen er \"s3v4\". Noen leverandører støtter bare \"s3\"."
 
-#: frontend/src/components/GenericPage.vue:394
-#: frontend/src/components/Navbar.vue:278
+#: frontend/src/components/GenericPage.vue:403
+#: frontend/src/components/Navbar.vue:279
 msgid "Delete"
 msgstr "Slett"
+
+#: frontend/src/components/Settings/TemplateSettings.vue:110
+msgid "Delete Template"
+msgstr ""
 
 #: frontend/src/components/InfoPopup.vue:157
 msgid "Developer"
@@ -218,6 +229,11 @@ msgstr "DocType-navn"
 msgid "Document"
 msgstr "Dokument"
 
+#. Label of the doc (Link) field in DocType 'Drive File'
+#: drive/drive/doctype/drive_file/drive_file.json
+msgid "Document (Writer)"
+msgstr ""
+
 #. Label of the document_field (Data) field in DocType 'Drive Entity Activity
 #. Log'
 #: drive/drive/doctype/drive_entity_activity_log/drive_entity_activity_log.json
@@ -229,12 +245,12 @@ msgstr "Dokument Felt"
 msgid "Document Type"
 msgstr "Dokumenttype (DocType)"
 
-#: frontend/src/components/Sidebar.vue:149
+#: frontend/src/components/Sidebar.vue:148
 msgid "Documentation"
 msgstr "Dokumentasjon"
 
-#: frontend/src/components/GenericPage.vue:318
-#: frontend/src/components/Navbar.vue:213
+#: frontend/src/components/GenericPage.vue:324
+#: frontend/src/components/Navbar.vue:214
 msgid "Download"
 msgstr "Last ned"
 
@@ -358,6 +374,10 @@ msgstr "Rediger"
 msgid "Edit Profile"
 msgstr "Rediger profil"
 
+#: frontend/src/components/Settings/TemplateSettings.vue:66
+msgid "Edit Template"
+msgstr ""
+
 #: frontend/src/components/Settings/ProfileSettings.vue:20
 msgid "Edit profile"
 msgstr "Rediger profil"
@@ -369,7 +389,7 @@ msgstr "Rediger profil"
 msgid "Email"
 msgstr "E-post"
 
-#: frontend/src/components/Navbar.vue:307
+#: frontend/src/components/Navbar.vue:308
 msgid "Empty"
 msgstr "Tom"
 
@@ -382,6 +402,10 @@ msgstr "Aktivert"
 #: drive/drive/doctype/drive_disk_settings/drive_disk_settings.json
 msgid "Endpoint URL"
 msgstr "Endepunkt-URL"
+
+#: frontend/src/components/Settings/TemplateSettings.vue:86
+msgid "Enter template title"
+msgstr ""
 
 #. Label of the entity (Link) field in DocType 'Drive Document Version'
 #. Label of the entity (Link) field in DocType 'Drive Entity Activity Log'
@@ -415,8 +439,8 @@ msgstr "Eksempel på format: https://s3.ap-south-1.amazonaws.com"
 msgid "Expired"
 msgstr "Utløpt"
 
-#: frontend/src/components/GenericPage.vue:355
-#: frontend/src/components/Navbar.vue:249
+#: frontend/src/components/GenericPage.vue:364
+#: frontend/src/components/Navbar.vue:250
 msgid "Favourite"
 msgstr "Favoritt"
 
@@ -487,7 +511,7 @@ msgstr "Ikon"
 msgid "In MB"
 msgstr "I MB"
 
-#: frontend/src/components/Sidebar.vue:212
+#: frontend/src/components/Sidebar.vue:211
 msgid "Inbox"
 msgstr "Innboks"
 
@@ -563,7 +587,7 @@ msgstr "Last inn mer"
 msgid "Loading..."
 msgstr "Laster inn..."
 
-#: frontend/src/components/Sidebar.vue:175
+#: frontend/src/components/Sidebar.vue:174
 msgid "Log out"
 msgstr "Logg ut"
 
@@ -578,7 +602,7 @@ msgid "MIME Type"
 msgstr "MIME-type"
 
 #: frontend/src/components/InfoPopup.vue:106
-#: frontend/src/components/Sidebar.vue:120
+#: frontend/src/components/Sidebar.vue:119
 msgid "Manage"
 msgstr "Administrer"
 
@@ -621,8 +645,8 @@ msgstr "Metaverdi"
 msgid "Modified"
 msgstr "Modifisert"
 
-#: frontend/src/components/GenericPage.vue:334
-#: frontend/src/components/Navbar.vue:231
+#: frontend/src/components/GenericPage.vue:343
+#: frontend/src/components/Navbar.vue:232
 msgid "Move"
 msgstr "Flytt"
 
@@ -687,7 +711,7 @@ msgstr "Gammel verdi"
 msgid "Only applies if S3 is turned on."
 msgstr "Gjelder bare hvis S3 er aktivert."
 
-#: frontend/src/components/GenericPage.vue:304
+#: frontend/src/components/GenericPage.vue:310
 msgid "Open"
 msgstr "Åpne"
 
@@ -696,7 +720,7 @@ msgstr "Åpne"
 msgid "Open in Drive"
 msgstr "Åpne i Drive"
 
-#: frontend/src/components/Sidebar.vue:165
+#: frontend/src/components/Sidebar.vue:164
 msgid "Others"
 msgstr "Andre"
 
@@ -741,7 +765,7 @@ msgstr "Innstillinger"
 msgid "Prefix"
 msgstr "Prefiks"
 
-#: frontend/src/components/GenericPage.vue:298
+#: frontend/src/components/GenericPage.vue:304
 msgid "Preview"
 msgstr "Forhåndsvisning"
 
@@ -758,6 +782,11 @@ msgstr "Profil"
 #: drive/drive/doctype/drive_user_invitation/drive_user_invitation.json
 msgid "Proposed"
 msgstr "Foreslått"
+
+#. Label of the public (Check) field in DocType 'Drive Team'
+#: drive/drive/doctype/drive_team/drive_team.json
+msgid "Public"
+msgstr "Offentlig"
 
 #. Description of the 'Updates' (Table) field in DocType 'Drive Desktop Client'
 #: drive/drive/doctype/drive_desktop_client/drive_desktop_client.json
@@ -801,12 +830,12 @@ msgstr "Henviserdata"
 msgid "Referrer ID"
 msgstr "Henviser-ID"
 
-#: frontend/src/components/GenericPage.vue:381
+#: frontend/src/components/GenericPage.vue:390
 msgid "Remove from Recents"
 msgstr "Fjern fra nylige"
 
-#: frontend/src/components/GenericPage.vue:342
-#: frontend/src/components/Navbar.vue:237
+#: frontend/src/components/GenericPage.vue:351
+#: frontend/src/components/Navbar.vue:238
 msgid "Rename"
 msgstr "Endre navn"
 
@@ -834,7 +863,7 @@ msgid "S3 Bucket"
 msgstr "S3 bucket"
 
 #: frontend/src/components/EmojiPicker.vue:22
-#: frontend/src/components/Sidebar.vue:207
+#: frontend/src/components/Sidebar.vue:206
 msgid "Search"
 msgstr "Søk"
 
@@ -845,7 +874,7 @@ msgstr "Angi farge"
 #. Label of the settings (JSON) field in DocType 'Drive Document'
 #: drive/drive/doctype/drive_document/drive_document.json
 #: frontend/src/components/Settings/SettingsDialog.vue:16
-#: frontend/src/components/Sidebar.vue:170
+#: frontend/src/components/Sidebar.vue:169
 msgid "Settings"
 msgstr "Innstillinger"
 
@@ -853,17 +882,17 @@ msgstr "Innstillinger"
 #. Label of the share (Check) field in DocType 'Drive Permission'
 #: drive/drive/doctype/drive_notification/drive_notification.json
 #: drive/drive/doctype/drive_permission/drive_permission.json
-#: frontend/src/components/GenericPage.vue:311
-#: frontend/src/components/Navbar.vue:205
+#: frontend/src/components/GenericPage.vue:317
+#: frontend/src/components/Navbar.vue:206
 msgid "Share"
 msgstr "Del"
 
-#: frontend/src/components/InfoPopup.vue:132 frontend/src/utils/files.js:199
+#: frontend/src/components/InfoPopup.vue:132 frontend/src/utils/files.js:197
 msgid "Shared"
 msgstr "Delt"
 
-#: frontend/src/components/GenericPage.vue:348
-#: frontend/src/components/Navbar.vue:243
+#: frontend/src/components/GenericPage.vue:357
+#: frontend/src/components/Navbar.vue:244
 msgid "Show Info"
 msgstr "Vis info"
 
@@ -921,7 +950,7 @@ msgstr "Status"
 msgid "Storage"
 msgstr "Lagring"
 
-#: frontend/src/components/Sidebar.vue:154
+#: frontend/src/components/Sidebar.vue:153
 msgid "Support"
 msgstr "Brukerstøtte"
 
@@ -983,6 +1012,10 @@ msgstr "Teamets prefiks"
 msgid "Teams"
 msgstr "Team"
 
+#: frontend/src/components/Settings/TemplateSettings.vue:5
+msgid "Templates"
+msgstr "Maler"
+
 #. Label of the thumbnail_prefix (Data) field in DocType 'Drive Disk Settings'
 #: drive/drive/doctype/drive_disk_settings/drive_disk_settings.json
 msgid "Thumbnail prefix"
@@ -1023,10 +1056,14 @@ msgstr "Type"
 msgid "URL Args"
 msgstr "URL-parametere"
 
-#: frontend/src/components/GenericPage.vue:368
-#: frontend/src/components/Navbar.vue:260
+#: frontend/src/components/GenericPage.vue:377
+#: frontend/src/components/Navbar.vue:261
 msgid "Unfavourite"
 msgstr "Fjern fra favoritter"
+
+#: frontend/src/components/Settings/TemplateSettings.vue:70
+msgid "Update"
+msgstr "Oppdater"
 
 #. Label of the updates (Table) field in DocType 'Drive Desktop Client'
 #: drive/drive/doctype/drive_desktop_client/drive_desktop_client.json

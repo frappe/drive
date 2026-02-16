@@ -2,8 +2,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: frappe\n"
 "Report-Msgid-Bugs-To: developers@frappe.io\n"
-"POT-Creation-Date: 2025-12-05 16:12+0000\n"
-"PO-Revision-Date: 2026-01-27 12:20\n"
+"POT-Creation-Date: 2026-02-06 16:22+0000\n"
+"PO-Revision-Date: 2026-02-11 17:38\n"
 "Last-Translator: developers@frappe.io\n"
 "Language-Team: Serbian (Latin)\n"
 "MIME-Version: 1.0\n"
@@ -64,6 +64,7 @@ msgstr "Zahtev za nalog"
 msgid "Action Type"
 msgstr "Vrsta radnje"
 
+#: frontend/src/components/Settings/TemplateSettings.vue:70
 #: frontend/src/components/Settings/UserListSettings.vue:456
 #: frontend/src/components/TagInput.vue:25
 msgid "Add"
@@ -72,6 +73,11 @@ msgstr "Dodaj"
 #: frontend/src/components/Settings/ProfileSettings.vue:76
 msgid "Add Image"
 msgstr "Dodaj sliku"
+
+#: frontend/src/components/Settings/TemplateSettings.vue:11
+#: frontend/src/components/Settings/TemplateSettings.vue:66
+msgid "Add Template"
+msgstr "Dodaj šablon"
 
 #: frontend/src/components/InfoPopup.vue:47
 msgid "Added"
@@ -99,7 +105,7 @@ msgstr "Sve"
 msgid "Allow Download"
 msgstr "Dozvoli preuzimanje"
 
-#: frontend/src/components/Sidebar.vue:125
+#: frontend/src/components/Sidebar.vue:124
 msgid "Apps"
 msgstr "Aplikacije"
 
@@ -132,7 +138,7 @@ msgstr "Može sadržati bilo koju meta vrednost neophodnu za evidenciju pristupa
 msgid "Characters"
 msgstr "Karakteri"
 
-#: frontend/src/components/Navbar.vue:301
+#: frontend/src/components/Navbar.vue:302
 msgid "Clear"
 msgstr "Očisti"
 
@@ -168,11 +174,12 @@ msgstr "Potvrdi"
 #. Label of the content (Long Text) field in DocType 'Drive Document'
 #: drive/drive/doctype/drive_comment/drive_comment.json
 #: drive/drive/doctype/drive_document/drive_document.json
+#: frontend/src/components/Settings/TemplateSettings.vue:92
 msgid "Content"
 msgstr "Sadržaj"
 
-#: frontend/src/components/GenericPage.vue:327
-#: frontend/src/components/Navbar.vue:220
+#: frontend/src/components/GenericPage.vue:336
+#: frontend/src/components/Navbar.vue:221
 msgid "Copy Link"
 msgstr "Kopiraj link"
 
@@ -187,10 +194,14 @@ msgstr "Osnovno"
 msgid "Defaults to \"s3v4\". Some providers only support \"s3\"."
 msgstr "Podrazumevana vrednost je \"s3v4\". Neki provajderi podržavaju samo \"s3\"."
 
-#: frontend/src/components/GenericPage.vue:394
-#: frontend/src/components/Navbar.vue:278
+#: frontend/src/components/GenericPage.vue:403
+#: frontend/src/components/Navbar.vue:279
 msgid "Delete"
 msgstr "Obriši"
+
+#: frontend/src/components/Settings/TemplateSettings.vue:110
+msgid "Delete Template"
+msgstr "Obriši šablon"
 
 #: frontend/src/components/InfoPopup.vue:157
 msgid "Developer"
@@ -218,6 +229,11 @@ msgstr "Naziv DocType"
 msgid "Document"
 msgstr "Dokument"
 
+#. Label of the doc (Link) field in DocType 'Drive File'
+#: drive/drive/doctype/drive_file/drive_file.json
+msgid "Document (Writer)"
+msgstr "Dokument (Uređivač)"
+
 #. Label of the document_field (Data) field in DocType 'Drive Entity Activity
 #. Log'
 #: drive/drive/doctype/drive_entity_activity_log/drive_entity_activity_log.json
@@ -229,12 +245,12 @@ msgstr "Polje dokumenta"
 msgid "Document Type"
 msgstr "Vrsta dokumenta"
 
-#: frontend/src/components/Sidebar.vue:149
+#: frontend/src/components/Sidebar.vue:148
 msgid "Documentation"
 msgstr "Dokumentacija"
 
-#: frontend/src/components/GenericPage.vue:318
-#: frontend/src/components/Navbar.vue:213
+#: frontend/src/components/GenericPage.vue:324
+#: frontend/src/components/Navbar.vue:214
 msgid "Download"
 msgstr "Preuzmi"
 
@@ -358,6 +374,10 @@ msgstr "Uredi"
 msgid "Edit Profile"
 msgstr "Uredi profil"
 
+#: frontend/src/components/Settings/TemplateSettings.vue:66
+msgid "Edit Template"
+msgstr "Uredi šablon"
+
 #: frontend/src/components/Settings/ProfileSettings.vue:20
 msgid "Edit profile"
 msgstr "Uredi profil"
@@ -369,7 +389,7 @@ msgstr "Uredi profil"
 msgid "Email"
 msgstr "Imejl"
 
-#: frontend/src/components/Navbar.vue:307
+#: frontend/src/components/Navbar.vue:308
 msgid "Empty"
 msgstr "Prazno"
 
@@ -382,6 +402,10 @@ msgstr "Omogućeno"
 #: drive/drive/doctype/drive_disk_settings/drive_disk_settings.json
 msgid "Endpoint URL"
 msgstr "Endpoint URL"
+
+#: frontend/src/components/Settings/TemplateSettings.vue:86
+msgid "Enter template title"
+msgstr "Unesite naziv šablona"
 
 #. Label of the entity (Link) field in DocType 'Drive Document Version'
 #. Label of the entity (Link) field in DocType 'Drive Entity Activity Log'
@@ -415,8 +439,8 @@ msgstr "Primer formata: https://s3.ap-south-1.amazonaws.com"
 msgid "Expired"
 msgstr "Isteklo"
 
-#: frontend/src/components/GenericPage.vue:355
-#: frontend/src/components/Navbar.vue:249
+#: frontend/src/components/GenericPage.vue:364
+#: frontend/src/components/Navbar.vue:250
 msgid "Favourite"
 msgstr "Omiljeno"
 
@@ -487,7 +511,7 @@ msgstr "Ikonica"
 msgid "In MB"
 msgstr "U MB"
 
-#: frontend/src/components/Sidebar.vue:212
+#: frontend/src/components/Sidebar.vue:211
 msgid "Inbox"
 msgstr "Prijemna pošta"
 
@@ -563,7 +587,7 @@ msgstr "Učita više"
 msgid "Loading..."
 msgstr "Učitavanje..."
 
-#: frontend/src/components/Sidebar.vue:175
+#: frontend/src/components/Sidebar.vue:174
 msgid "Log out"
 msgstr "Odjavite se"
 
@@ -578,7 +602,7 @@ msgid "MIME Type"
 msgstr "MIME vrsta"
 
 #: frontend/src/components/InfoPopup.vue:106
-#: frontend/src/components/Sidebar.vue:120
+#: frontend/src/components/Sidebar.vue:119
 msgid "Manage"
 msgstr "Upravljaj"
 
@@ -621,8 +645,8 @@ msgstr "Meta vrednost"
 msgid "Modified"
 msgstr "Izmenjeno"
 
-#: frontend/src/components/GenericPage.vue:334
-#: frontend/src/components/Navbar.vue:231
+#: frontend/src/components/GenericPage.vue:343
+#: frontend/src/components/Navbar.vue:232
 msgid "Move"
 msgstr "Premesti"
 
@@ -687,7 +711,7 @@ msgstr "Prethodna vrednost"
 msgid "Only applies if S3 is turned on."
 msgstr "Primenjuje se samo ukoliko je S3 uključen."
 
-#: frontend/src/components/GenericPage.vue:304
+#: frontend/src/components/GenericPage.vue:310
 msgid "Open"
 msgstr "Otvoreno"
 
@@ -696,7 +720,7 @@ msgstr "Otvoreno"
 msgid "Open in Drive"
 msgstr "Otvori u Drive-u"
 
-#: frontend/src/components/Sidebar.vue:165
+#: frontend/src/components/Sidebar.vue:164
 msgid "Others"
 msgstr "Ostali"
 
@@ -741,7 +765,7 @@ msgstr "Preferencije"
 msgid "Prefix"
 msgstr "Prefiks"
 
-#: frontend/src/components/GenericPage.vue:298
+#: frontend/src/components/GenericPage.vue:304
 msgid "Preview"
 msgstr "Pregled"
 
@@ -758,6 +782,11 @@ msgstr "Profil"
 #: drive/drive/doctype/drive_user_invitation/drive_user_invitation.json
 msgid "Proposed"
 msgstr "Predloženo"
+
+#. Label of the public (Check) field in DocType 'Drive Team'
+#: drive/drive/doctype/drive_team/drive_team.json
+msgid "Public"
+msgstr "Javni"
 
 #. Description of the 'Updates' (Table) field in DocType 'Drive Desktop Client'
 #: drive/drive/doctype/drive_desktop_client/drive_desktop_client.json
@@ -801,12 +830,12 @@ msgstr "Podaci o preporučiocu"
 msgid "Referrer ID"
 msgstr "ID preporučioca"
 
-#: frontend/src/components/GenericPage.vue:381
+#: frontend/src/components/GenericPage.vue:390
 msgid "Remove from Recents"
 msgstr "Ukloni iz nedavnih"
 
-#: frontend/src/components/GenericPage.vue:342
-#: frontend/src/components/Navbar.vue:237
+#: frontend/src/components/GenericPage.vue:351
+#: frontend/src/components/Navbar.vue:238
 msgid "Rename"
 msgstr "Preimenuj"
 
@@ -834,7 +863,7 @@ msgid "S3 Bucket"
 msgstr "S3 Bucket"
 
 #: frontend/src/components/EmojiPicker.vue:22
-#: frontend/src/components/Sidebar.vue:207
+#: frontend/src/components/Sidebar.vue:206
 msgid "Search"
 msgstr "Pretraga"
 
@@ -845,7 +874,7 @@ msgstr "Postavite boju"
 #. Label of the settings (JSON) field in DocType 'Drive Document'
 #: drive/drive/doctype/drive_document/drive_document.json
 #: frontend/src/components/Settings/SettingsDialog.vue:16
-#: frontend/src/components/Sidebar.vue:170
+#: frontend/src/components/Sidebar.vue:169
 msgid "Settings"
 msgstr "Podešavanja"
 
@@ -853,17 +882,17 @@ msgstr "Podešavanja"
 #. Label of the share (Check) field in DocType 'Drive Permission'
 #: drive/drive/doctype/drive_notification/drive_notification.json
 #: drive/drive/doctype/drive_permission/drive_permission.json
-#: frontend/src/components/GenericPage.vue:311
-#: frontend/src/components/Navbar.vue:205
+#: frontend/src/components/GenericPage.vue:317
+#: frontend/src/components/Navbar.vue:206
 msgid "Share"
 msgstr "Podeli"
 
-#: frontend/src/components/InfoPopup.vue:132 frontend/src/utils/files.js:199
+#: frontend/src/components/InfoPopup.vue:132 frontend/src/utils/files.js:197
 msgid "Shared"
 msgstr "Podeljeno"
 
-#: frontend/src/components/GenericPage.vue:348
-#: frontend/src/components/Navbar.vue:243
+#: frontend/src/components/GenericPage.vue:357
+#: frontend/src/components/Navbar.vue:244
 msgid "Show Info"
 msgstr "Prikaži informacije"
 
@@ -921,7 +950,7 @@ msgstr "Status"
 msgid "Storage"
 msgstr "Skladište"
 
-#: frontend/src/components/Sidebar.vue:154
+#: frontend/src/components/Sidebar.vue:153
 msgid "Support"
 msgstr "Podrška"
 
@@ -983,6 +1012,10 @@ msgstr "Prefiks tima"
 msgid "Teams"
 msgstr "Timovi"
 
+#: frontend/src/components/Settings/TemplateSettings.vue:5
+msgid "Templates"
+msgstr "Šabloni"
+
 #. Label of the thumbnail_prefix (Data) field in DocType 'Drive Disk Settings'
 #: drive/drive/doctype/drive_disk_settings/drive_disk_settings.json
 msgid "Thumbnail prefix"
@@ -1023,10 +1056,14 @@ msgstr "Vrsta"
 msgid "URL Args"
 msgstr "URL Args"
 
-#: frontend/src/components/GenericPage.vue:368
-#: frontend/src/components/Navbar.vue:260
+#: frontend/src/components/GenericPage.vue:377
+#: frontend/src/components/Navbar.vue:261
 msgid "Unfavourite"
 msgstr "Ukloni iz omiljenih"
+
+#: frontend/src/components/Settings/TemplateSettings.vue:70
+msgid "Update"
+msgstr "Ažuriraj"
 
 #. Label of the updates (Table) field in DocType 'Drive Desktop Client'
 #: drive/drive/doctype/drive_desktop_client/drive_desktop_client.json
