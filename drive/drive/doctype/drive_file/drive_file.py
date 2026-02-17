@@ -12,7 +12,7 @@ from drive.api.activity import create_new_activity_log
 from drive.api.files import get_new_title
 from drive.api.permissions import get_user_access, user_has_permission
 from drive.api.product import invite_users
-from drive.utils import generate_upward_path, get_home_folder, update_file_size, update_clients
+from drive.utils import generate_upward_path, get_home_folder, update_file_size
 from drive.utils.files import FileManager
 from drive.utils.api import prettify_file
 
@@ -69,26 +69,10 @@ class DriveFile(Document):
 
     def __update_modified(func):
         def decorator(self: DriveFile, *args, **kwargs):
-            client = kwargs.pop("client", None)
-            old_parent = self.parent_entity
+            # Legacy code
+            kwargs.pop("client", None)
             res = func(self, *args, **kwargs)
             frappe.db.set_value("Drive File", self.name, "_modified", now())
-            update_clients(self.name, self.team, func.__name__, client)
-            if client:
-                if func.__name__ == "rename":
-                    frappe.publish_realtime(
-                        "client-rename",
-                        {"entity_name": self.name, "title": self.title},
-                    )
-                elif func.__name__ == "move":
-                    frappe.publish_realtime(
-                        "list-remove",
-                        {"parent": old_parent, "entity_name": self.name},
-                    )
-                    frappe.publish_realtime(
-                        "list-add",
-                        {"file": prettify_file(self.as_dict())},
-                    )
             return res
 
         return decorator

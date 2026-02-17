@@ -9,7 +9,7 @@ from frappe.utils import now
 def mark_as_viewed(entity):
     if (
         frappe.session.user == "Guest"
-        or not frappe.has_permission(doctype="Drive Entity Log", ptype="write", user=frappe.session.user)
+        or not frappe.has_permission(doctype="Drive Entity Log", ptype="create", user=frappe.session.user)
         or entity.is_group
     ):
         return
