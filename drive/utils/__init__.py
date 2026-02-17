@@ -113,16 +113,14 @@ def get_ancestors_of(entity_name):
     """
     Return all parent nodes till the root node
     """
-    # CONCAT_WS('/', t.title, gp.path),
-    entity_name = frappe.db.escape(entity_name)
     result = frappe.db.sql(
-        f"""
+        """
         WITH RECURSIVE generated_path as (
         SELECT
             `tabDrive File`.name,
             `tabDrive File`.parent_entity
         FROM `tabDrive File`
-        WHERE `tabDrive File`.name = {entity_name}
+        WHERE `tabDrive File`.name = %(entity_name)s
 
         UNION ALL
 
@@ -133,9 +131,9 @@ def get_ancestors_of(entity_name):
         JOIN `tabDrive File` as t ON t.name = gp.parent_entity)
         SELECT name FROM generated_path;
     """,
+        values={"entity_name": entity_name},
         as_dict=0,
     )
-    # Match the output of frappe/nested.py get_ancestors_of
     flattened_list = [item for sublist in result for item in sublist]
     flattened_list.pop(0)
     return flattened_list
@@ -163,10 +161,9 @@ def generate_upward_path(entity_name, user=None, team=0):
     Given an ID traverse upwards till the root node
     Stops when parent_drive_file IS NULL
     """
-    entity = frappe.db.escape(entity_name)
     if user is None:
         user = frappe.session.user
-    user = frappe.db.escape(user if user != "Guest" else "")
+    user = frappe.db.escape(user) if user != "Guest" else ""
 
     filter_: str
     if team:
@@ -187,7 +184,7 @@ def generate_upward_path(entity_name, user=None, team=0):
                 FROM
                     `tabDrive File`
                 WHERE
-                    `tabDrive File`.name = {entity}
+                    `tabDrive File`.name = %(entity_name)s
                 UNION ALL
                 SELECT
                     t.title,
@@ -218,6 +215,7 @@ def generate_upward_path(entity_name, user=None, team=0):
         ON gp.name = p.entity AND {filter_}
         ORDER BY gp.level DESC;
     """,
+        values={"entity_name": entity_name},
         as_dict=1,
     )
     for i, p in enumerate(result):

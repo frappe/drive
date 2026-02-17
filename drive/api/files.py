@@ -621,8 +621,8 @@ def remove_or_restore(entity_names: list[str]):
     manager = FileManager()
 
     def depth_zero_toggle_is_active(doc):
-        if not frappe.has_permission(doc, "write"):
-            frappe.throw("You do not have permission to change this file")
+        if not user_has_permission(doc, "write"):
+            raise frappe.PermissionError("You do not have permission to remove this file")
         if doc.is_active:
             flag = 0
             manager.move_to_trash(doc)
@@ -646,10 +646,7 @@ def remove_or_restore(entity_names: list[str]):
         doc.save()
 
     for entity in entity_names:
-        doc = frappe.get_doc("Drive File", entity)
-        if not user_has_permission(doc, "write"):
-            raise frappe.PermissionError("You do not have permission to remove this file")
-        depth_zero_toggle_is_active(doc)
+        depth_zero_toggle_is_active(frappe.get_doc("Drive File", entity))
 
 
 @frappe.whitelist()
@@ -777,11 +774,11 @@ def search(query: str):
     """
     Basic search implementation
     """
-    text = frappe.db.escape(" ".join(k + "*" for k in query.split()))
+    text = " ".join(k + "*" for k in query.split())
     teams = get_teams()
     try:
         result = frappe.db.sql(
-            f"""
+            """
         SELECT  `tabDrive File`.name,
                 `tabDrive File`.title,
                 `tabDrive File`.is_group,
@@ -794,12 +791,13 @@ def search(query: str):
                 `tabUser`.full_name
         FROM `tabDrive File`
         LEFT JOIN `tabUser` ON `tabDrive File`.`owner` = `tabUser`.`name`
-        WHERE `tabDrive File`.team IN {tuple(teams)}
+        WHERE `tabDrive File`.team IN %(teams)s
             AND `tabDrive File`.`is_active` = 1
             AND `tabDrive File`.`parent_entity` <> ''
-            AND MATCH(title) AGAINST ({text} IN BOOLEAN MODE)
+            AND MATCH(title) AGAINST (%(text)s IN BOOLEAN MODE)
         GROUP  BY `tabDrive File`.`name`
         """,
+            values={"teams": teams, "text": text},
             as_dict=1,
         )
         for r in result:
