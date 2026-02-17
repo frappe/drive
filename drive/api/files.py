@@ -612,7 +612,7 @@ def set_favourite(entities: list[str] | None = None, clear_all: bool = False):
 
 
 @frappe.whitelist()
-def remove_or_restore(entity_names: list[str], client: str | None = None):
+def remove_or_restore(entity_names: list[str] | str, client: str | None = None):
     """
     To move entities to or restore entities from the trash
 
