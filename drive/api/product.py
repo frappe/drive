@@ -253,7 +253,7 @@ def get_settings():
 
 
 @frappe.whitelist()
-def set_settings(updates: dict):
+def set_settings(updates: dict[str, int | str]):
     try:
         settings = frappe.get_doc("Drive Settings", frappe.session.user)
     except:

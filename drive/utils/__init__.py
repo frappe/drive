@@ -163,7 +163,7 @@ def generate_upward_path(entity_name, user=None, team=0):
     """
     if user is None:
         user = frappe.session.user
-    user = frappe.db.escape(user) if user != "Guest" else ""
+    user = frappe.db.escape(user if user != "Guest" else "") 
 
     filter_: str
     if team:
