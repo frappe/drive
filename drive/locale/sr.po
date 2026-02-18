@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: frappe\n"
 "Report-Msgid-Bugs-To: developers@frappe.io\n"
 "POT-Creation-Date: 2026-02-13 16:23+0000\n"
-"PO-Revision-Date: 2026-02-17 19:07\n"
+"PO-Revision-Date: 2026-02-18 19:43\n"
 "Last-Translator: developers@frappe.io\n"
 "Language-Team: Serbian (Cyrillic)\n"
 "MIME-Version: 1.0\n"
@@ -358,7 +358,7 @@ msgstr "Drive пренос"
 #: drive/drive/doctype/drive_team/drive_team.json
 #: drive/drive/doctype/drive_user_invitation/drive_user_invitation.json
 msgid "Drive User"
-msgstr ""
+msgstr "Drive корисник"
 
 #. Name of a DocType
 #: drive/drive/doctype/drive_user_invitation/drive_user_invitation.json
