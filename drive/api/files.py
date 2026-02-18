@@ -532,6 +532,8 @@ def stream_file_content(entity_name: str):
     :param drive_entity: Drive Entity record object
     """
     range_header = frappe.request.headers.get("Range")
+    if not range_header:
+        return get_file_content(entity_name)
     entity = frappe.get_doc("Drive File", entity_name)
     if not user_has_permission(entity, "read"):
         raise frappe.PermissionError("You do not have permission to view this file")
