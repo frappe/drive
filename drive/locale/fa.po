@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: frappe\n"
 "Report-Msgid-Bugs-To: developers@frappe.io\n"
 "POT-Creation-Date: 2026-02-13 16:23+0000\n"
-"PO-Revision-Date: 2026-02-17 19:07\n"
+"PO-Revision-Date: 2026-02-18 19:43\n"
 "Last-Translator: developers@frappe.io\n"
 "Language-Team: Persian\n"
 "MIME-Version: 1.0\n"
@@ -184,7 +184,7 @@ msgstr "حذف"
 
 #: frontend/src/components/Settings/TemplateSettings.vue:110
 msgid "Delete Template"
-msgstr ""
+msgstr "حذف الگو"
 
 #: frontend/src/components/InfoPopup.vue:157
 msgid "Developer"
@@ -215,7 +215,7 @@ msgstr "سند"
 #. Label of the doc (Link) field in DocType 'Drive File'
 #: drive/drive/doctype/drive_file/drive_file.json
 msgid "Document (Writer)"
-msgstr ""
+msgstr "سند (نویسنده)"
 
 #. Label of the document_field (Data) field in DocType 'Drive Entity Activity
 #. Log'
