@@ -53,6 +53,7 @@ watch(shareAccess, (val) =>
     comment: 1,
     share: 1,
     write: val === "editor" ? 1 : 0,
+    upload: val === 'editor' || val === 'upload' ? 1 : 0
   })
 )
 
