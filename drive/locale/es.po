@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: frappe\n"
 "Report-Msgid-Bugs-To: developers@frappe.io\n"
 "POT-Creation-Date: 2026-02-13 16:23+0000\n"
-"PO-Revision-Date: 2026-02-19 19:41\n"
+"PO-Revision-Date: 2026-02-20 19:56\n"
 "Last-Translator: developers@frappe.io\n"
 "Language-Team: Spanish\n"
 "MIME-Version: 1.0\n"
@@ -464,7 +464,7 @@ msgstr "Primer Nombre"
 #. Label of the from_user (Link) field in DocType 'Drive Notification'
 #: drive/drive/doctype/drive_notification/drive_notification.json
 msgid "From User"
-msgstr ""
+msgstr "Del usuario"
 
 #. Label of the general_section (Section Break) field in DocType 'Drive Disk
 #. Settings'
@@ -520,7 +520,7 @@ msgstr "Está Activo"
 #. Label of the is_group (Check) field in DocType 'Drive File'
 #: drive/drive/doctype/drive_file/drive_file.json
 msgid "Is Group"
-msgstr ""
+msgstr "Es un grupo"
 
 #. Label of the is_link (Check) field in DocType 'Drive File'
 #: drive/drive/doctype/drive_file/drive_file.json
@@ -962,7 +962,7 @@ msgstr "Administrador del sistema"
 #. Label of the tag (Link) field in DocType 'Drive Entity Tag'
 #: drive/drive/doctype/drive_entity_tag/drive_entity_tag.json
 msgid "Tag"
-msgstr ""
+msgstr "Etiqueta"
 
 #. Label of the tags (Table) field in DocType 'Drive File'
 #: drive/drive/doctype/drive_file/drive_file.json
@@ -1111,7 +1111,7 @@ msgstr ""
 #. Label of the write (Check) field in DocType 'Drive Permission'
 #: drive/drive/doctype/drive_permission/drive_permission.json
 msgid "Write"
-msgstr ""
+msgstr "Escribir"
 
 #. Label of the writer_section (Section Break) field in DocType 'Drive
 #. Settings'
@@ -1138,7 +1138,7 @@ msgstr "comentario"
 #. Activity Log'
 #: drive/drive/doctype/drive_entity_activity_log/drive_entity_activity_log.json
 msgid "create"
-msgstr ""
+msgstr "crear"
 
 #. Option for the 'Action Type' (Select) field in DocType 'Drive Entity
 #. Activity Log'
@@ -1146,7 +1146,7 @@ msgstr ""
 #: drive/drive/doctype/drive_entity_activity_log/drive_entity_activity_log.json
 #: drive/drive/doctype/drive_file_update/drive_file_update.json
 msgid "delete"
-msgstr ""
+msgstr "eliminar"
 
 #. Option for the 'Action Type' (Select) field in DocType 'Drive Entity
 #. Activity Log'
