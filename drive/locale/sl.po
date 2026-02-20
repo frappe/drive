@@ -2,8 +2,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: frappe\n"
 "Report-Msgid-Bugs-To: developers@frappe.io\n"
-"POT-Creation-Date: 2026-02-06 16:22+0000\n"
-"PO-Revision-Date: 2026-02-09 17:37\n"
+"POT-Creation-Date: 2026-02-13 16:23+0000\n"
+"PO-Revision-Date: 2026-02-19 19:41\n"
 "Last-Translator: developers@frappe.io\n"
 "Language-Team: Slovenian\n"
 "MIME-Version: 1.0\n"
@@ -82,23 +82,6 @@ msgstr "Dodaj Predlogo"
 #: frontend/src/components/InfoPopup.vue:47
 msgid "Added"
 msgstr "Dodano"
-
-#. Name of a role
-#: drive/drive/doctype/drive_desktop_client/drive_desktop_client.json
-#: drive/drive/doctype/drive_document/drive_document.json
-#: drive/drive/doctype/drive_document_version/drive_document_version.json
-#: drive/drive/doctype/drive_entity_activity_log/drive_entity_activity_log.json
-#: drive/drive/doctype/drive_entity_log/drive_entity_log.json
-#: drive/drive/doctype/drive_favourite/drive_favourite.json
-#: drive/drive/doctype/drive_file/drive_file.json
-#: drive/drive/doctype/drive_notification/drive_notification.json
-#: drive/drive/doctype/drive_permission/drive_permission.json
-#: drive/drive/doctype/drive_settings/drive_settings.json
-#: drive/drive/doctype/drive_tag/drive_tag.json
-#: drive/drive/doctype/drive_team/drive_team.json
-#: drive/drive/doctype/drive_user_invitation/drive_user_invitation.json
-msgid "All"
-msgstr "Vsi"
 
 #. Label of the allow_download (Check) field in DocType 'Drive File'
 #: drive/drive/doctype/drive_file/drive_file.json
@@ -201,7 +184,7 @@ msgstr "Izbriši"
 
 #: frontend/src/components/Settings/TemplateSettings.vue:110
 msgid "Delete Template"
-msgstr ""
+msgstr "Izbriši Predlogo"
 
 #: frontend/src/components/InfoPopup.vue:157
 msgid "Developer"
@@ -232,7 +215,7 @@ msgstr "Dokument"
 #. Label of the doc (Link) field in DocType 'Drive File'
 #: drive/drive/doctype/drive_file/drive_file.json
 msgid "Document (Writer)"
-msgstr ""
+msgstr "Dokument (Pisec)"
 
 #. Label of the document_field (Data) field in DocType 'Drive Entity Activity
 #. Log'
@@ -361,6 +344,22 @@ msgstr "Član Ekipe"
 msgid "Drive Transfer"
 msgstr "Prenos"
 
+#. Name of a role
+#: drive/drive/doctype/drive_document/drive_document.json
+#: drive/drive/doctype/drive_document_version/drive_document_version.json
+#: drive/drive/doctype/drive_entity_activity_log/drive_entity_activity_log.json
+#: drive/drive/doctype/drive_entity_log/drive_entity_log.json
+#: drive/drive/doctype/drive_favourite/drive_favourite.json
+#: drive/drive/doctype/drive_file/drive_file.json
+#: drive/drive/doctype/drive_notification/drive_notification.json
+#: drive/drive/doctype/drive_permission/drive_permission.json
+#: drive/drive/doctype/drive_settings/drive_settings.json
+#: drive/drive/doctype/drive_tag/drive_tag.json
+#: drive/drive/doctype/drive_team/drive_team.json
+#: drive/drive/doctype/drive_user_invitation/drive_user_invitation.json
+msgid "Drive User"
+msgstr "Uporabnik"
+
 #. Name of a DocType
 #: drive/drive/doctype/drive_user_invitation/drive_user_invitation.json
 msgid "Drive User Invitation"
@@ -376,7 +375,7 @@ msgstr "Uredi Profil"
 
 #: frontend/src/components/Settings/TemplateSettings.vue:66
 msgid "Edit Template"
-msgstr ""
+msgstr "Uredi Predlogo"
 
 #: frontend/src/components/Settings/ProfileSettings.vue:20
 msgid "Edit profile"
@@ -405,7 +404,7 @@ msgstr "URL končne točke"
 
 #: frontend/src/components/Settings/TemplateSettings.vue:86
 msgid "Enter template title"
-msgstr ""
+msgstr "Vnesite naslov predloge"
 
 #. Label of the entity (Link) field in DocType 'Drive Document Version'
 #. Label of the entity (Link) field in DocType 'Drive Entity Activity Log'
@@ -483,13 +482,6 @@ msgstr "Geografska Lokacija"
 #: drive/drive/workspace/drive/drive.json
 msgid "Go to Drive"
 msgstr "Pojdi na Drive"
-
-#. Name of a role
-#: drive/drive/doctype/drive_document/drive_document.json
-#: drive/drive/doctype/drive_file/drive_file.json
-#: drive/drive/doctype/drive_team/drive_team.json
-msgid "Guest"
-msgstr "Gost"
 
 #: frontend/src/utils/files.js:209
 msgid "Home"
@@ -786,7 +778,7 @@ msgstr "Predlagano"
 #. Label of the public (Check) field in DocType 'Drive Team'
 #: drive/drive/doctype/drive_team/drive_team.json
 msgid "Public"
-msgstr ""
+msgstr "Javno"
 
 #. Description of the 'Updates' (Table) field in DocType 'Drive Desktop Client'
 #: drive/drive/doctype/drive_desktop_client/drive_desktop_client.json
@@ -1014,7 +1006,7 @@ msgstr "Ekipe"
 
 #: frontend/src/components/Settings/TemplateSettings.vue:5
 msgid "Templates"
-msgstr ""
+msgstr "Predloge"
 
 #. Label of the thumbnail_prefix (Data) field in DocType 'Drive Disk Settings'
 #: drive/drive/doctype/drive_disk_settings/drive_disk_settings.json
@@ -1063,7 +1055,7 @@ msgstr "Nepriljubljene"
 
 #: frontend/src/components/Settings/TemplateSettings.vue:70
 msgid "Update"
-msgstr ""
+msgstr "Posodobitev"
 
 #. Label of the updates (Table) field in DocType 'Drive Desktop Client'
 #: drive/drive/doctype/drive_desktop_client/drive_desktop_client.json
