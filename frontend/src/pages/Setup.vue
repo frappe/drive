@@ -117,6 +117,13 @@ const team_name = ref(null)
 const email = computed(() => store.state.user.id)
 const route = useRoute()
 
+const onSuccess = (data) => {
+  if (data) {
+    console.log(route.query["redirect-to"], "/drive")
+    window.location.replace(route.query["redirect-to"] || "/drive")
+  }
+}
+
 const domainTeams = createResource({
   url: "drive.api.product.get_domain_teams",
   auto: true,
@@ -133,13 +140,6 @@ const domainTeams = createResource({
       )
   },
 })
-
-const onSuccess = (data) => {
-  if (data) {
-    console.log(route.query["redirect-to"], "/drive")
-    window.location.replace(route.query["redirect-to"] || "/drive")
-  }
-}
 
 const requestInvite = createResource({
   url: "drive.api.product.request_invite",
