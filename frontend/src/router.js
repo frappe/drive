@@ -2,7 +2,7 @@ import { createRouter, createWebHistory } from "vue-router"
 import store from "./store"
 import { createResource } from "frappe-ui"
 import Dummy from "@/pages/Dummy.vue"
-import { getTeams, translate } from "@/resources/files"
+import { translate } from "@/resources/files"
 
 function clearStore() {
   store.commit("setActiveEntity", null)
@@ -141,6 +141,7 @@ const routes = [
     component: () => import("@/pages/Team.vue"),
     beforeEnter: [setRootBreadCrumb],
     props: true,
+    meta: { allowGuest: true },
   },
   {
     path: "/f/:entityName/:slug?",
@@ -164,20 +165,21 @@ const routes = [
     meta: { documentPage: true, allowGuest: true },
     component: () => import("@/pages/Document.vue"),
     props: true,
-    beforeEnter: [manageBreadcrumbs],
+    beforeEnter: (props) => {
+      window.location.href = "/writer/w/" + props.params.entityName
+    },
   },
   // old redirects
   {
     path: "/folder/:entityName",
+    meta: { allowGuest: true },
     component: () => null,
     beforeEnter: async (to) => {
-      await getTeams.fetch()
-      await translate.fetch()
+      await translate.fetch({ old_name: to.params.entityName })
       return {
         name: "Folder",
         params: {
-          entityName:
-            translate.data[to.params.entityName] || to.params.entityName,
+          entityName: translate.data,
         },
       }
     },
@@ -186,13 +188,11 @@ const routes = [
     path: "/document/:entityName",
     component: () => null,
     beforeEnter: async (to) => {
-      await getTeams.fetch()
-      await translate.fetch()
+      await translate.fetch({ old_name: to.params.entityName })
       return {
         name: "Document",
         params: {
-          entityName:
-            translate.data[to.params.entityName] || to.params.entityName,
+          entityName: translate.data,
         },
       }
     },
@@ -200,14 +200,13 @@ const routes = [
   {
     path: "/file/:entityName",
     component: () => null,
+    meta: { allowGuest: true },
     beforeEnter: async (to) => {
-      await getTeams.fetch()
-      await translate.fetch()
+      await translate.fetch({ old_name: to.params.entityName })
       return {
         name: "File",
         params: {
-          entityName:
-            translate.data[to.params.entityName] || to.params.entityName,
+          entityName: translate.data,
         },
       }
     },

@@ -9,11 +9,11 @@ from drive.utils import get_home_folder
 
 
 @frappe.whitelist(allow_guest=True)
-def get_file_content(embed_name, parent_entity_name):
+def get_file_content(embed_name: str, parent_entity_name: str):
     """
     Give or stream embed content
     """
-    # Used for <v0.1 support, also a security flaw
+    # Used for <v0.1 support
     old_parent_name = frappe.get_value(
         "Drive File",
         {"old_name": parent_entity_name},

@@ -1,15 +1,18 @@
+from __future__ import annotations
+
 import shutil
 from pathlib import Path
 
 import frappe
 from frappe.model.document import Document
 from frappe.utils import now
+from frappe.rate_limiter import rate_limit
 
 from drive.api.activity import create_new_activity_log
 from drive.api.files import get_new_title
 from drive.api.permissions import get_user_access, user_has_permission
 from drive.api.product import invite_users
-from drive.utils import generate_upward_path, get_home_folder, update_file_size, update_clients
+from drive.utils import generate_upward_path, get_home_folder, update_file_size
 from drive.utils.files import FileManager
 from drive.utils.api import prettify_file
 
@@ -65,27 +68,11 @@ class DriveFile(Document):
             yield frappe.get_doc(self.doctype, name)
 
     def __update_modified(func):
-        def decorator(self, *args, **kwargs):
-            client = kwargs.pop("client", None)
-            old_parent = self.parent_entity
+        def decorator(self: DriveFile, *args, **kwargs):
+            # Legacy code
+            kwargs.pop("client", None)
             res = func(self, *args, **kwargs)
             frappe.db.set_value("Drive File", self.name, "_modified", now())
-            update_clients(self.name, self.team, func.__name__, client)
-            if client:
-                if func.__name__ == "rename":
-                    frappe.publish_realtime(
-                        "client-rename",
-                        {"entity_name": self.name, "title": self.title},
-                    )
-                elif func.__name__ == "move":
-                    frappe.publish_realtime(
-                        "list-remove",
-                        {"parent": old_parent, "entity_name": self.name},
-                    )
-                    frappe.publish_realtime(
-                        "list-add",
-                        {"file": prettify_file(self.as_dict())},
-                    )
             return res
 
         return decorator
@@ -104,7 +91,7 @@ class DriveFile(Document):
         if new_team and not new_parent:
             new_parent = new_parent or get_home_folder(new_team).name
         elif new_parent and not new_team:
-            new_team = frappe.db.get_value('Drive File', new_parent, 'team')
+            new_team = frappe.db.get_value("Drive File", new_parent, "team")
         elif not new_parent and not new_team:
             new_team = self.team
             new_parent = new_parent or get_home_folder(new_team).name
@@ -116,7 +103,7 @@ class DriveFile(Document):
             )
         if not (
             frappe.db.get_value("Drive File", new_parent, "is_group")
-            or frappe.db.get_value("Drive File", new_parent, "document")
+            or frappe.db.get_value("Drive File", new_parent, "doc")
         ):
             frappe.throw(
                 "Can only move into folders",
@@ -155,7 +142,7 @@ class DriveFile(Document):
 
     @frappe.whitelist()
     @__update_modified
-    def rename(self, new_title):
+    def rename(self: DriveFile, new_title: str):
         """
         Rename file or folder
 
@@ -203,7 +190,7 @@ class DriveFile(Document):
         self.save()
 
     @frappe.whitelist()
-    def change_color(self, new_color):
+    def change_color(self: DriveFile, new_color: str):
         """
         Change color of a folder
 
@@ -228,14 +215,14 @@ class DriveFile(Document):
 
     @frappe.whitelist()
     def share(
-        self,
-        user=None,
-        read=None,
-        comment=None,
-        share=None,
-        upload=None,
-        write=None,
-        team=False,
+        self: DriveFile,
+        user: str = None,
+        read: bool | None = None,
+        comment: bool | None = None,
+        share: bool | None = None,
+        upload: bool | None = None,
+        write: bool | None = None,
+        team: bool = False,
     ):
         if not user_has_permission(self, "share"):
             frappe.throw("Not permitted to share", frappe.PermissionError)
@@ -265,7 +252,7 @@ class DriveFile(Document):
             permission = frappe.get_doc("Drive Permission", permission)
 
         # Create user
-        if not frappe.db.exists("User", user):
+        if user and not frappe.db.exists("User", user):
             invite_users(user, auto=True)
 
         levels = [
@@ -280,7 +267,7 @@ class DriveFile(Document):
         permission.save(ignore_permissions=True)
 
     @frappe.whitelist()
-    def unshare(self, user=None):
+    def unshare(self: DriveFile, user: str | None = None):
         """Unshare this file or folder with the specified user
         :param user: User or group with whom this is to be shared
         :param user_type:
@@ -334,6 +321,26 @@ class DriveFile(Document):
             )
             if perm_name:
                 frappe.delete_doc("Drive Permission", perm_name, ignore_permissions=True)
+
+    @frappe.whitelist()
+    def toggle_favourite(self: DriveFile):
+        existing_doc = frappe.db.exists(
+            {
+                "doctype": "Drive Favourite",
+                "entity": self.name,
+                "user": frappe.session.user,
+            }
+        )
+        if existing_doc:
+            frappe.delete_doc("Drive Favourite", existing_doc)
+        else:
+            frappe.get_doc(
+                {
+                    "doctype": "Drive Favourite",
+                    "entity": self.name,
+                    "user": frappe.session.user,
+                }
+            ).insert()
 
 
 def on_doctype_update():

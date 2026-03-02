@@ -9,7 +9,7 @@ DriveFile = frappe.qb.DocType("Drive File")
 
 
 @frappe.whitelist()
-def storage_breakdown(team, owned_only):
+def storage_breakdown(team: str, owned_only: bool):
     limit = frappe.get_value("Drive Team", team, "quota" if owned_only else "storage") * MEGA_BYTE
     filters = {
         "team": team,
@@ -47,9 +47,11 @@ def storage_breakdown(team, owned_only):
 
 @frappe.whitelist()
 @default_team
-def storage_bar_data(team, entity_name=None):
+def storage_bar_data(team: str | None = None, entity_name: str | None = None):
     if not team:
         team = frappe.get_value("Drive File", entity_name, "team")
+        if not team:
+            frappe.throw("Could not find team.", ValueError)
     query = (
         frappe.qb.from_(DriveFile)
         .where(

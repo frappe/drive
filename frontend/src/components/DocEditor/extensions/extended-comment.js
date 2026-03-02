@@ -1,10 +1,116 @@
-import CommentExtension from "@sereneinserenade/tiptap-comment-extension"
+import { Mark, mergeAttributes } from "@tiptap/core"
+
+const CommentExtension = Mark.create({
+  name: "comment",
+
+  addOptions() {
+    return {
+      HTMLAttributes: {},
+      onCommentActivated: () => {},
+    }
+  },
+
+  addAttributes() {
+    return {
+      commentId: {
+        default: null,
+        parseHTML: (el) => el.getAttribute("data-comment-id"),
+        renderHTML: (attrs) => ({ "data-comment-id": attrs.commentId }),
+      },
+    }
+  },
+
+  parseHTML() {
+    return [
+      {
+        tag: "span[data-comment-id]",
+        getAttrs: (el) => !!el.getAttribute("data-comment-id")?.trim() && null,
+      },
+    ]
+  },
+
+  renderHTML({ HTMLAttributes }) {
+    return [
+      "span",
+      mergeAttributes(this.options.HTMLAttributes, HTMLAttributes),
+      0,
+    ]
+  },
+
+  onSelectionUpdate() {
+    const { $from } = this.editor.state.selection
+
+    const marks = $from.marks()
+
+    if (!marks.length) {
+      this.storage.activeCommentId = null
+      this.options.onCommentActivated(this.storage.activeCommentId)
+      return
+    }
+
+    const commentMark = this.editor.schema.marks.comment
+
+    const activeCommentMark = marks.find((mark) => mark.type === commentMark)
+
+    this.storage.activeCommentId = activeCommentMark?.attrs.commentId || null
+
+    this.options.onCommentActivated(this.storage.activeCommentId)
+  },
+
+  addStorage() {
+    return {
+      activeCommentId: null,
+    }
+  },
+
+  addCommands() {
+    return {
+      setComment:
+        (commentId) =>
+        ({ commands }) => {
+          if (!commentId) return false
+
+          commands.setMark("comment", { commentId })
+        },
+      unsetComment:
+        (commentId) =>
+        ({ tr, dispatch }) => {
+          if (!commentId) return false
+
+          const commentMarksWithRange = []
+
+          tr.doc.descendants((node, pos) => {
+            const commentMark = node.marks.find(
+              (mark) =>
+                mark.type.name === "comment" &&
+                mark.attrs.commentId === commentId
+            )
+
+            if (!commentMark) return
+
+            commentMarksWithRange.push({
+              mark: commentMark,
+              range: {
+                from: pos,
+                to: pos + node.nodeSize,
+              },
+            })
+          })
+
+          commentMarksWithRange.forEach(({ mark, range }) => {
+            tr.removeMark(range.from, range.to, mark)
+          })
+
+          return dispatch?.(tr)
+        },
+    }
+  },
+})
 
 export default CommentExtension.extend({
   addAttributes() {
     return {
       ...this.parent?.(),
-
       resolved: {
         default: false,
         parseHTML: (el) => el.hasAttribute("data-resolved"),

@@ -36,6 +36,15 @@ export const getTeams = createResource({
   cache: "teams",
 })
 
+export const getPublicTeams = createResource({
+  url: "drive.api.permissions.get_public_teams",
+  method: "GET",
+  cache: "public-teams",
+  transform: (d) => {
+    return d.reduce((acc, k) => ({ ...acc, [k.name]: k }), {})
+  },
+})
+
 export const getRecents = createResource({
   ...COMMON_OPTIONS,
   url: "drive.api.list.files",
@@ -239,11 +248,10 @@ export const clearTrash = createResource({
 })
 
 export const rename = createResource({
-  url: "drive.api.files.call_controller_method",
+  url: "drive.api.files.rename",
   method: "POST",
   makeParams: (data) => {
     return {
-      method: "rename",
       ...data,
     }
   },
@@ -269,7 +277,7 @@ export const rename = createResource({
 
 export const createDocument = createResource({
   method: "POST",
-  url: "drive.api.files.create_document_entity",
+  url: "writer.api.docs.create_document",
   makeParams: (params) => params,
 })
 
@@ -327,8 +335,7 @@ export const allFolders = createResource({
 
 export const translate = createResource({
   method: "GET",
-  url: "/api/method/drive.api.files.get_translate",
-  cache: "translate",
+  url: "/api/method/drive.api.files.translate_old_name",
 })
 
 export const storageBar = createResource({

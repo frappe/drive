@@ -15,12 +15,6 @@
         :draggable="false"
         class="w-full px-10 py-5 flex-grow w-full flex justify-center align-center items-center relative"
       >
-        <Button
-          class="text-ink-gray-8 absolute top-4 left-4"
-          :variant="'ghost'"
-          icon="arrow-left"
-          @click="closePreview"
-        />
         <LoadingIndicator
           v-if="file.loading"
           class="w-10 h-full text-neutral-100"
@@ -83,11 +77,13 @@ const props = defineProps({
 
 const currentEntity = ref(props.entityName)
 
-const filteredEntities = computed(() =>
-  store.state.currentFolder.entities.filter(
-    (item) => !item.is_group && !item.document && !item.is_link
-  )
-)
+// const filteredEntities = computed(() =>
+//   store.state.currentFolder.entities.filter(
+//     (item) => !item.is_group && !item.document && !item.is_link
+//   )
+// )
+// FIX: redo with server fetch
+const filteredEntities = computed(() => [])
 
 const index = computed(() => {
   return filteredEntities.value.findIndex(
@@ -118,6 +114,10 @@ onKeyStroke("ArrowRight", (e) => {
 })
 
 const onSuccess = async (entity) => {
+  // temporary hack: #475
+  if (entity.doc) {
+    window.location.href = "/writer/w/" + entity.name
+  }
   document.title = entity.title
   setBreadCrumbs(entity)
   updateURLSlug(entity.title)
@@ -137,13 +137,6 @@ store.commit("setCurrentResource", file)
 function scrollEntity(negative = false) {
   currentEntity.value = negative ? prevEntity.value : nextEntity.value
   if (currentEntity.value) fetchFile(currentEntity.value.name)
-}
-
-function closePreview() {
-  router.push({
-    name: "Folder",
-    params: { entityName: file.data.parent_entity },
-  })
 }
 
 onMounted(() => {

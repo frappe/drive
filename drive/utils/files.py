@@ -358,7 +358,7 @@ class FileManager:
 
     @__not_if_flat
     def move_to_trash(self, entity: DriveFile):
-        if not entity.path or entity.mime_type.startswith("frappe"):
+        if not entity.path or entity.mime_type in ["frappe/slides", "link"]:
             return
 
         trash_path = self.__get_trash_path(entity)

@@ -40,7 +40,6 @@ const store = createStore({
     currentFolder: {
       name: getJson("currentFolder", ""),
       team: getJson("currentFolderTeam", ""),
-      entities: getJson("currentEntitites", []),
     },
     breadcrumbs: getJson("breadcrumbs", [{ label: "Home", route: "/" }]),
     sidebarCollapsed: getJson("sidebarCollapsed", false),
@@ -97,8 +96,7 @@ const store = createStore({
     },
     setCurrentFolder(state, payload) {
       // Don't clear cache for performance's sake (state is cleared on every reroute)
-      if (payload === null)
-        state.currentFolder = { name: null, team: null, entities: [] }
+      if (payload === null) state.currentFolder = { name: null, team: null }
       else {
         state.currentFolder = { ...state.currentFolder, ...payload }
         localStorage.setItem(
@@ -108,10 +106,6 @@ const store = createStore({
         localStorage.setItem(
           "currentFolderTeam",
           JSON.stringify(state.currentFolder.team)
-        )
-        localStorage.setItem(
-          "currentEntitites",
-          JSON.stringify(state.currentFolder.entities)
         )
       }
     },

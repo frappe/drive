@@ -58,11 +58,7 @@ const open = ref(true)
 const presentationName = ref("")
 const submit = async () => {
   if (!presentationName.value) return
-  const data = await createPresentation.submit({
-    parent: props.parent,
-    title: presentationName.value.trim(),
-    team: route.params.team,
-  })
+  const data = 
   emit("success", data)
   window.location.replace("/slides/presentation/" + data.path)
 }

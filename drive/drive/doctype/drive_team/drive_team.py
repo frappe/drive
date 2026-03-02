@@ -7,8 +7,6 @@ from pathlib import Path
 import frappe
 from frappe.model.document import Document
 
-from drive.api.permissions import get_teams
-from drive.api.product import set_settings
 from drive.utils import get_home_folder
 
 

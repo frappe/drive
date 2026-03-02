@@ -47,7 +47,7 @@
   "grid_page_length": 50,
   "index_web_pages_for_search": 1,
   "links": [],
-  "modified": "2025-09-22 16:15:08.406507",
+  "modified": "2026-02-05 15:54:03.437373",
   "modified_by": "Administrator",
   "module": "Drive",
   "name": "Drive Settings",
@@ -73,7 +73,7 @@
       "print": 1,
       "read": 1,
       "report": 1,
-      "role": "All",
+      "role": "Drive User",
       "share": 1,
       "write": 1
     }

@@ -1,19 +1,17 @@
 import frappe
 from pypika import Order
+from frappe.model.document import Document
 
 
 def get_link(entity):
-    type_ = {True: "f", bool(entity.is_group): "d", bool(entity.document): "w"}
+    if entity.doc:
+        return "/writer/w/" + entity.name
+    type_ = {True: "f", bool(entity.is_group): "d"}
     return entity.path if entity.is_link else f"/drive/{type_.get(True)}/{entity.name}/"
 
 
 @frappe.whitelist()
-def get_notifications(only_unread):
-    """
-    Get notifications for current user
-
-    :param only_unread: only get notifications where read is False
-    """
+def get_notifications(only_unread: bool = False):
     User = frappe.qb.DocType("User")
     Notification = frappe.qb.DocType("Drive Notification")
     fields = [
@@ -54,13 +52,7 @@ def get_unread_count():
 
 
 @frappe.whitelist()
-def mark_as_read(name=None, all=False):
-    """
-    Mark notification for current user as read
-
-    :param name: ID of notification record
-    :param all: Will mark all unread notifications as read
-    """
+def mark_as_read(name: str | None = None, all: bool = False):
     if all:
         frappe.db.set_value("Drive Notification", {"to_user": frappe.session.user, "read": False}, "read", True)
         return
@@ -68,7 +60,7 @@ def mark_as_read(name=None, all=False):
     return
 
 
-def notify_mentions(entity_name, mentions):
+def notify_mentions(entity_name, mentions, comment=False):
     """
     Create a mention notification for each user mentioned
     :param entity_name: ID of entity
@@ -81,7 +73,7 @@ def notify_mentions(entity_name, mentions):
             mention,
             "Mention",
             entity,
-            f"You were mentioned in a document: {entity.title}",
+            f"You were mentioned in a {'comment in:' if comment else 'document:'} {entity.title}",
         )
 
 
@@ -95,7 +87,7 @@ def notify_share(entity_name, docperm_name):
     docshare = frappe.get_doc("Drive Permission", docperm_name)
 
     author_full_name = frappe.db.get_value("User", {"name": docshare.owner}, ["full_name"])
-    entity_type = "document" if entity.document else "folder" if entity.is_group else "file"
+    entity_type = "document" if entity.doc else "folder" if entity.is_group else "file"
     link = get_link(entity)
     message = f'{author_full_name} shared a {entity_type} with you: "{entity.title}"'
     if not frappe.db.exists("User", docshare.user):
@@ -106,22 +98,14 @@ def notify_share(entity_name, docperm_name):
     send_share_email(docshare.user, message, link, entity.team, entity_type)
 
 
-def create_notification(from_user, to_user, type, entity, message=None):
-    """
-    Create a notification
-    :param from_user: notification owner user email
-    :param to_user: notification receiver user email
-    :param type: subject of notification
-    :param entity: drive_file name
-    :param message: notification message
-    """
+def create_notification(from_user: str, to_user: str, type: str, entity: str, message: str | None = None):
     from drive.api.permissions import get_user_access
 
     user_access = get_user_access(entity.name, to_user)
     if user_access.get("read") == 0:
         return
 
-    entity_type = "Document" if entity.document else "Folder" if entity.is_group else "File"
+    entity_type = "Document" if entity.doc else "Folder" if entity.is_group else "File"
     details = {
         "from_user": from_user,
         "to_user": to_user,

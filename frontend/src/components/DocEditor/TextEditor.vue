@@ -150,7 +150,7 @@ import { EditorContent } from "@tiptap/vue-3"
 import { toUint8Array } from "js-base64"
 import * as Y from "yjs"
 import { IndexeddbPersistence } from "y-indexeddb"
-import { ySyncPluginKey } from "y-prosemirror"
+import { ySyncPluginKey } from "@tiptap/y-tiptap"
 import { WebrtcProvider } from "y-webrtc"
 import Collaboration from "@tiptap/extension-collaboration"
 import { onKeyDown } from "@vueuse/core"
@@ -300,7 +300,7 @@ const editorExtensions = [
 
 let prov, doc, localstorage
 const collab = computed(() => props.settings?.collab)
-import { yDocToProsemirrorJSON } from "y-prosemirror"
+import { yDocToProsemirrorJSON } from "@tiptap/y-tiptap"
 import { Editor } from "@tiptap/core"
 import { isModKey } from "@/utils/files"
 

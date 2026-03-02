@@ -6,12 +6,6 @@
     :parent="$route.params.entityName"
     @success="(data) => addToList(data, 'Folder')"
   />
-  <NewPresentationDialog
-    v-else-if="dialog === 'p'"
-    v-model="dialog"
-    :parent="$route.params.entityName"
-    @success="(data) => addToList(data, 'Presentation')"
-  />
   <NewLinkDialog
     v-else-if="dialog === 'l'"
     v-model="dialog"
@@ -85,10 +79,9 @@ import { openEntity } from "@/utils/files"
 import emitter from "@/emitter"
 
 import NewFolderDialog from "@/components/NewFolderDialog.vue"
-import NewPresentationDialog from "@/components/NewPresentationDialog.vue"
 import NewLinkDialog from "@/components/NewLinkDialog.vue"
 import RenameDialog from "@/components/RenameDialog.vue"
-import ShareDialog from "@/components/ShareDialog/ShareDialog.vue"
+import { ShareDialog } from "frappe-ui/drive"
 import ConfirmDialog from "@/components/ConfirmDialog.vue"
 import MoveDialog from "@/components/MoveDialog.vue"
 

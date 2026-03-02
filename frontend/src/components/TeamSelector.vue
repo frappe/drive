@@ -12,7 +12,6 @@ import { getTeams } from "@/resources/files"
 import icons from "@/utils/icons"
 import { computed, watch } from "vue"
 import { Combobox } from "frappe-ui"
-import { DropdownItem } from "frappe-ui/src/components/Dropdown/types"
 import { dynamicList } from "@/utils/files"
 
 getTeams.fetch()
@@ -35,7 +34,7 @@ watch(
   },
   { immediate: true }
 )
-const options = computed<DropdownItem[]>(() => {
+const options = computed<object[]>(() => {
   const res = Object.values(getTeams.data).map((k) => ({
     label: k.title,
     value: k.name,

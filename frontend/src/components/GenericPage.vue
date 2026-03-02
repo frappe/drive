@@ -81,7 +81,7 @@ import Navbar from "@/components/Navbar.vue"
 import NoFilesSection from "@/components/NoFilesSection.vue"
 import UploadTracker from "@/components/UploadTracker.vue"
 import ErrorPage from "@/components/ErrorPage.vue"
-import { getLink, pasteObj } from "@/utils/files"
+import { pasteObj } from "@/utils/files"
 import { toggleFav, clearRecent } from "@/resources/files"
 import { allUsers } from "@/resources/permissions"
 import { entitiesDownload } from "@/utils/download"
@@ -95,6 +95,7 @@ import { move } from "@/resources/files"
 import { LoadingIndicator } from "frappe-ui"
 import { settings } from "@/resources/permissions"
 import emitter from "@/emitter"
+import { getFileLink } from "frappe-ui/drive/js/utils"
 
 import LucideClock from "~icons/lucide/clock"
 import LucideDownload from "~icons/lucide/download"
@@ -147,13 +148,19 @@ const sortId = computed(
   () =>
     props.getEntities.params?.entity_name || props.getEntities.params?.personal
 )
-const sortOrder = ref(
-  store.state.sortOrder[sortId.value] || {
-    label: "Modified",
-    field: "modified",
-    ascending: false,
-  }
-)
+const inIframe = inject("inIframe")
+const DEFAULT_SORT = inIframe.value
+  ? {
+      label: "Name",
+      field: "name",
+      ascending: true,
+    }
+  : {
+      label: "Modified",
+      field: "modified",
+      ascending: false,
+    }
+const sortOrder = ref(store.state.sortOrder[sortId.value] || DEFAULT_SORT)
 const search = ref("")
 const filters = ref([])
 
@@ -242,7 +249,6 @@ watch(
 )
 emitter.on("refresh", refreshData)
 emitter.on("remove-file", (item) => {
-  console.log("alo")
   selections.value.clear()
   selections.value.add(item)
   dialog.value = "remove"
@@ -318,7 +324,10 @@ const actionItems = computed(() => {
         label: __("Download"),
         icon: LucideDownload,
         isEnabled: (e) =>
-          !e.is_link && e.mime_type !== "frappe/slides" && e.allow_download,
+          !e.is_link &&
+          e.mime_type !== "frappe/slides" &&
+          e.mime_type !== "frappe_doc" &&
+          e.allow_download,
         action: (entities) => entitiesDownload(team.value, entities),
         multi: true,
         important: true,
@@ -326,7 +335,7 @@ const actionItems = computed(() => {
       {
         label: __("Copy Link"),
         icon: LucideLink2,
-        action: ([entity]) => getLink(entity),
+        action: ([entity]) => getFileLink(entity),
         important: true,
       },
       { divider: true, isEnabled: (e) => !e.external },
@@ -439,15 +448,13 @@ if (settings.data?.auto_detect_links) {
 
 const socket = inject("socket")
 socket.on("list-add", ({ file }) => {
-  refreshData()
-
-  // if (
-  //   file.parent_entity === props.getEntities.params.entity_name &&
-  //   !props.getEntities.data.find((k) => k.name === file.name)
-  // ) {
-  //   props.getEntities.data.push(...prettyData([file]))
-  //   props.getEntities.setData(props.getEntities.data)
-  // }
+  if (
+    file.parent_entity === props.getEntities.params.entity_name &&
+    !props.getEntities.data.find((k) => k.name === file.name)
+  ) {
+    props.getEntities.data.push(...prettyData([file]))
+    props.getEntities.setData(props.getEntities.data)
+  }
 })
 socket.on("list-update", ({ file }) => {
   if (file.parent_entity !== props.getEntities.params.entity_name) return
