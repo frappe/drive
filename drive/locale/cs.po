@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: frappe\n"
 "Report-Msgid-Bugs-To: developers@frappe.io\n"
 "POT-Creation-Date: 2026-02-13 16:23+0000\n"
-"PO-Revision-Date: 2026-04-18 00:59\n"
+"PO-Revision-Date: 2026-04-22 01:21\n"
 "Last-Translator: developers@frappe.io\n"
 "Language-Team: Czech\n"
 "MIME-Version: 1.0\n"
@@ -756,7 +756,7 @@ msgstr "Předpona"
 
 #: frontend/src/components/GenericPage.vue:304
 msgid "Preview"
-msgstr ""
+msgstr "Náhled"
 
 #. Label of the preview_size (Int) field in DocType 'Drive Disk Settings'
 #: drive/drive/doctype/drive_disk_settings/drive_disk_settings.json
@@ -775,7 +775,7 @@ msgstr ""
 #. Label of the public (Check) field in DocType 'Drive Team'
 #: drive/drive/doctype/drive_team/drive_team.json
 msgid "Public"
-msgstr ""
+msgstr "Veřejné"
 
 #. Description of the 'Updates' (Table) field in DocType 'Drive Desktop Client'
 #: drive/drive/doctype/drive_desktop_client/drive_desktop_client.json
@@ -826,7 +826,7 @@ msgstr ""
 #: frontend/src/components/GenericPage.vue:351
 #: frontend/src/components/Navbar.vue:238
 msgid "Rename"
-msgstr ""
+msgstr "Přejmenovat"
 
 #. Label of the replies (Table) field in DocType 'Drive Comment'
 #: drive/drive/doctype/drive_comment/drive_comment.json
@@ -874,7 +874,7 @@ msgstr "Nastavení"
 #: frontend/src/components/GenericPage.vue:317
 #: frontend/src/components/Navbar.vue:206
 msgid "Share"
-msgstr ""
+msgstr "Sdílet"
 
 #: frontend/src/components/InfoPopup.vue:132 frontend/src/utils/files.js:197
 msgid "Shared"
@@ -904,7 +904,7 @@ msgstr ""
 #: frontend/src/components/InfoPopup.vue:33
 #: frontend/src/components/ListView.vue:186
 msgid "Size"
-msgstr ""
+msgstr "Velikost"
 
 #: frontend/src/components/DriveToolBar.vue:271
 msgid "Smart"
@@ -924,7 +924,7 @@ msgstr ""
 
 #: frontend/src/components/InfoPopup.vue:66
 msgid "Stats"
-msgstr ""
+msgstr "Statistiky"
 
 #. Label of the status (Select) field in DocType 'Drive User Invitation'
 #: drive/drive/doctype/drive_user_invitation/drive_user_invitation.json
@@ -962,7 +962,7 @@ msgstr "Správce systému"
 #. Label of the tag (Link) field in DocType 'Drive Entity Tag'
 #: drive/drive/doctype/drive_entity_tag/drive_entity_tag.json
 msgid "Tag"
-msgstr ""
+msgstr "Štítek"
 
 #. Label of the tags (Table) field in DocType 'Drive File'
 #: drive/drive/doctype/drive_file/drive_file.json
@@ -1003,7 +1003,7 @@ msgstr ""
 
 #: frontend/src/components/Settings/TemplateSettings.vue:5
 msgid "Templates"
-msgstr ""
+msgstr "Šablony"
 
 #. Label of the thumbnail_prefix (Data) field in DocType 'Drive Disk Settings'
 #: drive/drive/doctype/drive_disk_settings/drive_disk_settings.json
@@ -1052,7 +1052,7 @@ msgstr ""
 
 #: frontend/src/components/Settings/TemplateSettings.vue:70
 msgid "Update"
-msgstr ""
+msgstr "Aktualizovat"
 
 #. Label of the updates (Table) field in DocType 'Drive Desktop Client'
 #: drive/drive/doctype/drive_desktop_client/drive_desktop_client.json
@@ -1093,7 +1093,7 @@ msgstr "Uživatelé"
 #. Label of the version (Int) field in DocType 'Drive Document'
 #: drive/drive/doctype/drive_document/drive_document.json
 msgid "Version"
-msgstr ""
+msgstr "Verze"
 
 #. Label of the versions (Table) field in DocType 'Drive Document'
 #: drive/drive/doctype/drive_document/drive_document.json
@@ -1111,7 +1111,7 @@ msgstr ""
 #. Label of the write (Check) field in DocType 'Drive Permission'
 #: drive/drive/doctype/drive_permission/drive_permission.json
 msgid "Write"
-msgstr ""
+msgstr "Zápis"
 
 #. Label of the writer_section (Section Break) field in DocType 'Drive
 #. Settings'
