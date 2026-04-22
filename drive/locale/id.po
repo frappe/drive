@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: frappe\n"
 "Report-Msgid-Bugs-To: developers@frappe.io\n"
 "POT-Creation-Date: 2026-02-13 16:23+0000\n"
-"PO-Revision-Date: 2026-04-17 00:58\n"
+"PO-Revision-Date: 2026-04-22 01:21\n"
 "Last-Translator: developers@frappe.io\n"
 "Language-Team: Indonesian\n"
 "MIME-Version: 1.0\n"
@@ -159,7 +159,7 @@ msgstr "Menegaskan"
 #: drive/drive/doctype/drive_document/drive_document.json
 #: frontend/src/components/Settings/TemplateSettings.vue:92
 msgid "Content"
-msgstr ""
+msgstr "Konten"
 
 #: frontend/src/components/GenericPage.vue:336
 #: frontend/src/components/Navbar.vue:221
@@ -471,7 +471,7 @@ msgstr "Dari Pengguna"
 #: drive/drive/doctype/drive_disk_settings/drive_disk_settings.json
 #: frontend/src/components/InfoPopup.vue:119
 msgid "General"
-msgstr ""
+msgstr "Umum"
 
 #. Label of the geo_location (Code) field in DocType 'Account Request'
 #: drive/drive/doctype/account_request/account_request.json
@@ -874,7 +874,7 @@ msgstr "Pengaturan"
 #: frontend/src/components/GenericPage.vue:317
 #: frontend/src/components/Navbar.vue:206
 msgid "Share"
-msgstr ""
+msgstr "Bagikan"
 
 #: frontend/src/components/InfoPopup.vue:132 frontend/src/utils/files.js:197
 msgid "Shared"
@@ -904,7 +904,7 @@ msgstr ""
 #: frontend/src/components/InfoPopup.vue:33
 #: frontend/src/components/ListView.vue:186
 msgid "Size"
-msgstr ""
+msgstr "Ukuran"
 
 #: frontend/src/components/DriveToolBar.vue:271
 msgid "Smart"
@@ -957,7 +957,7 @@ msgstr ""
 #: drive/drive/doctype/drive_transfer/drive_transfer.json
 #: drive/drive/doctype/drive_user_invitation/drive_user_invitation.json
 msgid "System Manager"
-msgstr ""
+msgstr "Manajer sistem"
 
 #. Label of the tag (Link) field in DocType 'Drive Entity Tag'
 #: drive/drive/doctype/drive_entity_tag/drive_entity_tag.json
@@ -1003,7 +1003,7 @@ msgstr ""
 
 #: frontend/src/components/Settings/TemplateSettings.vue:5
 msgid "Templates"
-msgstr ""
+msgstr "Templat"
 
 #. Label of the thumbnail_prefix (Data) field in DocType 'Drive Disk Settings'
 #: drive/drive/doctype/drive_disk_settings/drive_disk_settings.json
@@ -1038,7 +1038,7 @@ msgstr "Ke Pengguna"
 #: frontend/src/components/DriveToolBar.vue:259
 #: frontend/src/components/InfoPopup.vue:27
 msgid "Type"
-msgstr ""
+msgstr "Tipe"
 
 #. Label of the url_args (Code) field in DocType 'Account Request'
 #: drive/drive/doctype/account_request/account_request.json
