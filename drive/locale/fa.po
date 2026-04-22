@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: frappe\n"
 "Report-Msgid-Bugs-To: developers@frappe.io\n"
 "POT-Creation-Date: 2026-02-13 16:23+0000\n"
-"PO-Revision-Date: 2026-04-20 01:09\n"
+"PO-Revision-Date: 2026-04-22 01:21\n"
 "Last-Translator: developers@frappe.io\n"
 "Language-Team: Persian\n"
 "MIME-Version: 1.0\n"
@@ -1114,7 +1114,7 @@ msgstr "واژه‌ها"
 #. Label of the write (Check) field in DocType 'Drive Permission'
 #: drive/drive/doctype/drive_permission/drive_permission.json
 msgid "Write"
-msgstr ""
+msgstr "نوشتن"
 
 #. Label of the writer_section (Section Break) field in DocType 'Drive
 #. Settings'
@@ -1149,7 +1149,7 @@ msgstr "ایجاد"
 #: drive/drive/doctype/drive_entity_activity_log/drive_entity_activity_log.json
 #: drive/drive/doctype/drive_file_update/drive_file_update.json
 msgid "delete"
-msgstr ""
+msgstr "حذف"
 
 #. Option for the 'Action Type' (Select) field in DocType 'Drive Entity
 #. Activity Log'
