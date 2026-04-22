@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: frappe\n"
 "Report-Msgid-Bugs-To: developers@frappe.io\n"
 "POT-Creation-Date: 2026-02-13 16:23+0000\n"
-"PO-Revision-Date: 2026-04-17 00:58\n"
+"PO-Revision-Date: 2026-04-22 01:21\n"
 "Last-Translator: developers@frappe.io\n"
 "Language-Team: Burmese\n"
 "MIME-Version: 1.0\n"
@@ -395,7 +395,7 @@ msgstr ""
 #. Label of the enabled (Check) field in DocType 'Drive Disk Settings'
 #: drive/drive/doctype/drive_disk_settings/drive_disk_settings.json
 msgid "Enabled"
-msgstr ""
+msgstr "ဖွင့်ထား"
 
 #. Label of the endpoint_url (Data) field in DocType 'Drive Disk Settings'
 #: drive/drive/doctype/drive_disk_settings/drive_disk_settings.json
@@ -471,7 +471,7 @@ msgstr "အသုံးပြုသူထံမှ"
 #: drive/drive/doctype/drive_disk_settings/drive_disk_settings.json
 #: frontend/src/components/InfoPopup.vue:119
 msgid "General"
-msgstr ""
+msgstr "အထွေထွေ"
 
 #. Label of the geo_location (Code) field in DocType 'Account Request'
 #: drive/drive/doctype/account_request/account_request.json
@@ -756,7 +756,7 @@ msgstr "ရှေ့ဆက်"
 
 #: frontend/src/components/GenericPage.vue:304
 msgid "Preview"
-msgstr ""
+msgstr "အကြိုကြည့်ရှုခြင်း"
 
 #. Label of the preview_size (Int) field in DocType 'Drive Disk Settings'
 #: drive/drive/doctype/drive_disk_settings/drive_disk_settings.json
@@ -765,7 +765,7 @@ msgstr ""
 
 #: frontend/src/components/Settings/ProfileSettings.vue:3
 msgid "Profile"
-msgstr ""
+msgstr "ပရိုဖိုင်"
 
 #. Option for the 'Status' (Select) field in DocType 'Drive User Invitation'
 #: drive/drive/doctype/drive_user_invitation/drive_user_invitation.json
@@ -775,7 +775,7 @@ msgstr ""
 #. Label of the public (Check) field in DocType 'Drive Team'
 #: drive/drive/doctype/drive_team/drive_team.json
 msgid "Public"
-msgstr ""
+msgstr "အများသူငှာ"
 
 #. Description of the 'Updates' (Table) field in DocType 'Drive Desktop Client'
 #: drive/drive/doctype/drive_desktop_client/drive_desktop_client.json
@@ -797,7 +797,7 @@ msgstr ""
 #: drive/drive/doctype/drive_notification/drive_notification.json
 #: drive/drive/doctype/drive_permission/drive_permission.json
 msgid "Read"
-msgstr ""
+msgstr "ဖတ်ရှု"
 
 #: frontend/src/components/InfoPopup.vue:85
 msgid "Reading time"
@@ -826,7 +826,7 @@ msgstr ""
 #: frontend/src/components/GenericPage.vue:351
 #: frontend/src/components/Navbar.vue:238
 msgid "Rename"
-msgstr ""
+msgstr "အမည်ပြောင်း"
 
 #. Label of the replies (Table) field in DocType 'Drive Comment'
 #: drive/drive/doctype/drive_comment/drive_comment.json
@@ -854,7 +854,7 @@ msgstr ""
 #: frontend/src/components/EmojiPicker.vue:22
 #: frontend/src/components/Sidebar.vue:206
 msgid "Search"
-msgstr ""
+msgstr "ရှာဖွေမှု"
 
 #: frontend/src/components/TagColorInput.vue:36
 msgid "Set Color"
@@ -865,7 +865,7 @@ msgstr ""
 #: frontend/src/components/Settings/SettingsDialog.vue:16
 #: frontend/src/components/Sidebar.vue:169
 msgid "Settings"
-msgstr ""
+msgstr "ဆက်တင်များ"
 
 #. Option for the 'Type' (Select) field in DocType 'Drive Notification'
 #. Label of the share (Check) field in DocType 'Drive Permission'
@@ -874,7 +874,7 @@ msgstr ""
 #: frontend/src/components/GenericPage.vue:317
 #: frontend/src/components/Navbar.vue:206
 msgid "Share"
-msgstr ""
+msgstr "မျှဝေ"
 
 #: frontend/src/components/InfoPopup.vue:132 frontend/src/utils/files.js:197
 msgid "Shared"
@@ -904,7 +904,7 @@ msgstr ""
 #: frontend/src/components/InfoPopup.vue:33
 #: frontend/src/components/ListView.vue:186
 msgid "Size"
-msgstr ""
+msgstr "အရွယ်အစား"
 
 #: frontend/src/components/DriveToolBar.vue:271
 msgid "Smart"
@@ -924,12 +924,12 @@ msgstr ""
 
 #: frontend/src/components/InfoPopup.vue:66
 msgid "Stats"
-msgstr ""
+msgstr "စာရင်းအင်း"
 
 #. Label of the status (Select) field in DocType 'Drive User Invitation'
 #: drive/drive/doctype/drive_user_invitation/drive_user_invitation.json
 msgid "Status"
-msgstr ""
+msgstr "အခြေအနေ"
 
 #. Label of the storage (Int) field in DocType 'Drive Team'
 #: drive/drive/doctype/drive_team/drive_team.json
@@ -957,19 +957,19 @@ msgstr ""
 #: drive/drive/doctype/drive_transfer/drive_transfer.json
 #: drive/drive/doctype/drive_user_invitation/drive_user_invitation.json
 msgid "System Manager"
-msgstr ""
+msgstr "စနစ်စီမံခန့်ခွဲသူ"
 
 #. Label of the tag (Link) field in DocType 'Drive Entity Tag'
 #: drive/drive/doctype/drive_entity_tag/drive_entity_tag.json
 msgid "Tag"
-msgstr ""
+msgstr "တဂ်"
 
 #. Label of the tags (Table) field in DocType 'Drive File'
 #: drive/drive/doctype/drive_file/drive_file.json
 #: frontend/src/components/InfoPopup.vue:53
 #: frontend/src/components/Settings/TagSettings.vue:4
 msgid "Tags"
-msgstr ""
+msgstr "တဂ်များ"
 
 #. Label of the team (Link) field in DocType 'Drive Desktop Client'
 #. Label of the team (Link) field in DocType 'Drive File'
@@ -1024,7 +1024,7 @@ msgstr ""
 #: drive/drive/doctype/drive_transfer/drive_transfer.json
 #: frontend/src/components/Settings/NewTagDialog.vue:19
 msgid "Title"
-msgstr ""
+msgstr "ခေါင်းစဉ်"
 
 #. Label of the to_user (Link) field in DocType 'Drive Notification'
 #: drive/drive/doctype/drive_notification/drive_notification.json
@@ -1038,7 +1038,7 @@ msgstr ""
 #: frontend/src/components/DriveToolBar.vue:259
 #: frontend/src/components/InfoPopup.vue:27
 msgid "Type"
-msgstr ""
+msgstr "အမျိုးအစား"
 
 #. Label of the url_args (Code) field in DocType 'Account Request'
 #: drive/drive/doctype/account_request/account_request.json
@@ -1052,7 +1052,7 @@ msgstr ""
 
 #: frontend/src/components/Settings/TemplateSettings.vue:70
 msgid "Update"
-msgstr ""
+msgstr "အပ်ဒိတ်"
 
 #. Label of the updates (Table) field in DocType 'Drive Desktop Client'
 #: drive/drive/doctype/drive_desktop_client/drive_desktop_client.json
@@ -1062,7 +1062,7 @@ msgstr ""
 #. Label of the upload (Check) field in DocType 'Drive Permission'
 #: drive/drive/doctype/drive_permission/drive_permission.json
 msgid "Upload"
-msgstr ""
+msgstr "အပ်လုဒ်တင်"
 
 #. Description of the 'Preview size' (Int) field in DocType 'Drive Disk
 #. Settings'
@@ -1083,17 +1083,17 @@ msgstr ""
 #: drive/drive/doctype/drive_settings/drive_settings.json
 #: drive/drive/doctype/drive_team_member/drive_team_member.json
 msgid "User"
-msgstr ""
+msgstr "အသုံးပြုသူ"
 
 #. Label of the users (Table) field in DocType 'Drive Team'
 #: drive/drive/doctype/drive_team/drive_team.json
 msgid "Users"
-msgstr ""
+msgstr "အသုံးပြုသူများ"
 
 #. Label of the version (Int) field in DocType 'Drive Document'
 #: drive/drive/doctype/drive_document/drive_document.json
 msgid "Version"
-msgstr ""
+msgstr "ဗားရှင်း"
 
 #. Label of the versions (Table) field in DocType 'Drive Document'
 #: drive/drive/doctype/drive_document/drive_document.json
@@ -1111,7 +1111,7 @@ msgstr ""
 #. Label of the write (Check) field in DocType 'Drive Permission'
 #: drive/drive/doctype/drive_permission/drive_permission.json
 msgid "Write"
-msgstr ""
+msgstr "ရေးသားခွင့်"
 
 #. Label of the writer_section (Section Break) field in DocType 'Drive
 #. Settings'
