@@ -1,14 +1,8 @@
 <template>
   <div class="flex w-full h-full">
     <div class="w-full h-full flex flex-col">
-      <Navbar
-        v-if="!file?.error"
-        :root-resource="file"
-      />
-      <ErrorPage
-        v-if="file.error"
-        :error="file.error"
-      />
+      <Navbar v-if="!file?.error" :root-resource="file" />
+      <ErrorPage v-if="file.error" :error="file.error" />
       <div
         v-else
         id="renderContainer"
@@ -19,10 +13,7 @@
           v-if="file.loading"
           class="w-10 h-full text-neutral-100"
         />
-        <FileRender
-          v-else-if="file.data"
-          :preview-entity="file.data"
-        />
+        <FileRender v-else-if="file.data" :preview-entity="file.data" />
       </div>
       <div
         class="hidden sm:flex absolute bottom-4 left-1/2 transform -translate-x-1/2 w-fit items-center justify-center p-1 gap-1 rounded shadow-xl l bg-surface-white"
@@ -33,10 +24,7 @@
           icon="arrow-left"
           @click="scrollEntity(true)"
         />
-        <Button
-          :variant="'ghost'"
-          @click="enterFullScreen"
-        >
+        <Button :variant="'ghost'" @click="enterFullScreen">
           <LucideScan class="size-4" />
         </Button>
         <Button
@@ -51,22 +39,22 @@
 </template>
 
 <script setup>
-import { useStore } from "vuex"
-import Navbar from "@/components/Navbar.vue"
-import { ref, computed, onMounted, defineProps } from "vue"
-import { Button, LoadingIndicator } from "frappe-ui"
-import FileRender from "@/components/FileRender.vue"
-import { createResource } from "frappe-ui"
-import { useRouter } from "vue-router"
-import LucideScan from "~icons/lucide/scan"
-import { onKeyStroke } from "@vueuse/core"
+import { useStore } from 'vuex'
+import Navbar from '@/components/Navbar.vue'
+import { ref, computed, onMounted, defineProps } from 'vue'
+import { Button, LoadingIndicator } from 'frappe-ui'
+import FileRender from '@/components/FileRender.vue'
+import { createResource } from 'frappe-ui'
+import { useRouter } from 'vue-router'
+import LucideScan from '~icons/lucide/scan'
+import { onKeyStroke } from '@vueuse/core'
 import {
   prettyData,
   setBreadCrumbs,
   enterFullScreen,
   updateURLSlug,
-} from "@/utils/files"
-import ErrorPage from "@/components/ErrorPage.vue"
+} from '@/utils/files'
+import ErrorPage from '@/components/ErrorPage.vue'
 
 const router = useRouter()
 const store = useStore()
@@ -77,13 +65,15 @@ const props = defineProps({
 
 const currentEntity = ref(props.entityName)
 
-// const filteredEntities = computed(() =>
-//   store.state.currentFolder.entities.filter(
-//     (item) => !item.is_group && !item.document && !item.is_link
-//   )
-// )
-// FIX: redo with server fetch
-const filteredEntities = computed(() => [])
+// buggy logic, only works if navigated through folder
+const folderEntitites = computed(() => {
+  return store.state.currentFolder?.entities || []
+})
+const filteredEntities = computed(() =>
+  folderEntitites.value.filter(
+    (item) => !item.is_group && !item.doc && !item.is_link
+  )
+)
 
 const index = computed(() => {
   return filteredEntities.value.findIndex(
@@ -102,12 +92,12 @@ function fetchFile(currentEntity) {
   })
 }
 
-onKeyStroke("ArrowLeft", (e) => {
+onKeyStroke('ArrowLeft', (e) => {
   if (!e.shiftKey) return
   e.preventDefault()
   scrollEntity(true)
 })
-onKeyStroke("ArrowRight", (e) => {
+onKeyStroke('ArrowRight', (e) => {
   if (!e.shiftKey) return
   e.preventDefault()
   scrollEntity()
@@ -116,7 +106,7 @@ onKeyStroke("ArrowRight", (e) => {
 const onSuccess = async (entity) => {
   // temporary hack: #475
   if (entity.doc) {
-    window.location.href = "/writer/w/" + entity.name
+    window.location.href = '/writer/w/' + entity.name
   }
   document.title = entity.title
   setBreadCrumbs(entity)
@@ -124,15 +114,15 @@ const onSuccess = async (entity) => {
 }
 
 const file = createResource({
-  url: "drive.api.permissions.get_entity_with_permissions",
+  url: 'drive.api.permissions.get_entity_with_permissions',
   params: { entity_name: props.entityName },
   transform(entity) {
-    store.commit("setActiveEntity", entity)
+    store.commit('setActiveEntity', entity)
     return prettyData([entity])[0]
   },
   onSuccess,
 })
-store.commit("setCurrentResource", file)
+store.commit('setCurrentResource', file)
 
 function scrollEntity(negative = false) {
   currentEntity.value = negative ? prevEntity.value : nextEntity.value
