@@ -418,7 +418,7 @@ export function getLink(entity, copy = true, withDomain = true) {
   let link
   if (entity.is_link) link = entity.path
   else if (entity.mime_type === 'frappe/slides') {
-    link = window.location.origin + '/slides/presentation/' + entity.name
+    link = window.location.origin + '/slides/presentation/' + entity.path
   } else if (
     entity.mime_type === 'frappe_doc' ||
     entity.mime_type === 'text/markdown'

@@ -117,11 +117,13 @@ def create_notification(from_user: str, to_user: str, type: str, entity: str, me
     }
     notif = frappe.db.exists("Drive Notification", details)
     if notif:
-        return
+        return False
     try:
         frappe.get_doc({"doctype": "Drive Notification", **details}).insert()
-    except frappe.exceptions.ValidationError as e:
-        print(f"Error inserting document: {e}")
+        return True
+    except Exception:
+        frappe.log_error(frappe.get_traceback(), "Frappe Drive Notification Error")
+        return False
 
 
 def send_share_email(to, message, link, team, type_):

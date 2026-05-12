@@ -329,7 +329,7 @@ const newEntityOptions = computed(() => [
         label: "Presentation",
         icon: LucideGalleryVerticalEnd,
         onClick: () => newExternal("Presentation"),
-        cond: isPrivate.value && apps.data?.find?.((k) => k.name === "slides"),
+        cond: apps.data?.find?.((k) => k.name === "slides"),
       },
       {
         label: "Folder",
