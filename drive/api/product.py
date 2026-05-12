@@ -4,7 +4,7 @@ from frappe.rate_limiter import rate_limit
 from frappe.translate import get_all_translations
 from frappe.utils import escape_html, split_emails, validate_email_address
 
-from drive.api.permissions import get_teams, is_admin
+from drive.api.permissions import get_team_member_row, get_teams, is_admin
 from drive.utils import default_team
 
 
@@ -60,10 +60,11 @@ def edit_team(team: str, icon: str = None, team_name: str = None):
 def leave_team(team: str):
     user = frappe.session.user
     drive_team = {k.user: k for k in frappe.get_doc("Drive Team", team).users}
-    if user not in drive_team:
+    member = get_team_member_row(drive_team, user)
+    if not member:
         frappe.throw("User doesn't belong to team")
 
-    frappe.delete_doc("Drive Team Member", drive_team[user].name)
+    frappe.delete_doc("Drive Team Member", member.name)
 
 
 @frappe.whitelist()
@@ -300,8 +301,11 @@ def set_user_access(team: str, user: str, access_level: int):
     if not is_admin(team):
         frappe.throw("You don't have the permissions for this action.")
     drive_team = {k.user: k for k in frappe.get_doc("Drive Team", team).users}
-    drive_team[user].access_level = access_level
-    drive_team[user].save()
+    member = get_team_member_row(drive_team, user)
+    if not member:
+        frappe.throw("User doesn't belong to team")
+    member.access_level = access_level
+    member.save()
 
 
 @frappe.whitelist()
@@ -309,9 +313,12 @@ def remove_user(team: str, user_id: str):
     if not is_admin(team) or user_id == frappe.session.user:
         frappe.throw("You don't have the permissions for this action.")
     drive_team = {k.user: k for k in frappe.get_doc("Drive Team", team).users}
-    if frappe.session.user not in drive_team:
+    if not get_team_member_row(drive_team, frappe.session.user):
         frappe.throw("User doesn't belong to team")
-    frappe.delete_doc("Drive Team Member", drive_team[user_id].name)
+    target = get_team_member_row(drive_team, user_id)
+    if not target:
+        frappe.throw("User doesn't belong to team")
+    frappe.delete_doc("Drive Team Member", target.name)
 
 
 # SECURITY: send user data with files

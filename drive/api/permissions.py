@@ -112,14 +112,30 @@ def is_admin(team: str):
     if frappe.session.user == "Administrator":
         return True
     drive_team = {k.user: k for k in frappe.get_doc("Drive Team", team).users}
-    return drive_team[frappe.session.user].access_level == 2
+    member = get_team_member_row(drive_team, frappe.session.user)
+    return bool(member and member.access_level == 2)
 
 
 def get_access_level(team, user=None):
     if not user:
         user = frappe.session.user
     drive_team = {k.user: k for k in frappe.get_doc("Drive Team", team).users}
-    return drive_team[user].access_level
+    member = get_team_member_row(drive_team, user)
+    if not member:
+        return 0
+    return member.access_level
+
+
+def get_team_member_row(users_by_name: dict, user: str):
+    """Resolve a team member row; session *user* can differ in case from Link values in the child table."""
+    row = users_by_name.get(user)
+    if row is not None:
+        return row
+    key_cf = user.casefold()
+    for key, row in users_by_name.items():
+        if key.casefold() == key_cf:
+            return row
+    return None
 
 
 @frappe.whitelist()
