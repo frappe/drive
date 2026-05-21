@@ -25,6 +25,7 @@ from drive.utils import (
 )
 from drive.utils.api import prettify_file
 from drive.utils.files import FileManager
+from drive.utils.users import mark_as_viewed
 
 from .permissions import get_teams, user_has_permission
 
@@ -846,6 +847,12 @@ def get_root_folder(team: str):
     if team not in get_teams():
         frappe.throw("You can't check the home folder of a team you don't belong to.", frappe.PermissionError)
     return get_home_folder(team)
+
+
+@frappe.whitelist()
+def track_visit(entity_name: str):
+    entity = frappe.get_doc("Drive File", entity_name)
+    mark_as_viewed(entity)
 
 
 def auto_delete_transfers():
