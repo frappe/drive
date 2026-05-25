@@ -128,11 +128,12 @@
   </Dialog>
 </template>
 <script setup>
-import { Dialog, Avatar, createResource } from "frappe-ui"
+import { Dialog, Avatar, createResource, useTelemetry } from "frappe-ui"
 import { getIconUrl } from "@/utils/getIconUrl"
 import { openEntity } from "@/utils/files"
 import { ref, watch } from "vue"
 import { useRoute } from "vue-router"
+import { watchEffect } from "vue"
 
 import LucideFilePlus2 from "~icons/lucide/file-plus-2"
 import LucideFolderPlus from "~icons/lucide/folder-plus"
@@ -140,8 +141,12 @@ import LucideStar from "~icons/lucide/star"
 
 const search = ref("")
 const route = useRoute()
+const { capture } = useTelemetry()
 
 const open = defineModel()
+watchEffect(() => {
+  if (open.value) capture("drive_search_opened")
+})
 
 const searchResults = createResource({
   auto: false,

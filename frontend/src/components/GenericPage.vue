@@ -86,6 +86,7 @@ import { toggleFav, clearRecent } from "@/resources/files"
 import { allUsers } from "@/resources/permissions"
 import { entitiesDownload } from "@/utils/download"
 import { ref, computed, watch, watchEffect, provide, inject } from "vue"
+import { useTelemetry } from "frappe-ui"
 import { useRoute } from "vue-router"
 import { useEventListener } from "@vueuse/core"
 import { useStore } from "vuex"
@@ -121,6 +122,7 @@ const props = defineProps({
 })
 const route = useRoute()
 const store = useStore()
+const { capture } = useTelemetry()
 
 const dialog = ref("")
 provide("dialog", dialog)
@@ -274,6 +276,7 @@ const onDrop = (targetFile, draggedItem) => {
     new_parent: targetFile.name,
   })
   removeFile(draggedItem, targetFile.name)
+  capture("drive_file_moved", { method: "drag_drop" })
 }
 emitter.on("remove-file-ui", removeFile)
 
@@ -315,7 +318,10 @@ const actionItems = computed(() => {
       {
         label: __("Share"),
         icon: LucideShare2,
-        action: () => (dialog.value = "s"),
+        action: (entities) => {
+          capture("drive_share_dialog_opened", { entity_type: entities[0]?.file_type })
+          dialog.value = "s"
+        },
         isEnabled: (e) => e.share,
         important: true,
       },
@@ -334,7 +340,10 @@ const actionItems = computed(() => {
       {
         label: __("Copy Link"),
         icon: LucideLink2,
-        action: ([entity]) => getFileLink(entity),
+        action: ([entity]) => {
+          getFileLink(entity)
+          capture("drive_link_copied", { entity_type: entity.file_type })
+        },
         important: true,
       },
       { divider: true, isEnabled: (e) => !e.external },
@@ -367,6 +376,7 @@ const actionItems = computed(() => {
           // Hack to cache
           props.getEntities.setData(props.getEntities.data)
           toggleFav.submit({ entities })
+          capture("drive_file_favourited", { entity_type: entities[0]?.file_type })
         },
         isEnabled: (e) => !e.is_favourite && !e.external,
         important: true,
@@ -380,6 +390,7 @@ const actionItems = computed(() => {
           entities.forEach((e) => (e.is_favourite = false))
           props.getEntities.setData(props.getEntities.data)
           toggleFav.submit({ entities })
+          capture("drive_file_unfavourited", { entity_type: entities[0]?.file_type })
         },
         isEnabled: (e) => e.is_favourite && !e.external,
         important: true,
@@ -430,6 +441,7 @@ async function newLink() {
           {
             label: "Add",
             onClick: () => {
+              capture("drive_link_auto_detected", { action: "accepted" })
               dialog.value = "l"
             },
           },

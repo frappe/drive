@@ -42,7 +42,7 @@
 import { useStore } from 'vuex'
 import Navbar from '@/components/Navbar.vue'
 import { ref, computed, onMounted, defineProps } from 'vue'
-import { Button, LoadingIndicator } from 'frappe-ui'
+import { Button, LoadingIndicator, useTelemetry } from 'frappe-ui'
 import FileRender from '@/components/FileRender.vue'
 import { createResource } from 'frappe-ui'
 import { useRouter } from 'vue-router'
@@ -58,6 +58,7 @@ import ErrorPage from '@/components/ErrorPage.vue'
 
 const router = useRouter()
 const store = useStore()
+const { capture } = useTelemetry()
 const props = defineProps({
   entityName: String,
   slug: String,
@@ -111,6 +112,7 @@ const onSuccess = async (entity) => {
   document.title = entity.title
   setBreadCrumbs(entity)
   updateURLSlug(entity.title)
+  capture('drive_file_previewed', { file_type: entity.file_type, mime_type: entity.mime_type })
 }
 
 const file = createResource({

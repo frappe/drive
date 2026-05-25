@@ -1,6 +1,6 @@
 import { createRouter, createWebHistory } from "vue-router"
 import store from "./store"
-import { createResource } from "frappe-ui"
+import { createResource, useTelemetry } from "frappe-ui"
 import Dummy from "@/pages/Dummy.vue"
 import { translate } from "@/resources/files"
 
@@ -226,6 +226,8 @@ let router = createRouter({
   routes,
 })
 
+const { capture } = useTelemetry()
+
 router.beforeEach(async (to, from, next) => {
   if (!store.getters.isLoggedIn && !to.meta.allowGuest) {
     next("/login?redirect-to=/drive" + to.path)
@@ -238,6 +240,7 @@ router.beforeEach(async (to, from, next) => {
 
 router.afterEach((to) => {
   sessionStorage.setItem("currentRoute", to.href)
+  capture("drive_page_viewed", { page_name: to.name, route: to.path })
 })
 
 export default router

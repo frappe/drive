@@ -199,6 +199,7 @@ import {
   LoadingIndicator,
   createResource,
   Switch,
+  useTelemetry,
 } from "frappe-ui"
 import {
   Combobox,
@@ -228,6 +229,7 @@ import LucideGlobe2 from "~icons/lucide/globe-2"
 import store from "@/store"
 
 const props = defineProps({ modelValue: String, entity: Object })
+const { capture } = useTelemetry()
 const emit = defineEmits(["update:modelValue", "success"])
 const dialogType = defineModel()
 const open = ref(true)
@@ -385,6 +387,10 @@ function addShares() {
     updateAccess.submit(r)
     getUsersWithAccess.data.push({ ...user, ...access })
   }
+  capture("drive_invite_sent", {
+    user_count: sharedUsers.value.length,
+    access_level: shareAccess.value,
+  })
   sharedUsers.value = []
   emit("success")
 }

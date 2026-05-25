@@ -6,6 +6,7 @@ import {
   setConfig,
   frappeRequest,
   Button,
+  telemetryPlugin,
 } from "frappe-ui"
 
 import store from "./store"
@@ -33,6 +34,7 @@ app.use(store)
 app.use(translation, "drive.api.product.get_translations")
 
 app.use(FrappeUI, { socketio: false })
+app.use(telemetryPlugin, { app_name: "drive" })
 app.provide("socket", initSocket())
 
 app.directive("on-outside-click", onOutsideClickDirective)

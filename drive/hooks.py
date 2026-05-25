@@ -128,7 +128,13 @@ doc_events = {
     "Presentation": {
         "on_update": "drive.api.integration.presentation",
         "on_trash": "drive.api.integration.presentation",
-    }
+    },
+    "Drive File": {
+        "on_update": "drive.analytics.on_update",
+    },
+    "Drive User Invitation": {
+        "on_update": "drive.analytics.on_update",
+    },
 }
 
 
@@ -142,7 +148,7 @@ scheduler_events = {
     "hourly": ["drive.api.permissions.auto_delete_expired_perms", "drive.api.files.auto_delete_transfers"],
 }
 
-after_request = "drive.api.product.after_request"
+after_request = ["drive.api.product.after_request", "drive.analytics.after_request"]
 # Testing
 # -------
 

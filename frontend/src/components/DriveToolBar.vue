@@ -165,7 +165,7 @@
   </div>
 </template>
 <script setup>
-import { Button, Dropdown, TextInput, TabButtons, Switch } from 'frappe-ui'
+import { Button, Dropdown, TextInput, TabButtons, Switch, useTelemetry } from 'frappe-ui'
 import {
   ref,
   computed,
@@ -192,12 +192,16 @@ const props = defineProps({
   getEntities: Object,
 })
 const store = useStore()
+const { capture } = useTelemetry()
 
 const activeFilters = defineModel('filters')
 const disabled = computed(() => !props.getEntities.data?.length)
 
 const viewState = ref(store.state.view)
-watch(viewState, (val) => store.commit('toggleView', val))
+watch(viewState, (val) => {
+  store.commit('toggleView', val)
+  capture('drive_view_toggled', { view: val })
+})
 const shareView = ref(store.state.shareView)
 const searchInput = useTemplateRef('search-input')
 
@@ -238,11 +242,13 @@ const orderByItems = computed(() => {
     onClick: () => {
       sortOrder.value.field = header.field
       sortOrder.value.label = header.label
+      capture('drive_sort_order_changed', { field: header.field, ascending: sortOrder.value.ascending })
     },
   }))
 })
 const toggleAscending = () => {
   sortOrder.value.ascending = !sortOrder.value.ascending
+  capture('drive_sort_order_changed', { field: sortOrder.value.field, ascending: sortOrder.value.ascending })
 }
 
 const columnHeaders = [
