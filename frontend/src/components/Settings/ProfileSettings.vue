@@ -36,8 +36,11 @@
             v-if="newImageUrl"
             class="flex items-center justify-between bg-surface-gray-2 h-7 pl-2 text-base rounded"
           >
-            <LucideLink class="mr-2" />
-            <a :href="newImageUrl" class="truncate max-w-56 underline">{{ newImageUrl }}</a>
+            <LucideLink class="mr-2 size-4" />
+            <a
+              :href="newImageUrl"
+              class="truncate max-w-56 underline"
+            >{{ newImageUrl }}</a>
 
             <Button @click="newImageUrl = null">
               <template #icon>

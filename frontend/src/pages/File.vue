@@ -65,13 +65,13 @@ const props = defineProps({
 
 const currentEntity = ref(props.entityName)
 
-// const filteredEntities = computed(() =>
-//   store.state.currentFolder.entities.filter(
-//     (item) => !item.is_folder && !item.document && !item.is_link
-//   )
-// )
-// FIX: redo with server fetch
-const filteredEntities = computed(() => [])
+// buggy logic, only works if navigated through folder
+const folderEntities = computed(() => store.state.currentFolder?.entities || [])
+const filteredEntities = computed(() =>
+  folderEntities.value.filter(
+    (item) => !item.is_folder && !item.document && !item.is_link
+  )
+)
 
 const index = computed(() => {
   return filteredEntities.value.findIndex(

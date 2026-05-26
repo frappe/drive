@@ -102,7 +102,7 @@ def auto_delete_from_trash():
 
 
 def clear_deleted_files():
-    days_before = (date.today() + timedelta(days=30)).isoformat()
+    days_before = (date.today() - timedelta(days=30)).isoformat()
     result = frappe.db.get_all(
         "File",
         filters={"status": -1, "modified": ["<", days_before]},

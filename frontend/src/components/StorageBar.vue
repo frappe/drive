@@ -60,7 +60,6 @@ const calculatePercent = computed(() => {
 })
 const route = useRoute()
 const team = computed(() => route.params.team)
-
 watch(
   team,
   (val) =>

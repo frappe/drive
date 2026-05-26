@@ -85,9 +85,9 @@ def get_user_access(entity: str | Document | frappe._dict, user: str = None, tea
         team_access = NO_ACCESS
 
     for access_type in [user_access, team_access, public_access]:
-        for type, v in access_type.items():
+        for type_, v in access_type.items():
             if v:
-                access[type] = 1
+                access[type_] = 1
 
     return access
 
@@ -149,12 +149,25 @@ def get_entity_with_permissions(entity_name: str):
         limit=1,
     )
     if not entity:
-        frappe.throw("We couldn't find what you're looking for.", frappe.DoesNotExistError)
+        # Mimic API v2 points
+        frappe.local.response.errors = [
+            {
+                "type": "PageDoesNotExistError",
+                "message": "We couldn't find what you're looking for.",
+            }
+        ]
+        frappe.throw("We couldn't find what you're looking for.", frappe.PageDoesNotExistError)
     entity = entity[0]
 
     entity["in_home"] = entity.team == get_default_team()
     user_access = get_user_access(entity)
     if not user_access.get("read"):
+        frappe.local.response.errors = [
+            {
+                "type": "PermissionError",
+                "message": "You don't have access to this file.",
+            }
+        ]
         frappe.throw("You don't have access to this file.", frappe.PermissionError)
 
     owner_info = frappe.db.get_value("User", entity.owner, ["user_image", "full_name"], as_dict=True) or {}
@@ -183,6 +196,8 @@ def get_entity_with_permissions(entity_name: str):
     return_obj["modifiable"] = entity["is_drive_file"] and not entity["details_doctype"] == "File"
     return_obj["is_attachment"] = entity["is_drive_file"] and entity["details_doctype"] == "File"
 
+    # To work with modern frappe-ui composables
+    frappe.response["data"] = return_obj
     return return_obj
 
 
@@ -232,7 +247,6 @@ def user_has_permission(doc, ptype, user=None, team=0):
     if ptype not in ("read", "write", "comment", "share", "upload"):
         # Should ideally deflect to Framework
         ptype = "write"
-
     access = get_user_access(doc, user, team)
     if ptype in access:
         return bool(access[ptype])
@@ -241,7 +255,8 @@ def user_has_permission(doc, ptype, user=None, team=0):
 def requires(perm):
     def wrapped(fn):
         def inner(*args, **kwargs):
-            if not user_has_permission(args[0], perm):
+            file = frappe.db.get_value("Drive File", {"doc": args[0].name}, "name")
+            if not user_has_permission(file, perm):
                 frappe.throw("You don't have permission for this action.", ValueError)
             fn(*args, **kwargs)
 

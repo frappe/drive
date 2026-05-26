@@ -123,8 +123,6 @@ import { PropType, Ref, StyleValue, computed, nextTick, ref, watch } from 'vue'
 
 const hueMap = ref(null) as unknown as Ref<HTMLDivElement>
 const colorMap = ref(null) as unknown as Ref<HTMLDivElement>
-const hueSelector = ref(null) as unknown as Ref<HTMLDivElement>
-const colorSelector = ref(null) as unknown as Ref<HTMLDivElement>
 
 const colorSelectorPosition = ref({ x: 0, y: 0 })
 const hueSelectorPosition = ref({ x: 0, y: 0 })

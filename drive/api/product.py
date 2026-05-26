@@ -345,7 +345,7 @@ def get_drive_users():
     users = frappe.get_all(
         doctype="User",
         filters=[
-            ["user_type", "=", "Website User"],
+            ["user_type", "=", "Drive User"],
             ["enabled", "=", 1],
         ],
         fields=[
@@ -359,7 +359,7 @@ def get_drive_users():
 
 
 @frappe.whitelist(allow_guest=True)
-def accept_invite(key: str, redirect: bool = True):
+def accept_invite(key: str, redirect: bool | str = True):
     try:
         invitation = frappe.get_doc("Drive User Invitation", key)
     except:

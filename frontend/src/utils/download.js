@@ -4,7 +4,6 @@ import { printDoc } from './files'
 import emitter from '@/emitter'
 import router from '@/router'
 import html2pdf from 'html2pdf.js'
-import editorStyle from '@/components/DocEditor/styles/editor.css?inline'
 import globalStyle from '@/index.css?inline'
 
 async function getPdfFromDoc(entity_name) {
@@ -15,7 +14,6 @@ async function getPdfFromDoc(entity_name) {
           <html>
             <head>
               <style>${globalStyle}</style>
-              <style>${editorStyle}</style>
             </head>
             <body>
               <div class="ProseMirror prose-sm" style='padding-left: 40px; padding-right: 40px; padding-top: 20px; padding-bottom: 20px; margin: 0;'>

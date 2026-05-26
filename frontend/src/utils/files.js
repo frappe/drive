@@ -8,12 +8,10 @@ import {
   getRecents,
   mutate,
   createDocument,
-  createPresentation,
   getDocuments,
 } from '@/resources/files'
 import { getTeams, getPublicTeams } from '@/resources/files'
 import { set } from 'idb-keyval'
-import editorStyle from '@/components/DocEditor/styles/editor.css?inline'
 import globalStyle from '@/index.css?inline'
 import slugify from 'slugify'
 import { toast } from '@/utils/toasts.js'
@@ -428,7 +426,6 @@ export function printDoc(html, settings = {}) {
             <html>
               <head>
               <style>${globalStyle}</style>
-              <style>${editorStyle}</style>
               <style>
                 .ProseMirror {
                   font-family: ${fontFamily} !important;
@@ -538,6 +535,11 @@ export function getLink(entity, copy = true, withDomain = true) {
   if (entity.file_type === 'Link') link = entity.file_url
   else if (entity.mime_type === 'frappe/slides') {
     link = window.location.origin + '/slides/presentation/' + entity.name
+  } else if (
+    entity.file_type === 'Document' ||
+    entity.file_type === 'Markdown'
+  ) {
+    link = window.location.origin + '/writer/w/' + entity.name
   } else {
     link = `${
       withDomain ? window.location.origin + '/drive' : ''
@@ -745,10 +747,13 @@ export function getRandomColor() {
 }
 export const newExternal = async (type) => {
   const route = router.currentRoute.value
-  const data = await (type === 'Document'
-    ? createDocument
-    : createPresentation
-  ).submit({
+  if (type === 'Presentation') {
+    window.location.href = `/slides/presentation/new?parent=${
+      store.state.currentFolder.name
+    }&team=${route.params.team || ''}`
+    return
+  }
+  const data = await createDocument.submit({
     team: route.params.team,
     parent: store.state.currentFolder.name,
   })
@@ -756,14 +761,10 @@ export const newExternal = async (type) => {
   data.file_type = type
   store.state.listResource.data?.push?.(data)
   getDocuments.data?.push?.(data)
-  if (type === 'Document') {
-    router.push({
-      name: 'Document',
-      params: { entityName: data.name },
-    })
-  } else if (type === 'Presentation') {
-    window.location.replace('/slides/presentation/' + data.path + '?is_new=1')
-  }
+  router.push({
+    name: 'Document',
+    params: { entityName: data.name },
+  })
 }
 
 function isApple() {

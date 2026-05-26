@@ -7,6 +7,8 @@ export default {
     './src/**/*.{vue,js,ts,jsx,tsx}',
     './node_modules/frappe-ui/src/components/**/*.{vue,js,ts,jsx,tsx}',
     '../node_modules/frappe-ui/src/components/**/*.{vue,js,ts,jsx,tsx}',
+    './node_modules/frappe-ui/frappe/components/**/*.{vue,js,ts,jsx,tsx}',
+    '../node_modules/frappe-ui/frappe/components/**/*.{vue,js,ts,jsx,tsx}',
   ],
   safelist: [
     'text-[13px]',
@@ -14,7 +16,6 @@ export default {
     'text-[15px]',
     'text-[16px]',
     'text-[17px]',
-    'text-[18px]',
     'text-[18px]',
     'text-[19px]',
     'leading-[1.2]',

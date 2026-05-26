@@ -147,8 +147,7 @@ watch(
 const activeEntity = computed(() => store.state.activeEntity)
 
 const sortId = computed(
-  () =>
-    props.getEntities.params?.entity_name || props.getEntities.params?.personal
+  () => route.params.entityName || route.params.team || route.name
 )
 const inIframe = inject('inIframe')
 const DEFAULT_SORT = inIframe.value

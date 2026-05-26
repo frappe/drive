@@ -10,8 +10,7 @@
       enableActive: true,
       showTooltip: true,
       resizeColumn: false,
-      // Should be getLink(row, false, false) - but messes up clicking
-      getRowRoute: () => '',
+      getRowRoute: (row) => getLink(row, false, false),
       emptyState: {
         description: 'Nothing found - try something else?',
       },
@@ -79,6 +78,7 @@ import {
   LoadingIndicator,
   ListView as FrappeListView,
   Avatar,
+  Tooltip,
 } from 'frappe-ui'
 import { getThumbnailUrl } from '@/utils/getIconUrl'
 import { useStore } from 'vuex'
@@ -137,10 +137,18 @@ const selectedColumns = [
     },
     suffix: ({ row }) => {
       if (row.share_count === props.rootEntity?.share_count) return
-      if (row.share_count === -2) return h(LucideGlobe2, { class: 'size-4' })
+      if (row.share_count === -2)
+        return h(Tooltip, { text: __('Public') }, {
+          default: () => h(LucideGlobe2, { class: 'size-4' })
+        })
       else if (row.share_count === -1)
-        return h(LucideBuilding2, { class: 'size-4' })
-      else if (row.share_count > 0) return h(LucideUsers, { class: 'size-4' })
+        return h(Tooltip, { text: __('Organization') }, {
+          default: () => h(LucideBuilding2, { class: 'size-4' })
+        })
+      else if (row.share_count > 0)
+        return h(Tooltip, { text: __('Shared with {0} users', [row.share_count]) }, {
+          default: () => h(LucideUsers, { class: 'size-4' })
+        })
     },
   },
   {
@@ -221,7 +229,7 @@ const dropdownActionItems = (row) => {
 const contextMenu = (event, row) => {
   if (selections.value.size > 0) return
   // Ctrl + click triggers context menu on Mac
-  if (event.ctrlKey) openEntity(row, true)
+  if (isModKey(event)) openEntity(row, true)
   rowEvent.value = event
   selectedRow.value = row
   event.stopPropagation()

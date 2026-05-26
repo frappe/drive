@@ -4,8 +4,8 @@
     :icon="LucideFileText"
     :empty="{
       icon: LucideFileText,
-      title: `Nothing here`,
-      description: `You haven't created documents yet.`,
+      title: 'No documents yet',
+      description: `Use Writer to create documents.`,
     }"
   />
 </template>

@@ -3,7 +3,8 @@
     :get-entities="getSlides"
     :empty="{
       icon: LucideGalleryVerticalEnd,
-      title: 'No presentations yet.',
+      title: 'No presentations yet',
+      description: 'Create presentations using Slides.'
     }"
   />
 </template>

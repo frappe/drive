@@ -414,7 +414,6 @@ def get_teams(user=None, details=None, exclude_personal=True):
         return teams_info
     return teams
 
-
 def get_new_file_name(file_name: str, parent_name: str, type: str = False, entity: str | None = None):
     entity_title, entity_ext = os.path.splitext(file_name)
 

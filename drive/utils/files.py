@@ -8,7 +8,6 @@ from urllib.parse import unquote
 import boto3
 import cv2
 import frappe
-
 # import magic
 import mimemapper
 from botocore.config import Config

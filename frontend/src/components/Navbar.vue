@@ -51,7 +51,8 @@
         v-if="
           ['Folder', 'Home', 'Team'].includes($route.name) &&
           isLoggedIn &&
-          props.rootResource?.data?.upload
+          // Assume upload to remove flash
+          props.rootResource?.data?.upload !== false
         "
         :button="{
           variant: 'solid',
@@ -63,7 +64,7 @@
         placement="right"
       />
       <Button
-        v-else-if="$route.name === 'Documents' || $route.name === 'Slides'"
+        v-else-if="$route.name === 'Documents' || $route.name === 'Presentations'"
         id="create-button"
         label="Create"
         variant="solid"

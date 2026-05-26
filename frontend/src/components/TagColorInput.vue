@@ -37,7 +37,7 @@
 </template>
 <script setup lang="ts">
 import { Input } from 'frappe-ui'
-import ColorPicker from '@/components/DocEditor/components/ColorPicker.vue'
+import ColorPicker from '@/components/ColorPicker.vue'
 const emit = defineEmits(['change'])
 
 defineProps({

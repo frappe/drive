@@ -89,7 +89,7 @@ export const getDocuments = createResource({
 
 export const getSlides = createResource({
   ...COMMON_OPTIONS,
-  url: 'slides.slides.doctype.presentation.presentation.get_all_presentations',
+  url: 'slides.slides.doctype.presentation.presentation.get_presentations',
   cache: 'slides-folder-contents',
   transform(data) {
     data = data.map((k) => ({
@@ -286,10 +286,6 @@ export const createDocument = createResource({
   makeParams: (params) => params,
 })
 
-export const createPresentation = createResource({
-  method: 'POST',
-  url: 'drive.api.files.create_presentation',
-})
 
 export const move = createResource({
   url: 'drive.api.files.move',
