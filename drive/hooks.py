@@ -128,7 +128,10 @@ doc_events = {
     "Presentation": {
         "on_update": "drive.api.integration.presentation",
         "on_trash": "drive.api.integration.presentation",
-    }
+    },
+    "User": {
+		"after_insert": "drive.utils.users.assign_drive_role_and_create_settings",
+	}
 }
 
 

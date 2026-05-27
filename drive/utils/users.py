@@ -75,3 +75,28 @@ def get_country_info():
         return {}
 
     return frappe.cache().hget("ip_country_map", ip, generator=_get_country_info)
+
+
+
+def assign_drive_role_and_create_settings(user: User, method: str) -> None:
+    """Assign the "Meet User" role to a newly created User."""
+    role_name = "Drive User"
+    user_name = user.name
+
+    if not user_name or user_name in ("Guest", "Administrator"):
+        return
+
+    if not frappe.db.exists("Role", role_name):
+        frappe.get_doc({"doctype": "Role", "role_name": role_name}).insert(ignore_permissions=True)
+
+    user_doc = frappe.get_doc("User", user_name)
+    user_doc.append("roles", {"role": role_name})
+    doc = frappe.get_doc(
+        {
+            "doctype": "Drive Settings",
+            "user": user.email,
+        }
+    )
+    doc.insert(ignore_permissions=True)
+
+    user_doc.save(ignore_permissions=True)

@@ -31,16 +31,7 @@ const routes = [
   {
     path: "/signup",
     name: "Signup",
-    component: () => import("@/pages/LoginSignup.vue"),
-    beforeEnter: () => {
-      if (store.getters.isLoggedIn) return "/"
-    },
-    meta: { allowGuest: true },
-  },
-  {
-    path: "/login",
-    name: "Login",
-    component: () => import("@/pages/LoginSignup.vue"),
+    component: () => import("@/pages/Signup.vue"),
     beforeEnter: () => {
       if (store.getters.isLoggedIn) return "/"
     },
@@ -228,7 +219,8 @@ let router = createRouter({
 
 router.beforeEach(async (to, from, next) => {
   if (!store.getters.isLoggedIn && !to.meta.allowGuest) {
-    next("/login?redirect-to=/drive" + to.path)
+    window.location.href =
+      "/login?redirect-to=" + encodeURIComponent("/drive" + to.path)
   } else {
     if (to.params.team) localStorage.setItem("recentTeam", to.params.team)
     clearStore()
