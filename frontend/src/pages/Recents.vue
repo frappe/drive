@@ -26,11 +26,17 @@ function groupByTime(entities) {
     "Earlier this year": [],
     "Older than a year": [],
   }
+  const startOfToday = new Date(today.getFullYear(), today.getMonth(), today.getDate())
   entities.forEach((file) => {
     const modifiedDate = new Date(file.accessed)
+    const startOfModified = new Date(
+      modifiedDate.getFullYear(),
+      modifiedDate.getMonth(),
+      modifiedDate.getDate(),
+    )
     const yearDiff = today.getFullYear() - modifiedDate.getFullYear()
     const monthDiff = today.getMonth() - modifiedDate.getMonth() + yearDiff * 12 // Adjust for year difference
-    const dayDiff = Math.floor((today - modifiedDate) / (1000 * 60 * 60 * 24))
+    const dayDiff = Math.round((startOfToday - startOfModified) / (1000 * 60 * 60 * 24))
     if (dayDiff === 0) {
       grouped["Today"].push(file)
     } else if (dayDiff <= 7) {

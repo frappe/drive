@@ -9,7 +9,6 @@ from pypika import Field
 
 from drive.utils import generate_upward_path, get_default_team, get_file_type, get_valid_breadcrumbs
 from drive.utils.files import FileManager
-from drive.utils.users import mark_as_viewed
 
 ENTITY_FIELDS = [
     "name",
@@ -189,7 +188,6 @@ def get_entity_with_permissions(entity_name: str):
         },
         ["entity as is_favourite"],
     )
-    mark_as_viewed(entity)
     file_type = get_file_type(entity)
     return_obj = entity | user_access | owner_info | breadcrumbs | {"is_favourite": favourite, "file_type": file_type}
     if entity.mime_type == "text/markdown":
