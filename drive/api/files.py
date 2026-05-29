@@ -139,6 +139,7 @@ def get_thumbnail(entity_name: str):
         entity_name,
         [
             "is_group",
+            "is_link",
             "path",
             "title",
             "mime_type",
@@ -171,13 +172,14 @@ def get_thumbnail(entity_name: str):
                 html = frappe.get_value("Drive Document", drive_file.document, "raw_content")
                 thumbnail_data = html[:1000] if html else ""
             elif drive_file.mime_type == "frappe/slides":
-                # Use this until the thumbnail method is whitelisted
-                thumbnails = frappe.call(
-                    "slides.slides.doctype.presentation.presentation.get_slide_thumbnails",
-                    presentation=drive_file.path,
+                thumbnail_url = frappe.call(
+                    "slides.slides.doctype.presentation.presentation.get_presentation_thumbnail",
+                    presentation_name=drive_file.path,
                 )
+                if not thumbnail_url:
+                    return ""
                 frappe.local.response["type"] = "redirect"
-                frappe.local.response["location"] = thumbnails[0]
+                frappe.local.response["location"] = thumbnail_url
                 return
             else:
                 thumbnail = manager.get_thumbnail(drive_file.team, entity_name)
