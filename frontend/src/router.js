@@ -31,16 +31,7 @@ const routes = [
   {
     path: '/signup',
     name: 'Signup',
-    component: () => import('@/pages/LoginSignup.vue'),
-    beforeEnter: () => {
-      if (store.getters.isLoggedIn) return '/'
-    },
-    meta: { allowGuest: true },
-  },
-  {
-    path: '/login',
-    name: 'Login',
-    component: () => import('@/pages/LoginSignup.vue'),
+    component: () => import('@/pages/Signup.vue'),
     beforeEnter: () => {
       if (store.getters.isLoggedIn) return '/'
     },
@@ -103,7 +94,7 @@ const routes = [
   },
   {
     path: '/presentations',
-    name: 'Slides',
+    name: 'Presentations',
     component: () => import('@/pages/Slides.vue'),
     beforeEnter: [setRootBreadCrumb],
   },
@@ -161,9 +152,8 @@ const routes = [
   {
     path: '/w/:entityName/:slug?',
     name: 'Document',
-    meta: { documentPage: true, allowGuest: true },
-    component: () => import('@/pages/Document.vue'),
-    props: true,
+    meta: { allowGuest: true },
+    component: Dummy,
     beforeEnter: (props) => {
       window.location.href = '/writer/w/' + props.params.entityName
     },
@@ -228,7 +218,8 @@ let router = createRouter({
 
 router.beforeEach(async (to, from, next) => {
   if (!store.getters.isLoggedIn && !to.meta.allowGuest) {
-    next('/login?redirect-to=/drive' + to.path)
+    window.location.href =
+      '/login?redirect-to=' + encodeURIComponent('/drive' + to.path)
   } else {
     if (to.params.team) localStorage.setItem('recentTeam', to.params.team)
     clearStore()

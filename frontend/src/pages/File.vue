@@ -109,7 +109,12 @@ const onSuccess = async (entity) => {
   document.title = entity.file_name
   setBreadCrumbs(entity)
   updateURLSlug(entity.file_name)
+  trackVisit.submit({ entity_name: entity.name })
 }
+
+const trackVisit = createResource({
+  url: 'drive.api.files.track_visit',
+})
 
 const file = createResource({
   url: 'drive.api.permissions.get_entity_with_permissions',

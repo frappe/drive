@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: frappe\n"
 "Report-Msgid-Bugs-To: developers@frappe.io\n"
 "POT-Creation-Date: 2026-02-13 16:23+0000\n"
-"PO-Revision-Date: 2026-02-20 19:56\n"
+"PO-Revision-Date: 2026-04-17 00:58\n"
 "Last-Translator: developers@frappe.io\n"
 "Language-Team: Spanish\n"
 "MIME-Version: 1.0\n"
@@ -702,7 +702,7 @@ msgstr "Solo se aplica si S3 está activado."
 
 #: frontend/src/components/GenericPage.vue:310
 msgid "Open"
-msgstr ""
+msgstr "Abrir"
 
 #: drive/drive/doctype/drive_file/drive_file.js:9
 #: drive/drive/doctype/drive_team/drive_team.js:6
@@ -743,7 +743,7 @@ msgstr "Permisos"
 #. Label of the personal (Check) field in DocType 'Drive Team'
 #: drive/drive/doctype/drive_team/drive_team.json
 msgid "Personal"
-msgstr ""
+msgstr "Personal"
 
 #: frontend/src/components/Settings/ProfileSettings.vue:94
 msgid "Preferences"

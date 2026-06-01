@@ -86,7 +86,7 @@ import { useRoute } from 'vue-router'
 import { computed, h, ref, watch, useTemplateRef } from 'vue'
 import ContextMenu from '@/components/ContextMenu.vue'
 import CustomListRow from './CustomListRow.vue'
-import { openEntity } from '@/utils/files'
+import { openEntity, isModKey, getLink } from '@/utils/files'
 import { formatDate } from '@/utils/format'
 
 import { onKeyDown } from '@vueuse/core'

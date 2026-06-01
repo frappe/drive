@@ -70,7 +70,7 @@ import { createResource } from 'frappe-ui'
 import { ref, computed } from 'vue'
 const props = defineProps({ file: Object })
 
-const [thumbnailLink, backupLink, is_image] = getThumbnailUrl(props.file)
+const [thumbnailLink, backupLink, is_image] = getThumbnailUrl(props.file, "grid")
 const src = ref(thumbnailLink || backupLink)
 const imgLoaded = ref(false)
 

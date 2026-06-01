@@ -23,7 +23,7 @@
       >
         <div class="flex gap-2"><LucideHome class="size-4" />Go Home</div>
       </Button>
-      <Button v-else variant="solid" size="md" @click="$router.replace('/drive/login')">
+      <Button v-else variant="solid" size="md" @click="goToLogin">
         <div class="flex gap-2"><LucideUser class="size-4" />Login</div>
       </Button>
     </div>
@@ -39,15 +39,18 @@ import { LucideFileUser } from 'lucide-vue-next'
 
 const props = defineProps({ error: Object })
 
+const goToLogin = () => {
+  window.location.href =
+    "/login?redirect-to=" +
+    encodeURIComponent("/drive" + router.currentRoute.value.path)
+}
+
 watchEffect(() => {
   if (
     props.error.exc_type === 'PermissionError' &&
     (!store.state.user.id || store.state.user.id === 'Guest')
   ) {
-    router.replace({
-      name: 'Login',
-      query: { 'redirect-to': '/drive' + router.currentRoute.value.path },
-    })
+    goToLogin()
   }
   store.commit('setBreadcrumbs', [])
 })

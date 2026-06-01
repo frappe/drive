@@ -11,7 +11,6 @@ from drive.utils import (
     get_home_folder,
     map_ff_to_drive_type,
 )
-from drive.utils.users import mark_as_viewed
 
 
 NO_ACCESS = {
@@ -180,7 +179,6 @@ def get_entity_with_permissions(entity_name: str):
         },
         ["entity as is_favourite"],
     )
-    mark_as_viewed(entity)
     return_obj = entity | user_access | owner_info | breadcrumbs | {"is_favourite": favourite}
 
     default = 0

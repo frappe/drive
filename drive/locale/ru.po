@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: frappe\n"
 "Report-Msgid-Bugs-To: developers@frappe.io\n"
 "POT-Creation-Date: 2026-02-13 16:23+0000\n"
-"PO-Revision-Date: 2026-03-01 20:50\n"
+"PO-Revision-Date: 2026-03-03 21:52\n"
 "Last-Translator: developers@frappe.io\n"
 "Language-Team: Russian\n"
 "MIME-Version: 1.0\n"
@@ -184,7 +184,7 @@ msgstr "Удалить"
 
 #: frontend/src/components/Settings/TemplateSettings.vue:110
 msgid "Delete Template"
-msgstr ""
+msgstr "Удалить шаблон"
 
 #: frontend/src/components/InfoPopup.vue:157
 msgid "Developer"
@@ -215,7 +215,7 @@ msgstr "Документ"
 #. Label of the doc (Link) field in DocType 'Drive File'
 #: drive/drive/doctype/drive_file/drive_file.json
 msgid "Document (Writer)"
-msgstr ""
+msgstr "Документ (Создание)"
 
 #. Label of the document_field (Data) field in DocType 'Drive Entity Activity
 #. Log'
@@ -358,7 +358,7 @@ msgstr "Передача привода"
 #: drive/drive/doctype/drive_team/drive_team.json
 #: drive/drive/doctype/drive_user_invitation/drive_user_invitation.json
 msgid "Drive User"
-msgstr ""
+msgstr "Пользователь Drive"
 
 #. Name of a DocType
 #: drive/drive/doctype/drive_user_invitation/drive_user_invitation.json
@@ -375,7 +375,7 @@ msgstr "Изменить профиль"
 
 #: frontend/src/components/Settings/TemplateSettings.vue:66
 msgid "Edit Template"
-msgstr ""
+msgstr "Редактировать шаблон"
 
 #: frontend/src/components/Settings/ProfileSettings.vue:20
 msgid "Edit profile"
@@ -404,7 +404,7 @@ msgstr "URL конечной точки"
 
 #: frontend/src/components/Settings/TemplateSettings.vue:86
 msgid "Enter template title"
-msgstr ""
+msgstr "Введите название шаблона"
 
 #. Label of the entity (Link) field in DocType 'Drive Document Version'
 #. Label of the entity (Link) field in DocType 'Drive Entity Activity Log'
@@ -881,7 +881,7 @@ msgstr "Поделиться"
 
 #: frontend/src/components/InfoPopup.vue:132 frontend/src/utils/files.js:197
 msgid "Shared"
-msgstr ""
+msgstr "Общий"
 
 #: frontend/src/components/GenericPage.vue:357
 #: frontend/src/components/Navbar.vue:244
@@ -1114,7 +1114,7 @@ msgstr "Слова"
 #. Label of the write (Check) field in DocType 'Drive Permission'
 #: drive/drive/doctype/drive_permission/drive_permission.json
 msgid "Write"
-msgstr ""
+msgstr "Пишите"
 
 #. Label of the writer_section (Section Break) field in DocType 'Drive
 #. Settings'
@@ -1141,7 +1141,7 @@ msgstr "комментарий"
 #. Activity Log'
 #: drive/drive/doctype/drive_entity_activity_log/drive_entity_activity_log.json
 msgid "create"
-msgstr ""
+msgstr "создать"
 
 #. Option for the 'Action Type' (Select) field in DocType 'Drive Entity
 #. Activity Log'
@@ -1149,7 +1149,7 @@ msgstr ""
 #: drive/drive/doctype/drive_entity_activity_log/drive_entity_activity_log.json
 #: drive/drive/doctype/drive_file_update/drive_file_update.json
 msgid "delete"
-msgstr ""
+msgstr "удалить"
 
 #. Option for the 'Action Type' (Select) field in DocType 'Drive Entity
 #. Activity Log'

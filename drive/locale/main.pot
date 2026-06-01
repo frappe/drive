@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Frappe Drive VERSION\n"
 "Report-Msgid-Bugs-To: developers@frappe.io\n"
-"POT-Creation-Date: 2026-02-27 16:19+0000\n"
-"PO-Revision-Date: 2026-02-27 16:19+0000\n"
+"POT-Creation-Date: 2026-03-27 16:27+0000\n"
+"PO-Revision-Date: 2026-03-27 16:27+0000\n"
 "Last-Translator: developers@frappe.io\n"
 "Language-Team: developers@frappe.io\n"
 "MIME-Version: 1.0\n"
@@ -159,7 +159,7 @@ msgstr ""
 msgid "Content"
 msgstr ""
 
-#: frontend/src/components/GenericPage.vue:336
+#: frontend/src/components/GenericPage.vue:335
 #: frontend/src/components/Navbar.vue:221
 msgid "Copy Link"
 msgstr ""
@@ -175,7 +175,7 @@ msgstr ""
 msgid "Defaults to \"s3v4\". Some providers only support \"s3\"."
 msgstr ""
 
-#: frontend/src/components/GenericPage.vue:403
+#: frontend/src/components/GenericPage.vue:402
 #: frontend/src/components/Navbar.vue:279
 msgid "Delete"
 msgstr ""
@@ -230,7 +230,7 @@ msgstr ""
 msgid "Documentation"
 msgstr ""
 
-#: frontend/src/components/GenericPage.vue:324
+#: frontend/src/components/GenericPage.vue:323
 #: frontend/src/components/Navbar.vue:214
 msgid "Download"
 msgstr ""
@@ -436,7 +436,7 @@ msgstr ""
 msgid "Expired"
 msgstr ""
 
-#: frontend/src/components/GenericPage.vue:364
+#: frontend/src/components/GenericPage.vue:363
 #: frontend/src/components/Navbar.vue:250
 msgid "Favourite"
 msgstr ""
@@ -481,7 +481,7 @@ msgstr ""
 msgid "Go to Drive"
 msgstr ""
 
-#: frontend/src/utils/files.js:209
+#: frontend/src/utils/files.js:206
 msgid "Home"
 msgstr ""
 
@@ -540,7 +540,7 @@ msgstr ""
 msgid "JWT Key"
 msgstr ""
 
-#: frontend/src/components/ListView.vue:178
+#: frontend/src/components/ListView.vue:177
 msgid "Last Accessed"
 msgstr ""
 
@@ -549,7 +549,7 @@ msgstr ""
 msgid "Last Interaction"
 msgstr ""
 
-#: frontend/src/components/ListView.vue:170
+#: frontend/src/components/ListView.vue:169
 msgid "Last Modified"
 msgstr ""
 
@@ -628,18 +628,18 @@ msgstr ""
 
 #. Label of the _modified (Datetime) field in DocType 'Drive File'
 #: drive/drive/doctype/drive_file/drive_file.json
-#: frontend/src/components/DriveToolBar.vue:251
+#: frontend/src/components/DriveToolBar.vue:233
 #: frontend/src/components/InfoPopup.vue:41
 msgid "Modified"
 msgstr ""
 
-#: frontend/src/components/GenericPage.vue:343
+#: frontend/src/components/GenericPage.vue:342
 #: frontend/src/components/Navbar.vue:232
 msgid "Move"
 msgstr ""
 
-#: frontend/src/components/DriveToolBar.vue:243
-#: frontend/src/components/ListView.vue:131
+#: frontend/src/components/DriveToolBar.vue:225
+#: frontend/src/components/ListView.vue:130
 msgid "Name"
 msgstr ""
 
@@ -699,7 +699,7 @@ msgstr ""
 msgid "Only applies if S3 is turned on."
 msgstr ""
 
-#: frontend/src/components/GenericPage.vue:310
+#: frontend/src/components/GenericPage.vue:309
 msgid "Open"
 msgstr ""
 
@@ -712,9 +712,9 @@ msgstr ""
 msgid "Others"
 msgstr ""
 
-#: frontend/src/components/DriveToolBar.vue:247
+#: frontend/src/components/DriveToolBar.vue:229
 #: frontend/src/components/InfoPopup.vue:19
-#: frontend/src/components/ListView.vue:150
+#: frontend/src/components/ListView.vue:149
 msgid "Owner"
 msgstr ""
 
@@ -753,7 +753,7 @@ msgstr ""
 msgid "Prefix"
 msgstr ""
 
-#: frontend/src/components/GenericPage.vue:304
+#: frontend/src/components/GenericPage.vue:303
 msgid "Preview"
 msgstr ""
 
@@ -818,11 +818,11 @@ msgstr ""
 msgid "Referrer ID"
 msgstr ""
 
-#: frontend/src/components/GenericPage.vue:390
+#: frontend/src/components/GenericPage.vue:389
 msgid "Remove from Recents"
 msgstr ""
 
-#: frontend/src/components/GenericPage.vue:351
+#: frontend/src/components/GenericPage.vue:350
 #: frontend/src/components/Navbar.vue:238
 msgid "Rename"
 msgstr ""
@@ -870,16 +870,16 @@ msgstr ""
 #. Label of the share (Check) field in DocType 'Drive Permission'
 #: drive/drive/doctype/drive_notification/drive_notification.json
 #: drive/drive/doctype/drive_permission/drive_permission.json
-#: frontend/src/components/GenericPage.vue:317
+#: frontend/src/components/GenericPage.vue:316
 #: frontend/src/components/Navbar.vue:206
 msgid "Share"
 msgstr ""
 
-#: frontend/src/components/InfoPopup.vue:132 frontend/src/utils/files.js:197
+#: frontend/src/components/InfoPopup.vue:132 frontend/src/utils/files.js:194
 msgid "Shared"
 msgstr ""
 
-#: frontend/src/components/GenericPage.vue:357
+#: frontend/src/components/GenericPage.vue:356
 #: frontend/src/components/Navbar.vue:244
 msgid "Show Info"
 msgstr ""
@@ -899,13 +899,13 @@ msgstr ""
 msgid "Single Click"
 msgstr ""
 
-#: frontend/src/components/DriveToolBar.vue:255
+#: frontend/src/components/DriveToolBar.vue:237
 #: frontend/src/components/InfoPopup.vue:33
-#: frontend/src/components/ListView.vue:186
+#: frontend/src/components/ListView.vue:185
 msgid "Size"
 msgstr ""
 
-#: frontend/src/components/DriveToolBar.vue:271
+#: frontend/src/components/DriveToolBar.vue:253
 msgid "Smart"
 msgstr ""
 
@@ -1034,7 +1034,7 @@ msgstr ""
 #. Label of the type (Select) field in DocType 'Drive Notification'
 #: drive/drive/doctype/drive_file_update/drive_file_update.json
 #: drive/drive/doctype/drive_notification/drive_notification.json
-#: frontend/src/components/DriveToolBar.vue:259
+#: frontend/src/components/DriveToolBar.vue:241
 #: frontend/src/components/InfoPopup.vue:27
 msgid "Type"
 msgstr ""
@@ -1044,7 +1044,7 @@ msgstr ""
 msgid "URL Args"
 msgstr ""
 
-#: frontend/src/components/GenericPage.vue:377
+#: frontend/src/components/GenericPage.vue:376
 #: frontend/src/components/Navbar.vue:261
 msgid "Unfavourite"
 msgstr ""

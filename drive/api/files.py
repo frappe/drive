@@ -26,6 +26,7 @@ from drive.utils import (
 )
 from drive.utils.api import prettify_file
 from drive.utils.files import FileManager, sanitize_url, get_s3_key, get_s3_url
+from drive.utils.users import mark_as_viewed
 
 from .permissions import get_teams, user_has_permission
 
@@ -150,14 +151,15 @@ def get_thumbnail(entity_name: str):
             elif drive_file.file_type == "Document":
                 html = frappe.get_value("Writer Document", drive_file.details_docname, "raw_content")
                 thumbnail_data = html[:1000] if html else ""
-            elif drive_file.file_type == "Presentation":
-                # Use this until the thumbnail method is whitelisted
-                thumbnails = frappe.call(
-                    "slides.slides.doctype.presentation.presentation.get_slide_thumbnails",
-                    presentation=drive_file.path,
+            elif drive_file.mime_type == "frappe/slides":
+                thumbnail_url = frappe.call(
+                    "slides.slides.doctype.presentation.presentation.get_presentation_thumbnail",
+                    presentation_name=drive_file.path,
                 )
+                if not thumbnail_url:
+                    return ""
                 frappe.local.response["type"] = "redirect"
-                frappe.local.response["location"] = thumbnails[0]
+                frappe.local.response["location"] = thumbnail_url
                 return
             else:
                 thumbnail = manager.get_thumbnail(drive_file.team, entity_name)
@@ -181,33 +183,6 @@ def get_thumbnail(entity_name: str):
         return thumbnail_data
 
 
-@frappe.whitelist()
-@default_team
-def create_presentation(team: str, file_name: str = "Untitled", parent: str | None = None):
-    home_directory = get_home_folder(team)
-    parent = parent or home_directory.name
-    team = frappe.db.get_value("Drive File", parent, "team")
-    if not user_has_permission(parent, "upload"):
-        frappe.throw(
-            "Cannot access folder due to insufficient permissions",
-            frappe.PermissionError,
-        )
-    try:
-        r = frappe.call(
-            "slides.slides.doctype.presentation.presentation.create_presentation",
-            title=file_name,
-            theme="1mjgj61m8j",
-        )
-    except BaseException as e:
-        print("Couldn't create", e)
-    entity = create_drive_file(
-        team,
-        file_name,
-        parent,
-        "frappe/slides",
-        lambda _: r.name,
-    )
-    return entity
 
 
 @frappe.whitelist()
@@ -698,6 +673,12 @@ def redirect_to_original(file_id: str):
 
     frappe.local.response["type"] = "redirect"
     frappe.local.response["location"] = "/drive/g/" + file.details_docname
+
+
+@frappe.whitelist()
+def track_visit(entity_name: str):
+    entity = frappe.get_doc("File", entity_name)
+    mark_as_viewed(entity)
 
 
 @frappe.whitelist()
