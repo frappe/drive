@@ -1,11 +1,14 @@
-from drive.api.permissions import user_has_permission
 import frappe
-from drive.utils.files import get_s3_url
+from frappe import _
+from drive.api.files import get_file_content, get_s3_url
 
 
 @frappe.whitelist(allow_guest=True)
 def fetch(path: str):
-    file = frappe.get_doc("File", {"file_url": get_s3_url(path)})
-    frappe.local.response["type"] = "redirect"
-    frappe.local.response["location"] = "/api/method/drive.api.files.get_file_content?entity_name=" + file.name
-    return
+    name = frappe.db.get_value("File", {"file_url": get_s3_url(path)})
+    if not name:
+        frappe.throw(_("Not found"), frappe.DoesNotExistError)
+    try:
+        return get_file_content(name)
+    except (frappe.PermissionError, frappe.DoesNotExistError):
+        frappe.throw(_("Not found"), frappe.DoesNotExistError)

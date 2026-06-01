@@ -25,7 +25,7 @@ from drive.utils import (
     get_upload_path,
 )
 from drive.utils.api import prettify_file
-from drive.utils.files import FileManager, sanitize_url, get_s3_key, get_s3_url
+from drive.utils.files import FileManager, storage_key, get_s3_key, get_s3_url
 from drive.utils.users import mark_as_viewed
 
 from .permissions import get_teams, user_has_permission
@@ -78,7 +78,7 @@ def upload_file(
     file = frappe.request.files["file"]
     file_name = get_new_file_name(file.filename, parent)
     upload_session = frappe.form_dict.uuid
-    temp_path = get_upload_path(sanitize_url(home_folder["file_url"]), f"{upload_session}_{secure_filename(file_name)}")
+    temp_path = get_upload_path(storage_key(home_folder["file_url"]), f"{upload_session}_{secure_filename(file_name)}")
     with temp_path.open("ab") as f:
         f.seek(offset)
         f.write(file.stream.read())

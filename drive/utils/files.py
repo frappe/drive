@@ -102,14 +102,14 @@ class FileManager:
             else:
                 os.remove(current_path)
         else:
-            os.rename(current_path, self.site_folder / sanitize_url(file.file_url))
+            os.rename(current_path, self.site_folder / storage_key(file.file_url))
             if file and create_thumbnail and self.can_create_thumbnail(file):
                 frappe.enqueue(
                     self.upload_thumbnail,
                     now=True,
                     at_front=True,
                     file=file,
-                    file_path=str(self.site_folder / sanitize_url(file.file_url)),
+                    file_path=str(self.site_folder / storage_key(file.file_url)),
                 )
 
     def upload_thumbnail(self, file, file_path: str):
@@ -183,16 +183,16 @@ class FileManager:
         if self.flat:
             if not root:
                 root = get_home_folder(entity.team)
-            return Path(root["file_url"]) / (Path("embeds") / entity.name if embed else entity.name)
+            return Path(storage_key(root["file_url"])) / (Path("embeds") / entity.name if embed else entity.name)
         else:
             # perf: stupidly complicated because we use this both with a real entity and a dict
             parent = (
-                Path(sanitize_url(frappe.get_value("File", entity.folder, "file_url") or ""))
+                Path(storage_key(frappe.get_value("File", entity.folder, "file_url") or ""))
                 if not hasattr(entity, "parent_path")
                 else Path(entity.parent_path)
             )
             if embed:
-                return parent / ".embeds" / entity.file_names
+                return parent / ".embeds" / entity.file_name
             return parent / entity.file_name
 
     @__not_if_flat
@@ -212,7 +212,7 @@ class FileManager:
         """
         Function to get a file, with an optional range header for S3 objects
         """
-        file_url = sanitize_url(entity.file_url)
+        file_url = storage_key(entity.file_url)
         try:
             if self.s3_enabled:
                 if range_header:
@@ -224,8 +224,8 @@ class FileManager:
             else:
                 with open(self.site_folder / file_url, "rb") as fh:
                     buf = BytesIO(fh.read())
-        except BaseException as e:
-            print(e)
+        except (ClientError, FileNotFoundError, OSError) as e:
+            frappe.log_error("Drive: could not read file", e)
             frappe.throw("Could not find this file.", frappe.DoesNotExistError)
 
         return buf
@@ -342,14 +342,14 @@ class FileManager:
         return files
 
     def get_thumbnail_path(self, team, name):
-        return Path(get_home_folder(team)["file_url"]) / self.settings.thumbnail_prefix / (name + ".thumbnail")
+        return Path(storage_key(get_home_folder(team)["file_url"])) / self.settings.thumbnail_prefix / (name + ".thumbnail")
 
     def get_thumbnail(self, team, name):
         return self.get_file(frappe._dict({"team": team, "file_url": str(self.get_thumbnail_path(team, name))}))
 
     def __get_trash_path(self, entity):
         root = get_home_folder(entity.team)
-        return Path(root["file_url"]) / ".trash" / entity.file_name
+        return Path(storage_key(root["file_url"])) / ".trash" / entity.file_name
 
     @__not_if_flat
     def rename(self, entity):
@@ -369,17 +369,17 @@ class FileManager:
                 bucket = self.get_bucket(entity.team)
                 self.conn.copy_object(
                     Bucket=bucket,
-                    CopySource={"Bucket": bucket, "Key": entity.file_url},
+                    CopySource={"Bucket": bucket, "Key": storage_key(entity.file_url)},
                     Key=str(trash_path),
                 )
-                self.conn.delete_object(Bucket=bucket, Key=entity.file_url)
+                self.conn.delete_object(Bucket=bucket, Key=storage_key(entity.file_url))
             else:
                 full_trash_path = self.site_folder / trash_path
                 if full_trash_path.exists() and full_trash_path.is_dir():
                     shutil.rmtree(full_trash_path)
 
                 full_trash_path.parent.mkdir(exist_ok=True)
-                cur_path = self.site_folder / entity.file_url
+                cur_path = self.site_folder / storage_key(entity.file_url)
                 if cur_path.is_dir():
                     shutil.move(cur_path, full_trash_path)
                 else:
@@ -400,18 +400,22 @@ class FileManager:
         """
         Move a file on disk
         """
+        # Callers pass new_path as either a bare key or a stored file_url;
+        # normalize both ends to the actual backend key.
+        src_key = storage_key(entity.file_url)
+        dest_key = storage_key(new_path)
         try:
             if self.s3_enabled:
                 bucket = self.get_bucket(entity.team)
                 self.conn.copy_object(
                     Bucket=bucket,
-                    CopySource={"Bucket": bucket, "Key": entity.file_url},
-                    Key=str(new_path),
+                    CopySource={"Bucket": bucket, "Key": src_key},
+                    Key=dest_key,
                 )
-                self.conn.delete_object(Bucket=bucket, Key=sanitize_url(entity.file_url))
+                self.conn.delete_object(Bucket=bucket, Key=src_key)
             else:
-                cur_path = self.site_folder / sanitize_url(entity.file_url)
-                dest_path = self.site_folder / new_path
+                cur_path = self.site_folder / src_key
+                dest_path = self.site_folder / dest_key
                 if cur_path.is_dir():
                     shutil.move(cur_path, dest_path)
                 else:
@@ -426,14 +430,14 @@ class FileManager:
         if self.s3_enabled:
             bucket = self.get_bucket(entity.team)
             try:
-                self.conn.delete_object(Bucket=bucket, Key=sanitize_url(entity.file_url))
+                self.conn.delete_object(Bucket=bucket, Key=storage_key(entity.file_url))
                 if thumbnail_path:
                     self.conn.delete_object(Bucket=bucket, Key=str(thumbnail_path))
             except:
                 pass
         else:
             try:
-                (self.site_folder / sanitize_url(entity.file_url)).unlink()
+                (self.site_folder / storage_key(entity.file_url)).unlink()
                 if thumbnail_path:
                     (self.site_folder / thumbnail_path).unlink()
             except FileNotFoundError:
@@ -441,11 +445,13 @@ class FileManager:
 
 
 # Utils
-def sanitize_url(file_url):
-    # For S3 links
+def storage_key(file_url):
+    # file_url -> backend storage key, always relative so `base / key` can't
+    # reset to an absolute path (Path("a") / "/b" == Path("/b")).
+    file_url = str(file_url)
     if file_url.startswith(S3_URL_PREFIX):
         return unquote(file_url[len(S3_URL_PREFIX) :])
-    return file_url[1:] if file_url.startswith("/private") else file_url
+    return file_url.lstrip("/")
 
 
 def get_s3_key(file_url):
