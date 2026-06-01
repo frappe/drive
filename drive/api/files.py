@@ -337,13 +337,13 @@ def get_file_content(entity_name: str, trigger_download: bool = False, jwt_token
         as_dict=1,
     )
 
-    if file.file_type == "Document" or not file.is_drive_file:
-        frappe.local.response["type"] = "redirect"
-        frappe.local.response["location"] = "/drive/w/" + file.name if file.is_drive_file else file.file_url
-        return
-
     if not file or file.file_type in FORBIDDEN_DOWNLOAD_TYPES or file.status != STATUS_ACTIVE:
         frappe.throw("Not found", frappe.DoesNotExistError)
+
+    if file.file_type == "Document" or not file.is_drive_file:
+        frappe.local.response["type"] = "redirect"
+        frappe.local.response["location"] = ("/drive/w/" + file.name) if file.is_drive_file else file.file_url
+        return
 
     return get_file_internal(file, trigger_download)
 
@@ -568,6 +568,11 @@ def does_entity_exist(name: str | None = None, folder: str | None = None, team: 
         folder = home_folder.name
     result = frappe.db.exists("File", {"folder": folder, "file_name": name})
     return result
+
+
+@frappe.whitelist()
+def get_new_title(title: str, parent_name: str, folder: bool = False):
+    return get_new_file_name(title, parent_name, folder)
 
 
 @frappe.whitelist()

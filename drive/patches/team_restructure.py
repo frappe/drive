@@ -111,7 +111,6 @@ def execute():
                     "share": s["share"],
                     "write": s["share"],
                     "comment": 1,
-                    "valid_until": s["valid_until"],
                 }
             ).insert()
 

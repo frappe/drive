@@ -249,16 +249,3 @@ def user_has_permission(doc, ptype, user=None, team=0):
     access = get_user_access(doc, user, team)
     if ptype in access:
         return bool(access[ptype])
-
-
-def requires(perm):
-    def wrapped(fn):
-        def inner(*args, **kwargs):
-            file = frappe.db.get_value("Drive File", {"doc": args[0].name}, "name")
-            if not user_has_permission(file, perm):
-                frappe.throw("You don't have permission for this action.", ValueError)
-            fn(*args, **kwargs)
-
-        return inner
-
-    return wrapped

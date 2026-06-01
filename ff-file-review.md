@@ -136,7 +136,8 @@ result = frappe.db.get_all("File", filters={"status": -1, "modified": ["<", days
 every file with `status == -1`, so the daily job hard-deletes the entire
 tombstone bucket immediately.
 
-**Status:** open — high priority.
+**Status:** done — already fixed in a prior commit (`scripts.py` now uses
+`date.today() - timedelta(days=30)`).
 
 ### D2. Migration patch writes the wrong field names
 [drive/patches/integrate_with_framework.py:68,76-81](drive/patches/integrate_with_framework.py#L68)
@@ -156,7 +157,10 @@ the function deleted from [drive/api/permissions.py](drive/api/permissions.py).
 If `valid_until` is still a field on `Drive Permission`, time-limited shares
 now never expire — security regression.
 
-**Status:** open. Decide: restore the job, or drop the field + UI.
+**Status:** done — dropped the feature. `valid_until` was already gone from the
+`Drive Permission` doctype and UI; removed the stale write in
+[team_restructure.py](drive/patches/team_restructure.py) that was the only
+remaining reference.
 
 ### D4. `drive.api.s3.fetch` is `allow_guest=True` and probeable
 [drive/api/s3.py](drive/api/s3.py)
@@ -192,7 +196,10 @@ if not file or file.file_type in FORBIDDEN_DOWNLOAD_TYPES or file.status != 1:
   binds as `"/drive/w/" + (file.name if ... else file.file_url)`. For
   non-drive-files we redirect to `/drive/w/<file_url>` instead of `<file_url>`.
 
-**Status:** open.
+**Status:** done — moved the `not file` guard before the dereference. The
+precedence claim was **wrong**: ternary binds looser than `+`, so it already
+evaluates as `("/drive/w/" + name) if is_drive else file_url` (verified). Added
+parens for clarity.
 
 ### D6. `create_presentation` `NameError` on failure path
 [drive/api/files.py:196-209](drive/api/files.py#L196-L209)
@@ -208,7 +215,8 @@ entity = create_drive_file(..., lambda _: r.name)
 - `print` instead of `frappe.log_error`.
 - `"frappe/slides"` passed as `file_type`, but elsewhere we use `"Presentation"`.
 
-**Status:** open.
+**Status:** moot — `create_presentation` was removed in a prior commit; no
+equivalent buggy path remains.
 
 ### D7. `entity.file_names` typo crashes embed uploads
 [drive/utils/files.py:196](drive/utils/files.py#L196)
@@ -227,7 +235,9 @@ storage.
 - Passes lowercase `mime_type` as the positional `file_type` argument, so
   `is_folder = (file_type == "Folder")` is always False even for folders.
 
-**Status:** open. (Low priority — admin path only.)
+**Status:** done — dropped the invalid `is_folder=` kwarg; pass the real
+`file_type` (`"Folder"` for folders, else `get_file_type(mime_type)`) and
+`mime_type` as the keyword arg.
 
 ### D9. `requires` decorator missing return + wrong exception
 [drive/api/permissions.py:236-244](drive/api/permissions.py#L236-L244)
@@ -235,7 +245,8 @@ storage.
 - Throws `ValueError` instead of `frappe.PermissionError` for permission
   failures (different HTTP status downstream).
 
-**Status:** open.
+**Status:** done — removed; it was dead code (no callers) referencing the
+deprecated `Drive File` doctype.
 
 ### D10. `Document.vue` is unreachable
 [frontend/src/router.js:161-170](frontend/src/router.js#L161-L170)
@@ -248,7 +259,8 @@ rendered.
 or is it leftover? If replacing: drop the `beforeEnter`. If leftover: delete
 the file.
 
-**Status:** open.
+**Status:** done — leftover. `Document.vue` is already deleted on this branch
+and the `/w/` route uses `Dummy` + a redirect to `/writer/w/`.
 
 ### D11. `shareView` state shape changed silently
 [frontend/src/store.js:32](frontend/src/store.js#L32)
@@ -258,7 +270,9 @@ the file.
 Any component reading `state.shareView === "with"` now compares string to
 false. Need to grep call sites and update or restore.
 
-**Status:** open.
+**Status:** done — verified no `"with"` comparisons remain; `shareView` is now a
+consistent boolean (false=personal, true=shared). Left the dropped localStorage
+persistence as-is (intentional: default to personal view on load).
 
 ### D12. `getShared` param name mismatch
 [frontend/src/resources/files.js:113](frontend/src/resources/files.js#L113)
@@ -266,7 +280,8 @@ sends `shared: true`, but the new endpoint
 [drive/api/list.py:shared](drive/api/list.py) takes `shared_type` (string
 `"with"` / `"public"`). Verify the default fallback is doing what we want.
 
-**Status:** open.
+**Status:** done — `getShared` now sends `shared_type: 'with'` instead of the
+ignored `shared: true`.
 
 ### D13. `FileUploader.vue` calls likely-removed endpoints
 [frontend/src/components/FileUploader.vue:34,50](frontend/src/components/FileUploader.vue#L34)
@@ -275,14 +290,16 @@ sends `shared: true`, but the new endpoint
 - `drive.api.files.get_new_title?...` — likely renamed to `get_new_file_name`.
 - Stray `}` literal in the URL template.
 
-**Status:** open.
+**Status:** done — `does_entity_exist` exists and works; added a whitelisted
+`get_new_title` wrapping the `get_new_file_name` util; removed the stray `}`.
 
 ### D14. `_get_share_count` parameter is dead, query is unbounded
 [drive/api/list.py](drive/api/list.py) — `_get_share_count(team=None)` never
 uses `team`. Together with `_get_public_files` and `_get_team_files`, every
 list request materializes system-wide permission data. Will not scale.
 
-**Status:** open. Scope to the result set or to the team.
+**Status:** done — all three helpers now take the result-set `names` and filter
+`WHERE entity IN (names)`; dropped the dead `team` param.
 
 ### D15. `share_count` dict-with-bool-keys trick
 [drive/api/list.py:367-371](drive/api/list.py#L367-L371)
@@ -296,13 +313,14 @@ r["share_count"] = {
 Bool keys collide, all RHS computed eagerly, ordering meaningless. Replace
 with `if/elif/else`.
 
-**Status:** open.
+**Status:** done — replaced with `if/elif/else` (public > team > default==0),
+fixing the silent priority collision.
 
 ### D16. `permissions.py` shadows builtin `type`
 [drive/api/permissions.py:91](drive/api/permissions.py#L91) — loop variable
 renamed from `type_` to `type`. Cosmetic regression.
 
-**Status:** open.
+**Status:** done — already clean; loop uses `type_`, no builtin shadow.
 
 ---
 

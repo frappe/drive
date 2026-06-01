@@ -4,6 +4,7 @@ from drive.api.product import is_admin
 from drive.utils import (
     create_drive_file,
     default_team,
+    get_file_type,
     get_home_folder,
     update_file_size,
     STATUS_TRASHED,
@@ -63,10 +64,10 @@ def sync_from_disk(team: str):
             team,
             file_name=parent_path.strip("/").split("/")[-1],
             parent=grandparent,
-            mime_type="folder",
+            file_type="Folder",
             entity_path=lambda _: str(parent_path) + "/",
+            mime_type="folder",
             file_size=0,
-            is_folder=True,
             owner=owner,
         )
         return new_parent.name
@@ -85,11 +86,11 @@ def sync_from_disk(team: str):
                 team,
                 file.name,
                 parent,
-                mime_type,
+                "Folder" if mime_type == "folder" else get_file_type(mime_type),
                 lambda _: actual_path if mime_type != "folder" else actual_path.strip("/") + "/",
+                mime_type=mime_type,
                 file_modified=file_modified,
                 file_size=file_size,
-                is_folder=mime_type == "folder",
                 owner=frappe.session.user,
             )
         )

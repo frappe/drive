@@ -100,35 +100,53 @@ def _get_children_count(files):
     return dict(query.run())
 
 
-def _get_share_count(team=None):
+def _get_share_count(names):
     """
     Returns a dict mapping file names to their share count.
     Counts shares with individual users (excludes team and public shares).
     """
+    if not names:
+        return {}
     query = (
         frappe.qb.from_(DriveFile)
         .right_join(DrivePermission)
         .on(DrivePermission.entity == DriveFile.name)
-        .where((DrivePermission.user != "") & (DrivePermission.user != "$TEAM"))
+        .where(
+            DrivePermission.entity.isin(names)
+            & (DrivePermission.user != "")
+            & (DrivePermission.user != "$TEAM")
+        )
         .select(DriveFile.name, fn.Count("*").as_("share_count"))
         .groupby(DriveFile.name)
     )
     return dict(query.run())
 
 
-def _get_public_files():
+def _get_public_files(names):
     """
     Returns a set of file names that are publicly shared.
     """
-    query = frappe.qb.from_(DrivePermission).where(DrivePermission.user == "").select(DrivePermission.entity)
+    if not names:
+        return set()
+    query = (
+        frappe.qb.from_(DrivePermission)
+        .where((DrivePermission.entity.isin(names)) & (DrivePermission.user == ""))
+        .select(DrivePermission.entity)
+    )
     return set(k[0] for k in query.run())
 
 
-def _get_team_files():
+def _get_team_files(names):
     """
     Returns a set of file names shared with team.
     """
-    query = frappe.qb.from_(DrivePermission).where(DrivePermission.team == 1).select(DrivePermission.entity)
+    if not names:
+        return set()
+    query = (
+        frappe.qb.from_(DrivePermission)
+        .where((DrivePermission.entity.isin(names)) & (DrivePermission.team == 1))
+        .select(DrivePermission.entity)
+    )
     return set(k[0] for k in query.run())
 
 
@@ -354,12 +372,6 @@ def get_query_data(
 
     res = query.run(as_dict=True)
 
-    # Get aggregated data
-    children_count = _get_children_count(res)
-    share_count = _get_share_count()
-    public_files = _get_public_files()
-    team_files = _get_team_files()
-
     default = get_default_access(entity_name) if entity_name else 0
 
     # Deduplicate results
@@ -372,20 +384,31 @@ def get_query_data(
             added.add(r["name"])
         res = filtered_list
 
+    # Get aggregated data, scoped to the files we're returning
+    names = [r["name"] for r in res]
+    children_count = _get_children_count(res)
+    share_count = _get_share_count(names)
+    public_files = _get_public_files(names)
+    team_files = _get_team_files(names)
+
     # Enrich results with aggregated data and permissions
     for r in res:
-        r["child_count"] = children_count.get(r["name"], 0)
-        r["share_count"] = {
-            r["name"] in public_files: -2,
-            default > -1 and (r["name"] in team_files): -1,
-            default == 0: share_count.get(r["name"], default),
-        }.get(True, default)
+        name = r["name"]
+        r["child_count"] = children_count.get(name, 0)
+        if name in public_files:
+            r["share_count"] = -2
+        elif default > -1 and name in team_files:
+            r["share_count"] = -1
+        elif default == 0:
+            r["share_count"] = share_count.get(name, default)
+        else:
+            r["share_count"] = default
 
         if not r["is_drive_file"]:
             r["file_type"] = map_ff_to_drive_type(r)
         r["modifiable"] = r["is_drive_file"] and not r["content_doctype"] == "File"
         r["is_attachment"] = r["is_drive_file"] and r["content_doctype"] == "File"
-        r |= get_user_access(r["name"])
+        r |= get_user_access(name)
 
     return res
 
