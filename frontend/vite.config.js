@@ -31,6 +31,7 @@ export default defineConfig(async ({ mode }) => {
       alias: {
         '@': path.resolve(__dirname, 'src'),
         'tailwind.config.js': path.resolve(__dirname, 'tailwind.config.js'),
+        ...localFrappeUIAliases,
       },
       dedupe: ['yjs'],
     },
@@ -49,16 +50,11 @@ export default defineConfig(async ({ mode }) => {
         allow: ['..', 'node_modules', '../frappe-ui'],
       },
     },
-
-     resolve: {
-      alias: {
-         '@': path.resolve(__dirname, 'src'),
-        'tailwind.config.js': path.resolve(__dirname, 'tailwind.config.js'),
-        ...localFrappeUIAliases,
-      },
+    ssr: {
+      external: ['html2canvas', 'dompurify'],
     },
     optimizeDeps: {
-      include: ['feather-icons', 'tailwind.config.js'],
+      include: ['frappe-ui > feather-icons', 'frappe-ui > lowlight', 'yjs', 'tailwind.config.js'],
     },
   }
   return config

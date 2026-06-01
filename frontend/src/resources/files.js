@@ -163,9 +163,8 @@ export const updateMoved = (team, new_parent, special) => {
     }).fetch(
       store.state.sortOrder[new_parent]
         ? {
-            order_by:
-              store.state.sortOrder[new_parent].field +
-              (store.state.sortOrder[new_parent].ascending ? ' 1' : ' 0'),
+            order_by: store.state.sortOrder[new_parent].field,
+            ascending: store.state.sortOrder[new_parent].ascending,
           }
         : {}
     )
