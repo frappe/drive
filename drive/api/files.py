@@ -76,7 +76,7 @@ def upload_file(
     file = frappe.request.files["file"]
     title = get_new_title(file.filename, parent) if not transfer else file.filename
     upload_session = frappe.form_dict.uuid
-    temp_path = get_upload_path(home_folder["path"], f"{upload_session}_{secure_filename(title)}")
+    temp_path = get_upload_path(f"{upload_session}_{secure_filename(title)}")
     with temp_path.open("ab") as f:
         f.seek(offset)
         f.write(file.stream.read())
@@ -257,11 +257,10 @@ def create_document_entity(team: str, title: str | None = None, parent: str | No
     return entity
 
 
-def get_upload_path(team_path, file_name):
-    uploads_path = Path(frappe.get_site_path("private/files"), team_path, ".uploads")
-    if not os.path.exists(uploads_path):
-        uploads_path = Path(frappe.get_site_path("private/files"), team_path, ".uploads")
-        uploads_path.mkdir()
+def get_upload_path(file_name):
+    root_folder = frappe.get_single("Drive Disk Settings").root_folder or ""
+    uploads_path = Path(frappe.get_site_path("private/files"), root_folder, ".uploads")
+    uploads_path.mkdir(exist_ok=True)
     return uploads_path / file_name
 
 
