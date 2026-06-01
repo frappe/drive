@@ -232,20 +232,11 @@ onKeyDown('Escape', () => {
   search.value = ''
 })
 
-const orderByItems = computed(() => {
-  return columnHeaders.map((header) => ({
-    ...header,
-    onClick: () => {
-      sortOrder.value.field = header.field
-      sortOrder.value.label = header.label
-    },
-  }))
-})
 const toggleAscending = () => {
   sortOrder.value.ascending = !sortOrder.value.ascending
 }
 
-const columnHeaders = [
+const columnHeaders = computed(() => [
   {
     label: __('Name'),
     field: 'title',
@@ -271,19 +262,23 @@ const columnHeaders = [
     hideLabel: true,
     items: [
       {
-        component: defineComponent({
-          setup() {
-            return () =>
-              h(Switch, {
-                label: __('Smart'),
-                disabled: sortOrder.value.field !== 'title',
-                modelValue: sortOrder.value.smart,
-                'onUpdate:modelValue': (val) => (sortOrder.value.smart = val),
-              })
-          },
-        }),
+        label: __('Smart'),
+        disabled: sortOrder.value.field !== 'title',
+        switch: true,
+        switchValue: sortOrder.value.smart,
+        onClick: (val) => (sortOrder.value.smart = val),
       },
     ],
   },
-]
+])
+
+const orderByItems = computed(() => {
+  return columnHeaders.value.map((header) => ({
+    ...header,
+    onClick: () => {
+      sortOrder.value.field = header.field
+      sortOrder.value.label = header.label
+    },
+  }))
+})
 </script>
