@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: frappe\n"
 "Report-Msgid-Bugs-To: developers@frappe.io\n"
 "POT-Creation-Date: 2026-02-13 16:23+0000\n"
-"PO-Revision-Date: 2026-02-17 19:07\n"
+"PO-Revision-Date: 2026-04-22 01:21\n"
 "Last-Translator: developers@frappe.io\n"
 "Language-Team: Italian\n"
 "MIME-Version: 1.0\n"
@@ -77,7 +77,7 @@ msgstr "Aggiungi immagine"
 #: frontend/src/components/Settings/TemplateSettings.vue:11
 #: frontend/src/components/Settings/TemplateSettings.vue:66
 msgid "Add Template"
-msgstr ""
+msgstr "Aggiungi modello"
 
 #: frontend/src/components/InfoPopup.vue:47
 msgid "Added"
@@ -1006,7 +1006,7 @@ msgstr "Team"
 
 #: frontend/src/components/Settings/TemplateSettings.vue:5
 msgid "Templates"
-msgstr ""
+msgstr "Modelli"
 
 #. Label of the thumbnail_prefix (Data) field in DocType 'Drive Disk Settings'
 #: drive/drive/doctype/drive_disk_settings/drive_disk_settings.json
@@ -1055,7 +1055,7 @@ msgstr "Non preferito"
 
 #: frontend/src/components/Settings/TemplateSettings.vue:70
 msgid "Update"
-msgstr ""
+msgstr "Aggiorna"
 
 #. Label of the updates (Table) field in DocType 'Drive Desktop Client'
 #: drive/drive/doctype/drive_desktop_client/drive_desktop_client.json

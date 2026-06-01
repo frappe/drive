@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: frappe\n"
 "Report-Msgid-Bugs-To: developers@frappe.io\n"
 "POT-Creation-Date: 2026-02-13 16:23+0000\n"
-"PO-Revision-Date: 2026-02-18 19:43\n"
+"PO-Revision-Date: 2026-04-22 01:21\n"
 "Last-Translator: developers@frappe.io\n"
 "Language-Team: Persian\n"
 "MIME-Version: 1.0\n"
@@ -230,7 +230,7 @@ msgstr "نوع سند"
 
 #: frontend/src/components/Sidebar.vue:148
 msgid "Documentation"
-msgstr "مستندات"
+msgstr ""
 
 #: frontend/src/components/GenericPage.vue:324
 #: frontend/src/components/Navbar.vue:214
@@ -446,7 +446,7 @@ msgstr "مورد علاقه"
 #. Label of the file_size (Int) field in DocType 'Drive File'
 #: drive/drive/doctype/drive_file/drive_file.json
 msgid "File Size"
-msgstr ""
+msgstr "حجم فایل"
 
 #. Label of the file_size (Int) field in DocType 'Drive Transfer'
 #: drive/drive/doctype/drive_transfer/drive_transfer.json
@@ -611,12 +611,12 @@ msgstr "دستی"
 #. Option for the 'Type' (Select) field in DocType 'Drive Notification'
 #: drive/drive/doctype/drive_notification/drive_notification.json
 msgid "Mention"
-msgstr ""
+msgstr "اشاره"
 
 #. Label of the mentions (JSON) field in DocType 'Drive Document'
 #: drive/drive/doctype/drive_document/drive_document.json
 msgid "Mentions"
-msgstr ""
+msgstr "اشاره‌ها"
 
 #. Label of the message (Data) field in DocType 'Drive Entity Activity Log'
 #. Label of the message (Text) field in DocType 'Drive Notification'
@@ -881,7 +881,7 @@ msgstr "اشتراک گذاری"
 
 #: frontend/src/components/InfoPopup.vue:132 frontend/src/utils/files.js:197
 msgid "Shared"
-msgstr ""
+msgstr "به اشتراک گذاشته شده"
 
 #: frontend/src/components/GenericPage.vue:357
 #: frontend/src/components/Navbar.vue:244
@@ -1114,7 +1114,7 @@ msgstr "واژه‌ها"
 #. Label of the write (Check) field in DocType 'Drive Permission'
 #: drive/drive/doctype/drive_permission/drive_permission.json
 msgid "Write"
-msgstr ""
+msgstr "نوشتن"
 
 #. Label of the writer_section (Section Break) field in DocType 'Drive
 #. Settings'
@@ -1141,7 +1141,7 @@ msgstr "comment"
 #. Activity Log'
 #: drive/drive/doctype/drive_entity_activity_log/drive_entity_activity_log.json
 msgid "create"
-msgstr ""
+msgstr "ایجاد"
 
 #. Option for the 'Action Type' (Select) field in DocType 'Drive Entity
 #. Activity Log'
@@ -1149,7 +1149,7 @@ msgstr ""
 #: drive/drive/doctype/drive_entity_activity_log/drive_entity_activity_log.json
 #: drive/drive/doctype/drive_file_update/drive_file_update.json
 msgid "delete"
-msgstr ""
+msgstr "حذف"
 
 #. Option for the 'Action Type' (Select) field in DocType 'Drive Entity
 #. Activity Log'

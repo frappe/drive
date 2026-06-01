@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: frappe\n"
 "Report-Msgid-Bugs-To: developers@frappe.io\n"
 "POT-Creation-Date: 2026-02-13 16:23+0000\n"
-"PO-Revision-Date: 2026-02-19 19:42\n"
+"PO-Revision-Date: 2026-04-17 00:58\n"
 "Last-Translator: developers@frappe.io\n"
 "Language-Team: Vietnamese\n"
 "MIME-Version: 1.0\n"
@@ -188,7 +188,7 @@ msgstr ""
 
 #: frontend/src/components/InfoPopup.vue:157
 msgid "Developer"
-msgstr ""
+msgstr "Nhà phát triển"
 
 #. Label of the disk_section (Section Break) field in DocType 'Drive Disk
 #. Settings'
@@ -230,7 +230,7 @@ msgstr "Loại tài liệu"
 
 #: frontend/src/components/Sidebar.vue:148
 msgid "Documentation"
-msgstr ""
+msgstr "Tài liệu"
 
 #: frontend/src/components/GenericPage.vue:324
 #: frontend/src/components/Navbar.vue:214
@@ -386,11 +386,11 @@ msgstr ""
 #: drive/drive/doctype/account_request/account_request.json
 #: drive/drive/doctype/drive_user_invitation/drive_user_invitation.json
 msgid "Email"
-msgstr ""
+msgstr "Email"
 
 #: frontend/src/components/Navbar.vue:308
 msgid "Empty"
-msgstr ""
+msgstr "Trống"
 
 #. Label of the enabled (Check) field in DocType 'Drive Disk Settings'
 #: drive/drive/doctype/drive_disk_settings/drive_disk_settings.json
@@ -400,7 +400,7 @@ msgstr "Đã bật"
 #. Label of the endpoint_url (Data) field in DocType 'Drive Disk Settings'
 #: drive/drive/doctype/drive_disk_settings/drive_disk_settings.json
 msgid "Endpoint URL"
-msgstr ""
+msgstr "URL điểm cuối"
 
 #: frontend/src/components/Settings/TemplateSettings.vue:86
 msgid "Enter template title"
@@ -415,7 +415,7 @@ msgstr ""
 #: drive/drive/doctype/drive_file_update/drive_file_update.json
 #: drive/drive/doctype/drive_permission/drive_permission.json
 msgid "Entity"
-msgstr ""
+msgstr "Thực thể"
 
 #. Label of the entity_name (Link) field in DocType 'Drive Entity Log'
 #: drive/drive/doctype/drive_entity_log/drive_entity_log.json
@@ -520,7 +520,7 @@ msgstr "Đang hoạt động"
 #. Label of the is_group (Check) field in DocType 'Drive File'
 #: drive/drive/doctype/drive_file/drive_file.json
 msgid "Is Group"
-msgstr ""
+msgstr "Là nhóm"
 
 #. Label of the is_link (Check) field in DocType 'Drive File'
 #: drive/drive/doctype/drive_file/drive_file.json
@@ -530,7 +530,7 @@ msgstr ""
 #. Label of the is_private (Check) field in DocType 'Drive File'
 #: drive/drive/doctype/drive_file/drive_file.json
 msgid "Is Private"
-msgstr ""
+msgstr "Là riêng tư"
 
 #. Label of the resolved (Check) field in DocType 'Drive Comment'
 #: drive/drive/doctype/drive_comment/drive_comment.json
@@ -593,7 +593,7 @@ msgstr ""
 #: frontend/src/components/InfoPopup.vue:106
 #: frontend/src/components/Sidebar.vue:119
 msgid "Manage"
-msgstr ""
+msgstr "Quản lý"
 
 #. Label of a shortcut in the Drive Workspace
 #: drive/drive/workspace/drive/drive.json
@@ -603,7 +603,7 @@ msgstr ""
 #. Label of the manual (Check) field in DocType 'Drive Doc Version'
 #: drive/drive/doctype/drive_doc_version/drive_doc_version.json
 msgid "Manual"
-msgstr ""
+msgstr "Hướng dẫn sử dụng"
 
 #. Option for the 'Type' (Select) field in DocType 'Drive Notification'
 #: drive/drive/doctype/drive_notification/drive_notification.json
@@ -717,7 +717,7 @@ msgstr ""
 #: frontend/src/components/InfoPopup.vue:19
 #: frontend/src/components/ListView.vue:150
 msgid "Owner"
-msgstr ""
+msgstr "Chủ sở hữu"
 
 #. Label of the parent_entity (Link) field in DocType 'Drive File'
 #: drive/drive/doctype/drive_file/drive_file.json
@@ -831,7 +831,7 @@ msgstr "Đổi tên"
 #. Label of the replies (Table) field in DocType 'Drive Comment'
 #: drive/drive/doctype/drive_comment/drive_comment.json
 msgid "Replies"
-msgstr ""
+msgstr "Trả lời"
 
 #. Label of the request_key (Data) field in DocType 'Account Request'
 #: drive/drive/doctype/account_request/account_request.json
@@ -941,7 +941,7 @@ msgstr ""
 
 #: frontend/src/components/Sidebar.vue:153
 msgid "Support"
-msgstr ""
+msgstr "Hỗ trợ"
 
 #. Name of a role
 #: drive/drive/doctype/account_request/account_request.json
@@ -983,7 +983,7 @@ msgstr "Thẻ"
 #: drive/drive/doctype/drive_user_invitation/drive_user_invitation.json
 #: frontend/src/components/Settings/StorageSettings.vue:22
 msgid "Team"
-msgstr ""
+msgstr "Nhóm"
 
 #. Label of the team_domain (Data) field in DocType 'Drive Team'
 #: drive/drive/doctype/drive_team/drive_team.json
