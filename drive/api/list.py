@@ -7,7 +7,15 @@ from pypika import functions as fn
 from frappe.core.doctype.file.file import get_permission_query_conditions as ff_get_permission_query_conditions
 
 
-from drive.utils import MIME_LIST_MAP, default_team, get_home_folder, FILE_FIELDS, map_ff_to_drive_type
+from drive.utils import (
+    MIME_LIST_MAP,
+    default_team,
+    get_home_folder,
+    FILE_FIELDS,
+    map_ff_to_drive_type,
+    STATUS_ACTIVE,
+    STATUS_TRASHED,
+)
 from drive.utils.api import get_default_access
 from .permissions import get_user_access, user_has_permission
 
@@ -85,7 +93,7 @@ def _get_children_count(files):
         return {}
     query = (
         frappe.qb.from_(DriveFile)
-        .where((DriveFile.folder.isin([k["name"] for k in files])) & (DriveFile.status == 1))
+        .where((DriveFile.folder.isin([k["name"] for k in files])) & (DriveFile.status == STATUS_ACTIVE))
         .groupby(DriveFile.folder)
         .select(DriveFile.folder, fn.Count("*").as_("child_count"))
     )
@@ -125,7 +133,7 @@ def _get_team_files():
 
 
 def _get_basic_query(search):
-    query = frappe.qb.from_(DriveFile).where((DriveFile.status == 1) | (DriveFile.is_drive_file == 0))
+    query = frappe.qb.from_(DriveFile).where((DriveFile.status == STATUS_ACTIVE) | (DriveFile.is_drive_file == 0))
     if search:
         query = query.where(DriveFile.file_name.like(f"%{search}%"))
     return query
@@ -272,7 +280,7 @@ def trash(
     """
     query = (
         frappe.qb.from_(DriveFile)
-        .where((DriveFile.status == 0) & (DriveFile.is_drive_file == 1))
+        .where((DriveFile.status == STATUS_TRASHED) & (DriveFile.is_drive_file == 1))
         .where(DriveFile.owner == frappe.session.user)
     )
     if search:
@@ -375,8 +383,8 @@ def get_query_data(
 
         if not r["is_drive_file"]:
             r["file_type"] = map_ff_to_drive_type(r)
-        r["modifiable"] = r["is_drive_file"] and not r["details_doctype"] == "File"
-        r["is_attachment"] = r["is_drive_file"] and r["details_doctype"] == "File"
+        r["modifiable"] = r["is_drive_file"] and not r["content_doctype"] == "File"
+        r["is_attachment"] = r["is_drive_file"] and r["content_doctype"] == "File"
         r |= get_user_access(r["name"])
 
     return res

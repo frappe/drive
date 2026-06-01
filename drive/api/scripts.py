@@ -1,7 +1,14 @@
 import frappe
 
 from drive.api.product import is_admin
-from drive.utils import create_drive_file, default_team, get_home_folder, update_file_size
+from drive.utils import (
+    create_drive_file,
+    default_team,
+    get_home_folder,
+    update_file_size,
+    STATUS_TRASHED,
+    STATUS_REMOVED,
+)
 from drive.utils.files import FileManager
 from drive.api.files import delete_entities
 from datetime import date, timedelta
@@ -95,7 +102,7 @@ def auto_delete_from_trash():
     days_before = (date.today() - timedelta(days=30)).isoformat()
     result = frappe.db.get_all(
         "File",
-        filters={"status": 0, "file_modified": ["<", days_before]},
+        filters={"status": STATUS_TRASHED, "file_modified": ["<", days_before]},
         fields=["name"],
     )
     delete_entities(result)
@@ -105,7 +112,7 @@ def clear_deleted_files():
     days_before = (date.today() - timedelta(days=30)).isoformat()
     result = frappe.db.get_all(
         "File",
-        filters={"status": -1, "modified": ["<", days_before]},
+        filters={"status": STATUS_REMOVED, "modified": ["<", days_before]},
         fields=["name"],
     )
     for entity in result:

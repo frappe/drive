@@ -1,7 +1,7 @@
 import frappe
 from pypika import functions as fn
 
-from drive.utils import default_team
+from drive.utils import default_team, STATUS_ACTIVE
 
 MEGA_BYTE = 1024**2
 DriveFile = frappe.qb.DocType("File")
@@ -13,7 +13,7 @@ def storage_breakdown(team: str, owned_only: bool):
     filters = {
         "team": team,
         "is_folder": False,
-        "status": 1,
+        "status": STATUS_ACTIVE,
         "file_size": [">=", limit / 200],
     }
     if owned_only:
@@ -29,7 +29,7 @@ def storage_breakdown(team: str, owned_only: bool):
     query = (
         frappe.qb.from_(DriveFile)
         .select(DriveFile.file_type, fn.Sum(DriveFile.file_size).as_("file_size"))
-        .where((DriveFile.is_folder == 0) & (DriveFile.status == 1) & (DriveFile.team == team))
+        .where((DriveFile.is_folder == 0) & (DriveFile.status == STATUS_ACTIVE) & (DriveFile.team == team))
     )
     if owned_only:
         query = query.where(DriveFile.owner == frappe.session.user)
@@ -55,7 +55,7 @@ def storage_bar_data(team: str | None = None, entity_name: str | None = None):
             (DriveFile.team == team)
             & (DriveFile.is_folder == 0)
             & (DriveFile.owner == frappe.session.user)
-            & (DriveFile.status == 1)
+            & (DriveFile.status == STATUS_ACTIVE)
         )
         .select(fn.Coalesce(fn.Sum(DriveFile.file_size), 0).as_("total_size"))
     )

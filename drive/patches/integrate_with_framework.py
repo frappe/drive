@@ -3,7 +3,7 @@ Create `File` records of all existing `Drive File`s
 """
 
 import frappe
-from drive.utils import MIME_LIST_MAP
+from drive.utils import MIME_LIST_MAP, STATUS_ACTIVE, STATUS_TRASHED
 from drive.utils.files import get_s3_url
 
 
@@ -65,20 +65,20 @@ def migrate_file(file, is_remote=False):
             "folder": file.parent_entity,
             "is_folder": file.is_group,
             "file_size": file.file_size,
-            "last_modified": file._modified,
-            "status": file.is_active,
+            "file_modified": file._modified,
+            "status": STATUS_ACTIVE if file.is_active else STATUS_TRASHED,
             "mime_type": file.mime_type,
             "is_private": 1,
         }
     )
 
     if file.doc:
-        ff_file.special_file = "Writer Document"
-        ff_file.special_file_doc = file.doc
+        ff_file.content_doctype = "Writer Document"
+        ff_file.content_docname = file.doc
 
     if file.mime_type == "frappe/slides":
-        ff_file.special_file = "Presentation"
-        ff_file.special_file_doc = file.path
+        ff_file.content_doctype = "Presentation"
+        ff_file.content_docname = file.path
 
     # Attachment
     if frappe.db.get_value("Drive File", file.parent_entity, "doc"):

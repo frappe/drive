@@ -23,6 +23,8 @@ from drive.utils import (
     get_new_file_name,
     validate_filename,
     get_upload_path,
+    STATUS_ACTIVE,
+    STATUS_TRASHED,
 )
 from drive.utils.api import prettify_file
 from drive.utils.files import FileManager, storage_key, get_s3_key, get_s3_url
@@ -149,7 +151,7 @@ def get_thumbnail(entity_name: str):
                 with manager.get_file(drive_file) as f:
                     thumbnail_data = f.read()[:1000].decode("utf-8").replace("\n", "<br/>")
             elif drive_file.file_type == "Document":
-                html = frappe.get_value("Writer Document", drive_file.details_docname, "raw_content")
+                html = frappe.get_value("Writer Document", drive_file.content_docname, "raw_content")
                 thumbnail_data = html[:1000] if html else ""
             elif drive_file.mime_type == "frappe/slides":
                 thumbnail_url = frappe.call(
@@ -239,7 +241,7 @@ def ensure_path(team, fullpath, parent=None):
             {
                 "file_name": folder,
                 "is_folder": 1,
-                "status": 1,
+                "status": STATUS_ACTIVE,
                 "team": team,
                 "folder": current_parent,
             },
@@ -340,7 +342,7 @@ def get_file_content(entity_name: str, trigger_download: bool = False, jwt_token
         frappe.local.response["location"] = "/drive/w/" + file.name if file.is_drive_file else file.file_url
         return
 
-    if not file or file.file_type in FORBIDDEN_DOWNLOAD_TYPES or file.status != 1:
+    if not file or file.file_type in FORBIDDEN_DOWNLOAD_TYPES or file.status != STATUS_ACTIVE:
         frappe.throw("Not found", frappe.DoesNotExistError)
 
     return get_file_internal(file, trigger_download)
@@ -472,15 +474,15 @@ def remove_or_restore(entity_names: list[str] | str):
     def depth_zero_toggle_status(doc):
         if not user_has_permission(doc, "write"):
             raise frappe.PermissionError("You do not have permission to remove this file")
-        if doc.status:
-            flag = 0
+        if doc.status == STATUS_ACTIVE:
+            flag = STATUS_TRASHED
             manager.move_to_trash(doc)
         else:
             storage_data = storage_bar_data(doc.team)
             if (storage_data["limit"] - storage_data["total_size"]) < doc.file_size:
                 frappe.throw("You're out of storage!", ValueError)
             manager.restore(doc)
-            flag = 1
+            flag = STATUS_ACTIVE
 
         doc.status = flag
         doc.file_modified = frappe.utils.now_datetime()
@@ -491,7 +493,7 @@ def remove_or_restore(entity_names: list[str] | str):
                 "File",
                 doc.folder,
                 "file_size",
-                folder_size + doc.file_size * (1 if flag else -1),
+                folder_size + doc.file_size * (1 if flag == STATUS_ACTIVE else -1),
             )
 
         doc.save()
@@ -503,7 +505,7 @@ def remove_or_restore(entity_names: list[str] | str):
 @frappe.whitelist()
 def delete_entities(entity_names: list[str] | None = None, clear_all: bool = False):
     if clear_all:
-        entity_names = frappe.db.get_list("File", {"status": 0, "owner": frappe.session.user}, pluck="name")
+        entity_names = frappe.db.get_list("File", {"status": STATUS_TRASHED, "owner": frappe.session.user}, pluck="name")
     elif isinstance(entity_names, str):
         entity_names = json.loads(entity_names)
     elif not isinstance(entity_names, list) or not entity_names:
@@ -642,7 +644,7 @@ def get_entity_type(entity_name: str):
 
     entity = frappe.db.get_value(
         "File",
-        {"status": 1, "name": entity_name},
+        {"status": STATUS_ACTIVE, "name": entity_name},
         ["name", "file_type"],
         as_dict=1,
     )
@@ -668,11 +670,11 @@ def redirect_to_original(file_id: str):
     file = frappe.get_cached_doc("File", file_id)
     if not user_has_permission(file_id, "read"):
         frappe.throw("You do not have permission to view this file.", frappe.PermissionError)
-    if not file.details_doctype == "File":
+    if not file.content_doctype == "File":
         frappe.throw("This is not an attachment", ValueError)
 
     frappe.local.response["type"] = "redirect"
-    frappe.local.response["location"] = "/drive/g/" + file.details_docname
+    frappe.local.response["location"] = "/drive/g/" + file.content_docname
 
 
 @frappe.whitelist()

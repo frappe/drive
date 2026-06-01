@@ -75,8 +75,18 @@ Concrete points to discuss:
   branch on this. Acceptable; just keep the branch points in as few files as
   possible.
 
-**Status:** discuss — agree on the boundary between Drive-specific and
-framework fields, document it once.
+**Status:** done.
+- `status` Int (1/0/-1) → **Select** `Active`/`Trashed`/`Removed`, default `Active`,
+  backed by `STATUS_ACTIVE`/`STATUS_TRASHED`/`STATUS_REMOVED` constants in
+  [drive/utils/__init__.py](drive/utils/__init__.py). All numeric comparisons
+  replaced across api/utils/overrides (incl. the `if doc.status:` truthiness
+  trap in the trash toggle).
+- `details_doctype`/`details_docname` → **`content_doctype`/`content_docname`**
+  (the record holding the file's actual content — Writer Document, Presentation,
+  or referenced library File). Renamed in the fixture and all call sites.
+- Data on the `coffee.localhost` dev site migrated in place (status remapped,
+  `details_*` copied to `content_*`, orphan columns + custom fields dropped).
+- `file_modified` / `is_drive_file` left as-is (acceptable per discussion).
 
 ### C2. `file_url` overloading for S3
 
@@ -99,7 +109,18 @@ acknowledged this is badly designed.
   key scheme.
 - **(c)** Status quo + better helpers + invariant test.
 
-**Status:** discuss.
+**Status:** done — landed **(c)** (keeping the `file_url` encoding, which matches
+the canonical Frappe-S3 pattern, e.g. zerodha/frappe-attachments-s3, and avoids
+breaking existing rows) plus a serving fix:
+- `sanitize_url` → **`storage_key`**, now always returns a *relative* key so
+  `Path(base) / key` can't reset to absolute. Every S3 `Key`/`CopySource` and
+  `site_folder` join routes through it (fixed `move`/`move_to_trash` passing the
+  raw `file_url` as the S3 key, on both S3 and disk branches).
+- `s3.fetch` now serves *through* `get_file_content` (enforces Drive perms per
+  request) instead of a second redirect, and is no longer guest-probeable (see D4).
+- Invariant test `storage_key(get_s3_url(k)) == k` in
+  [drive/tests/test_storage_helpers.py](drive/tests/test_storage_helpers.py).
+- Committed in `652dbea2`.
 
 ---
 
@@ -125,7 +146,9 @@ tombstone bucket immediately.
 Effect: existing Writer Documents and Presentations migrate without their
 backing references; modified timestamps are lost.
 
-**Status:** open — high priority (re-run on staging once fixed).
+**Status:** done — patch now writes `file_modified` and `content_doctype`/
+`content_docname` (the renamed C1 fields), and maps `status` to the Select
+value. Re-run on staging.
 
 ### D3. `auto_delete_expired_perms` removed entirely
 Old scheduler entry deleted from [drive/hooks.py:142](drive/hooks.py#L142) and
@@ -151,7 +174,9 @@ def fetch(path: str):
 **Fix:** return a generic 404 for both "not found" and "no permission"; tighten
 `path` validation.
 
-**Status:** open.
+**Status:** done — `fetch` resolves the key, serves through `get_file_content`
+(which permission-checks per request), and returns a uniform 404 for both
+missing and forbidden so keys can't be enumerated. Committed in `652dbea2`.
 
 ### D5. `get_file_content` AttributeError + bad redirect
 [drive/api/files.py:364-370](drive/api/files.py#L364-L370)
@@ -193,7 +218,7 @@ return parent / ".embeds" / entity.file_names
 Should be `entity.file_name`. Hits whenever embed mode is used on non-flat
 storage.
 
-**Status:** open.
+**Status:** done — fixed in `652dbea2`.
 
 ### D8. `sync_from_disk` broken
 [drive/api/scripts.py:65-90](drive/api/scripts.py#L65-L90)
@@ -287,6 +312,10 @@ renamed from `type_` to `type`. Cosmetic regression.
 [drive/utils/files.py:229](drive/utils/files.py#L229),
 [drive/api/files.py:203](drive/api/files.py#L203). Replace with
 `frappe.log_error` / structured logging.
+
+**Partial:** the `get_file` print is now `frappe.log_error` with a narrowed
+`except (ClientError, FileNotFoundError, OSError)` (`652dbea2`). The
+`api/files.py:203` one is still open (tied to D6).
 
 ### E2. `__update_modified` / `__not_if_flat` name mangling
 Double-underscore decorators inside the class get name-mangled. Use

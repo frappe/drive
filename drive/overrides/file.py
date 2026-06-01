@@ -16,6 +16,8 @@ from drive.utils import (
     get_new_file_name,
     validate_filename,
     get_upload_path,
+    STATUS_ACTIVE,
+    STATUS_REMOVED,
 )
 from drive.utils.files import FileManager
 import mimemapper
@@ -215,7 +217,7 @@ class File(FrappeFile):
         if not (
             frappe.db.get_value("File", new_parent, "is_folder")
             # FIX: disable after redesign
-            or frappe.db.get_value("File", new_parent, "details_doctype")
+            or frappe.db.get_value("File", new_parent, "content_doctype")
         ):
             frappe.throw(
                 "Can only move into folders",
@@ -310,7 +312,7 @@ class File(FrappeFile):
         if not (write_access or parent_write_access):
             frappe.throw("Not permitted", frappe.PermissionError)
 
-        self.status = -1
+        self.status = STATUS_REMOVED
         if self.is_folder:
             for child in self.get_children():
                 child.permanent_delete()
@@ -348,8 +350,8 @@ def after_upload_file(doc):
             doc.file_type = library_doc.file_type
             doc.file_size = library_doc.file_size
             doc.modified = library_doc.modified
-            doc.details_doctype = "File"
-            doc.details_docname = frappe.form_dict.library_file_name
+            doc.content_doctype = "File"
+            doc.content_docname = frappe.form_dict.library_file_name
     elif settings.use_drive_for_files and doc.attached_to_name:
         doc.is_drive_file = 1
         content_hash = get_content_hash(doc.content)

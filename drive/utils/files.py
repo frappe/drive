@@ -16,7 +16,7 @@ from PIL import Image, ImageOps
 
 from drive.locks.distributed_lock import DistributedLock
 
-from . import get_home_folder
+from . import get_home_folder, STATUS_ACTIVE
 
 S3_URL_PREFIX = "/api/method/drive.api.s3.fetch?path="
 
@@ -302,7 +302,7 @@ class FileManager:
                     "File",
                     {
                         "file_url": f["Key"].rstrip("/") + ("/" if is_folder else ""),
-                        "status": 1,
+                        "status": STATUS_ACTIVE,
                         "team": team,
                         "is_folder": int(is_folder),
                     },
@@ -323,7 +323,7 @@ class FileManager:
                 path = f.relative_to(self.site_folder)
                 exists = frappe.get_value(
                     "File",
-                    {"file_url": str(path), "team": team, "status": 1},
+                    {"file_url": str(path), "team": team, "status": STATUS_ACTIVE},
                     "name",
                 )
                 if exists or any(p for p in f.parts if p.startswith(".")):

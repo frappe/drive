@@ -10,6 +10,11 @@ from pypika import Field, functions as fn
 import mimemapper
 
 DriveFile = frappe.qb.DocType("File")
+
+# File.status (Select). Active = live, Trashed = in trash, Removed = pending hard-delete.
+STATUS_ACTIVE = "Active"
+STATUS_TRASHED = "Trashed"
+STATUS_REMOVED = "Removed"
 MIME_LIST_MAP = {
     "Image": [
         "image/png",
@@ -96,8 +101,8 @@ FILE_FIELDS = [
     "file_size",
     "file_type",
     "is_folder",
-    "details_doctype",
-    "details_docname",
+    "content_doctype",
+    "content_docname",
     "team",
     "creation",
     fn.Coalesce(Field("file_modified"), DriveFile.modified).as_("modified"),
@@ -287,7 +292,7 @@ def if_folder_exists(team, folder_name, parent):
     values = {
         "file_name": folder_name,
         "is_folder": 1,
-        "status": 1,
+        "status": STATUS_ACTIVE,
         "team": team,
         "folder": parent,
     }
@@ -418,7 +423,7 @@ def get_new_file_name(file_name: str, parent_name: str, type: str = False, entit
     entity_title, entity_ext = os.path.splitext(file_name)
 
     filters = {
-        "status": 1,
+        "status": STATUS_ACTIVE,
         "folder": parent_name,
         "file_name": ["like", f"{entity_title}%{entity_ext}"],
     }
