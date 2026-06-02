@@ -331,9 +331,9 @@ renamed from `type_` to `type`. Cosmetic regression.
 [drive/api/files.py:203](drive/api/files.py#L203). Replace with
 `frappe.log_error` / structured logging.
 
-**Partial:** the `get_file` print is now `frappe.log_error` with a narrowed
-`except (ClientError, FileNotFoundError, OSError)` (`652dbea2`). The
-`api/files.py:203` one is still open (tied to D6).
+**Status:** done — both prints are gone. The `get_file` one became
+`frappe.log_error` earlier (`652dbea2`); the `api/files.py:203` one disappeared
+with `create_presentation` (D6, moot).
 
 ### E2. `__update_modified` / `__not_if_flat` name mangling
 Double-underscore decorators inside the class get name-mangled. Use
@@ -341,9 +341,19 @@ single-underscore (`_update_modified`) or move to module scope.
 [drive/overrides/file.py:74](drive/overrides/file.py#L74),
 [drive/utils/files.py](drive/utils/files.py).
 
+**Status:** done — renamed `__update_modified` → `_update_modified`
+([drive/overrides/file.py](drive/overrides/file.py)) and `__not_if_flat` →
+`_not_if_flat` ([drive/utils/files.py](drive/utils/files.py)). The copies in the
+deprecated `drive_file.py` are left for the B1 deletion.
+
 ### E3. `only_for_drive_files` uses `super(type(self), self)`
 [drive/overrides/file.py:23-30](drive/overrides/file.py#L23-L30) — fragile if
 `File` is ever subclassed further. Use plain `super()`.
+
+**Status:** done — replaced with `super(File, self)` (resolved at call time;
+bare `super()` can't be used inside the decorator's `inner`, which has no
+`__class__` cell). This also fixes the latent recursion bug `super(type(self),
+self)` would cause for a `File` subclass instance.
 
 ### E4. `get_attachments` returns synthetic "folder" entities
 [drive/api/list.py:359-389](drive/api/list.py#L359-L389) mixes real File rows
@@ -352,14 +362,32 @@ with fabricated rows that have `virtual` / `virtual_extra` fields and
 [frontend/src/utils/files.js:24-42](frontend/src/utils/files.js#L24-L42)
 special-cases them. Consider a separate endpoint or a tagged-union return type.
 
+**Status:** addressed by the `kind` refactor (see F6) — every row now carries an
+explicit `kind`, and the fabricated rows are tagged `kind="virtual"`, so the
+frontend tests `e.kind === 'virtual'` instead of sniffing a `virtual` field. The
+old overloaded `virtual` ("doctype"/"docname" level) and `virtual_extra` (parent
+doctype) fields were replaced with honest `attached_to_doctype` /
+`attached_to_name` (mirroring the framework fields these nodes bucket over);
+`openEntity` routes on `attached_to_name ? document : doctype`. `FILE_FIELDS`
+doesn't carry `attached_to_*`, so there's no collision with real rows. Splitting
+`get_attachments` into its own endpoint is still open, but the return shape is
+now a clean tagged union keyed on `kind`.
+
 ### E5. Hard-coded slides theme
 [drive/api/files.py:200](drive/api/files.py#L200) — `theme="1mjgj61m8j"` magic
 value. Pull from settings or a constant.
+
+**Status:** moot — gone with `create_presentation` (D6). No `theme=`/magic value
+remains in the Python source.
 
 ### E6. `details_doctype == "File"` magic string
 [drive/api/list.py:381-382](drive/api/list.py#L381-L382),
 [drive/api/permissions.py](drive/api/permissions.py) — used in several places
 to mean "this is a framework attachment". Wrap in a constant or a helper.
+
+**Status:** done — added `ATTACHMENT_CONTENT_DOCTYPE` and routed
+`files.py:redirect_to_original` through it. The `is_attachment`/`modifiable`
+booleans were then superseded by the `kind` enum (see F6).
 
 ---
 
@@ -374,7 +402,10 @@ it to `0`, which would expose the file via `/files/...`.
 throw if `is_private != 1`. Also harden `after_upload_file` to set
 `is_private = 1` on the framework branch when the upload routes through Drive.
 
-**Status:** open.
+**Status:** done — `validate` (drive branch) now throws `ValidationError` if
+`is_private` is falsy on save. `after_upload_file` sets `is_private = 1` on
+both the library-copy branch and the `use_drive_for_files` branch.
+[drive/overrides/file.py](drive/overrides/file.py).
 
 ### F2. Upload routing when "use Drive for files" is on
 
@@ -390,7 +421,16 @@ route through Drive. Two gaps:
 - **F2b. Allow user to choose at upload time.** Currently no picker.
   Need a Vue picker that surfaces during the stock framework upload flow.
 
-**Status:** open — depends on F3 component design.
+**Status:** F2a done (needs verification); F2b deferred.
+- **F2a** — the `use_drive_for_files` branch in `after_upload_file` previously
+  set `is_drive_file = 1` but never set `team`/`folder`, so the attachment was
+  orphaned (Drive list views filter by `team`, so it was invisible). It now
+  defaults to the uploading user's personal Drive home folder, **guarded**: when
+  there is no personal team (system / guest / background uploads), it falls back
+  to the un-placed attachment instead of throwing and blocking the upload.
+  [drive/overrides/file.py](drive/overrides/file.py).
+- **F2b** (destination picker) and a dedicated `Attachments` subfolder + aligning
+  the on-disk path with the team storage tree remain the design pass — deferred.
 
 ### F3. Splice Drive's own component into the stock upload dialog
 [drive/public/js/ff_integration.bundle.js:5-41](drive/public/js/ff_integration.bundle.js#L5-L41) —
@@ -409,7 +449,17 @@ Each tab acts as a folder picker; choosing a destination either copies an
 existing file in (current behavior) or sets the destination folder for a
 fresh upload (ties into F2b).
 
-**Status:** open — needs a component design pass.
+**Status:** done (additional-button form) — **needs manual verification on a
+running desk** (dev site currently down, tests disabled). Registered
+`DRIVE_UPLOADER` into `frappe.ui.FileUploader.UploadOptions` as a "Drive" button
+— the supported, non-fragile extension point. *Replacing* the stock Library tab
+would mean patching framework `FileUploader.vue` from an app, which is fragile;
+rejected. Selecting a Drive file routes through the framework's
+`library_file_name` flow, which `after_upload_file` already turns into an
+attachment pointing back at the chosen file (`content_doctype`/`content_docname`).
+Fixed the prior bugs (undeclared `file`, ref access, the `file_url` hack) and
+guarded against double-registration.
+[drive/public/js/ff_integration.bundle.js](drive/public/js/ff_integration.bundle.js).
 
 ### F4. Customize the framework `File` desk form
 "Attached to — flatten, move to bottom" (framework File desk form).
@@ -421,7 +471,34 @@ fresh upload (ties into F2b).
 - sits below the `Drive Properties` section added by
   [drive/fixtures/custom_field.json](drive/fixtures/custom_field.json)
 
-**Status:** open.
+**Status:** not done (reverted). A first pass added a `property_setter.json`
+fixture + enabled the `fixtures` hook, but that was backed out: a Property Setter
+is the *only* app-level way to move a standard `File` field, but it's heavier
+than warranted, and the form's real problem is the buggy custom-field chain (see
+below), not a missing setter. The cleaner fix — if pursued — is to repair the
+`insert_after` chain in `custom_field.json` and anchor the `Drive Properties`
+section just before `section_break_8` (`insert_after: is_folder`), so the form
+renders …fields → Drive Properties → Attached To with no Property Setter. Left as
+a deliberate non-change for now.
+
+Bugs noticed in [drive/fixtures/custom_field.json](drive/fixtures/custom_field.json)
+(layout only — columns still exist): `mime_type` → `insert_after: "drive_team"`
+(no such field; should be `team`), `column_break_tapww` →
+`insert_after: "settings"` (no such field), and the `Drive Properties` section is
+anchored on `section_break_8` so it renders jammed inside the Attached To section.
+
+> **Important (separate, real migration concern — independent of F4):** the
+> `fixtures` hook was commented out, so `custom_field.json` / `role.json` never
+> synced — the custom fields existed on the dev site only because they were
+> hand-created. **Re-enabled** the hook for `Custom Field` (File) + Drive `Role`
+> in [drive/hooks.py](drive/hooks.py) (Property Setter dropped). **Remaining
+> caveat:** fixtures sync *after* post_model_sync patches, but
+> `integrate_with_framework` writes to those columns during post_model_sync — so
+> on a fresh migrate the columns still won't exist when the patch runs (the
+> `Unknown column 'team'` family of error). Create the custom fields early
+> (`create_custom_fields(...)` in a pre_model_sync patch or at the top of the
+> integrate patch). Also `install.py:after_install` still references
+> `tabDrive File` and will fail on a fresh install.
 
 ### F5. Verify framework rename works on Drive files
 The override exposes its own [drive/overrides/file.py:rename](drive/overrides/file.py#L276)
@@ -439,7 +516,21 @@ verify:
 `after_rename` doc event or by overriding the framework's rename code
 path) so the same logic as `overrides/file.py:rename` runs.
 
-**Status:** open — needs investigation first; write the test, then decide.
+**Status:** done.
+- **Permissions:** the `has_permission` hook was registered under the dead
+  `"Drive File"` doctype, so framework `File` rows bypassed Drive's ACL on the
+  desk. Re-pointed to `"File"` in [drive/hooks.py](drive/hooks.py). Safe because
+  `user_has_permission` delegates non-drive Files to the framework's own check
+  (`ff_has_permission`), so attachments are unaffected.
+  (`permission_query_conditions` for list/report still points at `"Drive File"`
+  and queries `tabDrive File` — left as B1 deferred cleanup.)
+- **Disk move:** a desk-side `file_name` edit persisted the new name without
+  moving the blob (stale `file_url`). Replicating the move inside `validate` is
+  unsafe (`recursive_path_move` calls `save()` → recursion), so out-of-band
+  renames are now **blocked** in `validate` and must go through the Drive UI; the
+  sanctioned `rename`/`move` methods set `flags.drive_disk_rename` to bypass.
+  [drive/overrides/file.py](drive/overrides/file.py). (Primary-key renames via
+  `frappe.rename_doc` are an unusual admin op and left as-is.)
 
 ### F6. UX parity: drive-native vs attachment, inside Drive
 Inside the Drive frontend, a drive-native file and a framework attachment
@@ -464,7 +555,42 @@ or document why it's not safe (e.g. rename would break the host record's
 `file_url`). Where safe, enable. Where not safe, surface a clear reason.
 Thumbnails should be on by default.
 
-**Status:** open — audit pass first, then per-action decisions.
+**Status:** done — **also reworked the underlying model** (the
+`modifiable`/`is_attachment` booleans were vague and overlapping).
+
+**`kind` enum** — every Drive listing row now carries one self-documenting,
+mutually-exclusive `kind` (`entity_kind()` in
+[drive/utils/__init__.py](drive/utils/__init__.py); set in
+`list.py:get_query_data`, the `get_attachments` virtual rows, and
+`permissions.py:get_entity_with_permissions`):
+- `native` — Drive owns identity & storage (incl. folders, Writer Documents,
+  Presentations). Was `modifiable=1`.
+- `reference` — a Drive row pointing at another framework File ("open original").
+  Was `is_attachment=1`.
+- `foreign` — a stock framework File shown read-only in Drive ("open in desk").
+- `virtual` — fabricated grouping node (Doctype→Doc tree). Folds in the old
+  `!e.virtual` checks (also addresses E4).
+
+The frontend gates now read intent directly (`GenericPage.vue`, `Navbar.vue`,
+`InfoPopup.vue`): rename/move/share → `kind === 'native'`, open-original →
+`kind === 'reference'`, open-in-desk → `kind === 'foreign'`, etc. Verified on
+`coffee.localhost` (all four kinds derive correctly; no `modifiable`/
+`is_attachment` keys leak into responses).
+
+Per-action decisions:
+- **Download** — was wrongly gated on `modifiable`, so attachments couldn't be
+  downloaded. Now allowed for any real file (`kind !== 'virtual'` + downloadable
+  type), matching the file-preview navbar. (Also fixed a regression where my
+  first F6 pass let Download appear on virtual folders.) **Safe — enabled.**
+- **Copy Link / Show Info / Go to original** — enabled.
+- **Rename / Move** — `kind === 'native'` only: on a `reference`/`foreign` row
+  they'd rewrite the on-disk path / `file_url` and orphan the host blob.
+  **Documented unsafe.**
+- **Share** — `kind === 'native'` only: a framework attachment is shared via its
+  host document, not as a standalone Drive entity. **Documented.**
+- **Thumbnails** — `after_upload_file` no longer passes `create_thumbnail=False`;
+  back to the default (enqueued, image/video/pdf only).
+  [drive/overrides/file.py](drive/overrides/file.py).
 
 ### F7. `move` does not write an activity log entry
 [drive/overrides/file.py:194](drive/overrides/file.py#L194) `move` mutates
@@ -477,4 +603,7 @@ activity sidebar.
 `field_old_value=old_folder_name`, `field_new_value=new_folder_name`,
 message `"<user> moved <file_name> to <new_folder_name>"`.
 
-**Status:** open — small.
+**Status:** done — `move` now writes a `move` activity log (old/new folder
+*names*, `document_field="folder"`, message `"<user> moved <file> to <folder>"`)
+inside the `new_parent != self.folder` block, before the folder mutation.
+[drive/overrides/file.py](drive/overrides/file.py).

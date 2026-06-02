@@ -15,6 +15,37 @@ DriveFile = frappe.qb.DocType("File")
 STATUS_ACTIVE = "Active"
 STATUS_TRASHED = "Trashed"
 STATUS_REMOVED = "Removed"
+
+# A drive File whose `content_doctype` is "File" points at another framework File
+# row (the library / attachment-copy flow) rather than holding its own content.
+ATTACHMENT_CONTENT_DOCTYPE = "File"
+
+# `kind` — what a row in a Drive listing actually is, relative to Drive. This is a
+# mutually-exclusive, exhaustive partition (NOT the MIME `file_kinds` filter):
+#   native    — Drive owns the entity's identity & storage (incl. folders, Writer
+#               Documents, Presentations). Rename / move / share allowed.
+#   reference  — a Drive row that points at another framework File ("open original").
+#   foreign    — a stock framework File surfaced read-only in Drive ("open in desk").
+#   virtual    — a fabricated grouping node (Doctype→Doc tree), not a File row.
+# The old `modifiable` / `is_attachment` booleans are just projections of this:
+#   modifiable ≡ kind == native,  is_attachment ≡ kind == reference.
+KIND_NATIVE = "native"
+KIND_REFERENCE = "reference"
+KIND_FOREIGN = "foreign"
+KIND_VIRTUAL = "virtual"
+
+
+def entity_kind(row):
+    """Classify a real `File` listing row. See the `kind` partition above.
+
+    `virtual` grouping nodes are fabricated in `list.get_attachments` and tagged
+    with `kind` at construction, so they never reach this function.
+    """
+    if not row["is_drive_file"]:
+        return KIND_FOREIGN
+    if row["content_doctype"] == ATTACHMENT_CONTENT_DOCTYPE:
+        return KIND_REFERENCE
+    return KIND_NATIVE
 MIME_LIST_MAP = {
     "Image": [
         "image/png",

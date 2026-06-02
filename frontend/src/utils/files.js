@@ -18,24 +18,18 @@ import { useFileUpload, toast as nToast } from 'frappe-ui'
 import emitter from '@/emitter'
 
 export const openEntity = (entity, new_tab = false) => {
-  // Attachment doctype
-  if (entity.virtual) {
-    if (entity.virtual === 'doctype') {
-      return router.push({
-        name: 'Attachments',
-        params: {
-          doctype: entity.file_name,
-        },
-      })
-    } else {
-      return router.push({
-        name: 'Attachments',
-        params: {
-          doctype: entity.virtual_extra,
-          docname: entity.file_name,
-        },
-      })
-    }
+  // Virtual grouping node: navigate into its attachments bucket. A node with an
+  // attached_to_name drills into a single document; otherwise into a doctype.
+  if (entity.kind === 'virtual') {
+    return router.push({
+      name: 'Attachments',
+      params: entity.attached_to_name
+        ? {
+            doctype: entity.attached_to_doctype,
+            docname: entity.attached_to_name,
+          }
+        : { doctype: entity.attached_to_doctype },
+    })
   }
 
   if (!entity.is_folder) {

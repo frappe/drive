@@ -23,6 +23,7 @@ from drive.utils import (
     get_new_file_name,
     validate_filename,
     get_upload_path,
+    ATTACHMENT_CONTENT_DOCTYPE,
     STATUS_ACTIVE,
     STATUS_TRASHED,
 )
@@ -675,7 +676,7 @@ def redirect_to_original(file_id: str):
     file = frappe.get_cached_doc("File", file_id)
     if not user_has_permission(file_id, "read"):
         frappe.throw("You do not have permission to view this file.", frappe.PermissionError)
-    if not file.content_doctype == "File":
+    if not file.content_doctype == ATTACHMENT_CONTENT_DOCTYPE:
         frappe.throw("This is not an attachment", ValueError)
 
     frappe.local.response["type"] = "redirect"

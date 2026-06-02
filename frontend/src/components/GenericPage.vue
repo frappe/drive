@@ -306,7 +306,7 @@ const actionItems = computed(() => {
         label: __('Preview'),
         icon: LucideEye,
         action: ([entity]) => openEntity(entity),
-        isEnabled: (e) => e.file_type !== 'Link' && !e.virtual,
+        isEnabled: (e) => e.file_type !== 'Link' && e.kind !== 'virtual',
       },
       {
         label: __('Open'),
@@ -318,7 +318,7 @@ const actionItems = computed(() => {
         label: __('Show Info'),
         icon: LucideInfo,
         action: () => (dialog.value = 'i'),
-        isEnabled: (e) => !e.virtual,
+        isEnabled: (e) => e.kind !== 'virtual',
       },
       {
         label: __('Copy Link'),
@@ -329,8 +329,11 @@ const actionItems = computed(() => {
       {
         label: __('Download'),
         icon: LucideDownload,
+        // Downloading is read-only, so it is safe for every real file regardless
+        // of kind (parity with the file-preview navbar). Only virtual grouping
+        // nodes and non-downloadable types are excluded.
         isEnabled: (e) =>
-          e.modifiable &&
+          e.kind !== 'virtual' &&
           !['Link', 'Presentation', 'Document'].includes(e.file_type),
         action: (entities) => entitiesDownload(team.value, entities),
         multi: true,
@@ -339,8 +342,8 @@ const actionItems = computed(() => {
       {
         divider: true,
         isEnabled: (e) =>
-          e.is_attachment ||
-          (!e.is_drive_file && store.state.user.systemUser && !e.virtual),
+          e.kind === 'reference' ||
+          (e.kind === 'foreign' && store.state.user.systemUser),
       },
       {
         label: __('Go to original'),
@@ -352,35 +355,34 @@ const actionItems = computed(() => {
             '_blank'
           )
         },
-        isEnabled: (e) => e.is_attachment,
+        isEnabled: (e) => e.kind === 'reference',
       },
       {
         label: __('Open in Desk'),
         icon: LucideMonitorCog,
         action: ([entity]) =>
           window.open('/desk/file/' + entity.name, '_blank'),
-        isEnabled: (e) =>
-          !e.is_drive_file && store.state.user.systemUser && !e.virtual,
+        isEnabled: (e) => e.kind === 'foreign' && store.state.user.systemUser,
       },
-      { divider: true, isEnabled: (e) => !e.external && !e.virtual },
+      { divider: true, isEnabled: (e) => !e.external && e.kind !== 'virtual' },
       {
         label: __('Share'),
         icon: LucideShare2,
         action: () => (dialog.value = 's'),
-        isEnabled: (e) => e.share && e.modifiable,
+        isEnabled: (e) => e.share && e.kind === 'native',
         important: true,
       },
       {
         label: __('Rename'),
         icon: LucideSquarePen,
         action: () => (dialog.value = 'rn'),
-        isEnabled: (e) => e.modifiable && e.write,
+        isEnabled: (e) => e.kind === 'native' && e.write,
       },
       {
         label: __('Move'),
         icon: LucideArrowLeftRight,
         action: () => (dialog.value = 'm'),
-        isEnabled: (e) => e.modifiable && e.write,
+        isEnabled: (e) => e.kind === 'native' && e.write,
         multi: true,
         important: true,
       },
@@ -393,7 +395,7 @@ const actionItems = computed(() => {
           props.getEntities.setData(props.getEntities.data)
           toggleFav.submit({ entities })
         },
-        isEnabled: (e) => !e.is_favourite && !e.external && !e.virtual,
+        isEnabled: (e) => !e.is_favourite && !e.external && e.kind !== 'virtual',
         important: true,
         multi: true,
       },
@@ -406,7 +408,7 @@ const actionItems = computed(() => {
           props.getEntities.setData(props.getEntities.data)
           toggleFav.submit({ entities })
         },
-        isEnabled: (e) => e.is_favourite && !e.external && !e.virtual,
+        isEnabled: (e) => e.is_favourite && !e.external && e.kind !== 'virtual',
         important: true,
         multi: true,
       },

@@ -20,7 +20,7 @@ declare module 'vue' {
     AudioPreview: typeof import('./src/components/FileTypePreview/AudioPreview.vue')['default']
     BackendSettings: typeof import('./src/components/Settings/BackendSettings.vue')['default']
     BottomBar: typeof import('./src/components/BottomBar.vue')['default']
-    ColorPicker: typeof import('./src/components/DocEditor/components/ColorPicker.vue')['default']
+    ColorPicker: typeof import('./src/components/ColorPicker.vue')['default']
     CommentEditor: typeof import('./src/components/DocEditor/components/CommentEditor.vue')['default']
     ConfirmDialog: typeof import('./src/components/ConfirmDialog.vue')['default']
     ContextMenu: typeof import('./src/components/ContextMenu.vue')['default']

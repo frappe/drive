@@ -13,6 +13,8 @@ from drive.utils import (
     get_home_folder,
     FILE_FIELDS,
     map_ff_to_drive_type,
+    entity_kind,
+    KIND_VIRTUAL,
     STATUS_ACTIVE,
     STATUS_TRASHED,
 )
@@ -406,8 +408,7 @@ def get_query_data(
 
         if not r["is_drive_file"]:
             r["file_type"] = map_ff_to_drive_type(r)
-        r["modifiable"] = r["is_drive_file"] and not r["content_doctype"] == "File"
-        r["is_attachment"] = r["is_drive_file"] and r["content_doctype"] == "File"
+        r["kind"] = entity_kind(r)
         r |= get_user_access(name)
 
     return res
@@ -443,8 +444,13 @@ def get_attachments(doctype: str | None = None, docname: str | None = None):
             "is_folder": 1,
             "file_type": "Folder",
             "child_count": size,
-            "virtual": "docname" if doctype else "doctype",
-            "virtual_extra": doctype,
+            "kind": KIND_VIRTUAL,
+            # These nodes bucket framework attachments by their attached_to target.
+            # `kind` marks them virtual; these two say *which* bucket and double as
+            # the navigation target. The doctype-level node has no name yet; the
+            # document-level node carries the parent doctype + this document name.
+            "attached_to_doctype": doctype or name,
+            "attached_to_name": name if doctype else None,
         }
         for name, size in doctypes_set.items()
     ]

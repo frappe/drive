@@ -54,7 +54,7 @@ class FileManager:
                 config=Config(signature_version=settings.signature_version),
             )
 
-    def __not_if_flat(func):
+    def _not_if_flat(func):
         """
         Decorator to skip the function if flat structure is enabled.
         """
@@ -195,7 +195,7 @@ class FileManager:
                 return parent / ".embeds" / entity.file_name
             return parent / entity.file_name
 
-    @__not_if_flat
+    @_not_if_flat
     def create_folder(self, entity, root):
         """
         Function to create a folder in the S3 bucket or on disk.
@@ -351,14 +351,14 @@ class FileManager:
         root = get_home_folder(entity.team)
         return Path(storage_key(root["file_url"])) / ".trash" / entity.file_name
 
-    @__not_if_flat
+    @_not_if_flat
     def rename(self, entity):
         if not entity.file_url or entity.mime_type == "frappe/slides":
             return
         new_path = self.get_disk_path(entity)
         return self.move(entity, new_path)
 
-    @__not_if_flat
+    @_not_if_flat
     def move_to_trash(self, entity):
         if not entity.file_url or entity.mime_type in ["frappe/slides", "link"]:
             return
@@ -388,14 +388,14 @@ class FileManager:
             frappe.log_error(f"Moved {entity.name} to trash without it being on disk")
             pass
 
-    @__not_if_flat
+    @_not_if_flat
     def restore(self, entity):
         """
         Restore a file from the trash.
         """
         self.move(frappe._dict(file_url=self.__get_trash_path(entity), team=entity.team), entity.file_url)
 
-    @__not_if_flat
+    @_not_if_flat
     def move(self, entity, new_path: str | Path):
         """
         Move a file on disk

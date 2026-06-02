@@ -109,7 +109,10 @@ permission_query_conditions = {
 }
 
 has_permission = {
-    "Drive File": "drive.api.permissions.user_has_permission",
+    # Registered on the framework `File` doctype (the class override lives there
+    # too). `user_has_permission` delegates non-drive Files to the framework's own
+    # check, so attachments are unaffected; drive Files go through Drive's ACL.
+    "File": "drive.api.permissions.user_has_permission",
 }
 
 after_upload_file = "drive.overrides.file.after_upload_file"
@@ -137,7 +140,12 @@ doc_events = {
 }
 
 
-# fixtures = [{"dt": "Role", "filters": [["role_name", "like", "Drive %"]]}]
+fixtures = [
+    # Drive bolts its fields onto the framework File doctype; without this the
+    # custom_field.json / role.json fixtures never sync to other sites.
+    {"dt": "Custom Field", "filters": [["dt", "=", "File"]]},
+    {"dt": "Role", "filters": [["role_name", "like", "Drive %"]]},
+]
 
 # Scheduled Tasks
 # ---------------

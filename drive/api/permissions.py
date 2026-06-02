@@ -10,6 +10,7 @@ from drive.utils import (
     FILE_FIELDS,
     get_home_folder,
     map_ff_to_drive_type,
+    entity_kind,
     STATUS_ACTIVE,
 )
 
@@ -192,8 +193,7 @@ def get_entity_with_permissions(entity_name: str):
     if not entity.is_drive_file:
         return_obj["file_type"] = map_ff_to_drive_type(entity)
 
-    return_obj["modifiable"] = entity["is_drive_file"] and not entity["content_doctype"] == "File"
-    return_obj["is_attachment"] = entity["is_drive_file"] and entity["content_doctype"] == "File"
+    return_obj["kind"] = entity_kind(entity)
 
     # To work with modern frappe-ui composables
     frappe.response["data"] = return_obj

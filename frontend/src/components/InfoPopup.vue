@@ -11,7 +11,7 @@
     <template #body-content>
       <ul class="space-y-3 text-sm mb-4 text-ink-gray-8">
         <Alert
-          v-if="entity.is_attachment"
+          v-if="entity.kind === 'reference'"
           title="This is an attachment of another file."
           theme="blue"
           :dismissable="false"

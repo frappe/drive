@@ -159,7 +159,7 @@ const defaultActions = computed(() => {
           label: __('Open in Desk'),
           icon: LucideMonitorCog,
           onClick: () => window.open('/desk/file/' + rootEntity.value.name, '_blank'),
-          isEnabled: () => !rootEntity.value.is_drive_file && store.state.user.systemUser,
+          isEnabled: () => rootEntity.value.kind === 'foreign' && store.state.user.systemUser,
         },
         {
           label: __('Go to original'),
@@ -170,7 +170,7 @@ const defaultActions = computed(() => {
               '_blank'
             )
           },
-          isEnabled: () => rootEntity.value.is_attachment,
+          isEnabled: () => rootEntity.value.kind === 'reference',
         },
         {
           label: __('Copy Link'),
@@ -200,19 +200,19 @@ const defaultActions = computed(() => {
           onClick: () => {
             dialog.value = 's'
           },
-          isEnabled: () => rootEntity.value.share && rootEntity.value.modifiable,
+          isEnabled: () => rootEntity.value.share && rootEntity.value.kind === 'native',
         },
         {
           label: __('Rename'),
           icon: LucideSquarePen,
           onClick: () => (dialog.value = 'rn'),
-          isEnabled: () => rootEntity.value.write && rootEntity.value.modifiable,
+          isEnabled: () => rootEntity.value.write && rootEntity.value.kind === 'native',
         },
         {
           label: __('Move'),
           icon: LucideArrowLeftRight,
           onClick: () => (dialog.value = 'm'),
-          isEnabled: () => rootEntity.value.write && rootEntity.value.modifiable,
+          isEnabled: () => rootEntity.value.write && rootEntity.value.kind === 'native',
         },
         {
           label: __('Favourite'),
