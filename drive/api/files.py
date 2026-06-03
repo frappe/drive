@@ -597,8 +597,9 @@ def move(entity_names: list[str], new_parent: str | None = None, team: str | Non
         res = doc.move(new_parent, team)
 
     if not res["folder"]:
-        file_name, personal = frappe.db.get_value("Drive Team", res["team"], ["file_name", "personal"])
-        res["file_name"] = "Home" if personal else file_name
+        # Drive Team's display field is `title` (not `file_name`).
+        title, personal = frappe.db.get_value("Drive Team", res["team"], ["title", "personal"])
+        res["file_name"] = "Home" if personal else title
 
     return res
 

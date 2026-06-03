@@ -382,8 +382,10 @@ class File(FrappeFile):
 
 
 def after_upload_file(doc):
+    # `after_upload_file` hook (frappe handler.upload_file): reassigns `doc` to our
+    # return value, so every path must return the doc.
     if doc.is_drive_file:
-        return
+        return doc
     settings = frappe.get_single("Drive Disk Settings")
     if frappe.form_dict.library_file_name:
         library_doc = frappe.get_doc("File", frappe.form_dict.library_file_name)

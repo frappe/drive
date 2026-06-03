@@ -1,0 +1,38 @@
+[
+ {
+  "doctype": "Property Setter",
+  "doctype_or_field": "DocField",
+  "doc_type": "File",
+  "field_name": "file_url",
+  "property": "depends_on",
+  "property_type": "Data",
+  "value": "eval:doc.is_drive_file || !doc.is_folder",
+  "name": "File-file_url-depends_on",
+  "is_system_generated": 0,
+  "docstatus": 0
+ },
+ {
+  "doctype": "Property Setter",
+  "doctype_or_field": "DocField",
+  "doc_type": "File",
+  "field_name": "folder",
+  "property": "hidden",
+  "property_type": "Check",
+  "value": "0",
+  "name": "File-folder-hidden",
+  "is_system_generated": 0,
+  "docstatus": 0
+ },
+ {
+  "doctype": "Property Setter",
+  "doctype_or_field": "DocField",
+  "doc_type": "File",
+  "field_name": "folder",
+  "property": "depends_on",
+  "property_type": "Data",
+  "value": "eval:doc.is_drive_file",
+  "name": "File-folder-depends_on",
+  "is_system_generated": 0,
+  "docstatus": 0
+ }
+]

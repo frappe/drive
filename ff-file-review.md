@@ -449,17 +449,57 @@ Each tab acts as a folder picker; choosing a destination either copies an
 existing file in (current behavior) or sets the destination folder for a
 fresh upload (ties into F2b).
 
-**Status:** done (additional-button form) — **needs manual verification on a
-running desk** (dev site currently down, tests disabled). Registered
-`DRIVE_UPLOADER` into `frappe.ui.FileUploader.UploadOptions` as a "Drive" button
-— the supported, non-fragile extension point. *Replacing* the stock Library tab
-would mean patching framework `FileUploader.vue` from an app, which is fragile;
-rejected. Selecting a Drive file routes through the framework's
-`library_file_name` flow, which `after_upload_file` already turns into an
-attachment pointing back at the chosen file (`content_doctype`/`content_docname`).
-Fixed the prior bugs (undeclared `file`, ref access, the `file_url` hack) and
-guarded against double-registration.
-[drive/public/js/ff_integration.bundle.js](drive/public/js/ff_integration.bundle.js).
+**Status:** done — **verified on `coffee.localhost`** (render, all three tabs,
+folder navigation, image thumbnails, selection→Attach). Replaces the stock
+**Library** option (same label, same second slot, same library icon) with a Drive
+picker, modelled on the SPA's `MoveDialog` UX but built with desk primitives and
+styled with the espresso tokens that exist in desk (`--ink-gray-*`,
+`--surface-gray-*`, `--text-base`) — no framework files patched, no `frappe-ui`
+import (it isn't resolvable in the desk bundle), and the old `TreeNode`/`Thumbnail`
+(framework-ish, giant hover popover, crashed on framework files with no
+`file_type`) were dropped in favour of a clean breadcrumb list.
+
+Features (parity with the stock Library + Drive list view):
+- **File-type icons** like Drive's list view via `/assets/drive/images/icons/<type>.svg`
+  (`getIconUrl`); Site rows have no `file_type`, so infer from the extension and
+  fall back to `unknown.svg`. (The old desk `Thumbnail.vue` pointed at the wrong
+  `/assets/drive/frontend/icons/` path — that was the "broken thumbnails".)
+- **Infinite scroll**: added optional `start`/`limit` to `drive.api.list.files`
+  and `get_query_data` ([drive/api/list.py](drive/api/list.py)); the picker pages
+  on scroll (Site uses the framework's `get_files_in_folder` start/page_length).
+- **Search**: debounced; Site uses `get_files_by_search_text` (global), Drive
+  searches the **whole team** — `list.files` now drops the folder filter when
+  `search` is set (results still permission- and team-scoped via `get_query_data`).
+
+Gotchas found + fixed in the browser:
+- our `createApp` needs `SetVueGlobals(app)` (global) or template `__()` throws
+  `s.__ is not a function` and the dialog renders blank;
+- the option must read **Library** in the **second slot** (not a "Drive" button):
+  default `disable_file_browser=true` to hide the stock browser, then a DOM
+  reorder moves our button after "My Device";
+- `frappe.ui.Dialog` default width (no `size`) — `large` was too wide;
+- the row class was named `.row`, which collides with Bootstrap's grid `.row`
+  (`margin: 0 -15px`) and shifted rows 15px left of the tabs — renamed to
+  `.file-row`.
+
+- **Override** ([ff_integration.bundle.js](drive/public/js/ff_integration.bundle.js)):
+  subclass `frappe.ui.FileUploader` to default `disable_file_browser = true`
+  (hides the stock Library button at every call site — forms, grid, attach
+  control, communication, file view) and register a single "Drive" upload option.
+- **Picker** ([FileUploader.vue](drive/public/js/FileUploader.vue)), three tabs:
+  - **Site** — framework files via `frappe.core.api.file.get_files_in_folder`
+    (faithfully the old Library content).
+  - **Home** — personal Drive (`drive.api.list.files`, `get_default_team`).
+  - **Teams** — team selector + that team's Drive tree.
+  Reuses `TreeNode.vue` for the tree. Selecting a **file** attaches it; selecting
+  a **folder** (Drive tabs) sets it as the destination for a new upload.
+- **Attach path**: both modes hand the file to the framework engine via
+  `uploader.upload_file({ library_file_name })`, so the caller's `on_success`
+  (form field + attachments) fires unchanged.
+- **New upload to a Drive folder**: bytes go straight to Drive via the existing
+  `drive.api.files.upload_file` (team + parent), then the result is attached via
+  `library_file_name`. So Drive owns the bytes; the framework owns the link. No
+  `after_upload_file`/form_data changes needed.
 
 ### F4. Customize the framework `File` desk form
 "Attached to — flatten, move to bottom" (framework File desk form).

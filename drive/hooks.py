@@ -144,6 +144,10 @@ fixtures = [
     # Drive bolts its fields onto the framework File doctype; without this the
     # custom_field.json / role.json fixtures never sync to other sites.
     {"dt": "Custom Field", "filters": [["dt", "=", "File"]]},
+    # Desk-form tweaks for the framework File form: show the Drive folder + file_url
+    # fields only when relevant (is_drive_file). These used to be inline edits to
+    # frappe's file.json; they live here instead so the framework PR stays minimal.
+    {"dt": "Property Setter", "filters": [["doc_type", "=", "File"]]},
     {"dt": "Role", "filters": [["role_name", "like", "Drive %"]]},
 ]
 

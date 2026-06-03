@@ -169,9 +169,13 @@ def files(
     tag_list: list[str] | str = [],
     file_kinds: list[str] | str = [],
     search: str = None,
+    start: int = 0,
+    limit: int = None,
 ):
     """
-    Returns all active files in a folder.
+    Returns active files in a folder. Pass `start`/`limit` to page through large
+    folders. When `search` is set, results span the whole team (not just the
+    current folder).
     """
     if team == "all":
         team = None
@@ -191,7 +195,10 @@ def files(
             frappe.exceptions.PermissionError,
         )
 
-    query = _get_basic_query(search).where(DriveFile.folder == entity_name)
+    query = _get_basic_query(search)
+    if not search:
+        # Folder browsing; search is team-wide so it skips the folder filter.
+        query = query.where(DriveFile.folder == entity_name)
 
     return get_query_data(
         query,
@@ -201,6 +208,8 @@ def files(
         entity_name=entity_name,
         order_by=order_by,
         ascending=ascending,
+        start=start,
+        limit=limit,
     )
 
 
@@ -327,6 +336,8 @@ def get_query_data(
     shared_type=None,
     order_by="modified",
     ascending=True,
+    start=0,
+    limit=None,
 ):
     """
     Runs all the necessary commands to obtain files in the structure expected by Drive frontend.
@@ -371,6 +382,10 @@ def get_query_data(
     # Apply tag and file kind filters
     query = _apply_tags_filter(query, tag_list)
     query = _apply_file_kinds_filter(query, file_kinds)
+
+    # Page through large result sets (aggregation below is scoped to the page).
+    if limit:
+        query = query.limit(int(limit)).offset(int(start or 0))
 
     res = query.run(as_dict=True)
 

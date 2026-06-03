@@ -4,7 +4,7 @@ import frappe
 
 no_cache = 1
 
-file_nameS = {"login": "Login", "signup": "Create an Account"}
+TITLES = {"login": "Login", "signup": "Create an Account"}
 
 
 def get_context():
