@@ -36,6 +36,10 @@ def get_file_content(embed_name, parent_entity_name):
         frappe.throw("This is not an embed.")
 
     embed = frappe.get_cached_doc("Drive File", embed_name)
+
+    if embed.parent_entity != parent_entity_name or not user_has_permission(embed_name, "read"):
+        raise frappe.PermissionError("You do not have permission to view this file")
+
     # Remove at some point
     if not embed.path:
         embed = frappe._dict(
