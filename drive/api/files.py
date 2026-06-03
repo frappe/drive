@@ -1,6 +1,7 @@
 import json
 import os
 import re
+import zipfile
 from datetime import date, timedelta
 from io import BytesIO
 from pathlib import Path
@@ -542,6 +543,129 @@ def stream_file_content(entity_name: str):
     res = Response(data, 206, mimetype=entity.mime_type, direct_passthrough=True)
     res.headers.add("Content-Range", "bytes {0}-{1}/{2}".format(byte1, byte1 + length - 1, size))
     return res
+
+
+class _ZipSink:
+    """A non-seekable sink for `zipfile`. Because it exposes no `seek`/`tell`,
+    zipfile falls back to streaming-friendly data descriptors, letting us yield
+    archive bytes as they're produced instead of buffering the whole zip."""
+
+    def __init__(self):
+        self._chunks = bytearray()
+
+    def write(self, data):
+        self._chunks += data
+        return len(data)
+
+    def flush(self):
+        pass
+
+    def drain(self):
+        chunk = bytes(self._chunks)
+        del self._chunks[:]
+        return chunk
+
+
+def _iter_folder_files(entity_name, prefix=""):
+    """Recursively yield (arcname, drive_file) for downloadable files in a folder.
+
+    Drive Documents and links have no underlying blob, so they're skipped.
+    """
+    children = frappe.get_all(
+        "Drive File",
+        filters={"parent_entity": entity_name, "is_active": 1},
+        fields=["name", "title", "is_group", "is_link", "document", "path", "team"],
+    )
+    for child in children:
+        arcname = f"{prefix}{child.title}"
+        if child.is_group:
+            yield from _iter_folder_files(child.name, prefix=f"{arcname}/")
+        elif not child.is_link and not child.document and child.path:
+            yield arcname, child
+
+
+def _collect_download_files(entity_names):
+    """Expand the selected top-level entities into (arcname, drive_file) pairs.
+
+    Read permission is checked per top-level entity (Drive's ACL cascades to
+    children); a single folder nests its contents under its own title.
+    """
+    for name in entity_names:
+        if not user_has_permission(name, "read"):
+            raise frappe.PermissionError("You do not have permission to download this file")
+        entity = frappe.get_value(
+            "Drive File",
+            name,
+            ["name", "title", "is_group", "is_link", "document", "path", "team"],
+            as_dict=True,
+        )
+        if not entity:
+            continue
+        if entity.is_group:
+            yield from _iter_folder_files(entity.name, prefix=f"{entity.title}/")
+        elif not entity.is_link and not entity.document and entity.path:
+            yield entity.title, entity
+
+
+def _stream_zip(files):
+    """Generator that yields a ZIP archive built one file at a time, so memory
+    stays flat regardless of the total size."""
+    manager = FileManager()
+    sink = _ZipSink()
+    with zipfile.ZipFile(sink, "w", zipfile.ZIP_STORED, allowZip64=True) as zf:
+        for arcname, child in files:
+            info = zipfile.ZipInfo(arcname)
+            info.compress_type = zipfile.ZIP_STORED
+            with zf.open(info, "w") as dest:
+                source = manager.get_file(child)
+                try:
+                    while True:
+                        block = source.read(4 * 1024 * 1024)
+                        if not block:
+                            break
+                        dest.write(block)
+                        data = sink.drain()
+                        if data:
+                            yield data
+                finally:
+                    if hasattr(source, "close"):
+                        source.close()
+            data = sink.drain()
+            if data:
+                yield data
+    yield sink.drain()
+
+
+@frappe.whitelist(allow_guest=True)
+def download_folder(entities: str, team: str | None = None):
+    """Stream a ZIP of one or more Drive entities (folders and/or files).
+
+    Replaces the old client-side JSZip flow, which loaded every file into
+    browser memory and hung on large folders. Here the server streams the
+    archive a file at a time via chunked transfer.
+
+    :param entities: JSON list of Drive File names (the user's selection)
+    """
+    if isinstance(entities, str):
+        entities = frappe.parse_json(entities)
+    if not entities:
+        frappe.throw("Nothing to download", ValueError)
+
+    # Materialise the file list up front so a permission error surfaces as a
+    # clean HTTP error instead of a corrupt, half-streamed zip.
+    files = list(_collect_download_files(entities))
+    if not files:
+        frappe.throw("No downloadable files found", frappe.NotFound)
+
+    if len(entities) == 1:
+        title = frappe.get_value("Drive File", entities[0], "title")
+        zip_name = f"{title}.zip"
+    else:
+        zip_name = f"Drive Download {frappe.utils.now()}.zip"
+
+    response = Response(_stream_zip(files), mimetype="application/zip", direct_passthrough=True)
+    response.headers["Content-Disposition"] = f'attachment; filename="{secure_filename(zip_name)}"'
+    return response
 
 
 @frappe.whitelist()
