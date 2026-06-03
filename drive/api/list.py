@@ -443,9 +443,21 @@ def get_attachments(doctype: str | None = None, docname: str | None = None):
         query = frappe.qb.from_(DriveFile).where(DriveFile.name.isin(files))
         return get_query_data(query)
 
+    titles = {}
     if doctype:
         names = frappe.get_list("File", filters={"attached_to_doctype": doctype}, fields=["attached_to_name"])
         doctypes_set = Counter(k["attached_to_name"] for k in names)
+        # Show each document by its title field rather than its raw name (ID).
+        title_field = frappe.get_meta(doctype).get_title_field()
+        if title_field != "name":
+            titles = dict(
+                frappe.get_all(
+                    doctype,
+                    filters={"name": ["in", list(doctypes_set)]},
+                    fields=["name", title_field],
+                    as_list=True,
+                )
+            )
     else:
         doctypes = frappe.get_list(
             "File", filters={"attached_to_doctype": ["is", "set"]}, fields=["attached_to_doctype"]
@@ -455,7 +467,7 @@ def get_attachments(doctype: str | None = None, docname: str | None = None):
     return [
         {
             "name": name,
-            "file_name": name,
+            "file_name": titles.get(name) or name,
             "is_folder": 1,
             "file_type": "Folder",
             "child_count": size,

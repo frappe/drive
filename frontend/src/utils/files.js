@@ -199,14 +199,47 @@ export const prettyData = (entities) => {
   })
 }
 export const setBreadCrumbs = (entity) => {
-  const breadcrumbs = entity.breadcrumbs
+  let breadcrumbs = entity.breadcrumbs
   const in_home = entity.in_home
   const team =
     getTeams.data?.[breadcrumbs[0].team] ||
     getPublicTeams.data?.[breadcrumbs[0].team]
 
   let res = []
-  if (team || in_home) {
+  if (entity.attached_to_doctype) {
+    // Framework attachments live under Home/Attachments; surface their real
+    // location (Attachments > Doctype > Document) instead of "Shared".
+    res = [
+      {
+        label: __('Attachments'),
+        name: 'Attachments',
+        route: { name: 'Attachments' },
+      },
+      {
+        label: entity.attached_to_doctype,
+        name: entity.attached_to_doctype,
+        route: {
+          name: 'Attachments',
+          params: { doctype: entity.attached_to_doctype },
+        },
+      },
+    ]
+    if (entity.attached_to_name) {
+      res.push({
+        label: entity.attached_to_name,
+        name: entity.attached_to_name,
+        route: {
+          name: 'Attachments',
+          params: {
+            doctype: entity.attached_to_doctype,
+            docname: entity.attached_to_name,
+          },
+        },
+      })
+    }
+    // Drop the folder-based upward path; only the file itself follows above.
+    breadcrumbs = breadcrumbs.slice(-1)
+  } else if (team || in_home) {
     res = [
       {
         label: in_home ? __('Home') : team.title,

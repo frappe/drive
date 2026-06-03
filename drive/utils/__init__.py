@@ -139,6 +139,8 @@ FILE_FIELDS = [
     fn.Coalesce(Field("file_modified"), DriveFile.modified).as_("modified"),
     "owner",
     "is_drive_file",
+    "attached_to_doctype",
+    "attached_to_name",
 ]
 
 
