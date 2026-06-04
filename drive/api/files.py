@@ -637,7 +637,7 @@ def _stream_zip(files):
 
 
 @frappe.whitelist(allow_guest=True)
-def download_folder(entities: str, team: str | None = None):
+def download_folder(entities: str):
     """Stream a ZIP of one or more Drive entities (folders and/or files).
 
     Replaces the old client-side JSZip flow, which loaded every file into

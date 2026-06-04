@@ -35,7 +35,7 @@
         <div class="flex items-center gap-2">
           <Button
             :icon="LucideDownload"
-            @click="entitiesDownload(null, [{ name: file.name }], true)"
+            @click="entitiesDownload([{ name: file.name }], true)"
             variant="subtle"
           />
         </div>
