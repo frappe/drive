@@ -23,6 +23,7 @@ const LIBRARY_UPLOADER = {
     const d = new frappe.ui.Dialog({
       title: __('Library'),
     })
+    d.$wrapper.addClass('drive-library-dialog')
     // The picker owns its own action buttons; drop the dialog's default footer.
     d.$wrapper.find('.modal-footer').hide()
 

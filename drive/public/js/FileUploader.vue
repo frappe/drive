@@ -9,12 +9,15 @@
     </div>
 
     <!-- Team selector (Teams tab only) -->
-    <select v-if="tab === 'teams'" class="team-select" :value="team" @change="selectTeam($event.target.value)">
-      <option value="" disabled>{{ __('Select a team') }}</option>
-      <option v-for="t in teams" :key="t.name" :value="t.name">
-        {{ t.title }}
-      </option>
-    </select>
+    <div v-if="tab === 'teams'" class="team-select-wrap">
+      <select class="team-select" :value="team" @change="selectTeam($event.target.value)">
+        <option value="" disabled>{{ __('Select a team') }}</option>
+        <option v-for="t in teams" :key="t.name" :value="t.name">
+          {{ t.title }}
+        </option>
+      </select>
+      <span class="team-select-chevron" v-html="selectChevronIcon" />
+    </div>
 
     <!-- Search -->
     <input v-model="searchText" type="search" class="search" :placeholder="tab === 'site' ? __('Search site files') : __('Search this team')
@@ -61,7 +64,7 @@
           <b>{{ here.label }}</b>
         </template>
         <template v-else-if="selected">
-          {{ __('Attach') }} <b>{{ selected.file_name }}</b>
+          <b>{{ selected.file_name }}</b>
         </template>
         <template v-else-if="canUpload">
           {{ __('Choose a file, or open a folder') }}
@@ -71,7 +74,7 @@
 
       <input ref="fileInput" type="file" class="hidden" @change="onStage" />
       <button v-if="canUpload" class="ghost-btn" @click="$refs.fileInput.click()">
-        {{ __('Upload new…') }}
+        {{ __('Upload new') }}
       </button>
       <button class="primary-btn" :disabled="!ready || busy" @click="submit">
         <span v-if="busy" class="spinner-border spinner-border-sm" />
@@ -86,6 +89,8 @@ import { ref, computed, onMounted, watch } from 'vue'
 
 const chevronIcon =
   '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg>'
+const selectChevronIcon =
+  '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>'
 
 const props = defineProps({
   uploader: { type: Object, required: true },
@@ -354,6 +359,10 @@ defineExpose({ submit })
   color: var(--ink-gray-8);
 }
 
+:global(.drive-library-dialog .modal-body) {
+  padding-top: 0.5rem;
+}
+
 /* Tabs */
 .tab-bar {
   display: flex;
@@ -388,14 +397,32 @@ defineExpose({ submit })
 }
 
 /* Team select */
-.team-select {
+.team-select-wrap {
+  position: relative;
   margin-top: 0.75rem;
+}
+
+.team-select {
+  appearance: none;
+  width: 100%;
   font-size: var(--text-sm);
   height: 1.75rem;
   border: 1px solid var(--outline-gray-2, #e0e0e0);
   border-radius: var(--border-radius, 8px);
   background: var(--surface-gray-2);
-  padding: 0 0.5rem;
+  padding: 0 2rem 0 0.5rem;
+}
+
+.team-select-chevron {
+  position: absolute;
+  top: 50%;
+  right: 0.6rem;
+  display: inline-flex;
+  width: 14px;
+  height: 14px;
+  color: var(--ink-gray-7);
+  pointer-events: none;
+  transform: translateY(-50%);
 }
 
 /* Search */
