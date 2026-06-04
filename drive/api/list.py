@@ -19,7 +19,7 @@ from drive.utils import (
     STATUS_TRASHED,
 )
 from drive.utils.api import get_default_access
-from .permissions import get_user_access, user_has_permission
+from .permissions import get_user_access, user_has_permission, get_teams
 
 DriveUser = frappe.qb.DocType("User")
 UserGroupMember = frappe.qb.DocType("User Group Member")
@@ -153,7 +153,12 @@ def _get_team_files(names):
 
 
 def _get_basic_query(search):
-    query = frappe.qb.from_(DriveFile).where((DriveFile.status == STATUS_ACTIVE) | (DriveFile.is_drive_file == 0))
+    # Includes framework Files (favourites/recents/shared are scoped by a
+    # user-specific join, so showing a framework File the user favourited/was-shared
+    # is safe). Unscoped folder browse adds is_drive_file==1 itself.
+    query = frappe.qb.from_(DriveFile).where(
+        (DriveFile.status == STATUS_ACTIVE) | (DriveFile.is_drive_file == 0)
+    )
     if search:
         query = query.where(DriveFile.file_name.like(f"%{search}%"))
     return query
@@ -195,8 +200,30 @@ def files(
             frappe.exceptions.PermissionError,
         )
 
-    query = _get_basic_query(search)
-    if not search:
+    if not entity.is_drive_file:
+        # Framework folder (e.g. desk "Home"): list via frappe.get_list so the
+        # framework's own File permissions apply. team dropped so get_query_data
+        # skips the Drive-only team filter.
+        ff_filters = {"folder": entity_name}
+        if search:
+            ff_filters["file_name"] = ["like", f"%{search}%"]
+        names = frappe.get_list("File", filters=ff_filters, pluck="name")
+        return get_query_data(
+            frappe.qb.from_(DriveFile).where(DriveFile.name.isin(names or [""])),
+            tag_list=tag_list,
+            file_kinds=file_kinds,
+            order_by=order_by,
+            ascending=ascending,
+            start=start,
+            limit=limit,
+        )
+
+    # Drive folder browse is not user-scoped, so restrict to Drive files here
+    query = _get_basic_query(search).where(DriveFile.is_drive_file == 1)
+    if search:
+        if not team:
+            query = query.where(DriveFile.team.isin(get_teams() or [""]))
+    else:
         # Folder browsing; search is team-wide so it skips the folder filter.
         query = query.where(DriveFile.folder == entity_name)
 
@@ -472,10 +499,6 @@ def get_attachments(doctype: str | None = None, docname: str | None = None):
             "file_type": "Folder",
             "child_count": size,
             "kind": KIND_VIRTUAL,
-            # These nodes bucket framework attachments by their attached_to target.
-            # `kind` marks them virtual; these two say *which* bucket and double as
-            # the navigation target. The doctype-level node has no name yet; the
-            # document-level node carries the parent doctype + this document name.
             "attached_to_doctype": doctype or name,
             "attached_to_name": name if doctype else None,
         }

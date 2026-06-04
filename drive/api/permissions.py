@@ -41,6 +41,14 @@ def get_user_access(entity: str | Document | frappe._dict, user: str = None, tea
     if isinstance(entity, str):
         entity = frappe.get_cached_doc("File", entity)
 
+    # Framework Files: defer to the framework's own permissions, read-only. Needs a
+    # full doc (ff_has_permission reads is_private, absent from FILE_FIELDS rows).
+    if not entity.is_drive_file:
+        if not user:
+            user = frappe.session.user
+        doc = entity if isinstance(entity, Document) else frappe.get_cached_doc("File", entity.name)
+        return {**NO_ACCESS, "read": int(bool(ff_has_permission(doc, "read", user))), "type": "guest"}
+
     access = NO_ACCESS.copy()
     if not user:
         if team:
