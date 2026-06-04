@@ -20,7 +20,7 @@
     </div>
 
     <!-- Search -->
-    <input v-model="searchText" type="search" class="search" :placeholder="tab === 'site' ? __('Search site files') : __('Search this team')
+    <input v-model="searchText" type="search" class="search" :placeholder="tab === 'shared' ? __('Search shared files') : __('Search this team')
       " />
 
     <!-- Breadcrumbs (hidden while searching) -->
@@ -98,7 +98,7 @@ const props = defineProps({
 })
 
 const tabs = [
-  { key: 'site', label: __('Site'), icon: frappe.utils.icon('globe', 'sm') },
+  { key: 'shared', label: __('Shared'), icon: frappe.utils.icon('globe', 'sm') },
   { key: 'home', label: __('Home'), icon: frappe.utils.icon('home', 'sm') },
   { key: 'teams', label: __('Teams'), icon: frappe.utils.icon('users', 'sm') },
 ]
@@ -127,7 +127,7 @@ const searching = computed(() => searchText.value.trim().length >= 2)
 // also the upload destination on the Drive tabs.
 const crumbs = ref([{ name: '', label: __('Home') }])
 const here = computed(() => crumbs.value[crumbs.value.length - 1])
-const canUpload = computed(() => tab.value !== 'site')
+const canUpload = computed(() => tab.value !== 'shared')
 const ready = computed(() => (staged.value ? canUpload.value : !!selected.value))
 
 onMounted(async () => {
@@ -140,7 +140,7 @@ onMounted(async () => {
 })
 
 function rootCrumb(key) {
-  if (key === 'site') return { name: 'Home', label: __('Site') }
+  if (key === 'shared') return { name: 'Home', label: __('Shared') }
   if (key === 'home') return { name: '', label: __('Home') }
   const t = teams.value.find((x) => x.name === team.value)
   return { name: '', label: t ? t.title : __('Team') }
@@ -237,7 +237,7 @@ const sortRows = (items) =>
 // One page of results: { items, more }. Source depends on the tab + search mode.
 async function fetchPage(offset) {
   const q = searchText.value.trim()
-  if (tab.value === 'site') {
+  if (tab.value === 'shared') {
     if (q) {
       // Framework's global file search (not paged); only fetch once.
       if (offset > 0) return { items: [], more: false }

@@ -18,25 +18,28 @@ def get_file_type(r):
         return "Unknown"
 
 
-def execute(files=[]):
-    if not files:
-        root_files = frappe.get_all("Drive File", filters={"parent_entity": ""}, pluck="name")
+def execute(files=None):
+    root_files = files or frappe.get_all("Drive File", filters={"parent_entity": ""}, pluck="name")
 
     is_remote = frappe.get_single("Drive Disk Settings").enabled
+    failures = []
     for file_id in root_files:
         folder = frappe.get_doc("Drive File", file_id)
-        migrate_folder(folder, is_remote)
+        migrate_folder(folder, is_remote, failures)
+
+    if failures:
+        print(f"Migration finished with {len(failures)} failure(s): {failures}")
 
 
-def migrate_folder(folder, is_remote=False):
+def migrate_folder(folder, is_remote=False, failures=None):
     print(f"Migrating folder {folder}")
-    migrate_file(folder)
+    migrate_file(folder, is_remote, failures)
 
     for child in folder.get_children():
         if child.is_group or child.doc:
-            migrate_folder(child, is_remote)
+            migrate_folder(child, is_remote, failures)
         else:
-            migrate_file(child, is_remote)
+            migrate_file(child, is_remote, failures)
 
 
 def get_link(file, is_remote=False):
@@ -50,7 +53,7 @@ def get_link(file, is_remote=False):
     return "/private/files/" + file.path
 
 
-def migrate_file(file, is_remote=False):
+def migrate_file(file, is_remote=False, failures=None):
     if frappe.db.exists("File", {"is_drive_file": 1, "name": file.name}):
         return
 
@@ -88,12 +91,6 @@ def migrate_file(file, is_remote=False):
     # Calculate file type
     ff_file.file_type = get_file_type(file.as_dict())
 
-    settings = {}
-    if file.color:
-        settings["color"] = file.color
-    if not file.allow_download:
-        settings["forbid_download"] = 1
-    ff_file.settings = settings
     try:
         ff_file.insert()
         frappe.db.set_value("File", ff_file.name, "creation", file.creation, update_modified=False)
@@ -101,3 +98,5 @@ def migrate_file(file, is_remote=False):
         frappe.db.set_value("File", ff_file.name, "modified", file.modified, update_modified=False)
     except Exception as e:
         print(f"Error migrating file {file.name}: {e}")
+        if failures is not None:
+            failures.append(file.name)
