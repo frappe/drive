@@ -18,7 +18,6 @@
 <script setup>
 import GenericPage from "@/components/GenericPage.vue"
 import { getTeam, getTeams, getPublicTeams } from "@/resources/files"
-import { allUsers } from "@/resources/permissions"
 import { useStore } from "vuex"
 import { useRoute } from "vue-router"
 import LucideBuilding2 from "~icons/lucide/building-2"
@@ -30,16 +29,16 @@ const props = defineProps({
 })
 store.commit("setCurrentFolder", { name: "", team: props.team })
 
-const write = computed(
-  () =>
-    allUsers.data &&
-    allUsers.data.find((k) => k.name === store.state.user.id)?.access_level > 0
-)
 const route = useRoute()
 const teamData = computed(
   () =>
     getTeams.data?.[route.params?.team] ||
     getPublicTeams.data?.[route.params?.team]
+)
+const write = computed(
+  () =>
+    teamData.value?.users?.find((k) => k.user === store.state.user.id)
+      ?.access_level > 0
 )
 watch(() => getPublicTeams.data, console.log)
 if (!getPublicTeams.data) getPublicTeams.fetch()

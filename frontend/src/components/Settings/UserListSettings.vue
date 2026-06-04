@@ -124,7 +124,7 @@
           class="flex flex-col overflow-y-auto divide-y divide-outline-gray-modals"
         >
           <div
-            v-for="user in allUsers?.data"
+            v-for="user in teamUsers?.data"
             :key="user.user_name"
             class="flex items-center justify-start pr-4 gap-x-3 py-2"
           >
@@ -360,7 +360,7 @@
               user_id: selectedUser.name,
               team,
             })
-            allUsers.data.splice(allUsers.data.indexOf(selectedUser), 1)
+            teamUsers.data.splice(teamUsers.data.indexOf(selectedUser), 1)
             showRemove = false
           },
         },
@@ -560,7 +560,7 @@ import {
 } from "frappe-ui"
 import SyncBreakdown from "@/components/SyncBreakdown.vue"
 import { createDialog } from "@/utils/dialogs"
-import { allUsers, getDiskSettings } from "@/resources/permissions"
+import { teamUsers, getDiskSettings } from "@/resources/permissions"
 import { ref, watch } from "vue"
 import { toast } from "@/utils/toasts"
 import { useRoute } from "vue-router"
@@ -599,7 +599,7 @@ watch(
   team,
   (team) => {
     if (!team) return
-    allUsers.fetch({ team })
+    teamUsers.fetch({ team })
     invites.fetch({ team })
     isAdmin.fetch({ team })
     tabIndex.value = 0

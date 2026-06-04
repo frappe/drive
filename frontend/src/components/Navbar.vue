@@ -215,8 +215,7 @@ const defaultActions = computed(() => {
           label: __("Download"),
           icon: LucideDownload,
           isEnabled: () => rootEntity.value.allow_download,
-          onClick: () =>
-            entitiesDownload(route.params.team, [rootEntity.value]),
+          onClick: () => entitiesDownload([rootEntity.value]),
         },
         {
           label: __("Copy Link"),

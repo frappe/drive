@@ -63,8 +63,8 @@ importers:
         specifier: ^6.0.0-beta.2
         version: 6.0.0-beta.2
       frappe-ui:
-        specifier: github:frappe/frappe-ui#29ba5df9ecca9445d96be22ae269eaded6687052
-        version: https://codeload.github.com/frappe/frappe-ui/tar.gz/29ba5df9ecca9445d96be22ae269eaded6687052(@babel/parser@7.28.4)(@nuxt/kit@3.19.1(magicast@0.3.5))(@vue/compiler-sfc@3.5.21)(tailwindcss@3.4.17)(vue-router@4.5.1(vue@3.5.21(typescript@5.9.2)))(vue@3.5.21(typescript@5.9.2))
+        specifier: github:frappe/frappe-ui#3335d8d34f01b023ddd7ce4849a82e4199362058
+        version: https://codeload.github.com/frappe/frappe-ui/tar.gz/3335d8d34f01b023ddd7ce4849a82e4199362058(@babel/parser@7.28.4)(@nuxt/kit@3.19.1(magicast@0.3.5))(@vue/compiler-sfc@3.5.21)(tailwindcss@3.4.17)(vue-router@4.5.1(vue@3.5.21(typescript@5.9.2)))(vue@3.5.21(typescript@5.9.2))
       hast-util-to-html:
         specifier: ^9.0.5
         version: 9.0.5
@@ -681,7 +681,7 @@ packages:
     resolution: {integrity: sha512-uZA413QEpNuhtb3/iIKoYMSK07keHPYeXF02Zhd6e213j+d1NamLix/mCLxBUDW/Gx52sPH2m+chlUsyaBs/Ag==}
 
   '@floating-ui/dom@1.7.4':
-    resolution: {integrity: sha512-OOchDgh4F2CchOX94cRVqhvy7b3AFb+/rQXyswmzmGakRfkMgoWVjfnLWkRirfLEfuD4ysVW16eXzwt3jHIzKA==}
+    resolution: {integrity: sha512-OOchDgh4F2CchOX94cRVqhvy7b3AFb+/rQXyswmzmGakRfkMgoWVjfnLWkRirfLEfuD4ysVW16eXzwt3jHIzKA==, tarball: https://registry.npmjs.org/@floating-ui/dom/-/dom-1.7.4.tgz}
 
   '@floating-ui/utils@0.2.10':
     resolution: {integrity: sha512-aGTxbpbg8/b5JfU1HXSrbH3wXZuLPJcNEcZQFMxLs3oSzgtVu6nFPkbbGGUvBcUjKV2YyB9Wxxabo+HEH9tcRQ==}
@@ -1210,7 +1210,7 @@ packages:
     resolution: {integrity: sha512-wwQAWhWSuHaag8c4q/KN/vCoeOJYshAIvMQwD4GpSb3OiZklFfvAgmj0VCBBImRpuF/aFgIRzllXlVX93Jevww==}
 
   '@popperjs/core@2.11.8':
-    resolution: {integrity: sha512-P1st0aksCrn9sGZhp8GMYwBnQsbvAWsZAX44oXNNvLHGqAOcoVxmjZiohstwQ7SqKnbR47akdNi+uleWD8+g6A==}
+    resolution: {integrity: sha512-P1st0aksCrn9sGZhp8GMYwBnQsbvAWsZAX44oXNNvLHGqAOcoVxmjZiohstwQ7SqKnbR47akdNi+uleWD8+g6A==, tarball: https://registry.npmjs.org/@popperjs/core/-/core-2.11.8.tgz}
 
   '@poppinss/colors@4.1.5':
     resolution: {integrity: sha512-FvdDqtcRCtz6hThExcFOgW0cWX+xwSMWcRuQe5ZEb2m7cVQOAVZOIMt+/v9RxGiD9/OY16qJBXK4CVKWAPalBw==}
@@ -2951,9 +2951,9 @@ packages:
   fraction.js@4.3.7:
     resolution: {integrity: sha512-ZsDfxO51wGAXREY55a7la9LScWpwv9RxIrYABrlvOFBlH/ShPnrtsXeuUIfXKKOVicNxQ+o8JTbJvjS4M89yew==}
 
-  frappe-ui@https://codeload.github.com/frappe/frappe-ui/tar.gz/29ba5df9ecca9445d96be22ae269eaded6687052:
-    resolution: {tarball: https://codeload.github.com/frappe/frappe-ui/tar.gz/29ba5df9ecca9445d96be22ae269eaded6687052}
-    version: 0.1.267
+  frappe-ui@https://codeload.github.com/frappe/frappe-ui/tar.gz/3335d8d34f01b023ddd7ce4849a82e4199362058:
+    resolution: {tarball: https://codeload.github.com/frappe/frappe-ui/tar.gz/3335d8d34f01b023ddd7ce4849a82e4199362058}
+    version: 0.1.276
     peerDependencies:
       vue: '>=3.5.0'
       vue-router: ^4.1.6
@@ -8237,7 +8237,7 @@ snapshots:
 
   fraction.js@4.3.7: {}
 
-  frappe-ui@https://codeload.github.com/frappe/frappe-ui/tar.gz/29ba5df9ecca9445d96be22ae269eaded6687052(@babel/parser@7.28.4)(@nuxt/kit@3.19.1(magicast@0.3.5))(@vue/compiler-sfc@3.5.21)(tailwindcss@3.4.17)(vue-router@4.5.1(vue@3.5.21(typescript@5.9.2)))(vue@3.5.21(typescript@5.9.2)):
+  frappe-ui@https://codeload.github.com/frappe/frappe-ui/tar.gz/3335d8d34f01b023ddd7ce4849a82e4199362058(@babel/parser@7.28.4)(@nuxt/kit@3.19.1(magicast@0.3.5))(@vue/compiler-sfc@3.5.21)(tailwindcss@3.4.17)(vue-router@4.5.1(vue@3.5.21(typescript@5.9.2)))(vue@3.5.21(typescript@5.9.2)):
     dependencies:
       '@floating-ui/dom': 1.7.4
       '@floating-ui/vue': 1.1.8(vue@3.5.21(typescript@5.9.2))

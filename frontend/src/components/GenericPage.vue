@@ -43,7 +43,6 @@
       v-model="selections"
       :folder-contents="rows && grouper(rows)"
       :action-items="actionItems"
-      :user-data="userData"
       :root-entity="verify?.data"
       @dropped="onDrop"
     />
@@ -52,7 +51,6 @@
       v-model="selections"
       :folder-contents="rows"
       :action-items="actionItems"
-      :user-data="userData"
       @dropped="onDrop"
     />
   </div>
@@ -83,7 +81,6 @@ import UploadTracker from "@/components/UploadTracker.vue"
 import ErrorPage from "@/components/ErrorPage.vue"
 import { pasteObj } from "@/utils/files"
 import { toggleFav, clearRecent } from "@/resources/files"
-import { allUsers } from "@/resources/permissions"
 import { entitiesDownload } from "@/utils/download"
 import { ref, computed, watch, watchEffect, provide, inject } from "vue"
 import { useRoute } from "vue-router"
@@ -135,11 +132,6 @@ watch(
   (v) => {
     team.value = v || ""
   },
-  { immediate: true }
-)
-watch(
-  [team, () => props.getEntities.data?.[0]?.team],
-  ([v, v2]) => (v || v2) && allUsers.fetch({ team: v || v2 }),
   { immediate: true }
 )
 const activeEntity = computed(() => store.state.activeEntity)
@@ -253,9 +245,6 @@ emitter.on("remove-file", (item) => {
   dialog.value = "remove"
 })
 
-if (team.value && !allUsers.fetched && store.getters.isLoggedIn) {
-  allUsers.fetch({ team: team.value })
-}
 if (!settings.fetched && store.getters.isLoggedIn) settings.fetch()
 
 // Drag and drop
@@ -327,7 +316,7 @@ const actionItems = computed(() => {
           e.mime_type !== "frappe/slides" &&
           e.mime_type !== "frappe_doc" &&
           e.allow_download,
-        action: (entities) => entitiesDownload(team.value, entities),
+        action: (entities) => entitiesDownload(entities),
         multi: true,
         important: true,
       },
@@ -410,10 +399,6 @@ const actionItems = computed(() => {
     ]
   }
 })
-
-const userData = computed(() =>
-  allUsers.data ? Object.fromEntries(allUsers.data.map((k) => [k.name, k])) : {}
-)
 
 async function newLink() {
   if (!document.hasFocus()) return

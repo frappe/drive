@@ -93,6 +93,11 @@ def files(
         fn.Coalesce(DrivePermission.read, 1).as_("read") == 1
     )
 
+    # Send owner display data with files so the list view doesn't need a separate users fetch
+    query = query.left_join(DriveUser).on(DriveUser.name == DriveFile.owner).select(
+        DriveUser.full_name.as_("owner_full_name"), DriveUser.user_image.as_("owner_image")
+    )
+
     # Cursor pagination
     if cursor:
         query = query.where((Binary(DriveFile[field]) > cursor if ascending else field < cursor)).limit(limit)

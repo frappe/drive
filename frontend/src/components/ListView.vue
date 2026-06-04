@@ -1,11 +1,6 @@
 <template>
-  <FrappeListView
-    ref="container"
-    class="relative select-none p-5 md:pb-15"
-    row-key="name"
-    :columns="selectedColumns"
-    :rows="formattedRows"
-    :options="{
+  <FrappeListView ref="container" class="relative select-none p-5 md:pb-15" row-key="name" :columns="selectedColumns"
+    :rows="formattedRows" :options="{
       selectable: true,
       enableActive: true,
       showTooltip: true,
@@ -14,63 +9,31 @@
       emptyState: {
         description: 'Nothing found - try something else?',
       },
-    }"
-    @update:selections="handleSelections"
-    @update:active-row="setActive"
-  >
+    }" @update:selections="handleSelections" @update:active-row="setActive">
     <ListHeader class="mb-[1px]" />
-    <div
-      v-if="!folderContents"
-      class="w-full text-center flex items-center justify-center py-10"
-    >
+    <div v-if="!folderContents" class="w-full text-center flex items-center justify-center py-10">
       <LoadingIndicator class="w-8" />
     </div>
     <template v-else>
       <div class="h-full overflow-y-auto">
         <ListEmptyState v-if="!formattedRows.length" />
-        <div
-          v-for="group in formattedRows"
-          v-else-if="formattedRows[0].group"
-          :key="group.group"
-        >
+        <div v-for="group in formattedRows" v-else-if="formattedRows[0].group" :key="group.group">
           <ListGroupHeader :group="group">
-            <slot
-              v-if="$slots['group-header']"
-              name="group-header"
-              v-bind="{ group }"
-            />
+            <slot v-if="$slots['group-header']" name="group-header" v-bind="{ group }" />
           </ListGroupHeader>
           <ListGroupRows :group="group">
-            <CustomListRow
-              :rows="group.rows"
-              :context-menu="contextMenu"
-              :selections
-              @dropped="emit('dropped')"
-            />
+            <CustomListRow :rows="group.rows" :context-menu="contextMenu" :selections @dropped="emit('dropped')" />
           </ListGroupRows>
         </div>
-        <div
-          v-else
-          class="pb-8"
-        >
-          <CustomListRow
-            :rows="formattedRows"
-            :context-menu="contextMenu"
-            :selections
-            @dropped="(...p) => $emit('dropped', ...p)"
-          />
+        <div v-else class="pb-8">
+          <CustomListRow :rows="formattedRows" :context-menu="contextMenu" :selections
+            @dropped="(...p) => $emit('dropped', ...p)" />
         </div>
       </div>
     </template>
   </FrappeListView>
-  <ContextMenu
-    v-if="rowEvent && selectedRow"
-    :key="selectedRow.name"
-    v-on-outside-click="() => (rowEvent = false)"
-    :close="() => (rowEvent = false)"
-    :action-items="dropdownActionItems(selectedRow)"
-    :event="rowEvent"
-  />
+  <ContextMenu v-if="rowEvent && selectedRow" :key="selectedRow.name" v-on-outside-click="() => (rowEvent = false)"
+    :close="() => (rowEvent = false)" :action-items="dropdownActionItems(selectedRow)" :event="rowEvent" />
 </template>
 <script setup>
 import {
@@ -103,7 +66,6 @@ const route = useRoute()
 const props = defineProps({
   folderContents: Object,
   actionItems: Array,
-  userData: Object,
   rootEntity: Object,
 })
 const emit = defineEmits(["dropped"])
@@ -139,20 +101,20 @@ const selectedColumns = [
       return getThumbnailUrl(row)
     },
     suffix: ({ row }) => {
-      
-  if (row.share_count === -2) {
-    return h(Tooltip, { text: "Public" }, {
-      default: () => h(LucideGlobe2, { class: "size-4" })
-    })
-  } else if (row.share_count === -1) {
-    return h(Tooltip, { text: "Organization" }, {
-      default: () => h(LucideBuilding2, { class: "size-4" })
-    })
-  } else if (row.share_count > 0) {
-    return h(Tooltip, { text: `Shared with ${row.share_count} users` }, {
-      default: () => h(LucideUsers, { class: "size-4" })
-    })
-  }
+
+      if (row.share_count === -2) {
+        return h(Tooltip, { text: "Public" }, {
+          default: () => h(LucideGlobe2, { class: "size-4" })
+        })
+      } else if (row.share_count === -1) {
+        return h(Tooltip, { text: "Organization" }, {
+          default: () => h(LucideBuilding2, { class: "size-4" })
+        })
+      } else if (row.share_count > 0) {
+        return h(Tooltip, { text: `Shared with ${row.share_count} users` }, {
+          default: () => h(LucideUsers, { class: "size-4" })
+        })
+      }
 
     },
   },
@@ -162,15 +124,12 @@ const selectedColumns = [
     getLabel: ({ row }) =>
       row.owner === store.state.user.id
         ? "You"
-        : props.userData[row.owner]?.full_name || row.owner,
+        : row.owner_full_name || row.owner,
     prefix: ({ row }) => {
       return h(Avatar, {
         shape: "circle",
-        image: props.userData[row.owner]?.user_image,
-        label:
-          props.userData[row.owner]?.full_name ||
-          props.userData[row.owner]?.email ||
-          row.owner,
+        image: row.owner_image,
+        label: row.owner_full_name || row.owner,
         size: "sm",
       })
     },
