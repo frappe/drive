@@ -1,6 +1,6 @@
 <template>
   <div class="drive-picker">
-    <!-- Tabs: Site (framework files) / Home (personal Drive) / Teams -->
+    <!-- Tabs: Home (personal Drive) / Teams (including Site pseudo-team) -->
     <div class="tab-bar">
       <button v-for="t in tabs" :key="t.key" class="tab" :class="{ active: tab === t.key }" @click="switchTab(t.key)">
         <span class="tab-icon" v-html="t.icon" />
@@ -8,7 +8,7 @@
       </button>
     </div>
 
-    <!-- Team selector (Teams tab only) -->
+    <!-- Team selector (Teams tab only; Site is a pseudo-team) -->
     <div v-if="tab === 'teams'" class="team-select-wrap">
       <select class="team-select" :value="team" @change="selectTeam($event.target.value)">
         <option value="" disabled>{{ __('Select a team') }}</option>
@@ -20,7 +20,7 @@
     </div>
 
     <!-- Search -->
-    <input v-model="searchText" type="search" class="search" :placeholder="tab === 'shared' ? __('Search shared files') : __('Search this team')
+    <input v-model="searchText" type="search" class="search" :placeholder="__('Search')
       " />
 
     <!-- Breadcrumbs (hidden while searching) -->
@@ -98,10 +98,11 @@ const props = defineProps({
 })
 
 const tabs = [
-  { key: 'shared', label: __('Shared'), icon: frappe.utils.icon('globe', 'sm') },
   { key: 'home', label: __('Home'), icon: frappe.utils.icon('home', 'sm') },
   { key: 'teams', label: __('Teams'), icon: frappe.utils.icon('users', 'sm') },
 ]
+
+const SITE_TEAM = '__site'
 
 const tab = ref('home')
 const rows = ref([])
@@ -127,21 +128,22 @@ const searching = computed(() => searchText.value.trim().length >= 2)
 // also the upload destination on the Drive tabs.
 const crumbs = ref([{ name: '', label: __('Home') }])
 const here = computed(() => crumbs.value[crumbs.value.length - 1])
-const canUpload = computed(() => tab.value !== 'shared')
+const canUpload = computed(() => true)
 const ready = computed(() => (staged.value ? canUpload.value : !!selected.value))
+const isSiteTeam = computed(() => tab.value === 'teams' && team.value === SITE_TEAM)
 
 onMounted(async () => {
   const { message } = await frappe.call('drive.api.permissions.get_teams', { details: 1 })
-  teams.value = Object.values(message || {})
+  teams.value = [{ name: SITE_TEAM, title: __('Site') }, ...Object.values(message || {})]
   const dt = await frappe.call('drive.utils.get_default_team')
   personalTeam = dt.message || ''
-  team.value = teams.value[0]?.name || ''
+  team.value = SITE_TEAM
   switchTab('home')
 })
 
 function rootCrumb(key) {
-  if (key === 'shared') return { name: 'Home', label: __('Shared') }
   if (key === 'home') return { name: '', label: __('Home') }
+  if (team.value === SITE_TEAM) return { name: 'Home', label: __('Site') }
   const t = teams.value.find((x) => x.name === team.value)
   return { name: '', label: t ? t.title : __('Team') }
 }
@@ -237,7 +239,7 @@ const sortRows = (items) =>
 // One page of results: { items, more }. Source depends on the tab + search mode.
 async function fetchPage(offset) {
   const q = searchText.value.trim()
-  if (tab.value === 'shared') {
+  if (isSiteTeam.value) {
     if (q) {
       // Framework's global file search (not paged); only fetch once.
       if (offset > 0) return { items: [], more: false }
@@ -302,9 +304,13 @@ async function submit() {
   busy.value = true
   try {
     if (staged.value) {
-      const t = tab.value === 'home' ? personalTeam : team.value
-      const driveFile = await driveUpload(staged.value, t, here.value.name)
-      attach(driveFile.name)
+      if (isSiteTeam.value) {
+        await siteUpload(staged.value)
+      } else {
+        const t = tab.value === 'home' ? personalTeam : team.value
+        const driveFile = await driveUpload(staged.value, t, here.value.name)
+        attach(driveFile.name)
+      }
     } else {
       attach(selected.value.name)
     }
@@ -326,6 +332,24 @@ function attach(libraryFileName) {
   props.uploader.upload_file({ library_file_name: libraryFileName })
 }
 
+async function siteUpload(file) {
+  const form = new FormData()
+  form.append('file', file, file.name)
+  form.append('is_private', 1)
+  form.append('folder', here.value.name || 'Home')
+  const res = await fetch('/api/method/upload_file', {
+    method: 'POST',
+    headers: {
+      Accept: 'application/json',
+      'X-Frappe-CSRF-Token': frappe.csrf_token,
+    },
+    body: form,
+  })
+  const data = await res.json()
+  if (!res.ok) throwUploadError(data, __('Could not upload to Site files'))
+  attach(data.message.name)
+}
+
 async function driveUpload(file, t, parent) {
   const form = new FormData()
   form.append('file', file, file.name)
@@ -340,12 +364,14 @@ async function driveUpload(file, t, parent) {
   })
   const data = await res.json()
   if (!res.ok) {
-    const msgs = JSON.parse(data?._server_messages || '[]')
-    throw new Error(
-      msgs.length ? JSON.parse(msgs[0]).message : __('Could not upload to Drive')
-    )
+    throwUploadError(data, __('Could not upload to Drive'))
   }
   return data.message
+}
+
+function throwUploadError(data, fallback) {
+  const msgs = JSON.parse(data?._server_messages || '[]')
+  throw new Error(msgs.length ? JSON.parse(msgs[0]).message : fallback)
 }
 
 defineExpose({ submit })

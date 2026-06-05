@@ -23,6 +23,7 @@ from drive.utils import (
     get_new_file_name,
     validate_filename,
     get_upload_path,
+    is_site_file,
     ATTACHMENT_CONTENT_DOCTYPE,
     STATUS_ACTIVE,
     STATUS_TRASHED,
@@ -280,7 +281,6 @@ def create_link(team: str, file_name: str, link: str, parent: str | None = None)
             "file_type": "Link",
             "file_modified": frappe.utils.now_datetime(),
             "folder": parent,
-            "is_drive_file": 1,
         }
     )
     drive_file.insert()
@@ -333,7 +333,7 @@ def get_file_content(entity_name: str, trigger_download: bool = False, jwt_token
             "file_type",
             "status",
             "file_url",
-            "is_drive_file",
+            "team",
         ],
         as_dict=1,
     )
@@ -341,9 +341,9 @@ def get_file_content(entity_name: str, trigger_download: bool = False, jwt_token
     if not file or file.file_type in FORBIDDEN_DOWNLOAD_TYPES or file.status != STATUS_ACTIVE:
         frappe.throw("Not found", frappe.DoesNotExistError)
 
-    if file.file_type == "Document" or not file.is_drive_file:
+    if file.file_type == "Document" or is_site_file(file):
         frappe.local.response["type"] = "redirect"
-        frappe.local.response["location"] = ("/drive/w/" + file.name) if file.is_drive_file else file.file_url
+        frappe.local.response["location"] = file.file_url if is_site_file(file) else ("/drive/w/" + file.name)
         return
 
     return get_file_internal(file, trigger_download)
@@ -379,8 +379,7 @@ def stream_file_content(entity_name: str):
     if not user_has_permission(entity, "read"):
         raise frappe.PermissionError("You do not have permission to view this file")
 
-    if not entity.is_drive_file:
-        #     frappe.local.response = frappe.utils.response.download_private_file(entity.file_url)
+    if is_site_file(entity):
         frappe.local.response["type"] = "redirect"
         frappe.local.response["location"] = entity.file_url
         return

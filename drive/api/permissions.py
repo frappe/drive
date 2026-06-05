@@ -11,6 +11,7 @@ from drive.utils import (
     get_home_folder,
     map_ff_to_drive_type,
     entity_kind,
+    is_site_file,
     STATUS_ACTIVE,
 )
 
@@ -41,9 +42,11 @@ def get_user_access(entity: str | Document | frappe._dict, user: str = None, tea
     if isinstance(entity, str):
         entity = frappe.get_cached_doc("File", entity)
 
-    # Framework Files: defer to the framework's own permissions, read-only. Needs a
-    # full doc (ff_has_permission reads is_private, absent from FILE_FIELDS rows).
-    if not entity.is_drive_file:
+    # Site files defer to the framework's own permissions, read-only.
+    # Needs a full doc (ff_has_permission reads is_private, absent from FILE_FIELDS rows).
+    if is_site_file(entity):
+        if team:
+            return {**NO_ACCESS, "type": "guest"}
         if not user:
             user = frappe.session.user
         doc = entity if isinstance(entity, Document) else frappe.get_cached_doc("File", entity.name)
@@ -153,7 +156,7 @@ def get_entity_with_permissions(entity_name: str):
     entity = frappe.get_all(
         "File",
         filters={"name": entity_name},
-        or_filters={"status": STATUS_ACTIVE, "is_drive_file": 0},
+        or_filters={"status": STATUS_ACTIVE, "team": ["is", "not set"]},
         fields=FILE_FIELDS,
         limit=1,
     )
@@ -192,13 +195,13 @@ def get_entity_with_permissions(entity_name: str):
     return_obj = entity | user_access | owner_info | breadcrumbs | {"is_favourite": favourite}
 
     default = 0
-    if entity_name:
+    if entity_name and not is_site_file(entity):
         if get_user_access(entity_name, "Guest")["read"]:
             default = -2
         elif get_user_access(entity_name, team=1)["read"]:
             default = -1
     return_obj["share_count"] = default
-    if not entity.is_drive_file:
+    if is_site_file(entity):
         return_obj["file_type"] = map_ff_to_drive_type(entity)
 
     return_obj["kind"] = entity_kind(entity)
@@ -244,7 +247,7 @@ def get_shared_with_list(entity: str):
 def user_has_permission(doc, ptype, user=None, team=0):
     if isinstance(doc, str):
         doc = frappe.get_doc("File", doc)
-    if not doc.is_drive_file:
+    if is_site_file(doc):
         return ff_has_permission(doc, ptype, user)
 
     if not user:

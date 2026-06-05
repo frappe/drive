@@ -35,13 +35,19 @@ KIND_FOREIGN = "foreign"
 KIND_VIRTUAL = "virtual"
 
 
+def is_site_file(entity):
+    """Site files live outside any Drive team; they defer to framework storage & perms."""
+    team = entity.get("team") if isinstance(entity, dict) else entity.team
+    return not team
+
+
 def entity_kind(row):
     """Classify a real `File` listing row. See the `kind` partition above.
 
     `virtual` grouping nodes are fabricated in `list.get_attachments` and tagged
     with `kind` at construction, so they never reach this function.
     """
-    if not row["is_drive_file"]:
+    if is_site_file(row):
         return KIND_FOREIGN
     if row["content_doctype"] == ATTACHMENT_CONTENT_DOCTYPE:
         return KIND_REFERENCE
@@ -138,16 +144,17 @@ FILE_FIELDS = [
     "creation",
     fn.Coalesce(Field("file_modified"), DriveFile.modified).as_("modified"),
     "owner",
-    "is_drive_file",
     "attached_to_doctype",
     "attached_to_name",
 ]
 
 
 def get_home_folder(team):
+    # team=None → the single Site root (team & folder both null).
+    team_filter = DriveFile.team.isnull() if not team else (DriveFile.team == team)
     ls = (
         frappe.qb.from_(DriveFile)
-        .where(((DriveFile.team == team) & DriveFile.folder.isnull()))
+        .where(team_filter & DriveFile.folder.isnull())
         .select(DriveFile.name, DriveFile.file_url)
         .run(as_dict=True)
     )
@@ -354,7 +361,6 @@ def create_drive_file(
     drive_file = frappe.get_doc(
         {
             "doctype": "File",
-            "is_drive_file": 1,
             "is_private": 1,
             "team": team,
             "file_name": file_name,

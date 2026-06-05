@@ -1,45 +1,31 @@
 <template>
   <div class="flex p-5 pb-0 h-12">
-    <div
-      v-if="selections?.length"
-      class="my-auto w-[40%] text-base text-ink-gray-8"
-    >
+    <div v-if="selections?.length" class="my-auto w-[40%] text-base text-ink-gray-8">
       {{ selections.length }}
       {{ selections.length === 1 ? __('item') : __('items') }}
       {{ __('selected') }}
     </div>
-      <div
-          v-if="$route.name === 'Home'"
-          class="bg-surface-gray-2 rounded-[10px] space-x-0.5 h-7 flex items-center mr-4 py-1"
-        >
-          <TabButtons
-            v-model="shareView"
-            :buttons="[
-              {
-                label: __('Home'),
-                value: false,
-                onClick: () => {
-                  store.commit('toggleShareView', false)
-                },
-              },
-              {
-                label: __('Shared'),
-                value: true,
-                onClick: () => {
-                  store.commit('toggleShareView', true)
-                },
-              },
-            ]"
-          />
-        </div>
-    <TextInput
-      ref="search-input"
-      v-model="search"
-      :disabled
-      :class="selections.length ? 'hidden' : 'block'"
-      :placeholder="__('Find')"
-      class="w-[30%]"
-    >
+    <div v-if="$route.name === 'Shared'"
+      class="bg-surface-gray-2 rounded-[10px] space-x-0.5 h-7 flex items-center mr-4 py-1">
+      <TabButtons v-model="shareView" :buttons="[
+        {
+          label: __('Site'),
+          value: false,
+          onClick: () => {
+            store.commit('toggleShareView', false)
+          },
+        },
+        {
+          label: __('With you'),
+          value: true,
+          onClick: () => {
+            store.commit('toggleShareView', true)
+          },
+        },
+      ]" />
+    </div>
+    <TextInput ref="search-input" v-model="search" :disabled :class="selections.length ? 'hidden' : 'block'"
+      :placeholder="__('Find')" class="w-[30%]">
       <template #prefix>
         <LucideSearch class="size-4" />
       </template>
@@ -47,60 +33,34 @@
 
     <div class="flex gap-2 ml-auto my-auto">
       <template v-if="!selections?.length">
-        <div
-          v-if="activeFilters.length"
-          class="flex flex-wrap items-start justify-end gap-1 ml-3"
-        >
+        <div v-if="activeFilters.length" class="flex flex-wrap items-start justify-end gap-1 ml-3">
           <div v-for="({ icon, name }, index) in activeFilters" :key="index">
-            <div
-              class="flex items-center border rounded pl-2 py-1 h-7 text-base select-none"
-            >
+            <div class="flex items-center border rounded pl-2 py-1 h-7 text-base select-none">
               <img class="w-4" :src="icon" />
               <span class="text-sm ml-2">{{ name }}</span>
-              <Button
-                variant="minimal"
-                :icon="h(LucideX, { class: 'size-3' })"
-                @click="activeFilters.splice(index, 1)"
-              />
+              <Button variant="minimal" :icon="h(LucideX, { class: 'size-3' })"
+                @click="activeFilters.splice(index, 1)" />
             </div>
           </div>
         </div>
         <Button v-if="delayedLoading" :loading="true" label="Loading..." />
-        <TeamSelector
-          :disabled="disabled && team === 'all'"
-          v-if="
-            ['Shared', 'Recents', 'Favourites', 'Trash'].includes($route.name)
-          "
-          v-model="team"
-          :none="true"
-        />
-        <Dropdown
-          :options="
-            availableFilterTypes.map(({ name, icon }) => ({
-              label: __(name),
-              icon: h('img', { src: icon }),
-              onClick: () => activeFilters.push({ name, icon }),
-              disabled: activeFilters.includes({ name, icon }),
-            }))
-          "
-          :button="{
+        <TeamSelector :disabled="disabled && team === 'all'" v-if="
+          ['Shared', 'Recents', 'Favourites', 'Trash'].includes($route.name)
+        " v-model="team" :none="true" />
+        <Dropdown :options="availableFilterTypes.map(({ name, icon }) => ({
+          label: __(name),
+          icon: h('img', { src: icon }),
+          onClick: () => activeFilters.push({ name, icon }),
+          disabled: activeFilters.includes({ name, icon }),
+        }))
+          " :button="{
             icon: LucideFilter,
             tooltip: 'Filter',
-          }"
-          :disabled
-          placement="right"
-        />
-        <Dropdown
-          v-if="$route.name !== 'Recents'"
-          :options="orderByItems"
-          placement="right"
-        >
+          }" :disabled placement="right" />
+        <Dropdown v-if="$route.name !== 'Recents'" :options="orderByItems" placement="right">
           <div class="flex items-center whitespace-nowrap">
-            <Button
-              class="text-sm h-7 border-r border-slate-200 rounded-r-none"
-              :disabled
-              @click.stop="toggleAscending"
-            >
+            <Button class="text-sm h-7 border-r border-slate-200 rounded-r-none" :disabled
+              @click.stop="toggleAscending">
               <template #icon>
                 <LucideArrowDownAz v-if="sortOrder.ascending" class="size-4" />
                 <LucideArrowUpZa v-else class="size-4" />
@@ -118,44 +78,31 @@
           </div>
         </Dropdown>
 
-        <TabButtons
-          v-model="viewState"
-          :buttons="[
-            {
-              icon: 'grid',
-              value: 'grid',
-              disabled,
-            },
-            {
-              icon: 'list',
-              value: 'list',
-              disabled,
-            },
-          ]"
-        />
+        <TabButtons v-model="viewState" :buttons="[
+          {
+            icon: 'grid',
+            value: 'grid',
+            disabled,
+          },
+          {
+            icon: 'list',
+            value: 'list',
+            disabled,
+          },
+        ]" />
       </template>
       <div v-else-if="actionItems" class="flex gap-3 ml-4 overflow-auto">
-        <template
-          v-for="item in actionItems
-            .filter((i) => i.important && (selections.length === 1 || i.multi))
-            .filter(
-              (i) =>
-                !i.isEnabled ||
-                selections.every((e) => i.isEnabled(e, selections.length !== 1))
-            )"
-          :key="item.label"
-        >
-          <Button
-            variant="outline"
-            :tooltip="item.label"
-            @click.once="item.action(selections)"
-          >
+        <template v-for="item in actionItems
+          .filter((i) => i.important && (selections.length === 1 || i.multi))
+          .filter(
+            (i) =>
+              !i.isEnabled ||
+              selections.every((e) => i.isEnabled(e, selections.length !== 1))
+          )" :key="item.label">
+          <Button variant="outline" :tooltip="item.label" @click.once="item.action(selections)">
             <template #icon>
-              <component
-                :is="item.icon"
-                class="size-4 text-ink-gray-6"
-                :class="[item.class, item.theme ? 'text-ink-red-3' : '']"
-              />
+              <component :is="item.icon" class="size-4 text-ink-gray-6"
+                :class="[item.class, item.theme ? 'text-ink-red-3' : '']" />
             </template>
           </Button>
         </template>

@@ -2,9 +2,8 @@ import json
 from collections import Counter
 
 import frappe
-from pypika import Criterion, CustomFunction, Order, Query
+from pypika import Criterion, CustomFunction, Order
 from pypika import functions as fn
-from frappe.core.doctype.file.file import get_permission_query_conditions as ff_get_permission_query_conditions
 
 
 from drive.utils import (
@@ -14,6 +13,7 @@ from drive.utils import (
     FILE_FIELDS,
     map_ff_to_drive_type,
     entity_kind,
+    is_site_file,
     KIND_VIRTUAL,
     STATUS_ACTIVE,
     STATUS_TRASHED,
@@ -153,12 +153,8 @@ def _get_team_files(names):
 
 
 def _get_basic_query(search):
-    # Includes framework Files (favourites/recents/shared are scoped by a
-    # user-specific join, so showing a framework File the user favourited/was-shared
-    # is safe). Unscoped folder browse adds is_drive_file==1 itself.
-    query = frappe.qb.from_(DriveFile).where(
-        (DriveFile.status == STATUS_ACTIVE) | (DriveFile.is_drive_file == 0)
-    )
+    # Status defaults to Active for team and Site files alike — no team carve-out.
+    query = frappe.qb.from_(DriveFile).where(DriveFile.status == STATUS_ACTIVE)
     if search:
         query = query.where(DriveFile.file_name.like(f"%{search}%"))
     return query
@@ -191,7 +187,7 @@ def files(
             frappe.throw("You must provide a folder to query", ValueError)
 
     entity = frappe.get_doc("File", entity_name)
-    if team and not team == entity.team and entity.is_drive_file:
+    if not is_site_file(entity) and team != entity.team:
         frappe.throw("Given team doesn't match the file's team", ValueError)
 
     if not user_has_permission(entity, "read"):
@@ -200,7 +196,7 @@ def files(
             frappe.exceptions.PermissionError,
         )
 
-    if not entity.is_drive_file:
+    if is_site_file(entity):
         # Framework folder (e.g. desk "Home"): list via frappe.get_list so the
         # framework's own File permissions apply. team dropped so get_query_data
         # skips the Drive-only team filter.
@@ -218,8 +214,8 @@ def files(
             limit=limit,
         )
 
-    # Drive folder browse is not user-scoped, so restrict to Drive files here
-    query = _get_basic_query(search).where(DriveFile.is_drive_file == 1)
+    # Folder browse isn't user-scoped, so restrict to team files (Site files use the ff branch).
+    query = _get_basic_query(search).where(DriveFile.team.isnotnull())
     if search:
         if not team:
             query = query.where(DriveFile.team.isin(get_teams() or [""]))
@@ -336,7 +332,8 @@ def trash(
     """
     query = (
         frappe.qb.from_(DriveFile)
-        .where((DriveFile.status == STATUS_TRASHED) & (DriveFile.is_drive_file == 1))
+        .where(DriveFile.status == STATUS_TRASHED)
+        .where(DriveFile.team.isnotnull())
         .where(DriveFile.owner == frappe.session.user)
     )
     if search:
@@ -371,7 +368,7 @@ def get_query_data(
     """
     # Filter by team
     if team and team != "all":
-        query = query.where((DriveFile.team == team) | (DriveFile.team.isnull()))
+        query = query.where(DriveFile.team == team)
 
     # Apply shared filter
     query = _apply_shared_filter(query, shared_type)
@@ -448,7 +445,7 @@ def get_query_data(
         else:
             r["share_count"] = default
 
-        if not r["is_drive_file"]:
+        if is_site_file(r):
             r["file_type"] = map_ff_to_drive_type(r)
         r["kind"] = entity_kind(r)
         r |= get_user_access(name)

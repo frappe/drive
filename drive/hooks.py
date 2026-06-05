@@ -45,7 +45,7 @@ app_include_js = "ff_integration.bundle.js"
 # page_js = {"page" : "public/js/file.js"}
 
 # include js in doctype views
-# doctype_js = {"doctype" : "public/js/doctype.js"}
+doctype_js = {"doctype" : "public/js/file.js"}
 # doctype_list_js = {"doctype" : "public/js/doctype_list.js"}
 # doctype_tree_js = {"doctype" : "public/js/doctype_tree.js"}
 # doctype_calendar_js = {"doctype" : "public/js/doctype_calendar.js"}
@@ -144,9 +144,7 @@ fixtures = [
     # Drive bolts its fields onto the framework File doctype; without this the
     # custom_field.json / role.json fixtures never sync to other sites.
     {"dt": "Custom Field", "filters": [["dt", "=", "File"]]},
-    # Desk-form tweaks for the framework File form: show the Drive folder + file_url
-    # fields only when relevant (is_drive_file). These used to be inline edits to
-    # frappe's file.json; they live here instead so the framework PR stays minimal.
+    # Desk-form tweaks for the framework File form (Drive folder + file_url fields).
     {"dt": "Property Setter", "filters": [["doc_type", "=", "File"]]},
     {"dt": "Role", "filters": [["role_name", "like", "Drive %"]]},
 ]

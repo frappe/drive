@@ -15,7 +15,6 @@ class DriveTeam(Document):
         """Creates the file on disk"""
         d = frappe.get_doc(
             {
-                "is_drive_file": 1,
                 "name": self.name,
                 "doctype": "File",
                 "file_name": f"Drive - {self.name}",
@@ -66,6 +65,6 @@ class DriveTeam(Document):
             user_directory_path = files_dir / get_home_folder(self.name).path
             if user_directory_path != files_dir:
                 shutil.rmtree(str(user_directory_path))
-            frappe.db.delete("File", {"team": self.name, "is_drive_file": 1})
+            frappe.db.delete("File", {"team": self.name})
         except:
             pass

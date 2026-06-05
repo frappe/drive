@@ -80,7 +80,9 @@ def get_country_info():
 
 
 def assign_drive_role_and_create_settings(user: User, method: str) -> None:
-    """Assign the "Meet User" role to a newly created User."""
+    """Assign the "Drive User" role, settings and a personal team to a new User."""
+    from drive.api.product import create_team
+
     role_name = "Drive User"
     user_name = user.name
 
@@ -92,12 +94,14 @@ def assign_drive_role_and_create_settings(user: User, method: str) -> None:
 
     user_doc = frappe.get_doc("User", user_name)
     user_doc.append("roles", {"role": role_name})
-    doc = frappe.get_doc(
-        {
-            "doctype": "Drive Settings",
-            "user": user.email,
-        }
-    )
-    doc.insert(ignore_permissions=True)
-
     user_doc.save(ignore_permissions=True)
+
+    frappe.get_doc({"doctype": "Drive Settings", "user": user.email}).insert(ignore_permissions=True)
+
+    # Created as the new user so the team is owned by and shared with them.
+    original_user = frappe.session.user
+    try:
+        frappe.set_user(user_name)
+        create_team(user=user_name, team_name=user_name, personal=1)
+    finally:
+        frappe.set_user(original_user)

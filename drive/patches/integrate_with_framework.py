@@ -54,13 +54,12 @@ def get_link(file, is_remote=False):
 
 
 def migrate_file(file, is_remote=False, failures=None):
-    if frappe.db.exists("File", {"is_drive_file": 1, "name": file.name}):
+    if frappe.db.exists("File", {"name": file.name, "team": file.team}):
         return
 
     ff_file = frappe.get_doc(
         {
             "doctype": "File",
-            "is_drive_file": 1,
             "_name": file.name,
             "file_name": file.title,
             "team": file.team,
