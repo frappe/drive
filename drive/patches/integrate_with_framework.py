@@ -1,43 +1,53 @@
 """
-Create `File` records of all existing `Drive File`s
+Create framework `File` records from legacy `Drive File` rows.
 """
 
 import frappe
-from drive.utils import MIME_LIST_MAP, STATUS_ACTIVE, STATUS_TRASHED
+from drive.utils import MIME_LIST_MAP, PRESENTATION_CONTENT_DOCTYPE, STATUS_ACTIVE, STATUS_TRASHED, WRITER_CONTENT_DOCTYPE
 from drive.utils.files import get_s3_url
 
+LEGACY_DOCTYPE = "Drive File"
 
-def get_file_type(r):
-    if r["is_group"]:
+
+def get_file_type(row):
+    if row["is_group"]:
         return "Folder"
-    if r["is_link"]:
+    if row["is_link"]:
         return "Link"
     try:
-        return next(k for (k, v) in MIME_LIST_MAP.items() if r["mime_type"] in v)
+        return next(k for (k, v) in MIME_LIST_MAP.items() if row["mime_type"] in v)
     except StopIteration:
         return "Unknown"
 
 
 def execute(files=None):
-    root_files = files or frappe.get_all("Drive File", filters={"parent_entity": ""}, pluck="name")
+    if not frappe.db.table_exists(f"tab{LEGACY_DOCTYPE}"):
+        return
 
-    is_remote = frappe.get_single("Drive Disk Settings").enabled
-    failures = []
-    for file_id in root_files:
-        folder = frappe.get_doc("Drive File", file_id)
-        migrate_folder(folder, is_remote, failures)
+    frappe.flags.mute_drive_activity_log = True
+    try:
+        root_files = files or frappe.get_all(LEGACY_DOCTYPE, filters={"parent_entity": ""}, pluck="name")
 
-    if failures:
-        print(f"Migration finished with {len(failures)} failure(s): {failures}")
+        is_remote = frappe.get_single("Drive Disk Settings").enabled
+        failures = []
+        for file_id in root_files:
+            migrate_folder(file_id, is_remote, failures)
+
+        if failures:
+            print(f"Migration finished with {len(failures)} failure(s): {failures}")
+    finally:
+        frappe.flags.mute_drive_activity_log = False
 
 
-def migrate_folder(folder, is_remote=False, failures=None):
-    print(f"Migrating folder {folder}")
+def migrate_folder(folder_name, is_remote=False, failures=None):
+    print(f"Migrating folder {folder_name}")
+    folder = frappe.get_doc(LEGACY_DOCTYPE, folder_name)
     migrate_file(folder, is_remote, failures)
 
-    for child in folder.get_children():
+    for child_name in frappe.get_all(LEGACY_DOCTYPE, filters={"parent_entity": folder_name}, pluck="name"):
+        child = frappe.get_doc(LEGACY_DOCTYPE, child_name)
         if child.is_group or child.doc:
-            migrate_folder(child, is_remote, failures)
+            migrate_folder(child_name, is_remote, failures)
         else:
             migrate_file(child, is_remote, failures)
 
@@ -49,7 +59,7 @@ def get_link(file, is_remote=False):
         return file.path
     elif is_remote:
         return get_s3_url(file.path)
-        
+
     return "/private/files/" + file.path
 
 
@@ -75,19 +85,17 @@ def migrate_file(file, is_remote=False, failures=None):
     )
 
     if file.doc:
-        ff_file.content_doctype = "Writer Document"
+        ff_file.content_doctype = WRITER_CONTENT_DOCTYPE
         ff_file.content_docname = file.doc
 
     if file.mime_type == "frappe/slides":
-        ff_file.content_doctype = "Presentation"
+        ff_file.content_doctype = PRESENTATION_CONTENT_DOCTYPE
         ff_file.content_docname = file.path
 
-    # Attachment
-    if frappe.db.get_value("Drive File", file.parent_entity, "doc"):
+    if frappe.db.get_value(LEGACY_DOCTYPE, file.parent_entity, "doc"):
         ff_file.attached_to_doctype = "File"
         ff_file.attached_to_name = file.parent_entity
 
-    # Calculate file type
     ff_file.file_type = get_file_type(file.as_dict())
 
     try:

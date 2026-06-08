@@ -35,7 +35,7 @@ from drive.utils.users import mark_as_viewed
 
 from .permissions import get_teams, user_has_permission
 
-FORBIDDEN_DOWNLOAD_TYPES = ["Folder", "Link", "Document"]
+FORBIDDEN_DOWNLOAD_TYPES = ["Folder", "Link", "Document", "Presentation"]
 
 
 @frappe.whitelist(allow_guest=True)
@@ -443,7 +443,7 @@ class _ZipSink:
 def _iter_folder_files(entity_name, prefix=""):
     """Recursively yield (arcname, file) for downloadable files in a folder.
 
-    Drive Documents and links have no underlying blob, so they're skipped.
+    Writer documents and links have no underlying blob, so they're skipped.
     """
     children = frappe.get_all(
         "File",
@@ -518,7 +518,7 @@ def download_folder(entities: str):
     browser memory and hung on large folders. Here the server streams the
     archive a file at a time via chunked transfer.
 
-    :param entities: JSON list of Drive File names (the user's selection)
+    :param entities: JSON list of File names (the user's selection)
     """
     if isinstance(entities, str):
         entities = frappe.parse_json(entities)

@@ -1,4 +1,6 @@
+import shutil
 from pathlib import Path
+
 import frappe
 from frappe.core.doctype.file.file import File as FrappeFile
 from frappe.core.doctype.file.utils import get_content_hash
@@ -62,6 +64,54 @@ class File(FrappeFile):
         if is_site_file(self):
             return super().autoname()
         self.name = getattr(self, "_name", None) or frappe.generate_hash(length=10)
+
+    def after_insert(self):
+        if is_site_file(self) or frappe.flags.get("mute_drive_activity_log"):
+            return
+        full_name = frappe.db.get_value("User", frappe.session.user, "full_name")
+        create_new_activity_log(
+            entity=self.name,
+            activity_type="create",
+            activity_message=f"{full_name} created {self.file_name}",
+            document_field="file_name",
+            field_new_value=self.file_name,
+        )
+
+    def after_delete(self):
+        if is_site_file(self):
+            return
+
+        if self.is_folder:
+            for child_name in frappe.get_all("File", filters={"folder": self.name}, pluck="name"):
+                frappe.delete_doc("File", child_name, ignore_permissions=True)
+
+        frappe.db.delete("Drive Favourite", {"entity": self.name})
+        frappe.db.delete("Drive Entity Log", {"entity_name": self.name})
+        frappe.db.delete("Drive Permission", {"entity": self.name})
+        frappe.db.delete("Drive Notification", {"notif_doctype_name": self.name})
+        frappe.db.delete("Drive Entity Activity Log", {"entity": self.name})
+
+        if (
+            self.content_doctype
+            and self.content_docname
+            and self.content_doctype != ATTACHMENT_CONTENT_DOCTYPE
+            and frappe.db.exists(self.content_doctype, self.content_docname)
+        ):
+            frappe.delete_doc(self.content_doctype, self.content_docname, ignore_permissions=True)
+
+    def on_rollback(self):
+        if is_site_file(self) or not self.flags.file_created or not self.file_url:
+            return
+        path = Path(get_files_path(self.file_url, private=True))
+        if not path.exists():
+            return
+        if self.is_folder:
+            shutil.rmtree(path)
+        else:
+            path.unlink()
+
+    def _not_in_disk(self):
+        return self.file_type == "Link" or not self.file_url or bool(self.content_doctype)
 
     # Drive methods
     def _update_modified(func):
@@ -205,11 +255,7 @@ class File(FrappeFile):
         elif not user_has_permission(new_parent, "upload") or not user_has_permission(self, "write"):
             frappe.throw("You don't have permission to move this file.", frappe.PermissionError)
 
-        if not (
-            frappe.db.get_value("File", new_parent, "is_folder")
-            # FIX: disable after redesign
-            or frappe.db.get_value("File", new_parent, "content_doctype")
-        ):
+        if not frappe.db.get_value("File", new_parent, "is_folder"):
             frappe.throw(
                 "Can only move into folders",
                 NotADirectoryError,
@@ -247,10 +293,9 @@ class File(FrappeFile):
             self.file_name = get_new_file_name(self.file_name, new_parent, self.is_folder, self.name)
 
         self.team = new_team
-        not_in_disk = self.file_type == "Link" or not self.file_url
 
         # Update all the children's paths
-        if not self.manager.flat and not not_in_disk:
+        if not self.manager.flat and not self._not_in_disk():
             new_path = self.manager.get_disk_path(self)
             self.manager.move(self, str(new_path))
             self.recursive_path_move(self.file_url, new_path)
@@ -310,7 +355,7 @@ class File(FrappeFile):
         self.flags.drive_disk_rename = True
         self.file_name = new_file_name
         path = self.manager.rename(self)
-        if self.file_url and self.mime_type != "frappe/slides":
+        if self.file_url and not self._not_in_disk():
             self.recursive_path_move(self.file_url, path)
 
         self.save()
@@ -336,9 +381,10 @@ class File(FrappeFile):
         if new:
             self.file_url = new
         for child in self.get_children():
-            in_disk = child.file_type != "Link" and self.file_url
-            if in_disk:
-                child.recursive_path_move(child.file_url, str(Path(new) / Path(child.file_url).relative_to(old)))
+            if not child._not_in_disk():
+                child.recursive_path_move(
+                    child.file_url, str(Path(new) / Path(child.file_url).relative_to(old))
+                )
         self.save()
 
     def get_children(self):

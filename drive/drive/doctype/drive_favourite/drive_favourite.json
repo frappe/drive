@@ -21,7 +21,7 @@
    "fieldname": "entity",
    "fieldtype": "Link",
    "in_list_view": 1,
-   "label": "Drive File",
+   "label": "File",
    "options": "File",
    "reqd": 1
   }

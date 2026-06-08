@@ -14,11 +14,6 @@ def common_filters(func):
 
 
 @common_filters
-def filter_drive_file(user):
-    return f"""(`tabDrive File`.`owner` = {user})"""
-
-
-@common_filters
 def filter_drive_permission(user):
     return f"""(`tabDrive Permission`.`owner` = {user} or `tabDrive Permission`.user = {user})"""
 
@@ -29,16 +24,6 @@ def filter_drive_team(user):
     if teams:
         teams = ", ".join(frappe.db.escape(team) for team in teams)
         return f"""(`tabDrive Team`.name in ({teams}))"""
-
-
-@common_filters
-def filter_drive_document(user):
-    return f"""(`tabDrive Document`.`owner` = {user})"""
-
-
-@common_filters
-def filter_drive_comment(user):
-    return f"""(`tabDrive Comment`.`owner` = {user})"""
 
 
 @common_filters

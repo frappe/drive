@@ -11,19 +11,15 @@ import mimemapper
 
 DriveFile = frappe.qb.DocType("File")
 
-# File.status (Select). Active = live, Trashed = in trash, Removed = pending hard-delete.
 STATUS_ACTIVE = "Active"
 STATUS_TRASHED = "Trashed"
 STATUS_REMOVED = "Removed"
 
-# A drive File whose `content_doctype` is "File" points at another framework File
-# row (the library / attachment-copy flow) rather than holding its own content.
 ATTACHMENT_CONTENT_DOCTYPE = "File"
 WRITER_CONTENT_DOCTYPE = "Writer Document"
 PRESENTATION_CONTENT_DOCTYPE = "Presentation"
 
-# `kind` — what a row in a Drive listing actually is, relative to Drive. This is a
-# mutually-exclusive, exhaustive partition (NOT the MIME `file_kinds` filter):
+# `kind` — what a row in a Drive listing actually is, relative to Drive
 #   native    — Drive owns the entity's identity & storage (incl. folders, Writer
 #               Documents, Presentations). Rename / move / share allowed.
 #   reference  — a Drive row that points at another framework File ("open original").

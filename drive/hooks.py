@@ -100,8 +100,6 @@ after_install = "drive.install.after_install"
 permission_query_conditions = {
     "Drive Team": "drive.utils.overrides.filter_drive_team",
     "Drive Permission": "drive.utils.overrides.filter_drive_permission",
-    "Drive Document": "drive.utils.overrides.filter_drive_document",
-    "Drive Comment": "drive.utils.overrides.filter_drive_comment",
     "Drive Favourite": "drive.utils.overrides.filter_drive_favourite",
     "Drive Entity Log": "drive.utils.overrides.filter_drive_recent",
     "Drive Notification": "drive.utils.overrides.filter_drive_notif",
