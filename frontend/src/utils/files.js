@@ -19,6 +19,7 @@ import emitter from '@/emitter'
 
 export const WRITER_CONTENT_DOCTYPE = 'Writer Document'
 export const PRESENTATION_CONTENT_DOCTYPE = 'Presentation'
+export const ATTACHMENT_CONTENT_DOCTYPE = 'File'
 
 export function isWriterDocument(entity) {
   return entity?.content_doctype === WRITER_CONTENT_DOCTYPE
@@ -32,10 +33,30 @@ export function hasHostedContent(entity) {
   return isWriterDocument(entity) || isPresentation(entity)
 }
 
+export function isManaged(entity) {
+  return entity?.kind === 'native'
+}
+
+export function isReadonly(entity) {
+  return entity?.kind === 'readonly'
+}
+
+export function isSiteFile(entity) {
+  return !entity?.team
+}
+
+export function isAttachmentRef(entity) {
+  return entity?.content_doctype === ATTACHMENT_CONTENT_DOCTYPE
+}
+
+export function isVirtual(entity) {
+  return entity?.kind === 'virtual'
+}
+
 export const openEntity = (entity, new_tab = false) => {
   // Virtual grouping node: navigate into its attachments bucket. A node with an
   // attached_to_name drills into a single document; otherwise into a doctype.
-  if (entity.kind === 'virtual') {
+  if (isVirtual(entity)) {
     return router.push({
       name: 'Attachments',
       params: entity.attached_to_name

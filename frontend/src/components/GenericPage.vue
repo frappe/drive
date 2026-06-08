@@ -79,14 +79,22 @@ import Navbar from '@/components/Navbar.vue'
 import NoFilesSection from '@/components/NoFilesSection.vue'
 import UploadTracker from '@/components/UploadTracker.vue'
 import ErrorPage from '@/components/ErrorPage.vue'
-import { pasteObj } from '@/utils/files'
+import {
+  pasteObj,
+  openEntity,
+  prettyData,
+  sortEntities,
+  isVirtual,
+  isManaged,
+  isAttachmentRef,
+  isSiteFile,
+} from '@/utils/files'
 import { toggleFav, clearRecent } from '@/resources/files'
 import { entitiesDownload } from '@/utils/download'
 import { ref, computed, watch, watchEffect, provide, inject } from 'vue'
 import { useRoute } from 'vue-router'
 import { useEventListener } from '@vueuse/core'
 import { useStore } from 'vuex'
-import { openEntity } from '@/utils/files'
 import { toast } from '@/utils/toasts'
 import { move } from '@/resources/files'
 import { LoadingIndicator } from 'frappe-ui'
@@ -108,7 +116,6 @@ import LucideCornerLeftUp from '~icons/lucide/corner-left-up'
 import LucideMonitorCog from '~icons/lucide/monitor-cog'
 import LucideStar from '~icons/lucide/star'
 import LucideTrash from '~icons/lucide/trash'
-import { prettyData, sortEntities } from '@/utils/files'
 
 const props = defineProps({
   grouper: { type: Function, default: (d) => d },
@@ -295,7 +302,7 @@ const actionItems = computed(() => {
         label: __('Preview'),
         icon: LucideEye,
         action: ([entity]) => openEntity(entity),
-        isEnabled: (e) => e.file_type !== 'Link' && e.kind !== 'virtual',
+        isEnabled: (e) => e.file_type !== 'Link' && !isVirtual(e),
       },
       {
         label: __('Open'),
@@ -307,7 +314,7 @@ const actionItems = computed(() => {
         label: __('Show Info'),
         icon: LucideInfo,
         action: () => (dialog.value = 'i'),
-        isEnabled: (e) => e.kind !== 'virtual',
+        isEnabled: (e) => !isVirtual(e),
       },
       {
         label: __('Copy Link'),
@@ -322,7 +329,7 @@ const actionItems = computed(() => {
         // of kind (parity with the file-preview navbar). Only virtual grouping
         // nodes and non-downloadable types are excluded.
         isEnabled: (e) =>
-          e.kind !== 'virtual' &&
+          !isVirtual(e) &&
           !['Link', 'Presentation', 'Document'].includes(e.file_type) &&
           e.allow_download,
         action: (entities) => entitiesDownload(entities),
@@ -332,8 +339,7 @@ const actionItems = computed(() => {
       {
         divider: true,
         isEnabled: (e) =>
-          e.kind === 'reference' ||
-          (e.kind === 'foreign' && store.state.user.systemUser),
+          isAttachmentRef(e) || (isSiteFile(e) && store.state.user.systemUser),
       },
       {
         label: __('Go to original'),
@@ -345,34 +351,34 @@ const actionItems = computed(() => {
             '_blank'
           )
         },
-        isEnabled: (e) => e.kind === 'reference',
+        isEnabled: (e) => isAttachmentRef(e),
       },
       {
         label: __('Open in Desk'),
         icon: LucideMonitorCog,
         action: ([entity]) =>
           window.open('/desk/file/' + entity.name, '_blank'),
-        isEnabled: (e) => e.kind === 'foreign' && store.state.user.systemUser,
+        isEnabled: (e) => isSiteFile(e) && store.state.user.systemUser,
       },
-      { divider: true, isEnabled: (e) => !e.external && e.kind !== 'virtual' },
+      { divider: true, isEnabled: (e) => !e.external && !isVirtual(e) },
       {
         label: __('Share'),
         icon: LucideShare2,
         action: () => (dialog.value = 's'),
-        isEnabled: (e) => e.share && e.kind === 'native',
+        isEnabled: (e) => e.share && isManaged(e),
         important: true,
       },
       {
         label: __('Rename'),
         icon: LucideSquarePen,
         action: () => (dialog.value = 'rn'),
-        isEnabled: (e) => e.kind === 'native' && e.write,
+        isEnabled: (e) => isManaged(e) && e.write,
       },
       {
         label: __('Move'),
         icon: LucideArrowLeftRight,
         action: () => (dialog.value = 'm'),
-        isEnabled: (e) => e.kind === 'native' && e.write,
+        isEnabled: (e) => isManaged(e) && e.write,
         multi: true,
         important: true,
       },
@@ -385,7 +391,7 @@ const actionItems = computed(() => {
           props.getEntities.setData(props.getEntities.data)
           toggleFav.submit({ entities })
         },
-        isEnabled: (e) => !e.is_favourite && !e.external && e.kind !== 'virtual',
+        isEnabled: (e) => !e.is_favourite && !e.external && !isVirtual(e),
         important: true,
         multi: true,
       },
@@ -398,7 +404,7 @@ const actionItems = computed(() => {
           props.getEntities.setData(props.getEntities.data)
           toggleFav.submit({ entities })
         },
-        isEnabled: (e) => e.is_favourite && !e.external && e.kind !== 'virtual',
+        isEnabled: (e) => e.is_favourite && !e.external && !isVirtual(e),
         important: true,
         multi: true,
       },

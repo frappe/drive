@@ -11,7 +11,7 @@
     <template #body-content>
       <ul class="space-y-3 text-sm mb-4 text-ink-gray-8">
         <Alert
-          v-if="entity.kind === 'reference'"
+          v-if="isAttachmentRef(entity)"
           title="This is an attachment of another file."
           theme="blue"
           :dismissable="false"
@@ -146,6 +146,7 @@
 
 <script setup>
 import { formatDate } from '@/utils/format'
+import { isAttachmentRef } from '@/utils/files'
 import { Dialog, Button, LoadingIndicator, createResource, Alert } from 'frappe-ui'
 import TagInput from '@/components/TagInput.vue'
 import { ref, inject } from 'vue'

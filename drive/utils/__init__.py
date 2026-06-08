@@ -19,17 +19,14 @@ ATTACHMENT_CONTENT_DOCTYPE = "File"
 WRITER_CONTENT_DOCTYPE = "Writer Document"
 PRESENTATION_CONTENT_DOCTYPE = "Presentation"
 
-# `kind` — what a row in a Drive listing actually is, relative to Drive
-#   native    — Drive owns the entity's identity & storage (incl. folders, Writer
-#               Documents, Presentations). Rename / move / share allowed.
-#   reference  — a Drive row that points at another framework File ("open original").
-#   foreign    — a stock framework File surfaced read-only in Drive ("open in desk").
-#   virtual    — a fabricated grouping node (Doctype→Doc tree), not a File row.
-# The old `modifiable` / `is_attachment` booleans are just projections of this:
-#   modifiable ≡ kind == native,  is_attachment ≡ kind == reference.
+# `kind` — how Drive may treat a listing row (NOT the MIME `file_kinds` filter):
+#   native   — Drive-managed team file. Rename / move / share allowed.
+#   readonly — Shown in Drive but not managed here. Sub-cases use existing fields:
+#                no `team` → site file ("Open in Desk")
+#                content_doctype == "File" → attachment ref ("Go to original")
+#   virtual  — Fabricated folder for the attachments browser (not a DB row).
 KIND_NATIVE = "native"
-KIND_REFERENCE = "reference"
-KIND_FOREIGN = "foreign"
+KIND_READONLY = "readonly"
 KIND_VIRTUAL = "virtual"
 
 
@@ -40,15 +37,12 @@ def is_site_file(entity):
 
 
 def entity_kind(row):
-    """Classify a real `File` listing row. See the `kind` partition above.
+    """Classify a real `File` listing row. See `kind` above.
 
-    `virtual` grouping nodes are fabricated in `list.get_attachments` and tagged
-    with `kind` at construction, so they never reach this function.
+    `virtual` nodes are built in `list.get_attachments` and never reach here.
     """
-    if is_site_file(row):
-        return KIND_FOREIGN
-    if row["content_doctype"] == ATTACHMENT_CONTENT_DOCTYPE:
-        return KIND_REFERENCE
+    if is_site_file(row) or row.get("content_doctype") == ATTACHMENT_CONTENT_DOCTYPE:
+        return KIND_READONLY
     return KIND_NATIVE
 MIME_LIST_MAP = {
     "Image": [

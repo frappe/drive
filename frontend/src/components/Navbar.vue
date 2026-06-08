@@ -98,7 +98,14 @@ import { entitiesDownload } from '@/utils/download'
 import { getRecents, getTrash, toggleFav } from '@/resources/files'
 import { apps } from '@/resources/permissions'
 import { useRoute } from 'vue-router'
-import { newExternal, dynamicList } from '@/utils/files'
+import {
+  newExternal,
+  dynamicList,
+  isManaged,
+  isAttachmentRef,
+  isSiteFile,
+  isVirtual,
+} from '@/utils/files'
 import { getFileLink } from 'frappe-ui/drive/js/utils'
 
 import LucideClock from '~icons/lucide/clock'
@@ -159,7 +166,7 @@ const defaultActions = computed(() => {
           label: __('Open in Desk'),
           icon: LucideMonitorCog,
           onClick: () => window.open('/desk/file/' + rootEntity.value.name, '_blank'),
-          isEnabled: () => rootEntity.value.kind === 'foreign' && store.state.user.systemUser,
+          isEnabled: () => isSiteFile(rootEntity.value) && store.state.user.systemUser,
         },
         {
           label: __('Go to original'),
@@ -170,13 +177,13 @@ const defaultActions = computed(() => {
               '_blank'
             )
           },
-          isEnabled: () => rootEntity.value.kind === 'reference',
+          isEnabled: () => isAttachmentRef(rootEntity.value),
         },
         {
           label: __('Download'),
           icon: LucideDownload,
           isEnabled: () =>
-            rootEntity.value.kind !== 'virtual' &&
+            !isVirtual(rootEntity.value) &&
             !['Link', 'Presentation', 'Document'].includes(rootEntity.value.file_type) &&
             rootEntity.value.allow_download,
           onClick: () => entitiesDownload([rootEntity.value]),
@@ -204,19 +211,19 @@ const defaultActions = computed(() => {
           onClick: () => {
             dialog.value = 's'
           },
-          isEnabled: () => rootEntity.value.share && rootEntity.value.kind === 'native',
+          isEnabled: () => rootEntity.value.share && isManaged(rootEntity.value),
         },
         {
           label: __('Rename'),
           icon: LucideSquarePen,
           onClick: () => (dialog.value = 'rn'),
-          isEnabled: () => rootEntity.value.write && rootEntity.value.kind === 'native',
+          isEnabled: () => rootEntity.value.write && isManaged(rootEntity.value),
         },
         {
           label: __('Move'),
           icon: LucideArrowLeftRight,
           onClick: () => (dialog.value = 'm'),
-          isEnabled: () => rootEntity.value.write && rootEntity.value.kind === 'native',
+          isEnabled: () => rootEntity.value.write && isManaged(rootEntity.value),
         },
         {
           label: __('Favourite'),
