@@ -4,25 +4,21 @@
     :get-entities="getFolderContents"
     :empty="{
       icon: LucideFolderClosed,
-      title: 'No files added yet',
+      title: 'Nothing here',
+      description: 'Add files to this folder.',
     }"
   />
 </template>
 
 <script setup>
-import GenericPage from "@/components/GenericPage.vue"
-import { watch, computed } from "vue"
-import { useStore } from "vuex"
-import { createResource } from "frappe-ui"
-import { COMMON_OPTIONS } from "@/resources/files"
-import {
-  setBreadCrumbs,
-  prettyData,
-  setCache,
-  updateURLSlug,
-} from "@/utils/files"
-import router from "@/router"
-import LucideFolderClosed from "~icons/lucide/folder-closed"
+import GenericPage from '@/components/GenericPage.vue'
+import { watch, computed } from 'vue'
+import { useStore } from 'vuex'
+import { createResource } from 'frappe-ui'
+import { COMMON_OPTIONS } from '@/resources/files'
+import { setBreadCrumbs, prettyData, setCache, updateURLSlug } from '@/utils/files'
+import router from '@/router'
+import LucideFolderClosed from '~icons/lucide/folder-closed'
 
 const store = useStore()
 
@@ -30,34 +26,34 @@ const props = defineProps({
   entityName: String,
   slug: String,
 })
-store.commit("setCurrentFolder", { name: props.entityName })
+store.commit('setCurrentFolder', { name: props.entityName })
 
 const getFolderContents = createResource({
   ...COMMON_OPTIONS,
-  url: "drive.api.list.files",
+  url: 'drive.api.list.files',
   makeParams: (params) => ({
     ...params,
     entity_name: props.entityName,
   }),
-  cache: ["folder", props.entityName],
+  cache: ['folder', props.entityName],
 })
-setCache(getFolderContents, ["folder", props.entityName])
+setCache(getFolderContents, ['folder', props.entityName])
 
 const onSuccess = (entity) => {
   if (router.currentRoute.value.params.entityName !== entity.name) return
-  document.title = "Folder - " + entity.title
+  document.title = 'Folder - ' + entity.file_name
   setBreadCrumbs(entity)
-  updateURLSlug(entity.title)
+  updateURLSlug(entity.file_name)
 }
 
 const e = computed(() => props.entityName)
 const currentFolder = createResource({
-  url: "drive.api.permissions.get_entity_with_permissions",
+  url: 'drive.api.permissions.get_entity_with_permissions',
   transform(entity) {
     return prettyData([entity])[0]
   },
   onSuccess,
 })
-store.commit("setCurrentResource", currentFolder)
+store.commit('setCurrentResource', currentFolder)
 watch(e, (v) => currentFolder.fetch({ entity_name: v }), { immediate: true })
 </script>

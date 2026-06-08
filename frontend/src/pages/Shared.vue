@@ -1,31 +1,30 @@
 <template>
-  <GenericPage
-    :get-entities="getShared"
-    :empty="{
-      icon: LucideUsers,
-      title: 'No shared files',
-      description: 'You can share files easily on Drive - try it out!',
-    }"
-  />
+  <GenericPage :get-entities :empty />
 </template>
 
 <script setup>
-import GenericPage from "@/components/GenericPage.vue"
-
-import { computed, watch } from "vue"
-import { useStore } from "vuex"
-import { getShared } from "@/resources/files"
-import LucideUsers from "~icons/lucide/users"
-
+import GenericPage from '@/components/GenericPage.vue'
+import { computed } from 'vue'
+import { getSiteFiles, getShared } from '@/resources/files'
+import { useStore } from 'vuex'
+import LucideFiles from '~icons/lucide/files'
 const store = useStore()
-const shareView = computed(() => store.state.shareView)
-watch(
-  shareView,
-  (val) => {
-    const oldParams = getShared.params
-    getShared.params = { shared: val }
-    getShared.fetch({ ...oldParams, ...getShared.params })
-  },
-  { immediate: true }
+
+
+const getEntities = computed(() =>
+  store.state.shareView ? getShared : getSiteFiles
+)
+const empty = computed(() =>
+  store.state.shareView
+    ? {
+      icon: LucideUsers,
+      title: 'No shared files',
+      description: 'You can share files easily on Drive - try it out!',
+    }
+    : {
+      icon: LucideFiles,
+      title: 'No files on site yet',
+      description: 'Upload to get started!',
+    }
 )
 </script>

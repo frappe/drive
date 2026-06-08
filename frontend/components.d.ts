@@ -65,7 +65,6 @@ declare module 'vue' {
     LucideTrash: typeof import('~icons/lucide/trash')['default']
     LucideUser: typeof import('~icons/lucide/user')['default']
     LucideX: typeof import('~icons/lucide/x')['default']
-    MoveDialog: typeof import('./src/components/MoveDialog.vue')['default']
     MSOfficePreview: typeof import('./src/components/FileTypePreview/MSOfficePreview.vue')['default']
     Navbar: typeof import('./src/components/Navbar.vue')['default']
     NewFolderDialog: typeof import('./src/components/NewFolderDialog.vue')['default']

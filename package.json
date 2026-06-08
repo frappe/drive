@@ -2,19 +2,10 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "check-pnpm": "chmod +x ./scripts/install-pnpm.sh && ./scripts/install-pnpm.sh",
-    "frontend:pnpm_install": "npm run check-pnpm && cd frontend && pnpm install",
-    "postinstall": "npm run frontend:pnpm_install",
-    "dev": "cd frontend && pnpm dev",
-    "build": "npm run check-pnpm && cd frontend && pnpm install && pnpm build",
-    "upgrade-frappeui": "cd frontend && pnpm add frappe-ui@latest && cd ..",
-    "disable-workspaces": "chmod +x ./scripts/manage_workspaces.sh && ./scripts/manage_workspaces.sh disable",
-    "enable-workspaces": "chmod +x ./scripts/manage_workspaces.sh && ./scripts/manage_workspaces.sh enable"
-  },
-  "pnpm": {
-    "overrides": {
-      "yjs": "13.6.27"
-    }
+    "postinstall": "cd frontend && yarn install",
+    "dev": "cd frontend && yarn dev",
+    "build": "cd frontend && yarn build",
+    "upgrade-frappeui": "cd frontend && yarn add frappe-ui@latest"
   },
   "devDependencies": {
     "cypress": "^14.5.2",

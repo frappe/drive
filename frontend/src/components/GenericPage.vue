@@ -72,41 +72,50 @@
   </Transition>
 </template>
 <script setup>
-import ListView from "@/components/ListView.vue"
-import GridView from "@/components/GridView.vue"
-import DriveToolBar from "@/components/DriveToolBar.vue"
-import Navbar from "@/components/Navbar.vue"
-import NoFilesSection from "@/components/NoFilesSection.vue"
-import UploadTracker from "@/components/UploadTracker.vue"
-import ErrorPage from "@/components/ErrorPage.vue"
-import { pasteObj } from "@/utils/files"
-import { toggleFav, clearRecent } from "@/resources/files"
-import { entitiesDownload } from "@/utils/download"
-import { ref, computed, watch, watchEffect, provide, inject } from "vue"
-import { useRoute } from "vue-router"
-import { useEventListener } from "@vueuse/core"
-import { useStore } from "vuex"
-import { openEntity } from "@/utils/files"
-import { toast } from "@/utils/toasts"
-import { move } from "@/resources/files"
-import { LoadingIndicator } from "frappe-ui"
-import { settings } from "@/resources/permissions"
-import emitter from "@/emitter"
-import { getFileLink } from "frappe-ui/drive/js/utils"
+import ListView from '@/components/ListView.vue'
+import GridView from '@/components/GridView.vue'
+import DriveToolBar from '@/components/DriveToolBar.vue'
+import Navbar from '@/components/Navbar.vue'
+import NoFilesSection from '@/components/NoFilesSection.vue'
+import UploadTracker from '@/components/UploadTracker.vue'
+import ErrorPage from '@/components/ErrorPage.vue'
+import {
+  pasteObj,
+  openEntity,
+  prettyData,
+  sortEntities,
+  isVirtual,
+  isManaged,
+  isAttachmentRef,
+  isSiteFile,
+} from '@/utils/files'
+import { toggleFav, clearRecent } from '@/resources/files'
+import { entitiesDownload } from '@/utils/download'
+import { ref, computed, watch, watchEffect, provide, inject } from 'vue'
+import { useRoute } from 'vue-router'
+import { useEventListener } from '@vueuse/core'
+import { useStore } from 'vuex'
+import { toast } from '@/utils/toasts'
+import { move } from '@/resources/files'
+import { LoadingIndicator } from 'frappe-ui'
+import { settings } from '@/resources/permissions'
+import emitter from '@/emitter'
+import { getFileLink } from 'frappe-ui/drive/js/utils'
 
-import LucideClock from "~icons/lucide/clock"
-import LucideDownload from "~icons/lucide/download"
-import LucideExternalLink from "~icons/lucide/external-link"
-import LucideEye from "~icons/lucide/eye"
-import LucideInfo from "~icons/lucide/info"
-import LucideLink2 from "~icons/lucide/link-2"
-import LucideArrowLeftRight from "~icons/lucide/arrow-left-right"
-import LucideRotateCcw from "~icons/lucide/rotate-ccw"
-import LucideShare2 from "~icons/lucide/share-2"
-import LucideSquarePen from "~icons/lucide/square-pen"
-import LucideStar from "~icons/lucide/star"
-import LucideTrash from "~icons/lucide/trash"
-import { prettyData, sortEntities } from "@/utils/files"
+import LucideClock from '~icons/lucide/clock'
+import LucideDownload from '~icons/lucide/download'
+import LucideExternalLink from '~icons/lucide/external-link'
+import LucideEye from '~icons/lucide/eye'
+import LucideInfo from '~icons/lucide/info'
+import LucideLink2 from '~icons/lucide/link-2'
+import LucideArrowLeftRight from '~icons/lucide/arrow-left-right'
+import LucideRotateCcw from '~icons/lucide/rotate-ccw'
+import LucideShare2 from '~icons/lucide/share-2'
+import LucideSquarePen from '~icons/lucide/square-pen'
+import LucideCornerLeftUp from '~icons/lucide/corner-left-up'
+import LucideMonitorCog from '~icons/lucide/monitor-cog'
+import LucideStar from '~icons/lucide/star'
+import LucideTrash from '~icons/lucide/trash'
 
 const props = defineProps({
   grouper: { type: Function, default: (d) => d },
@@ -119,18 +128,18 @@ const props = defineProps({
 const route = useRoute()
 const store = useStore()
 
-const dialog = ref("")
-provide("dialog", dialog)
+const dialog = ref('')
+provide('dialog', dialog)
 
 const team = ref(
-  ["Shared", "Recents", "Favourites", "Trash"].includes(route.name)
-    ? "all"
+  ['Recents', 'Favourites', 'Trash'].includes(route.name)
+    ? 'all'
     : route.params.team
 )
 watch(
   () => route.params.team,
   (v) => {
-    team.value = v || ""
+    team.value = v || ''
   },
   { immediate: true }
 )
@@ -139,20 +148,20 @@ const activeEntity = computed(() => store.state.activeEntity)
 const sortId = computed(
   () => route.params.entityName || route.params.team || route.name
 )
-const inIframe = inject("inIframe")
+const inIframe = inject('inIframe')
 const DEFAULT_SORT = inIframe.value
   ? {
-      label: "Name",
-      field: "name",
+      label: 'Name',
+      field: 'name',
       ascending: true,
     }
   : {
-      label: "Modified",
-      field: "modified",
+      label: 'Modified',
+      field: 'modified',
       ascending: false,
     }
 const sortOrder = ref(store.state.sortOrder[sortId.value] || DEFAULT_SORT)
-const search = ref("")
+const search = ref('')
 const filters = ref([])
 
 const rows = ref(props.getEntities.data)
@@ -166,15 +175,15 @@ watch(
     rows.value = sortEntities([...rows.value], order)
     props.getEntities.setData(rows.value)
     if (sortId.value) {
-      store.commit("setSortOrder", [sortId.value, order])
+      store.commit('setSortOrder', [sortId.value, order])
     }
   },
   { deep: true }
 )
 
 watch(search, (val) => {
-  const search = new RegExp(val, "i")
-  rows.value = props.getEntities.data.filter((k) => search.test(k.title))
+  const search = new RegExp(val, 'i')
+  rows.value = props.getEntities.data.filter((k) => search.test(k.file_name))
 })
 
 watch(
@@ -185,10 +194,10 @@ watch(
       return
     }
     const file_types = val.map((k) => k.name)
-    const isFolder = file_types.find((k) => k === "Folder")
+    const isFolder = file_types.find((k) => k === 'Folder')
     rows.value = props.getEntities.data.filter(
-      ({ file_type, is_group }) =>
-        file_types.includes(file_type) || (isFolder && is_group)
+      ({ file_type, is_folder }) =>
+        file_types.includes(file_type) || (isFolder && is_folder)
     )
   },
   { deep: true }
@@ -199,15 +208,15 @@ watch(
   (val) => {
     if (!val) return
     rows.value = sortEntities([...val], sortOrder.value)
-    store.commit("setCurrentFolder", {
-      entities: rows.value.filter?.((k) => k.title[0] !== "."),
+    store.commit('setCurrentFolder', {
+      entities: rows.value.filter?.((k) => k.file_name?.[0] !== '.'),
     })
   },
   { immediate: true, deep: true }
 )
 
-store.commit("setListResource", props.getEntities)
-store.commit("setCurrentResource", null)
+store.commit('setListResource', props.getEntities)
+store.commit('setCurrentResource', null)
 
 const selections = ref(new Set())
 const selectedEntitities = computed(
@@ -219,14 +228,15 @@ const selectedEntitities = computed(
 
 const verifyAccess = computed(() => props.verify?.data || !props.verify)
 watchEffect(() => {
-  if (verifyAccess.value?.write) useEventListener("paste", pasteObj)
+  if (verifyAccess.value?.write) useEventListener('paste', pasteObj)
 })
 
 const refreshData = () => {
-  const params = { team: team.value === "home" ? "" : team.value || "" }
-  if (sortOrder.value)
-    params.order_by =
-      sortOrder.value.field + (sortOrder.value.ascending ? " 1" : " 0")
+  const params = { team: team.value === 'home' ? '' : team.value || '' }
+  if (sortOrder.value) {
+    params.order_by = sortOrder.value.field
+    params.ascending=  sortOrder.value.ascending
+  }
   props.getEntities.fetch({ ...props.getEntities.params, ...params })
 }
 
@@ -238,11 +248,11 @@ watch(
   },
   { immediate: true, deep: false }
 )
-emitter.on("refresh", refreshData)
-emitter.on("remove-file", (item) => {
+emitter.on('refresh', refreshData)
+emitter.on('remove-file', (item) => {
   selections.value.clear()
   selections.value.add(item)
-  dialog.value = "remove"
+  dialog.value = 'remove'
 })
 
 if (!settings.fetched && store.getters.isLoggedIn) settings.fetch()
@@ -256,7 +266,7 @@ const removeFile = (file, target) => {
   props.getEntities.setData(props.getEntities.data)
 }
 const onDrop = (targetFile, draggedItem) => {
-  if (!targetFile.is_group || draggedItem === targetFile.name || !draggedItem)
+  if (!targetFile.is_folder || draggedItem === targetFile.name || !draggedItem)
     return
   move.submit({
     entity_names: [draggedItem],
@@ -264,24 +274,24 @@ const onDrop = (targetFile, draggedItem) => {
   })
   removeFile(draggedItem, targetFile.name)
 }
-emitter.on("remove-file-ui", removeFile)
+emitter.on('remove-file-ui', removeFile)
 
 // Action Items
 const actionItems = computed(() => {
-  if (route.name === "Trash") {
+  if (route.name === 'Trash') {
     return [
       {
-        label: "Restore",
+        label: 'Restore',
         icon: LucideRotateCcw,
-        action: () => (dialog.value = "restore"),
+        action: () => (dialog.value = 'restore'),
         multi: true,
         important: true,
       },
       {
-        label: "Delete forever",
+        label: 'Delete forever',
         icon: LucideTrash,
-        action: () => (dialog.value = "d"),
-        isEnabled: () => route.name === "Trash",
+        action: () => (dialog.value = 'd'),
+        isEnabled: () => route.name === 'Trash',
         multi: true,
         danger: true,
       },
@@ -289,67 +299,91 @@ const actionItems = computed(() => {
   } else {
     return [
       {
-        label: __("Preview"),
+        label: __('Preview'),
         icon: LucideEye,
         action: ([entity]) => openEntity(entity),
-        isEnabled: (e) => !e.is_link,
+        isEnabled: (e) => e.file_type !== 'Link' && !isVirtual(e),
       },
       {
-        label: __("Open"),
+        label: __('Open'),
         icon: LucideExternalLink,
         action: ([entity]) => openEntity(entity),
-        isEnabled: (e) => e.is_link,
+        isEnabled: (e) => e.file_type === 'Link',
       },
-      { divider: true },
       {
-        label: __("Share"),
-        icon: LucideShare2,
-        action: () => (dialog.value = "s"),
-        isEnabled: (e) => e.share,
+        label: __('Show Info'),
+        icon: LucideInfo,
+        action: () => (dialog.value = 'i'),
+        isEnabled: (e) => !isVirtual(e),
+      },
+      {
+        label: __('Copy Link'),
+        icon: LucideLink2,
+        action: ([entity]) => getFileLink(entity),
         important: true,
       },
       {
-        label: __("Download"),
+        label: __('Download'),
         icon: LucideDownload,
+        // Downloading is read-only, so it is safe for every real file regardless
+        // of kind (parity with the file-preview navbar). Only virtual grouping
+        // nodes and non-downloadable types are excluded.
         isEnabled: (e) =>
-          !e.is_link &&
-          e.mime_type !== "frappe/slides" &&
-          e.mime_type !== "frappe_doc" &&
+          !isVirtual(e) &&
+          !['Link', 'Presentation', 'Document'].includes(e.file_type) &&
           e.allow_download,
         action: (entities) => entitiesDownload(entities),
         multi: true,
         important: true,
       },
       {
-        label: __("Copy Link"),
-        icon: LucideLink2,
-        action: ([entity]) => getFileLink(entity),
+        divider: true,
+        isEnabled: (e) =>
+          isAttachmentRef(e) || (isSiteFile(e) && store.state.user.systemUser),
+      },
+      {
+        label: __('Go to original'),
+        icon: LucideCornerLeftUp,
+        action: ([entity]) => {
+          window.open(
+            '/api/method/drive.api.files.redirect_to_original?file_id=' +
+              entity.name,
+            '_blank'
+          )
+        },
+        isEnabled: (e) => isAttachmentRef(e),
+      },
+      {
+        label: __('Open in Desk'),
+        icon: LucideMonitorCog,
+        action: ([entity]) =>
+          window.open('/desk/file/' + entity.name, '_blank'),
+        isEnabled: (e) => isSiteFile(e) && store.state.user.systemUser,
+      },
+      { divider: true, isEnabled: (e) => !e.external && !isVirtual(e) },
+      {
+        label: __('Share'),
+        icon: LucideShare2,
+        action: () => (dialog.value = 's'),
+        isEnabled: (e) => e.share && isManaged(e),
         important: true,
       },
-      { divider: true, isEnabled: (e) => !e.external },
       {
-        label: __("Move"),
+        label: __('Rename'),
+        icon: LucideSquarePen,
+        action: () => (dialog.value = 'rn'),
+        isEnabled: (e) => isManaged(e) && e.write,
+      },
+      {
+        label: __('Move'),
         icon: LucideArrowLeftRight,
-        action: () => (dialog.value = "m"),
-        isEnabled: (e) => e.write,
+        action: () => (dialog.value = 'm'),
+        isEnabled: (e) => isManaged(e) && e.write,
         multi: true,
         important: true,
       },
       {
-        label: __("Rename"),
-        icon: LucideSquarePen,
-        action: () => (dialog.value = "rn"),
-        isEnabled: (e) => e.write,
-      },
-      {
-        label: __("Show Info"),
-        icon: LucideInfo,
-        action: () => (dialog.value = "i"),
-        isEnabled: (e) =>
-          !store.state.activeEntity || (!store.state.showInfo && !e.external),
-      },
-      {
-        label: __("Favourite"),
+        label: __('Favourite'),
         icon: LucideStar,
         action: (entities) => {
           entities.forEach((e) => (e.is_favourite = true))
@@ -357,44 +391,44 @@ const actionItems = computed(() => {
           props.getEntities.setData(props.getEntities.data)
           toggleFav.submit({ entities })
         },
-        isEnabled: (e) => !e.is_favourite && !e.external,
+        isEnabled: (e) => !e.is_favourite && !e.external && !isVirtual(e),
         important: true,
         multi: true,
       },
       {
-        label: __("Unfavourite"),
+        label: __('Unfavourite'),
         icon: LucideStar,
-        class: "stroke-amber-500 fill-amber-500",
+        class: 'stroke-amber-500 fill-amber-500',
         action: (entities) => {
           entities.forEach((e) => (e.is_favourite = false))
           props.getEntities.setData(props.getEntities.data)
           toggleFav.submit({ entities })
         },
-        isEnabled: (e) => e.is_favourite && !e.external,
+        isEnabled: (e) => e.is_favourite && !e.external && !isVirtual(e),
         important: true,
         multi: true,
       },
       {
-        label: __("Remove from Recents"),
+        label: __('Remove from Recents'),
         icon: LucideClock,
         action: (entities) => {
           clearRecent.submit({
             entities,
           })
         },
-        isEnabled: () => route.name == "Recents",
+        isEnabled: () => route.name == 'Recents',
         important: true,
         multi: true,
       },
       { divider: true, isEnabled: (e) => e.write },
       {
-        label: __("Delete"),
+        label: __('Delete'),
         icon: LucideTrash,
-        action: () => (dialog.value = "remove"),
+        action: () => (dialog.value = 'remove'),
         isEnabled: (e) => e.write,
         important: true,
         multi: true,
-        theme: "red",
+        theme: 'red',
       },
     ]
   }
@@ -404,18 +438,18 @@ async function newLink() {
   if (!document.hasFocus()) return
   try {
     const text = await navigator.clipboard.readText()
-    if (localStorage.getItem("prevClip") === text) return
-    localStorage.setItem("prevClip", text)
+    if (localStorage.getItem('prevClip') === text) return
+    localStorage.setItem('prevClip', text)
     const url = new URL(text)
     if (url.host)
       toast({
-        title: "Link detected",
+        title: 'Link detected',
         text,
         buttons: [
           {
-            label: "Add",
+            label: 'Add',
             onClick: () => {
-              dialog.value = "l"
+              dialog.value = 'l'
             },
           },
         ],
@@ -426,36 +460,36 @@ async function newLink() {
 // JS doesn't allow direct reading of clipboard
 if (settings.data?.auto_detect_links) {
   newLink()
-  window.addEventListener("focus", newLink)
-  window.addEventListener("copy", newLink)
+  window.addEventListener('focus', newLink)
+  window.addEventListener('copy', newLink)
 }
 
-const socket = inject("socket")
-socket.on("list-add", ({ file }) => {
+const socket = inject('socket')
+socket.on('list-add', ({ file }) => {
   if (
-    file.parent_entity === props.getEntities.params.entity_name &&
+    file.folder === props.getEntities.params.entity_name &&
     !props.getEntities.data.find((k) => k.name === file.name)
   ) {
     props.getEntities.data.push(...prettyData([file]))
     props.getEntities.setData(props.getEntities.data)
   }
 })
-socket.on("list-update", ({ file }) => {
-  if (file.parent_entity !== props.getEntities.params.entity_name) return
+socket.on('list-update', ({ file }) => {
+  if (file.folder !== props.getEntities.params.entity_name) return
   const index = props.getEntities.data.findIndex((k) => k.name == file.name)
   if (index !== -1)
     props.getEntities.data.splice(index, 1, ...prettyData([file]))
   props.getEntities.setData(props.getEntities.data)
 })
-socket.on("list-remove", ({ parent, entity_name }) => {
+socket.on('list-remove', ({ parent, entity_name }) => {
   if (parent !== props.getEntities.params.entity_name) return
   const index = props.getEntities.data.findIndex((k) => k.name == entity_name)
   if (index !== -1) props.getEntities.data.splice(index, 1)
   props.getEntities.setData(props.getEntities.data)
 })
-socket.on("client-rename", ({ entity_name, title }) => {
+socket.on('client-rename', ({ entity_name, title }) => {
   const file = props.getEntities.data.find((k) => k.name === entity_name)
-  file.title = title
+  file.file_name = title
 })
 </script>
 <style>

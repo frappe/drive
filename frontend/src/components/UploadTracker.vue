@@ -7,49 +7,28 @@
       :class="[collapsed ? 'cursor-pointer' : 'mb-4']"
       @click="collapsed = false"
     >
-      <div
-        v-if="uploadsInProgress.length > 0"
-        class="font-medium truncate text-lg"
-      >
+      <div v-if="uploadsInProgress.length > 0" class="font-medium truncate text-lg">
         Uploading {{ uploadsInProgress.length }}
-        {{ uploadsInProgress.length == 1 ? "file" : "files" }}
+        {{ uploadsInProgress.length == 1 ? 'file' : 'files' }}
       </div>
-      <div
-        v-else-if="uploadsCompleted.length > 0"
-        class="font-medium truncate text-lg"
-      >
+      <div v-else-if="uploadsCompleted.length > 0" class="font-medium truncate text-lg">
         {{ uploadsCompleted.length }}
-        {{ uploadsCompleted.length == 1 ? "file" : "files" }} uploaded
+        {{ uploadsCompleted.length == 1 ? 'file' : 'files' }} uploaded
       </div>
-      <div
-        v-else-if="uploadsFailed.length > 0"
-        class="font-medium truncate text-lg"
-      >
+      <div v-else-if="uploadsFailed.length > 0" class="font-medium truncate text-lg">
         {{ uploadsFailed.length }}
-        {{ uploadsFailed.length == 1 ? "upload" : "uploads" }} failed
+        {{ uploadsFailed.length == 1 ? 'upload' : 'uploads' }} failed
       </div>
       <div class="ml-auto flex items-center gap-4">
-        <button
-          class="focus:outline-none"
-          @click.stop="collapsed = !collapsed"
-        >
-          <component
-            :is="collapsed ? LucidePlus : LucideMinus"
-            class="size-4 text-ink-gray-8"
-          />
+        <button class="focus:outline-none" @click.stop="collapsed = !collapsed">
+          <component :is="collapsed ? LucidePlus : LucideMinus" class="size-4 text-ink-gray-8" />
         </button>
-        <button
-          class="focus:outline-none"
-          @click="store.commit('clearUploads')"
-        >
+        <button class="focus:outline-none" @click="store.commit('clearUploads')">
           <LucideX class="size-4 text-ink-gray-8" />
         </button>
       </div>
     </div>
-    <div
-      v-if="!collapsed"
-      class="max-h-64 overflow-y-auto bg-surface-white w-full"
-    >
+    <div v-if="!collapsed" class="max-h-64 overflow-y-auto bg-surface-white w-full">
       <div
         v-for="(upload, index) in currentTabGetter()"
         :key="upload.uuid"
@@ -57,10 +36,7 @@
         @mouseover="hoverIndex = index"
         @mouseout="hoverIndex = null"
       >
-        <div
-          class="flex items-center gap-3 py-1 pr-[3px]"
-          @click="openFile(upload)"
-        >
+        <div class="flex items-center gap-3 py-1 pr-[3px]" @click="openFile(upload)">
           <div class="flex items-center justify-between w-full">
             <div class="flex justify-start items-center w-full max-w-[80%]">
               <LucideFile class="size-4 mr-2" />
@@ -116,17 +92,17 @@
   </div>
 </template>
 <script setup>
-import { Dialog } from "frappe-ui"
-import ProgressRing from "@/components/ProgressRing.vue"
-import LucideInfo from "~icons/lucide/info"
-import LucidePlus from "~icons/lucide/plus"
-import LucideMinus from "~icons/lucide/minus"
-import LucideFolderOpenDot from "~icons/lucide/folder-open-dot"
-import LucideX from "~icons/lucide/x"
-import LucideRefreshCcw from "~icons/lucide/refresh-ccw"
-import { useStore } from "vuex"
-import { useRouter } from "vue-router"
-import { ref, computed } from "vue"
+import { Dialog } from 'frappe-ui'
+import ProgressRing from '@/components/ProgressRing.vue'
+import LucideInfo from '~icons/lucide/info'
+import LucidePlus from '~icons/lucide/plus'
+import LucideMinus from '~icons/lucide/minus'
+import LucideFolderOpenDot from '~icons/lucide/folder-open-dot'
+import LucideX from '~icons/lucide/x'
+import LucideRefreshCcw from '~icons/lucide/refresh-ccw'
+import { useStore } from 'vuex'
+import { useRouter } from 'vue-router'
+import { ref, computed } from 'vue'
 
 const collapsed = ref(false)
 const showErrorDialog = ref(false)
@@ -137,24 +113,18 @@ const store = useStore()
 const router = useRouter()
 
 const currentTabGetter = () => {
-  return uploadsFailed.value.concat(
-    uploadsInProgress.value,
-    uploadsCompleted.value
-  )
+  return uploadsFailed.value.concat(uploadsInProgress.value, uploadsCompleted.value)
 }
 
 const mapGetters = () => {
   return Object.fromEntries(
-    Object.keys(store.getters).map((getter) => [
-      getter,
-      computed(() => store.getters[getter]),
-    ])
+    Object.keys(store.getters).map((getter) => [getter, computed(() => store.getters[getter])])
   )
 }
 const { uploadsInProgress, uploadsCompleted, uploadsFailed } = mapGetters([
-  "uploadsInProgress",
-  "uploadsCompleted",
-  "uploadsFailed",
+  'uploadsInProgress',
+  'uploadsCompleted',
+  'uploadsFailed',
 ])
 
 const openFile = (upload) => {
@@ -164,7 +134,7 @@ const openFile = (upload) => {
   }
   if (upload.completed && upload.response) {
     router.push({
-      name: "File",
+      name: 'File',
       params: { entityName: upload.response.name },
     })
   }

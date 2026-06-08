@@ -9,7 +9,7 @@
         :class="'h-10 w-auto'"
         :src="backupLink"
         :draggable="false"
-      >
+      />
       <img
         v-show="imgLoaded"
         :class="
@@ -20,7 +20,7 @@
         :src="src"
         :draggable="false"
         @load="imgLoaded = true"
-      >
+      />
     </template>
     <!-- Direct padding doesn't work -->
     <div
@@ -37,24 +37,24 @@
     class="p-2 h-[35%] border-t border-gray-100 flex flex-col justify-evenly"
   >
     <div class="truncate w-full w-fit text-base font-medium text-ink-gray-8">
-      {{ file.title }}
+      {{ file.file_name }}
     </div>
     <div class="mt-[5px] text-xs text-ink-gray-5">
       <div class="flex items-center justify-start gap-1">
         <img
           v-if="
             file.file_type !== 'Unknown' &&
-              !file.is_group &&
-              ((imgLoaded && src !== backupLink) || !is_image)
+            !file.is_folder &&
+            ((imgLoaded && src !== backupLink) || !is_image)
           "
           loading="lazy"
           class="h-4 w-auto"
           :src="getIconUrl(file.file_type) || '/drive'"
           :draggable="false"
-        >
+        />
         <p class="truncate">
-          {{ file.is_group ? childrenSentence + "∙" : "" }}
-          {{ file.file_type !== "Unknown" ? file.file_type + "∙" : "" }}
+          {{ file.is_folder ? childrenSentence + '∙' : '' }}
+          {{ file.file_type !== 'Unknown' ? file.file_type + '∙' : '' }}
           {{ file.relativeModified }}
         </p>
       </div>
@@ -65,9 +65,9 @@
   </div>
 </template>
 <script setup>
-import { getIconUrl, getThumbnailUrl } from "@/utils/getIconUrl"
-import { createResource } from "frappe-ui"
-import { ref, computed } from "vue"
+import { getIconUrl, getThumbnailUrl } from '@/utils/getIconUrl'
+import { createResource } from 'frappe-ui'
+import { ref, computed } from 'vue'
 const props = defineProps({ file: Object })
 
 const [thumbnailLink, backupLink, is_image] = getThumbnailUrl(props.file, "grid")
@@ -78,13 +78,13 @@ let getThumbnail
 if (!is_image) {
   getThumbnail = createResource({
     url: thumbnailLink,
-    cache: ["thumbnail", props.file.name],
+    cache: ['thumbnail', props.file.name],
     auto: true,
   })
 }
 
 const childrenSentence = computed(() => {
-  if (!props.file.children) return "Empty"
-  return props.file.children + " item" + (props.file.children === 1 ? "" : "s")
+  if (!props.file.child_count) return 'empty'
+  return props.file.child_count + ' item' + (props.file.child_count === 1 ? '' : 's')
 })
 </script>

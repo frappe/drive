@@ -1,5 +1,5 @@
-import { v4 as uuidv4 } from "uuid"
-import store from "@/store"
+import { v4 as uuidv4 } from 'uuid'
+import store from '@/store'
 
 /* Simple function to chunk upload a file instead of dropzone JS 
    Currently only used in documents
@@ -56,30 +56,27 @@ async function uploadChunk(
   doc_name
 ) {
   const formData = new FormData()
-  formData.append("filename", fileName)
-  formData.append("team", team)
-  formData.append("total_file_size", fileSize)
-  formData.append("mime_type", fileType)
-  formData.append("total_chunk_count", totalChunks)
-  formData.append("chunk_byte_offset", chunkByteOffset)
-  formData.append("chunk_index", chunkIndex)
-  formData.append("chunk_size", chunkSize)
-  formData.append("file", CurrentChunk)
-  formData.append("parent", doc_name)
-  formData.append("embed", 1)
-  formData.append("personal", store.state.breadcrumbs[0].name == "Home" ? 1 : 0)
+  formData.append('filename', fileName)
+  formData.append('team', team)
+  formData.append('total_file_size', fileSize)
+  formData.append('mime_type', fileType)
+  formData.append('total_chunk_count', totalChunks)
+  formData.append('chunk_byte_offset', chunkByteOffset)
+  formData.append('chunk_index', chunkIndex)
+  formData.append('chunk_size', chunkSize)
+  formData.append('file', CurrentChunk)
+  formData.append('parent', doc_name)
+  formData.append('embed', 1)
+  formData.append('personal', store.state.breadcrumbs[0].name == 'Home' ? 1 : 0)
 
-  formData.append("uuid", fileUuid)
-  const response = await fetch(
-    window.location.origin + "/api/method/drive.api.files.upload_file",
-    {
-      method: "POST",
-      body: formData,
-      headers: {
-        "X-Frappe-CSRF-Token": window.csrf_token,
-        Accept: "application/json",
-      },
-    }
-  )
+  formData.append('uuid', fileUuid)
+  const response = await fetch(window.location.origin + '/api/method/drive.api.files.upload_file', {
+    method: 'POST',
+    body: formData,
+    headers: {
+      'X-Frappe-CSRF-Token': window.csrf_token,
+      Accept: 'application/json',
+    },
+  })
   return response
 }

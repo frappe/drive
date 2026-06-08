@@ -37,26 +37,26 @@ def create_activity_log(share):
 
 
 def update_activity_log(log, share):
-    title = frappe.db.get_value("Drive File", share.share_name, ["title"])
+    file_name = frappe.db.get_value("Drive File", share.share_name, ["file_name"])
     owner_fullname = get_fullname(share.owner)
     if share.everyone:
         log.document_field = "everyone"
-        message = f"{owner_fullname} shared {title} with everyone"
+        message = f"{owner_fullname} shared {file_name} with everyone"
         log.old_value = False
         log.new_value = True
     elif share.public:
         log.document_field = "public"
-        message = f"{owner_fullname} shared {title} with publicly"
+        message = f"{owner_fullname} shared {file_name} with publicly"
         log.old_value = False
         log.new_value = True
     elif share.user_doctype == "User Group":
         log.document_field = "User Group"
-        message = f"{owner_fullname} shared {title} with {share.user_name}"
+        message = f"{owner_fullname} shared {file_name} with {share.user_name}"
         log.old_value = None
         log.new_value = share.user_name
     else:
         log.document_field = "User"
-        message = f"{owner_fullname} shared {title} with {share.user_name}"
+        message = f"{owner_fullname} shared {file_name} with {share.user_name}"
         log.old_value = None
         log.new_value = share.user_name
     log.save()

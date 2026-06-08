@@ -1,8 +1,5 @@
 <template>
-  <Dialog
-    v-model="open"
-    :options="{ title: __('New Tag'), size: 'sm' }"
-  >
+  <Dialog v-model="open" :options="{ title: __('New Tag'), size: 'sm' }">
     <template #body-content>
       <div class="flex flex-col items-stretch justify- gap-y-4">
         <TagColorInput
@@ -22,29 +19,25 @@
       </div>
     </template>
     <template #actions>
-      <Button
-        variant="solid"
-        class="w-full"
-        @click="submitTag"
-      >
-        {{ __("Confirm") }}
+      <Button variant="solid" class="w-full" @click="submitTag">
+        {{ __('Confirm') }}
       </Button>
     </template>
   </Dialog>
 </template>
 <script setup>
-import { Button, Input, Dialog, createResource } from "frappe-ui"
-import TagColorInput from "@/components/TagColorInput.vue"
-import { getRandomColor } from "@/utils/random-color"
-import { ref, computed } from "vue"
+import { Button, Input, Dialog, createResource } from 'frappe-ui'
+import TagColorInput from '@/components/TagColorInput.vue'
+import { getRandomColor } from '@/utils/random-color'
+import { ref, computed } from 'vue'
 
 const inputElem = ref()
 
 const selectedColor = ref(getRandomColor())
-const tagTitle = ref("")
+const tagTitle = ref('')
 const placeholder = getRandomPlaceholder()
 
-const emit = defineEmits(["update:modelValue", "success"])
+const emit = defineEmits(['update:modelValue', 'success'])
 const props = defineProps({
   modelValue: {
     type: Boolean,
@@ -58,7 +51,7 @@ const open = computed({
     return props.modelValue
   },
   set(value) {
-    emit("update:modelValue", value)
+    emit('update:modelValue', value)
   },
 })
 
@@ -71,23 +64,23 @@ function submitTag() {
 
 function getRandomPlaceholder() {
   const fileTags = [
-    "Marketing",
-    "Draft",
-    "Confidential",
-    "Public",
-    "Webinar",
-    "Approved",
-    "Draft",
-    "Invoice",
+    'Marketing',
+    'Draft',
+    'Confidential',
+    'Public',
+    'Webinar',
+    'Approved',
+    'Draft',
+    'Invoice',
   ]
   return fileTags[Math.floor(Math.random() * fileTags.length)]
 }
 
 const newTag = createResource({
-  url: "drive.api.tags.create_tag",
+  url: 'drive.api.tags.create_tag',
   onSuccess() {
-    emit("success")
-    emit("update:modelValue", false)
+    emit('success')
+    emit('update:modelValue', false)
   },
   onError(error) {
     if (error.messages) {

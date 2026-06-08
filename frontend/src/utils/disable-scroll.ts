@@ -1,7 +1,5 @@
 const canUseDOM = () =>
-  typeof window !== "undefined" &&
-  !!window.document &&
-  !!window.document.createElement
+  typeof window !== 'undefined' && !!window.document && !!window.document.createElement
 
 interface Options {
   authorizedInInputs: number[]
@@ -51,26 +49,23 @@ class DisableScroll {
 
     /* istanbul ignore else */
     if (disableWheel) {
-      document.addEventListener("wheel", this.handleWheel, { passive: false })
-      document.addEventListener("touchmove", this.handleWheel, {
+      document.addEventListener('wheel', this.handleWheel, { passive: false })
+      document.addEventListener('touchmove', this.handleWheel, {
         passive: false,
       })
     }
 
     /* istanbul ignore else */
     if (disableScroll) {
-      this.lockToScrollPos = [
-        this.element?.scrollLeft ?? 0,
-        this.element?.scrollTop ?? 0,
-      ]
-      document.addEventListener("scroll", this.handleScroll, {
+      this.lockToScrollPos = [this.element?.scrollLeft ?? 0, this.element?.scrollTop ?? 0]
+      document.addEventListener('scroll', this.handleScroll, {
         passive: false,
       })
     }
 
     /* istanbul ignore else */
     if (disableKeys) {
-      document.addEventListener("keydown", this.handleKeydown, {
+      document.addEventListener('keydown', this.handleKeydown, {
         passive: false,
       })
     }
@@ -82,10 +77,10 @@ class DisableScroll {
   off() {
     if (!canUseDOM()) return
 
-    document.removeEventListener("wheel", this.handleWheel)
-    document.removeEventListener("touchmove", this.handleWheel)
-    document.removeEventListener("scroll", this.handleScroll)
-    document.removeEventListener("keydown", this.handleKeydown)
+    document.removeEventListener('wheel', this.handleWheel)
+    document.removeEventListener('touchmove', this.handleWheel)
+    document.removeEventListener('scroll', this.handleScroll)
+    document.removeEventListener('keydown', this.handleKeydown)
   }
 
   handleWheel = (e: WheelEvent | TouchEvent) => {
@@ -101,13 +96,9 @@ class DisableScroll {
 
     /* istanbul ignore else */
     if (
-      ["INPUT", "TEXTAREA"].includes(
-        (e.target as HTMLInputElement | HTMLTextAreaElement).tagName
-      )
+      ['INPUT', 'TEXTAREA'].includes((e.target as HTMLInputElement | HTMLTextAreaElement).tagName)
     ) {
-      keys = keys.filter(
-        (key) => !this.options.authorizedInInputs.includes(key)
-      )
+      keys = keys.filter((key) => !this.options.authorizedInInputs.includes(key))
     }
 
     /* istanbul ignore else */

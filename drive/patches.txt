@@ -2,6 +2,7 @@
 drive.patches.team_restructure #8
 drive.patches.update_roles
 drive.patches.remove_personal #3
+drive.patches.integrate_with_framework
 
 [post_model_sync]
 drive.patches.folder_size #3
@@ -10,3 +11,4 @@ drive.patches.new_writer #3
 drive.patches.turn_on_flat_disk
 drive.patches.add_modified_field
 drive.patches.add_drive_user_role
+

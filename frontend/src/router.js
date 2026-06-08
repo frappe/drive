@@ -1,11 +1,11 @@
-import { createRouter, createWebHistory } from "vue-router"
-import store from "./store"
-import { createResource } from "frappe-ui"
-import Dummy from "@/pages/Dummy.vue"
-import { translate } from "@/resources/files"
+import { createRouter, createWebHistory } from 'vue-router'
+import store from './store'
+import { createResource } from 'frappe-ui'
+import Dummy from '@/pages/Dummy.vue'
+import { translate } from '@/resources/files'
 
 function clearStore() {
-  store.commit("setActiveEntity", null)
+  store.commit('setActiveEntity', null)
 }
 
 const manageBreadcrumbs = (to) => {
@@ -20,8 +20,8 @@ const manageBreadcrumbs = (to) => {
 async function setRootBreadCrumb(to) {
   if (store.getters.isLoggedIn) {
     document.title = __(to.name)
-    if (to.name !== "Team")
-      store.commit("setBreadcrumbs", [
+    if (to.name !== 'Team')
+      store.commit('setBreadcrumbs', [
         { label: __(to.name), name: to.name, route: to.path },
       ])
   }
@@ -29,97 +29,96 @@ async function setRootBreadCrumb(to) {
 
 const routes = [
   {
-    path: "/signup",
-    name: "Signup",
-    component: () => import("@/pages/Signup.vue"),
+    path: '/signup',
+    name: 'Signup',
+    component: () => import('@/pages/Signup.vue'),
     beforeEnter: () => {
-      if (store.getters.isLoggedIn) return "/"
+      if (store.getters.isLoggedIn) return '/'
     },
     meta: { allowGuest: true },
   },
   {
-    path: "/setup",
-    name: "Setup",
-    component: () => import("@/pages/Setup.vue"),
+    path: '/setup',
+    name: 'Setup',
+    component: () => import('@/pages/Setup.vue'),
   },
   {
-    path: "/",
-    name: "Home",
-    component: () => import("@/pages/Personal.vue"),
+    path: '/',
+    name: 'Home',
+    component: () => import('@/pages/Personal.vue'),
     beforeEnter: [setRootBreadCrumb],
     props: true,
   },
   {
-    path: "/inbox",
-    name: "Inbox",
+    path: '/inbox',
+    name: 'Inbox',
     // Load a skeleton template directly?
-    component: () => import("@/pages/Notifications.vue"),
+    component: () => import('@/pages/Notifications.vue'),
     beforeEnter: [setRootBreadCrumb],
   },
   {
-    path: "/teams",
-    name: "Teams",
-    component: () => import("@/pages/Teams.vue"),
+    path: '/teams',
+    name: 'Teams',
+    component: () => import('@/pages/Teams.vue'),
   },
   {
-    path: "/shared",
-    name: "Shared",
-    component: () => import("@/pages/Shared.vue"),
-    beforeEnter: [setRootBreadCrumb],
-    meta: { allowGuest: true },
-  },
-  {
-    path: "/recents",
-    name: "Recents",
-    component: () => import("@/pages/Recents.vue"),
+    path: '/recents',
+    name: 'Recents',
+    component: () => import('@/pages/Recents.vue'),
     beforeEnter: [setRootBreadCrumb],
   },
   {
-    path: "/favourites",
-    name: "Favourites",
-    component: () => import("@/pages/Favourites.vue"),
+    path: '/favourites',
+    name: 'Favourites',
+    component: () => import('@/pages/Favourites.vue'),
     beforeEnter: [setRootBreadCrumb],
   },
   {
-    path: "/documents",
-    name: "Documents",
-    component: () => import("@/pages/Documents.vue"),
+    path: '/shared',
+    name: 'Shared',
+    component: () => import('@/pages/Shared.vue'),
     beforeEnter: [setRootBreadCrumb],
   },
   {
-    path: "/presentations",
-    name: "Presentations",
-    component: () => import("@/pages/Slides.vue"),
+    path: '/attachments/:doctype?/:docname?',
+    name: 'Attachments',
+    props: true,
+    component: () => import('@/pages/Attachments.vue'),
     beforeEnter: [setRootBreadCrumb],
   },
   {
-    path: "/trash",
-    name: "Trash",
-    component: () => import("@/pages/Trash.vue"),
+    path: '/documents',
+    name: 'Documents',
+    component: () => import('@/pages/Documents.vue'),
     beforeEnter: [setRootBreadCrumb],
   },
   {
-    path: "/transfer",
-    name: "Transfer",
-    component: () => import("@/pages/QuickShare.vue"),
+    path: '/presentations',
+    name: 'Presentations',
+    component: () => import('@/pages/Slides.vue'),
     beforeEnter: [setRootBreadCrumb],
   },
   {
-    path: "/g/:entityName/",
+    path: '/trash',
+    name: 'Trash',
+    component: () => import('@/pages/Trash.vue'),
+    beforeEnter: [setRootBreadCrumb],
+  },
+  {
+    path: '/g/:entityName/',
     component: Dummy,
     beforeEnter: async (to) => {
       const entity = createResource({
-        url: "/api/method/drive.api.files.get_entity_type",
-        method: "GET",
+        url: '/api/method/drive.api.files.get_entity_type',
+        method: 'GET',
         params: {
           entity_name: to.params.entityName,
         },
       })
       await entity.fetch()
       const letter = {
-        folder: "d",
-        document: "w",
-        file: "f",
+        folder: 'd',
+        file: 'f',
       }[entity.data.type]
       return {
         path: `/${letter}/${entity.data.name}`,
@@ -127,47 +126,47 @@ const routes = [
     },
   },
   {
-    path: "/t/:team/",
-    name: "Team",
-    component: () => import("@/pages/Team.vue"),
+    path: '/t/:team/',
+    name: 'Team',
+    component: () => import('@/pages/Team.vue'),
     beforeEnter: [setRootBreadCrumb],
     props: true,
     meta: { allowGuest: true },
   },
   {
-    path: "/f/:entityName/:slug?",
-    name: "File",
-    component: () => import("@/pages/File.vue"),
+    path: '/f/:entityName/:slug?',
+    name: 'File',
+    component: () => import('@/pages/File.vue'),
     meta: { allowGuest: true, filePage: true },
     beforeEnter: [manageBreadcrumbs],
     props: true,
   },
   {
-    path: "/d/:entityName/:slug?",
-    name: "Folder",
-    component: () => import("@/pages/Folder.vue"),
+    path: '/d/:entityName/:slug?',
+    name: 'Folder',
+    component: () => import('@/pages/Folder.vue'),
     meta: { allowGuest: true },
     beforeEnter: [manageBreadcrumbs],
     props: true,
   },
   {
-    path: "/w/:entityName/:slug?",
-    name: "Document",
+    path: '/w/:entityName/:slug?',
+    name: 'Document',
     meta: { allowGuest: true },
     component: Dummy,
     beforeEnter: (props) => {
-      window.location.href = "/writer/w/" + props.params.entityName
+      window.location.href = '/writer/w/' + props.params.entityName
     },
   },
   // old redirects
   {
-    path: "/folder/:entityName",
+    path: '/folder/:entityName',
     meta: { allowGuest: true },
     component: () => null,
     beforeEnter: async (to) => {
       await translate.fetch({ old_name: to.params.entityName })
       return {
-        name: "Folder",
+        name: 'Folder',
         params: {
           entityName: translate.data,
         },
@@ -175,12 +174,12 @@ const routes = [
     },
   },
   {
-    path: "/document/:entityName",
+    path: '/document/:entityName',
     component: () => null,
     beforeEnter: async (to) => {
       await translate.fetch({ old_name: to.params.entityName })
       return {
-        name: "Document",
+        name: 'Document',
         params: {
           entityName: translate.data,
         },
@@ -188,13 +187,13 @@ const routes = [
     },
   },
   {
-    path: "/file/:entityName",
+    path: '/file/:entityName',
     component: () => null,
     meta: { allowGuest: true },
     beforeEnter: async (to) => {
       await translate.fetch({ old_name: to.params.entityName })
       return {
-        name: "File",
+        name: 'File',
         params: {
           entityName: translate.data,
         },
@@ -202,7 +201,7 @@ const routes = [
     },
   },
   {
-    path: "/t/:team/:letter/:entityName/:slug?",
+    path: '/t/:team/:letter/:entityName/:slug?',
     component: Dummy,
     beforeEnter: async (to) => {
       return {
@@ -213,23 +212,23 @@ const routes = [
 ]
 
 let router = createRouter({
-  history: createWebHistory("/drive"),
+  history: createWebHistory('/drive'),
   routes,
 })
 
 router.beforeEach(async (to, from, next) => {
   if (!store.getters.isLoggedIn && !to.meta.allowGuest) {
     window.location.href =
-      "/login?redirect-to=" + encodeURIComponent("/drive" + to.path)
+      '/login?redirect-to=' + encodeURIComponent('/drive' + to.path)
   } else {
-    if (to.params.team) localStorage.setItem("recentTeam", to.params.team)
+    if (to.params.team) localStorage.setItem('recentTeam', to.params.team)
     clearStore()
     next()
   }
 })
 
 router.afterEach((to) => {
-  sessionStorage.setItem("currentRoute", to.href)
+  sessionStorage.setItem('currentRoute', to.href)
 })
 
 export default router

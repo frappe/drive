@@ -1,7 +1,0 @@
-ignoredBuiltDependencies:
-  - "@swc/core"
-  - core-js
-  - vue-demi
-
-onlyBuiltDependencies:
-  - esbuild

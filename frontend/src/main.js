@@ -1,4 +1,4 @@
-import { createApp } from "vue"
+import { createApp } from 'vue'
 import {
   FrappeUI,
   FormControl,
@@ -6,34 +6,34 @@ import {
   setConfig,
   frappeRequest,
   Button,
-} from "frappe-ui"
+} from 'frappe-ui'
 
-import store from "./store"
-import router from "./router"
-import App from "./App.vue"
-import emitter from "@/emitter"
-import "./index.css"
-import { initSocket } from "./socket"
-import focusDirective from "./utils/focus"
-import translation from "./translation"
+import store from './store'
+import router from './router'
+import App from './App.vue'
+import emitter from '@/emitter'
+import './index.css'
+import { initSocket } from './socket'
+import focusDirective from './utils/focus'
+import translation from './translation'
 
 const app = createApp(App)
-setConfig("resourceFetcher", frappeRequest)
+setConfig('resourceFetcher', frappeRequest)
 app.config.unwrapInjectedRef = true
 app.config.globalProperties.emitter = emitter
 
-app.provide("emitter", emitter)
+app.provide('emitter', emitter)
 app.use(router)
 app.use(store)
-app.use(translation, "drive.api.product.get_translations")
+app.use(translation, 'drive.api.product.get_translations')
 
 app.use(FrappeUI, { socketio: false })
-app.provide("socket", initSocket())
+app.provide('socket', initSocket())
 
-app.directive("on-outside-click", onOutsideClickDirective)
-app.directive("focus", focusDirective)
+app.directive('on-outside-click', onOutsideClickDirective)
+app.directive('focus', focusDirective)
 
-setConfig("resourceFetcher", (options) => {
+setConfig('resourceFetcher', (options) => {
   return frappeRequest({
     ...options,
     onError(err) {
@@ -44,7 +44,7 @@ setConfig("resourceFetcher", (options) => {
   })
 })
 
-app.component("FormControl", FormControl)
-app.component("Button", Button)
+app.component('FormControl', FormControl)
+app.component('Button', Button)
 
-app.mount("#app")
+app.mount('#app')

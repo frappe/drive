@@ -16,7 +16,7 @@
         node.label
       }}</a>
       <a
-        v-if="!node.is_group"
+        v-if="!node.is_folder"
         :href="'/drive/f/' + node.value"
         class="ml-3 file-link"
         style="align-self: center"
@@ -49,78 +49,78 @@
         @click="emit('load-more', node)"
         :disabled="node.children_loading"
       >
-        {{ node.children_loading ? __("Loading...") : __("Load more") }}
+        {{ node.children_loading ? __('Loading...') : __('Load more') }}
       </button>
     </ul>
   </div>
 </template>
 
 <script setup>
-import { createPopper } from "@popperjs/core";
-import { ref, computed } from "vue";
-import Thumbnail from "./Thumbnail.vue";
+import { createPopper } from '@popperjs/core'
+import { ref, computed } from 'vue'
+import Thumbnail from './Thumbnail.vue'
 
 // props
 const props = defineProps({
   node: Object,
   selected_node: { type: Object, required: false },
-});
+})
 
 // emits
-let emit = defineEmits(["node-click", "load-more"]);
+let emit = defineEmits(['node-click', 'load-more'])
 
 // computed
 
-let linkIcon = frappe.utils.icon("external-link", "sm");
-let checkIcon = frappe.utils.icon("tick", "sm", "", "", "check-icon");
+let linkIcon = frappe.utils.icon('external-link', 'sm')
+let checkIcon = frappe.utils.icon('tick', 'sm', '', '', 'check-icon')
 let icon = computed(() => {
-  if (!props.node.is_group) return;
+  if (!props.node.is_folder) return
 
-  if (props.node.open) return frappe.utils.icon("folder-open", "sm");
-  return frappe.utils.icon("folder-normal", "sm");
-});
+  if (props.node.open) return frappe.utils.icon('folder-open', 'sm')
+  return frappe.utils.icon('folder-normal', 'sm')
+})
 
-const reference = ref(null);
-const popover = ref(null);
-let isOpen = ref(false);
+const reference = ref(null)
+const popover = ref(null)
+let isOpen = ref(false)
 
-let popper = ref(null);
+let popper = ref(null)
 
 function setupPopper() {
   if (!popper.value) {
     popper.value = createPopper(reference.value, popover.value, {
-      placement: "top",
+      placement: 'top',
       modifiers: [
         {
-          name: "offset",
+          name: 'offset',
           options: {
             offset: [0, 4],
           },
         },
       ],
-    });
+    })
   } else {
-    popper.value.update();
+    popper.value.update()
   }
 }
 
-let hoverTimer = null;
-let leaveTimer = null;
+let hoverTimer = null
+let leaveTimer = null
 
 function onMouseover() {
-  leaveTimer && clearTimeout(leaveTimer) && (leaveTimer = null);
-  hoverTimer && clearTimeout(hoverTimer);
+  leaveTimer && clearTimeout(leaveTimer) && (leaveTimer = null)
+  hoverTimer && clearTimeout(hoverTimer)
   hoverTimer = setTimeout(() => {
-    isOpen.value = true;
-    setupPopper();
-  }, 800);
+    isOpen.value = true
+    setupPopper()
+  }, 800)
 }
 function onMouseleave() {
-  hoverTimer && clearTimeout(hoverTimer) && (hoverTimer = null);
-  leaveTimer && clearTimeout(leaveTimer);
+  hoverTimer && clearTimeout(hoverTimer) && (hoverTimer = null)
+  leaveTimer && clearTimeout(leaveTimer)
   leaveTimer = setTimeout(() => {
-    isOpen.value = false;
-  }, 100);
+    isOpen.value = false
+  }, 100)
 }
 </script>
 

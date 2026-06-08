@@ -1,12 +1,18 @@
 import frappe
 
+from drive.utils import PRESENTATION_CONTENT_DOCTYPE
+
 
 def presentation(doc, event):
-    file = frappe.get_value("Drive File", {"path": doc.name}, "name")
+    file = frappe.db.get_value(
+        "File",
+        {"content_docname": doc.name, "content_doctype": PRESENTATION_CONTENT_DOCTYPE},
+        "name",
+    )
 
     if file:
+        drive_file = frappe.get_doc("File", file)
         if event == "on_update":
-            frappe.get_doc("Drive File", file).rename(doc.title)
+            drive_file.rename(doc.file_name)
         if event == "on_trash":
-            print("gone, boom boom")
-            frappe.get_doc("Drive File", file).permanent_delete()
+            drive_file.permanent_delete()

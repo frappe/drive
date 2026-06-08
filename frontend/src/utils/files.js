@@ -16,11 +16,59 @@ import slugify from 'slugify'
 import { toast } from '@/utils/toasts.js'
 import { useFileUpload, toast as nToast } from 'frappe-ui'
 import emitter from '@/emitter'
-import { createLowlight, common } from 'lowlight'
-import { toHtml } from 'hast-util-to-html'
+
+export const WRITER_CONTENT_DOCTYPE = 'Writer Document'
+export const PRESENTATION_CONTENT_DOCTYPE = 'Presentation'
+export const ATTACHMENT_CONTENT_DOCTYPE = 'File'
+
+export function isWriterDocument(entity) {
+  return entity?.content_doctype === WRITER_CONTENT_DOCTYPE
+}
+
+export function isPresentation(entity) {
+  return entity?.content_doctype === PRESENTATION_CONTENT_DOCTYPE
+}
+
+export function hasHostedContent(entity) {
+  return isWriterDocument(entity) || isPresentation(entity)
+}
+
+export function isManaged(entity) {
+  return entity?.kind === 'native'
+}
+
+export function isReadonly(entity) {
+  return entity?.kind === 'readonly'
+}
+
+export function isSiteFile(entity) {
+  return !entity?.team
+}
+
+export function isAttachmentRef(entity) {
+  return entity?.content_doctype === ATTACHMENT_CONTENT_DOCTYPE
+}
+
+export function isVirtual(entity) {
+  return entity?.kind === 'virtual'
+}
 
 export const openEntity = (entity, new_tab = false) => {
-  if (!entity.is_group) {
+  // Virtual grouping node: navigate into its attachments bucket. A node with an
+  // attached_to_name drills into a single document; otherwise into a doctype.
+  if (isVirtual(entity)) {
+    return router.push({
+      name: 'Attachments',
+      params: entity.attached_to_name
+        ? {
+            doctype: entity.attached_to_doctype,
+            docname: entity.attached_to_name,
+          }
+        : { doctype: entity.attached_to_doctype },
+    })
+  }
+
+  if (!entity.is_folder) {
     if (!getRecents.data?.some?.((k) => k.name === entity.name))
       getRecents.setData((data) => [...(data || []), entity])
 
@@ -33,14 +81,15 @@ export const openEntity = (entity, new_tab = false) => {
   if (new_tab) {
     return window.open(getFileLink(entity, false), '_blank')
   }
-
-  if (!entity.breadcrumbs?.length)
-    store.state.breadcrumbs.push({
-      label: entity.title,
-      name: entity.name,
-      route: null,
-    })
-  else setBreadCrumbs(entity)
+  if (!['Link', 'Presentation'].includes(entity.file_type)) {
+    if (!entity.breadcrumbs?.length)
+      store.state.breadcrumbs.push({
+        label: entity.file_name,
+        name: entity.name,
+        route: null,
+      })
+    else setBreadCrumbs(entity)
+  }
 
   // hm?
   if (entity.name === '') {
@@ -48,24 +97,24 @@ export const openEntity = (entity, new_tab = false) => {
       name: entity.is_private ? 'Home' : 'Team',
       params: { team },
     })
-  } else if (entity.is_group) {
+  } else if (entity.is_folder) {
     router.push({
       name: 'Folder',
       params: { entityName: entity.name },
     })
-  } else if (entity.is_link) {
-    const origin = new URL(entity.path).origin
+  } else if (entity.file_type === 'Link') {
+    const origin = new URL(entity.file_url).origin
     if (
       confirm(
         `This will open an external link to ${origin} - are you sure you want to open?`
       )
     )
-      window.open(entity.path, '_blank')
-  } else if (entity.mime_type === 'frappe/slides') {
-    window.location.href = '/slides/presentation/' + entity.path
+      window.open(entity.file_url, '_blank')
+  } else if (entity.file_type === 'Presentation') {
+    window.location.href = '/slides/presentation/' + entity.file_url
   } else if (
-    entity.mime_type === 'frappe_doc' ||
-    entity.mime_type === 'text/markdown'
+    entity.file_type === 'Document' ||
+    entity.file_type === 'Markdown'
   ) {
     window.location.href = '/writer/w/' + entity.name
   } else {
@@ -154,7 +203,7 @@ export const sortEntities = (rows, order) => {
   })
   if (order.smart) {
     rows.sort((a, b) => {
-      const [endA, endB] = trimCommonPrefix(a.title, b.title)
+      const [endA, endB] = trimCommonPrefix(a.file_name, b.file_name)
       if (!endA) return 0
       const numA = extractNum(endA)
       const numB = extractNum(endB)
@@ -172,8 +221,8 @@ export const sortEntities = (rows, order) => {
 
 export const groupByFolder = (entities) => {
   return {
-    Folders: entities.filter((x) => x.is_group === 1),
-    Files: entities.filter((x) => x.is_group === 0),
+    Folders: entities.filter((x) => x.is_folder === 1),
+    Files: entities.filter((x) => x.is_folder === 0),
   }
 }
 
@@ -186,21 +235,47 @@ export const prettyData = (entities) => {
   })
 }
 export const setBreadCrumbs = (entity) => {
-  const breadcrumbs = entity.breadcrumbs
+  let breadcrumbs = entity.breadcrumbs
   const in_home = entity.in_home
-  let res = store.getters.isLoggedIn
-    ? [
-        {
-          label: __('Shared'),
-          name: 'Shared',
-          route: '/shared',
-        },
-      ]
-    : []
   const team =
     getTeams.data?.[breadcrumbs[0].team] ||
     getPublicTeams.data?.[breadcrumbs[0].team]
-  if (team || in_home)
+
+  let res = []
+  if (entity.attached_to_doctype) {
+    // Framework attachments live under Home/Attachments; surface their real
+    // location (Attachments > Doctype > Document) instead of "Shared".
+    res = [
+      {
+        label: __('Attachments'),
+        name: 'Attachments',
+        route: { name: 'Attachments' },
+      },
+      {
+        label: entity.attached_to_doctype,
+        name: entity.attached_to_doctype,
+        route: {
+          name: 'Attachments',
+          params: { doctype: entity.attached_to_doctype },
+        },
+      },
+    ]
+    if (entity.attached_to_name) {
+      res.push({
+        label: entity.attached_to_name,
+        name: entity.attached_to_name,
+        route: {
+          name: 'Attachments',
+          params: {
+            doctype: entity.attached_to_doctype,
+            docname: entity.attached_to_name,
+          },
+        },
+      })
+    }
+    // Drop the folder-based upward path; only the file itself follows above.
+    breadcrumbs = breadcrumbs.slice(-1)
+  } else if (team || in_home) {
     res = [
       {
         label: in_home ? __('Home') : team.title,
@@ -210,15 +285,32 @@ export const setBreadCrumbs = (entity) => {
           : { name: 'Team', params: { team: team.name } },
       },
     ]
+  } else if (entity.folder === 'Home/Attachments' || entity.folder === 'Home') {
+    res = [
+      {
+        label: __('Shared'),
+        name: 'Shared',
+        route: '/shared',
+      },
+    ]
+  } else if (store.getters.isLoggedIn) {
+    res = [
+      {
+        label: __('Shared'),
+        name: 'Shared',
+        route: '/?shared=1',
+      },
+    ]
+  }
 
-  if (!breadcrumbs[0].parent_entity) breadcrumbs.splice(0, 1)
+  if (!breadcrumbs[0].folder) breadcrumbs.splice(0, 1)
   const popBreadcrumbs = (item) => () =>
     res.splice(res.findIndex((k) => k.name === item.name) + 1)
 
   breadcrumbs.forEach((folder, idx) => {
     const final = idx === breadcrumbs.length - 1
     res.push({
-      label: folder.title,
+      label: folder.file_name,
       name: folder.name,
       onClick: final
         ? () => entity.write && emitter.emit('rename')
@@ -359,19 +451,8 @@ export function enterFullScreen() {
   }
 }
 
-function highlightCodeBlocks(html) {
-  const lowlight = createLowlight(common)
-  const doc = new DOMParser().parseFromString(html, 'text/html')
-  doc.querySelectorAll('pre code').forEach((block) => {
-    const result = lowlight.highlightAuto(block.textContent)
-    block.innerHTML = toHtml(result)
-  })
-
-  return doc.body.innerHTML
-}
-
-function slugger(title) {
-  return slugify(title.split('.').join(' '), {
+function slugger(file_name) {
+  return slugify(file_name.split('.').join(' '), {
     lower: true,
     trim: true,
     remove: /[^\w\s\']|_/,
@@ -382,9 +463,10 @@ function getLinkStem(entity) {
   return `${
     {
       true: 'f',
-      [new Boolean(entity.is_group)]: 'd',
+      [new Boolean(entity.is_folder)]: 'd',
+      [new Boolean(isWriterDocument(entity) || entity.mime_type === 'text/markdown')]: 'w',
     }[true]
-  }/${entity.name}/${slugger(entity.title)}`
+  }/${entity.name}/${slugger(entity.file_name)}`
 }
 
 const copyToClipboard = (str) => {
@@ -402,10 +484,10 @@ const copyToClipboard = (str) => {
   }
 }
 
-export async function updateURLSlug(title) {
+export async function updateURLSlug(file_name) {
   const route = router.currentRoute.value
   await nextTick()
-  const slug = slugger(title)
+  const slug = slugger(file_name)
   if (route.params.slug !== slug) {
     // Hacky, but we only want to update the URL - triggering a reload breaks a lot
     const base = window.location.pathname.split('/').slice(0, 4).join('/')
@@ -416,12 +498,12 @@ export async function updateURLSlug(title) {
 
 export function getLink(entity, copy = true, withDomain = true) {
   let link
-  if (entity.is_link) link = entity.path
+  if (entity.file_type === 'Link') link = entity.file_url
   else if (entity.mime_type === 'frappe/slides') {
-    link = window.location.origin + '/slides/presentation/' + entity.path
+    link = window.location.origin + '/slides/presentation/' + entity.name
   } else if (
-    entity.mime_type === 'frappe_doc' ||
-    entity.mime_type === 'text/markdown'
+    entity.file_type === 'Document' ||
+    entity.file_type === 'Markdown'
   ) {
     link = window.location.origin + '/writer/w/' + entity.name
   } else {
@@ -450,9 +532,10 @@ export function dynamicList(k) {
   return k.filter((a) => typeof a !== 'object' || !('cond' in a) || a.cond)
 }
 
-export const setTitle = (title) =>
+export const setTitle = (file_name) =>
   (document.title =
-    (router.currentRoute.value.name === 'Folder' ? 'Folder - ' : '') + title)
+    (router.currentRoute.value.name === 'Folder' ? 'Folder - ' : '') +
+    file_name)
 
 async function uploadImage(file, params) {
   const uploader = useFileUpload()
@@ -483,7 +566,7 @@ export const pasteObj = (e) => {
         parent: route.params.entityName || '',
         personal: store.state.breadcrumbs[0].name === 'Home' ? 1 : 0,
         total_file_size: file.size,
-        last_modified: file.lastModified,
+        file_modified: file.lastModified,
       })
       nToast.promise(entity, {
         loading: 'Uploading...',

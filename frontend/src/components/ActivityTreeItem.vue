@@ -1,13 +1,12 @@
 <template>
   <div
-    :title="title ? title : entity.title"
+    :title="title ? title : entity.file_name"
     class="border max-w-[220px] rounded-[7px] px-1 py-1 flex items-center justify-center gap-x-1 overflow-clip"
   >
     <svg
-      v-if="!strikeThrough && entity.is_group"
-      class="h-3.5 mr-0.5"
+      v-if="!strikeThrough && entity.is_folder"
+      class="h-3.5 mr-0.5 fill-ink-gray-5"
       :draggable="false"
-      :style="{ fill: entity.color }"
       width="16"
       height="16"
       viewBox="0 0 16 16"
@@ -21,11 +20,7 @@
       </g>
       <defs>
         <clipPath id="clip0_1942_59507">
-          <rect
-            width="16"
-            height="16"
-            fill="white"
-          />
+          <rect width="16" height="16" fill="white" />
         </clipPath>
       </defs>
     </svg>
@@ -35,20 +30,21 @@
       class="h-full"
       :src="getIconUrl(entity.file_type)"
       :draggable="false"
-    >
+    />
     <span
       class="text-sm line-clamp-1 text-ink-gray-6"
       :class="strikeThrough ? 'line-through ' : ' '"
-    >{{ title ? title : entity.title }}</span>
+      >{{ title ? title : entity.file_name }}</span
+    >
   </div>
 </template>
 <script setup>
-import { getIconUrl } from "@/utils/getIconUrl"
+import { getIconUrl } from '@/utils/getIconUrl'
 
 defineProps({
   title: {
     type: String,
-    default: "File",
+    default: 'File',
     required: false,
   },
   activity: {

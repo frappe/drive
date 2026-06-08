@@ -1,8 +1,5 @@
 <template>
-  <Dialog
-    v-model="open"
-    :options="{ title: 'Edit Tag', size: 'sm' }"
-  >
+  <Dialog v-model="open" :options="{ title: 'Edit Tag', size: 'sm' }">
     <template #body-content>
       <div class="flex flex-col items-stretch justify- gap-y-4">
         <TagColorInput
@@ -20,26 +17,17 @@
           @keyup.enter="submitTag"
         />
       </div>
-      <ErrorMessage
-        class="mt-2"
-        :message="errorMessage"
-      />
+      <ErrorMessage class="mt-2" :message="errorMessage" />
     </template>
     <template #actions>
-      <Button
-        variant="solid"
-        class="w-full"
-        @click="submitTag"
-      >
-        Confirm
-      </Button>
+      <Button variant="solid" class="w-full" @click="submitTag"> Confirm </Button>
     </template>
   </Dialog>
 </template>
 <script setup>
-import { Button, Input, Dialog, createResource, ErrorMessage } from "frappe-ui"
-import TagColorInput from "@/components/TagColorInput.vue"
-import { ref, computed } from "vue"
+import { Button, Input, Dialog, createResource, ErrorMessage } from 'frappe-ui'
+import TagColorInput from '@/components/TagColorInput.vue'
+import { ref, computed } from 'vue'
 
 const inputElem = ref()
 
@@ -57,15 +45,15 @@ const props = defineProps({
 
 const selectedColor = ref(props.tag.color)
 const tagTitle = ref(props.tag.title)
-const errorMessage = ref("")
-const emit = defineEmits(["update:modelValue", "success"])
+const errorMessage = ref('')
+const emit = defineEmits(['update:modelValue', 'success'])
 
 const open = computed({
   get() {
     return props.modelValue
   },
   set(value) {
-    emit("update:modelValue", value)
+    emit('update:modelValue', value)
   },
 })
 
@@ -80,14 +68,14 @@ function submitTag() {
 }
 
 const editTag = createResource({
-  url: "drive.api.tags.edit_tag",
+  url: 'drive.api.tags.edit_tag',
   onSuccess() {
-    emit("success")
-    emit("update:modelValue", false)
+    emit('success')
+    emit('update:modelValue', false)
   },
   onError(error) {
     if (error.messages) {
-      errorMessage.value = error.messages.join("\n")
+      errorMessage.value = error.messages.join('\n')
     } else {
       errorMessage.value = error.message
     }

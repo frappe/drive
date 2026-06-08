@@ -1,4 +1,4 @@
-import { createResource } from "frappe-ui"
+import { createResource } from 'frappe-ui'
 
 export default function translationPlugin(app) {
   app.config.globalProperties.__ = translate
@@ -17,7 +17,7 @@ function translate(message) {
   return {
     format: function (...args) {
       return translatedMessage.replace(/{(\d+)}/g, function (match, number) {
-        return typeof args[number] != "undefined" ? args[number] : match
+        return typeof args[number] != 'undefined' ? args[number] : match
       })
     },
   }
@@ -25,8 +25,8 @@ function translate(message) {
 
 function fetchTranslations() {
   createResource({
-    url: "drive.api.product.get_translations",
-    cache: "translations",
+    url: 'drive.api.product.get_translations',
+    cache: 'translations',
     auto: true,
     transform: (data) => {
       window.translatedMessages = data

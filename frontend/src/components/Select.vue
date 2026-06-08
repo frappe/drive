@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed } from "vue"
+import { computed } from 'vue'
 import {
   SelectContent,
   SelectGroup,
@@ -13,9 +13,9 @@ import {
   SelectTrigger,
   SelectValue,
   SelectViewport,
-} from "reka-ui"
+} from 'reka-ui'
 
-import { type Component, h, FunctionalComponent } from "vue"
+import { type Component, h, FunctionalComponent } from 'vue'
 
 type SimpleOption =
   | string
@@ -29,7 +29,7 @@ type GroupedOption = { group: string; options: SimpleOption[] }
 type GenericOption = SimpleOption | GroupedOption
 
 function isGroup(option: GenericOption): option is GroupedOption {
-  return typeof option === "object" && "group" in option
+  return typeof option === 'object' && 'group' in option
 }
 
 function getMultipleLabel(options: [SimpleOption]) {
@@ -38,39 +38,35 @@ function getMultipleLabel(options: [SimpleOption]) {
 }
 
 function getLabel(option: SimpleOption): string {
-  return typeof option === "string" ? option : option.label
+  return typeof option === 'string' ? option : option.label
 }
 
 function getValue(option: SimpleOption): string {
-  return typeof option === "string" ? option : option.value
+  return typeof option === 'string' ? option : option.value
 }
 
 function isDisabled(option: SimpleOption): boolean {
-  return typeof option === "object" && !!option.disabled
+  return typeof option === 'object' && !!option.disabled
 }
 
 function getIcon(option: SimpleOption): string | Component | undefined {
-  return typeof option === "object" ? option.icon : undefined
+  return typeof option === 'object' ? option.icon : undefined
 }
-const RenderIcon: FunctionalComponent<{ icon?: string | Component }> = (
-  props
-) => {
+const RenderIcon: FunctionalComponent<{ icon?: string | Component }> = (props) => {
   if (!props.icon) return null
   const iconContent =
-    typeof props.icon === "string"
-      ? h("span", props.icon)
-      : h(props.icon, { class: "w-4 h-4" })
+    typeof props.icon === 'string' ? h('span', props.icon) : h(props.icon, { class: 'w-4 h-4' })
 
   return h(
-    "span",
+    'span',
     {
-      class: "flex-shrink-0 w-4 h-4 inline-flex items-center justify-center",
+      class: 'flex-shrink-0 w-4 h-4 inline-flex items-center justify-center',
     },
     [iconContent]
   )
 }
 
-import LucideChevronDown from "~icons/lucide/chevron-down"
+import LucideChevronDown from '~icons/lucide/chevron-down'
 
 type SelectOption =
   | string
@@ -92,16 +88,14 @@ interface SelectProps {
 }
 
 const props = withDefaults(defineProps<SelectProps>(), {
-  placeholder: "Select an option",
+  placeholder: 'Select an option',
 })
 
 const selected = defineModel<Value>()
 const selectedOption = computed<SimpleOption | SimpleOption[]>(() => {
   if (!selected.value) return null
   if (props.multiple) {
-    return selected.value.map((k) =>
-      flatOptions.value.find((opt) => getValue(opt) === k)
-    )
+    return selected.value.map((k) => flatOptions.value.find((opt) => getValue(opt) === k))
   }
   return flatOptions.value.find((opt) => getValue(opt) === selected.value)
 })
@@ -122,10 +116,7 @@ const labelFunction = (val: Value, selected = false) => {
 
 <template>
   <div class="relative">
-    <SelectRoot
-      v-model="selected"
-      :multiple
-    >
+    <SelectRoot v-model="selected" :multiple>
       <SelectTrigger
         :disabled="disabled"
         class="flex h-7 w-full overflow-hidden focus:ring-0 rounded bg-surface-gray-2 px-2 py-1 transition-colors hover:bg-surface-gray-3 focus:outline-0 focus:ring-0"
@@ -136,10 +127,7 @@ const labelFunction = (val: Value, selected = false) => {
           :placeholder
           class="gap-2 text-base h-full flex items-center w-full focus:outline-0 text-ink-gray-8 data-[placeholder]:text-ink-gray-4"
         >
-          <RenderIcon
-            v-if="selectedOptionIcon"
-            :icon="selectedOptionIcon"
-          />
+          <RenderIcon v-if="selectedOptionIcon" :icon="selectedOptionIcon" />
           <div class="flex-1 flex justify-start">
             {{ labelFunction(selectedOption, true) }}
           </div>
@@ -158,10 +146,7 @@ const labelFunction = (val: Value, selected = false) => {
             class="max-h-60 overflow-auto p-1.5"
             :class="{ 'pt-0': isGroup(options[0]) }"
           >
-            <template
-              v-for="(optionOrGroup, index) in options"
-              :key="index"
-            >
+            <template v-for="(optionOrGroup, index) in options" :key="index">
               <component
                 :is="isGroup(optionOrGroup) ? SelectGroup : 'div'"
                 :class="{ '': isGroup(optionOrGroup) }"
@@ -174,9 +159,7 @@ const labelFunction = (val: Value, selected = false) => {
                 </SelectLabel>
 
                 <SelectItem
-                  v-for="(option, idx) in optionOrGroup.options || [
-                    optionOrGroup,
-                  ]"
+                  v-for="(option, idx) in optionOrGroup.options || [optionOrGroup]"
                   :key="idx"
                   :value="getValue(option)"
                   :disabled="isDisabled(option)"
@@ -188,9 +171,7 @@ const labelFunction = (val: Value, selected = false) => {
                       {{ labelFunction(option) }}
                     </span>
                   </SelectItemText>
-                  <SelectItemIndicator
-                    class="inline-flex ml-auto items-center justify-center"
-                  >
+                  <SelectItemIndicator class="inline-flex ml-auto items-center justify-center">
                     <LucideCheck class="size-4" />
                   </SelectItemIndicator>
                 </SelectItem>

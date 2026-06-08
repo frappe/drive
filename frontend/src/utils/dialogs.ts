@@ -1,17 +1,17 @@
-import { ref, reactive } from "vue"
+import { ref, reactive } from 'vue'
 
 interface DialogOptions {
   key: string
   modelValue: boolean
 }
 
-type UserDialogOptions = Omit<DialogOptions, "key" | "modelValue">
+type UserDialogOptions = Omit<DialogOptions, 'key' | 'modelValue'>
 
 const dialogs = ref<DialogOptions[]>([])
 
 export function createDialog(options: UserDialogOptions) {
   const dialog = reactive<DialogOptions>({
-    key: "dialog-" + dialogs.value.length,
+    key: 'dialog-' + dialogs.value.length,
     modelValue: false,
     options,
   })

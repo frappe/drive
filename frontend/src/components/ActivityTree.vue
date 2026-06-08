@@ -1,8 +1,5 @@
 <template>
-  <template
-    v-for="(group, i) in groupedActivityLog"
-    :key="i"
-  >
+  <template v-for="(group, i) in groupedActivityLog" :key="i">
     <div
       v-if="group.length && Object.keys(groupedActivityLog).length > 1"
       class="px-5 pb-2 gap-x-2"
@@ -49,18 +46,9 @@
             v-else-if="activity.action_type.startsWith('share')"
             :activity="activity"
           >
-            <template
-              v-if="activity.nested"
-              #nested
-            >
-              <div
-                v-for="nested in activity.nested"
-                :key="nested.name"
-              >
-                <ActivityTreeShare
-                  v-if="activity.nested"
-                  :activity="nested"
-                />
+            <template v-if="activity.nested" #nested>
+              <div v-for="nested in activity.nested" :key="nested.name">
+                <ActivityTreeShare v-if="activity.nested" :activity="nested" />
               </div>
             </template>
           </ActivityTreeShare>
@@ -77,13 +65,14 @@
   </template>
 </template>
 <script setup>
-import { useStore } from "vuex"
-import { Avatar, createResource } from "frappe-ui"
-import { computed, ref, watch } from "vue"
-import ArrowRight from "~icons/lucide/arrow-right"
-import { formatDate } from "@/utils/format"
-import ActivityTreeItem from "./ActivityTreeItem.vue"
-import ActivityTreeShare from "./ActivityTreeShare.vue"
+import { useStore } from 'vuex'
+import { Avatar, createResource } from 'frappe-ui'
+import { computed, ref, watch } from 'vue'
+import ArrowRight from '~icons/lucide/arrow-right'
+import { formatDate } from '@/utils/format'
+import { hasHostedContent } from '@/utils/files'
+import ActivityTreeItem from './ActivityTreeItem.vue'
+import ActivityTreeShare from './ActivityTreeShare.vue'
 
 const store = useStore()
 const props = defineProps({ entity: Object })
@@ -91,7 +80,7 @@ const props = defineProps({ entity: Object })
 const entity = computed(() => props.entity)
 
 const activityLog = createResource({
-  url: "drive.api.activity.get_entity_activity_log",
+  url: 'drive.api.activity.get_entity_activity_log',
   params: { entity_name: entity.value.name },
   onSuccess: groupAndTransform,
 })
@@ -103,11 +92,11 @@ watch(
     groupedActivityLog.value = {
       Today: [],
       Yesterday: [],
-      "This week": [],
-      "Last week": [],
-      "This month": [],
-      "This year": [],
-      "Older than a year": [],
+      'This week': [],
+      'Last week': [],
+      'This month': [],
+      'This year': [],
+      'Older than a year': [],
     }
     activityLog.fetch({ entity_name: entity.value.name })
   },
@@ -115,35 +104,35 @@ watch(
 )
 
 const entityText = computed(() => {
-  if (entity.value.is_group) {
-    return "folder"
+  if (entity.value.is_folder) {
+    return 'folder'
   }
-  return "file"
+  return 'file'
 })
 
 function generateMessage(activity) {
   const user = activity.full_name ? activity.full_name : activity.owner
   const creationText =
-    entity.value.is_group || entity.value.document
-      ? "created this"
-      : "uploaded this"
+    entity.value.is_folder || hasHostedContent(entity.value)
+      ? 'created this'
+      : 'uploaded this'
 
   switch (activity.action_type) {
-    case "create":
+    case 'create':
       return `${user} ${creationText} ${entityText.value}`
-    case "rename":
+    case 'rename':
       return `${user} renamed this ${entityText.value}`
-    case "edit":
+    case 'edit':
       return `${user} edited this ${entityText.value}`
-    case "delete":
+    case 'delete':
       return `${user} deleted this ${entityText.value}`
-    case "share_add":
+    case 'share_add':
       return `${user} shared this ${entityText.value}`
-    case "share_edit":
+    case 'share_edit':
       return `${user} updated permissions on this ${entityText.value}`
-    case "share_remove":
+    case 'share_remove':
       return `${user} restricted this ${entityText.value}`
-    case "move":
+    case 'move':
       return `${user} moved this ${entityText.value}`
     default:
       return `Unknown action type: ${activity.action_type}`
@@ -179,7 +168,7 @@ function groupAndTransform(activities) {
       }
     }
     activity.full_name =
-      activity.owner === store.state.user.id ? "You" : activity.full_name
+      activity.owner === store.state.user.id ? 'You' : activity.full_name
     activity.message = generateMessage(activity)
     activity.creation = formatDate(activity.creation)
   }
@@ -197,21 +186,21 @@ function groupAndTransform(activities) {
         groupedActivityLog.value.Yesterday.push(activity)
         break
       case creationDate >= startOfWeek:
-        groupedActivityLog.value["This week"].push(activity)
+        groupedActivityLog.value['This week'].push(activity)
         break
       case dayDiff <= 14 &&
         creationDate >=
           new Date(startOfWeek.getTime() - 7 * 24 * 60 * 60 * 1000):
-        groupedActivityLog.value["Last week"].push(activity)
+        groupedActivityLog.value['Last week'].push(activity)
         break
       case monthDiff === 0:
-        groupedActivityLog.value["This month"].push(activity)
+        groupedActivityLog.value['This month'].push(activity)
         break
       case yearDiff === 0:
-        groupedActivityLog.value["This year"].push(activity)
+        groupedActivityLog.value['This year'].push(activity)
         break
       default:
-        groupedActivityLog.value["Older than a year"].push(activity)
+        groupedActivityLog.value['Older than a year'].push(activity)
     }
   })
 }

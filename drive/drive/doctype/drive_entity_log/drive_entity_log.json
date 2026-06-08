@@ -20,7 +20,7 @@
       "fieldtype": "Link",
       "in_list_view": 1,
       "label": "Entity Name",
-      "options": "Drive File",
+      "options": "File",
       "reqd": 1
     },
     {

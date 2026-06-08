@@ -1,11 +1,49 @@
+import os
 import inspect
 from datetime import datetime
 from functools import wraps
+from pathlib import Path
 
 import frappe
 from bs4 import BeautifulSoup
+from pypika import Field, functions as fn
+import mimemapper
 
-DriveFile = frappe.qb.DocType("Drive File")
+DriveFile = frappe.qb.DocType("File")
+
+STATUS_ACTIVE = "Active"
+STATUS_TRASHED = "Trashed"
+STATUS_REMOVED = "Removed"
+
+ATTACHMENT_CONTENT_DOCTYPE = "File"
+WRITER_CONTENT_DOCTYPE = "Writer Document"
+PRESENTATION_CONTENT_DOCTYPE = "Presentation"
+
+# `kind` — how Drive may treat a listing row (NOT the MIME `file_kinds` filter):
+#   native   — Drive-managed team file. Rename / move / share allowed.
+#   readonly — Shown in Drive but not managed here. Sub-cases use existing fields:
+#                no `team` → site file ("Open in Desk")
+#                content_doctype == "File" → attachment ref ("Go to original")
+#   virtual  — Fabricated folder for the attachments browser (not a DB row).
+KIND_NATIVE = "native"
+KIND_READONLY = "readonly"
+KIND_VIRTUAL = "virtual"
+
+
+def is_site_file(entity):
+    """Site files live outside any Drive team; they defer to framework storage & perms."""
+    team = entity.get("team") if isinstance(entity, dict) else entity.team
+    return not team
+
+
+def entity_kind(row):
+    """Classify a real `File` listing row. See `kind` above.
+
+    `virtual` nodes are built in `list.get_attachments` and never reach here.
+    """
+    if is_site_file(row) or row.get("content_doctype") == ATTACHMENT_CONTENT_DOCTYPE:
+        return KIND_READONLY
+    return KIND_NATIVE
 MIME_LIST_MAP = {
     "Image": [
         "image/png",
@@ -84,15 +122,36 @@ MIME_LIST_MAP = {
 }
 
 
+FILE_FIELDS = [
+    "name",
+    "file_name",
+    "folder",
+    "file_url",
+    "file_size",
+    "file_type",
+    "is_folder",
+    "content_doctype",
+    "content_docname",
+    "team",
+    "creation",
+    fn.Coalesce(Field("file_modified"), DriveFile.modified).as_("modified"),
+    "owner",
+    "attached_to_doctype",
+    "attached_to_name",
+]
+
+
 def get_home_folder(team):
+    # team=None → the single Site root (team & folder both null).
+    team_filter = DriveFile.team.isnull() if not team else (DriveFile.team == team)
     ls = (
         frappe.qb.from_(DriveFile)
-        .where(((DriveFile.team == team) & DriveFile.parent_entity.isnull()))
-        .select(DriveFile.name, DriveFile.path)
+        .where(team_filter & DriveFile.folder.isnull())
+        .select(DriveFile.name, DriveFile.file_url)
         .run(as_dict=True)
     )
     if not ls:
-        error_msg = f"This team ({team}) doesn't exist - please create in Desk."
+        error_msg = f"This team doesn't exist."
         team_names = frappe.get_all(
             "Drive Team Member",
             pluck="parent",
@@ -105,7 +164,7 @@ def get_home_folder(team):
             error_msg += f"<br /><br />Or maybe you want <a class='text-black' href='/drive/t/{team_names[0]}'>{frappe.db.get_value('Drive Team', team_names[0], 'title')}</a>?"
         if not team_names:
             error_msg += f"<br /><br />Please <a class='text-black' href='/drive/setup'>setup</a> an account."
-        frappe.throw(error_msg, {"error": frappe.NotFound})
+        frappe.throw(error_msg)
     return ls[0]
 
 
@@ -117,18 +176,18 @@ def get_ancestors_of(entity_name):
         """
         WITH RECURSIVE generated_path as (
         SELECT
-            `tabDrive File`.name,
-            `tabDrive File`.parent_entity
-        FROM `tabDrive File`
-        WHERE `tabDrive File`.name = %(entity_name)s
+            `tabFile`.name,
+            `tabFile`.folder
+        FROM `tabFile`
+        WHERE `tabFile`.name = %(entity_name)s
 
         UNION ALL
 
         SELECT
             t.name,
-            t.parent_entity
+            t.folder
         FROM generated_path as gp
-        JOIN `tabDrive File` as t ON t.name = gp.parent_entity)
+        JOIN `tabFile` as t ON t.name = gp.folder)
         SELECT name FROM generated_path;
     """,
         values={"entity_name": entity_name},
@@ -163,7 +222,7 @@ def generate_upward_path(entity_name, user=None, team=0):
     """
     if user is None:
         user = frappe.session.user
-    user = frappe.db.escape(user if user != "Guest" else "") 
+    user = frappe.db.escape(user if user != "Guest" else "")
 
     filter_: str
     if team:
@@ -175,33 +234,33 @@ def generate_upward_path(entity_name, user=None, team=0):
         f"""WITH RECURSIVE
             generated_path as (
                 SELECT
-                    `tabDrive File`.title,
-                    `tabDrive File`.name,
-                    `tabDrive File`.team,
-                    `tabDrive File`.parent_entity,
-                    `tabDrive File`.owner,
+                    `tabFile`.file_name,
+                    `tabFile`.name,
+                    `tabFile`.team,
+                    `tabFile`.folder,
+                    `tabFile`.owner,
                     0 AS level
                 FROM
-                    `tabDrive File`
+                    `tabFile`
                 WHERE
-                    `tabDrive File`.name = %(entity_name)s
+                    `tabFile`.name = %(entity_name)s
                 UNION ALL
                 SELECT
-                    t.title,
+                    t.file_name,
                     t.name,
                     t.team,
-                    t.parent_entity,
+                    t.folder,
                     t.owner,
                     gp.level + 1
                 FROM
                     generated_path as gp
-                    JOIN `tabDrive File` as t ON t.name = gp.parent_entity
+                    JOIN `tabFile` as t ON t.name = gp.folder
             )
         SELECT
-            gp.title,
+            gp.file_name,
             gp.name,
             gp.owner,
-            gp.parent_entity,
+            gp.folder,
             gp.team,
             p.read,
             p.upload,
@@ -243,24 +302,19 @@ def get_valid_breadcrumbs(entity_name, user_access):
         return paths[0] if len(paths) else []
 
 
-def get_file_type(r):
-    if r["is_group"]:
-        return "Folder"
-    elif r["is_link"]:
-        return "Link"
-    else:
-        try:
-            return next(k for (k, v) in MIME_LIST_MAP.items() if r["mime_type"] in v)
-        except StopIteration:
-            return "Unknown"
+def get_file_type(mime_type):
+    try:
+        return next(k for (k, v) in MIME_LIST_MAP.items() if mime_type in v)
+    except StopIteration:
+        return "Unknown"
 
 
 def update_file_size(entity, delta):
-    doc = frappe.get_doc("Drive File", entity)
-    while doc.parent_entity:
+    doc = frappe.get_doc("File", entity)
+    while doc.folder:
         doc.file_size += delta
         doc.save(ignore_permissions=True)
-        doc = frappe.get_doc("Drive File", doc.parent_entity)
+        doc = frappe.get_doc("File", doc.folder)
     # Update root
     doc.file_size += delta
     doc.save(ignore_permissions=True)
@@ -268,52 +322,55 @@ def update_file_size(entity, delta):
 
 def if_folder_exists(team, folder_name, parent):
     values = {
-        "title": folder_name,
-        "is_group": 1,
-        "is_active": 1,
+        "file_name": folder_name,
+        "is_folder": 1,
+        "status": STATUS_ACTIVE,
         "team": team,
-        "owner": frappe.session.user,
-        "parent_entity": parent,
+        "folder": parent,
     }
-    existing_folder = frappe.db.get_value("Drive File", values, ["name", "title", "is_group", "is_active"], as_dict=1)
+    existing_folder = frappe.db.get_value("File", values, ["name", "file_name", "is_folder", "status"], as_dict=1)
 
     if existing_folder:
         return existing_folder.name
     else:
-        d = frappe.get_doc({"doctype": "Drive File", **values, "_modified": frappe.utils.now_datetime()})
+        d = frappe.get_doc({"doctype": "File", **values, "file_modified": frappe.utils.now_datetime()})
         d.insert()
         return d.name
 
 
 def create_drive_file(
     team,
-    title,
+    file_name,
     parent,
-    mime_type,
+    file_type,
     entity_path,
+    mime_type=None,
     file_size=0,
-    last_modified=None,
-    document=None,
-    is_group=False,
+    file_modified=None,
+    content_doctype=None,
+    content_docname=None,
     owner=None,
 ):
-    drive_file = frappe.get_doc(
-        {
-            "doctype": "Drive File",
-            "team": team,
-            "title": title,
-            "parent_entity": parent,
-            "file_size": file_size,
-            "mime_type": mime_type,
-            "doc": document,
-            "is_group": is_group,
-            "_modified": (datetime.fromtimestamp(last_modified) if last_modified else frappe.utils.now()),
-        }
-    )
+    values = {
+        "doctype": "File",
+        "is_private": 1,
+        "team": team,
+        "file_name": file_name,
+        "folder": parent,
+        "file_size": file_size,
+        "file_type": file_type,
+        "mime_type": mime_type,
+        "is_folder": file_type == "Folder",
+        "file_modified": (datetime.fromtimestamp(file_modified) if file_modified else frappe.utils.now()),
+    }
+    if content_doctype:
+        values["content_doctype"] = content_doctype
+        values["content_docname"] = content_docname
+    drive_file = frappe.get_doc(values)
     drive_file.flags.file_created = True
     drive_file.insert(ignore_permissions=True)
-    path = entity_path(drive_file)
-    drive_file.path = str(path) if path else ""
+    path = entity_path if isinstance(entity_path, str) else entity_path(drive_file)
+    drive_file.file_url = str(path) if path else ""
     drive_file.save(ignore_permissions=True)
     if owner:
         drive_file.db_set("owner", owner, update_modified=False)
@@ -395,20 +452,55 @@ def get_teams(user=None, details=None, exclude_personal=True):
         return teams_info
     return teams
 
-@default_team
-def create_file(title="Untitled", parent=None, path=None, mime_type=None, team=None):
-    if not parent:
-        home_directory = get_home_folder(team)
-        parent = home_directory.name
-    else:
-        team = frappe.db.get_value('Drive File', parent, 'team')
+def get_new_file_name(file_name: str, parent_name: str, type: str = False, entity: str | None = None):
+    entity_title, entity_ext = os.path.splitext(file_name)
 
-    return create_drive_file(
-        team,
-        title,
-        parent,
-        mime_type,
-        lambda _: path,
+    filters = {
+        "status": STATUS_ACTIVE,
+        "folder": parent_name,
+        "file_name": ["like", f"{entity_title}%{entity_ext}"],
+    }
+
+    if type:
+        filters["file_type"] = type
+
+    sibling_entity_titles = frappe.db.get_list(
+        "File",
+        filters=filters,
+        fields=["file_name", "name"],
     )
+    if (
+        not sibling_entity_titles
+        or (sibling_entity_titles[0].name == entity)
+        or not any(k["file_name"] == file_name for k in sibling_entity_titles)
+    ):
+        return file_name
+    return f"{entity_title} ({len(sibling_entity_titles)}){entity_ext}"
 
-    
+
+def validate_filename(file_name, parent, type, error=None):
+    suggested_name = get_new_file_name(file_name, parent, type)
+    if suggested_name != file_name:
+        if not error:
+            error = f"{file_name} exists."
+        frappe.throw(
+            f"{error} Try {suggested_name}",
+            frappe.ValidationError,
+        )
+
+
+def map_ff_to_drive_type(file):
+    if file.is_folder:
+        return "Folder"
+    mime_type = mimemapper.get_mime_type(file.file_type) if file.file_type else ""
+    try:
+        return next(k for (k, v) in MIME_LIST_MAP.items() if mime_type in v)
+    except StopIteration:
+        return "Unknown"
+
+
+def get_upload_path(team_path, file_name):
+    uploads_path = Path(frappe.get_site_path(team_path), ".uploads")
+    if not os.path.exists(uploads_path):
+        uploads_path.mkdir()
+    return uploads_path / file_name

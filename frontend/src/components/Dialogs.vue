@@ -19,9 +19,9 @@
     v-model="dialog"
     :entity="entities[0]"
     @success="
-      ({ name, title }) => {
+      ({ name, file_name }) => {
         const el = listResource?.data?.find?.((k) => k.name === name)
-        if (el) el.title = title
+        if (el) el.file_name = file_name
         resetDialog()
       }
     "
@@ -43,7 +43,7 @@
     @success="removeFromList(entities)"
     @complete="entity_open && resource.fetch(resource.params)"
   />
-  <InfoPopup
+  <InfoDialog
     v-else-if="dialog === 'i'"
     v-model="dialog"
     :entity="entities[0]"
@@ -71,17 +71,17 @@
   />
 </template>
 <script setup>
-import { ref, watch, computed } from "vue"
-import { useStore } from "vuex"
-import { useTimeAgo } from "@vueuse/core"
-import { openEntity } from "@/utils/files"
+import { ref, watch, computed } from 'vue'
+import { useStore } from 'vuex'
+import { useTimeAgo } from '@vueuse/core'
+import { openEntity } from '@/utils/files'
 
-import emitter from "@/emitter"
+import emitter from '@/emitter'
 
-import NewFolderDialog from "@/components/NewFolderDialog.vue"
-import NewLinkDialog from "@/components/NewLinkDialog.vue"
-import { ShareDialog, RenameDialog, MoveDialog } from "frappe-ui/drive"
-import ConfirmDialog from "@/components/ConfirmDialog.vue"
+import NewFolderDialog from '@/components/NewFolderDialog.vue'
+import NewLinkDialog from '@/components/NewLinkDialog.vue'
+import { ShareDialog, MoveDialog, RenameDialog, InfoDialog } from 'frappe-ui/drive'
+import ConfirmDialog from '@/components/ConfirmDialog.vue'
 
 const props = defineProps({
   entities: Array,
@@ -105,14 +105,14 @@ watch(dialog, (val) => {
   if (val) open.value = true
 })
 
-const resetDialog = () => (dialog.value = "")
+const resetDialog = () => (dialog.value = '')
 
-emitter.on("share", () => (dialog.value = "s"))
-emitter.on("newFolder", () => (dialog.value = "f"))
-emitter.on("rename", () => (dialog.value = "rn"))
-emitter.on("remove", () => (dialog.value = "remove"))
-emitter.on("move", () => (dialog.value = "m"))
-emitter.on("newLink", () => (dialog.value = "l"))
+emitter.on('share', () => (dialog.value = 's'))
+emitter.on('newFolder', () => (dialog.value = 'f'))
+emitter.on('rename', () => (dialog.value = 'rn'))
+emitter.on('remove', () => (dialog.value = 'remove'))
+emitter.on('move', () => (dialog.value = 'm'))
+emitter.on('newLink', () => (dialog.value = 'l'))
 
 function addToList(data, file_type) {
   resetDialog()
@@ -145,8 +145,8 @@ function removeFromList(entities, move = true) {
         )
       )
       openEntity({
-        is_group: 1,
-        name: resource.value.data.parent_entity,
+        is_folder: 1,
+        name: resource.value.data.folder,
         breadcrumbs: resource.value.data.breadcrumbs.slice(0, -1),
       })
     }

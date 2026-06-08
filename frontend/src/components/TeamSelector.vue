@@ -1,18 +1,12 @@
 <template>
-  <Combobox
-    v-model="team"
-    placeholder="Select a team"
-    :options
-    :disabled
-    :open-on-click="true"
-  />
+  <Combobox v-model="team" placeholder="Select a team" :options :disabled :open-on-click="true" />
 </template>
 <script setup lang="ts">
-import { getTeams } from "@/resources/files"
-import icons from "@/utils/icons"
-import { computed, watch } from "vue"
-import { Combobox } from "frappe-ui"
-import { dynamicList } from "@/utils/files"
+import { getTeams } from '@/resources/files'
+import icons from '@/utils/icons'
+import { computed, watch } from 'vue'
+import { Combobox } from 'frappe-ui'
+import { dynamicList } from '@/utils/files'
 
 getTeams.fetch()
 const team = defineModel<string>()
@@ -27,7 +21,7 @@ watch(
   (teams) => {
     if (props.allowBlank || team.value) return
     if (props.none) {
-      team.value = props.none === true ? "all" : "home"
+      team.value = props.none === true ? 'all' : 'home'
     } else {
       team.value = Object.values(teams)[0]?.name
     }
@@ -38,11 +32,11 @@ const options = computed<object[]>(() => {
   const res = Object.values(getTeams.data).map((k) => ({
     label: k.title,
     value: k.name,
-    icon: icons[k.icon || "building"],
+    icon: icons[k.icon || 'building'],
   }))
   return dynamicList([
-    { cond: props.none === true, label: "Everywhere", value: "all" },
-    { cond: props.none, label: "Home", value: "home" },
+    { cond: props.none === true, label: 'Everywhere', value: 'all' },
+    { cond: props.none, label: 'Home', value: 'home' },
     ...res,
   ])
 })

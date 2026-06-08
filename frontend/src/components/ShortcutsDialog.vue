@@ -1,18 +1,8 @@
 <template>
-  <Dialog
-    v-model="open"
-    :options="{ title: 'Keyboard Shortcuts', size: '4xl' }"
-  >
+  <Dialog v-model="open" :options="{ title: 'Keyboard Shortcuts', size: '4xl' }">
     <template #body-content>
-      <div
-        v-focus
-        class="w-full grid grid-cols-2 gap-10 py-1"
-      >
-        <div
-          v-for="group in shortcutGroups"
-          :key="group.title"
-          class="border-b pb-4"
-        >
+      <div v-focus class="w-full grid grid-cols-2 gap-10 py-1">
+        <div v-for="group in shortcutGroups" :key="group.title" class="border-b pb-4">
           <h2 class="text-lg font-semibold text-ink-gray-8 mb-4">
             {{ group.title }}
           </h2>
@@ -42,55 +32,53 @@
   </Dialog>
 </template>
 <script setup>
-import { Dialog } from "frappe-ui"
-import { computed } from "vue"
+import { Dialog } from 'frappe-ui'
+import { computed } from 'vue'
 const props = defineProps({
   modelValue: Boolean,
 })
-const emit = defineEmits(["update:modelValue"])
+const emit = defineEmits(['update:modelValue'])
 
-const getLabel = (key) =>
-  document.querySelector(`[accesskey='${key}']`)?.accessKeyLabel
+const getLabel = (key) => document.querySelector(`[accesskey='${key}']`)?.accessKeyLabel
 
 const metaKey = computed(() => {
   const platform = navigator.platform.toLowerCase()
-  if (platform.includes("mac")) {
-    return "⌘" // Command key
-  } else if (platform.includes("win")) {
-    return "⊞" // Windows key
+  if (platform.includes('mac')) {
+    return '⌘' // Command key
+  } else if (platform.includes('win')) {
+    return '⊞' // Windows key
   }
-  return "Meta"
+  return 'Meta'
 })
 const shortcutGroups = [
   {
-    title: "General",
+    title: 'General',
     shortcuts: [
-      [[metaKey.value, "K"], "Find Files"],
-      [["Ctrl", ","], "Open Settings"],
+      [[metaKey.value, 'K'], 'Find Files'],
+      [['Ctrl', ','], 'Open Settings'],
     ],
   },
   {
-    title: "Navigation",
+    title: 'Navigation',
     shortcuts: [
-      [getLabel("i"), "Inbox"],
-      [getLabel("h"), "Home"],
-      [getLabel("t"), "Team"],
-      [getLabel("r"), "Recents"],
-      [getLabel("f"), "Favourites"],
-      [getLabel("s"), "Shared"],
-      [getLabel("d"), "Shared"],
+      [getLabel('i'), 'Inbox'],
+      [getLabel('h'), 'Home'],
+      [getLabel('t'), 'Team'],
+      [getLabel('r'), 'Recents'],
+      [getLabel('f'), 'Favourites'],
+      [getLabel('s'), 'Shared'],
     ],
   },
   {
-    title: "List",
+    title: 'List',
     shortcuts: [
-      [[metaKey.value, "A"], "Select all"],
-      [["Esc"], "Unselect all"],
-      [getLabel("s"), "Share selected file(s)"],
-      [getLabel("m"), "Move selected file(s)"],
-      [[metaKey.value, "Delete"], "Delete selected file(s)"],
-      [getLabel("u"), "Upload a file"],
-      [getLabel("n"), "Create a folder"],
+      [[metaKey.value, 'A'], 'Select all'],
+      [['Esc'], 'Unselect all'],
+      [getLabel('s'), 'Share selected file(s)'],
+      [getLabel('m'), 'Move selected file(s)'],
+      [[metaKey.value, 'Delete'], 'Delete selected file(s)'],
+      [getLabel('u'), 'Upload a file'],
+      [getLabel('n'), 'Create a folder'],
     ],
   },
 ]
@@ -100,7 +88,7 @@ const open = computed({
     return props.modelValue
   },
   set(newValue) {
-    emit("update:modelValue", newValue)
+    emit('update:modelValue', newValue)
   },
 })
 </script>

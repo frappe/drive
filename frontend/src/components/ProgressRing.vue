@@ -1,8 +1,5 @@
 <template>
-  <svg
-    :height="radius * 2"
-    :width="radius * 2"
-  >
+  <svg :height="radius * 2" :width="radius * 2">
     <circle
       class="fill-transparent stroke-current"
       :class="secondaryClass"
@@ -26,7 +23,7 @@
 </template>
 <script>
 export default {
-  name: "ProgressRing",
+  name: 'ProgressRing',
   props: {
     progress: {
       type: Number,
@@ -42,11 +39,11 @@ export default {
     },
     primaryClass: {
       type: String,
-      default: "text-black",
+      default: 'text-black',
     },
     secondaryClass: {
       type: String,
-      default: "text-ink-gray-1",
+      default: 'text-ink-gray-1',
     },
   },
   computed: {

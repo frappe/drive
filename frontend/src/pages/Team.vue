@@ -16,24 +16,22 @@
 </template>
 
 <script setup>
-import GenericPage from "@/components/GenericPage.vue"
-import { getTeam, getTeams, getPublicTeams } from "@/resources/files"
-import { useStore } from "vuex"
-import { useRoute } from "vue-router"
-import LucideBuilding2 from "~icons/lucide/building-2"
-import { computed, watch } from "vue"
+import GenericPage from '@/components/GenericPage.vue'
+import { getTeam, getTeams, getPublicTeams } from '@/resources/files'
+import { useStore } from 'vuex'
+import { useRoute } from 'vue-router'
+import LucideBuilding2 from '~icons/lucide/building-2'
+import { computed, watch } from 'vue'
 
 const store = useStore()
 const props = defineProps({
   team: String,
 })
-store.commit("setCurrentFolder", { name: "", team: props.team })
+store.commit('setCurrentFolder', { name: '', team: props.team })
 
 const route = useRoute()
 const teamData = computed(
-  () =>
-    getTeams.data?.[route.params?.team] ||
-    getPublicTeams.data?.[route.params?.team]
+  () => getTeams.data?.[route.params?.team] || getPublicTeams.data?.[route.params?.team]
 )
 const write = computed(
   () =>
@@ -46,7 +44,7 @@ watch(
   teamData,
   (t) =>
     t &&
-    store.commit("setBreadcrumbs", [
+    store.commit('setBreadcrumbs', [
       {
         label: t.title,
         name: t.name,

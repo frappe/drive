@@ -1,23 +1,15 @@
 <template>
   <h1 class="font-semibold mb-8 text-ink-gray-9">
-    {{ __("Profile") }}
+    {{ __('Profile') }}
   </h1>
   <div class="flex justify-start w-full items-center gap-x-4">
-    <Avatar
-      :image="newImageUrl"
-      size="3xl"
-      :label="fullName"
-      class="w-20 h-20"
-    />
+    <Avatar :image="newImageUrl" size="3xl" :label="fullName" class="w-20 h-20" />
     <div class="flex flex-col">
       <span class="text-xl font-semibold text-ink-gray-8">{{ fullName }}</span>
       <span class="text-base text-ink-gray-6">{{ $store.state.user.id }}</span>
     </div>
-    <Button
-      class="ml-auto"
-      @click="editProfileDialog = true"
-    >
-      {{ __("Edit profile") }}
+    <Button class="ml-auto" @click="editProfileDialog = true">
+      {{ __('Edit profile') }}
     </Button>
   </div>
   <Dialog
@@ -38,12 +30,7 @@
       <div class="flex flex-col items-start justify-start gap-y-2">
         <span class="text-base text-ink-gray-5">Profile Photo</span>
         <div class="flex items-center justify-between w-full">
-          <Avatar
-            :image="newImageUrl"
-            size="3xl"
-            :label="newFullName"
-            class="w-20 h-20"
-          />
+          <Avatar :image="newImageUrl" size="3xl" :label="newFullName" class="w-20 h-20" />
 
           <div
             v-if="newImageUrl"
@@ -73,25 +60,22 @@
           >
             <template #default="{ openFileSelector }">
               <Button @click="openFileSelector">
-                {{ __("Add Image") }}
+                {{ __('Add Image') }}
               </Button>
             </template>
           </FileUploader>
         </div>
         <div class="w-full flex flex-col gap-y-2 my-2">
-          <span class="text-base text-ink-gray-5">{{ __("First Name") }}</span>
-          <Input
-            v-model="newFirstName"
-            v-focus
-          />
-          <span class="text-base text-ink-gray-5">{{ __("Last Name") }}</span>
+          <span class="text-base text-ink-gray-5">{{ __('First Name') }}</span>
+          <Input v-model="newFirstName" v-focus />
+          <span class="text-base text-ink-gray-5">{{ __('Last Name') }}</span>
           <Input v-model="newLastName" />
         </div>
       </div>
     </template>
   </Dialog>
   <h1 class="font-semibold mt-12 mb-4 text-ink-gray-8">
-    {{ __("Preferences") }}
+    {{ __('Preferences') }}
   </h1>
 
   <Switch
@@ -109,26 +93,26 @@ import {
   FileUploader,
   Switch,
   createDocumentResource,
-} from "frappe-ui"
-import LucideLink from "~icons/lucide/link"
-import LucideX from "~icons/lucide/x"
+} from 'frappe-ui'
+import LucideLink from '~icons/lucide/link'
+import LucideX from '~icons/lucide/x'
 
-import { useStore } from "vuex"
-import { ref, computed, watch } from "vue"
-import { settings, setSettings } from "@/resources/permissions"
+import { useStore } from 'vuex'
+import { ref, computed, watch } from 'vue'
+import { settings, setSettings } from '@/resources/permissions'
 
 const store = useStore()
 
 const newImageUrl = ref(store.state.user.imageURL)
 const fullName = computed(() => store.state.user.fullName)
-const newLastName = ref(fullName.value.split(" ")[1])
-const newFirstName = ref(fullName.value.split(" ")[0])
-const newFullName = computed(() => newFirstName.value + " " + newLastName.value)
+const newLastName = ref(fullName.value.split(' ')[1])
+const newFirstName = ref(fullName.value.split(' ')[0])
+const newFullName = computed(() => newFirstName.value + ' ' + newLastName.value)
 
 const editProfileDialog = ref(false)
 
 const detectLinks = ref(Boolean(settings.data?.auto_detect_links))
-const defaultTeam = ref(settings.data.default_team || { label: "-" })
+const defaultTeam = ref(settings.data.default_team || { label: '-' })
 const options = {
   auto_detect_links: detectLinks,
   default_team: defaultTeam,
@@ -142,7 +126,7 @@ for (const k in options) {
 }
 
 const profile = createDocumentResource({
-  doctype: "User",
+  doctype: 'User',
   name: store.state.user.id,
   auto: true,
 })
@@ -162,9 +146,9 @@ const updateProfile = () => {
 }
 
 const validateFile = (file) => {
-  const extension = file.name.split(".").pop().toLowerCase()
-  if (!["jpg", "jpeg", "png"].includes(extension)) {
-    alert("Not a valid Image file")
+  const extension = file.name.split('.').pop().toLowerCase()
+  if (!['jpg', 'jpeg', 'png'].includes(extension)) {
+    alert('Not a valid Image file')
     return false
   }
 }

@@ -1,32 +1,19 @@
-from frappe.model.document import Document
-import io
-
 import frappe
-import markdown
 from frappe.utils import getdate
-from markdown.extensions.wikilinks import WikiLinkExtension
-from pypika import Field
+from frappe.model.document import Document
+from frappe.core.doctype.file.file import has_permission as ff_has_permission
 
-from drive.utils import generate_upward_path, get_default_team, get_file_type, get_valid_breadcrumbs
-from drive.utils.files import FileManager
-
-ENTITY_FIELDS = [
-    "name",
-    "title",
-    "is_group",
-    "is_link",
-    "path",
-    Field("_modified").as_("modified"),
-    "creation",
-    "file_size",
-    "mime_type",
-    "color",
-    "doc",
-    "owner",
-    "parent_entity",
-    "team",
-    "allow_download",
-]
+from drive.utils import (
+    generate_upward_path,
+    get_default_team,
+    get_valid_breadcrumbs,
+    FILE_FIELDS,
+    get_home_folder,
+    map_ff_to_drive_type,
+    entity_kind,
+    is_site_file,
+    STATUS_ACTIVE,
+)
 
 
 NO_ACCESS = {
@@ -53,7 +40,18 @@ def get_user_access(entity: str | Document | frappe._dict, user: str = None, tea
     Return the user specific permissions for an entity. Toggle `team` to check team permission.
     """
     if isinstance(entity, str):
-        entity = frappe.get_cached_doc("Drive File", entity)
+        entity = frappe.get_cached_doc("File", entity)
+
+    # Site files defer to the framework's own permissions, read-only.
+    # Needs a full doc (ff_has_permission reads is_private, absent from FILE_FIELDS rows).
+    if is_site_file(entity):
+        if team:
+            return {**NO_ACCESS, "type": "guest"}
+        if not user:
+            user = frappe.session.user
+        doc = entity if isinstance(entity, Document) else frappe.get_cached_doc("File", entity.name)
+        return {**NO_ACCESS, "read": int(bool(ff_has_permission(doc, "read", user))), "type": "guest"}
+
     access = NO_ACCESS.copy()
     if not user:
         if team:
@@ -78,7 +76,7 @@ def get_user_access(entity: str | Document | frappe._dict, user: str = None, tea
             "read": 1,
             "comment": 1,
             "share": 0,
-            "upload": int(entity.is_group) and access_level,
+            "upload": int(entity.is_folder) and access_level,
             "write": int(access_level == 2 or entity.owner == user),
             "type": {2: "admin", 1: "user", 0: "guest"}[access_level],
         }
@@ -135,9 +133,13 @@ def get_teams(user: str = None, details: bool = False, exclude_personal: bool = 
         filters=[["parenttype", "=", "Drive Team"], ["user", "=", user]],
     )
     if details:
-        teams_info = {team: frappe.get_doc("Drive Team", team) for team in teams}
+        teams_info = {
+            team: {**frappe.get_doc("Drive Team", team).as_dict(), "file": get_home_folder(team)["name"]}
+            for team in teams
+        }
         if exclude_personal:
-            return {t: team for t, team in teams_info.items() if not team.personal}
+            return {t: team for t, team in teams_info.items() if not team["personal"]}
+        return teams_info
     return teams
 
 
@@ -151,11 +153,12 @@ def get_entity_with_permissions(entity_name: str):
     """
     Return file data with permissions
     """
-    entity = frappe.db.get_value(
-        "Drive File",
-        {"is_active": 1, "name": entity_name},
-        ENTITY_FIELDS,
-        as_dict=1,
+    entity = frappe.get_all(
+        "File",
+        filters={"name": entity_name},
+        or_filters={"status": STATUS_ACTIVE, "team": ["is", "not set"]},
+        fields=FILE_FIELDS,
+        limit=1,
     )
     if not entity:
         # Mimic API v2 points
@@ -166,10 +169,11 @@ def get_entity_with_permissions(entity_name: str):
             }
         ]
         frappe.throw("We couldn't find what you're looking for.", frappe.PageDoesNotExistError)
+    entity = entity[0]
 
     entity["in_home"] = entity.team == get_default_team()
     user_access = get_user_access(entity)
-    if user_access.get("read") == 0:
+    if not user_access.get("read"):
         frappe.local.response.errors = [
             {
                 "type": "PermissionError",
@@ -188,30 +192,19 @@ def get_entity_with_permissions(entity_name: str):
         },
         ["entity as is_favourite"],
     )
-    file_type = get_file_type(entity)
-    return_obj = entity | user_access | owner_info | breadcrumbs | {"is_favourite": favourite, "file_type": file_type}
-    if entity.mime_type == "text/markdown":
-        entity.document_type == "markdown"
-        manager = FileManager()
-        wrapper = io.TextIOWrapper(manager.get_file(entity))
-        url_builder = (
-            lambda label, base, end: f"/api/method/drive.api.docs.get_wiki_link?team={entity.team}&title={label}"
-        )
-        with wrapper as r:
-            content = r.read()
-            return_obj["raw_content"] = markdown.markdown(
-                content,
-                output_format="html",
-                extensions=["extra", WikiLinkExtension(build_url=url_builder)],
-            )
+    return_obj = entity | user_access | owner_info | breadcrumbs | {"is_favourite": favourite}
 
     default = 0
-    if entity_name:
+    if entity_name and not is_site_file(entity):
         if get_user_access(entity_name, "Guest")["read"]:
             default = -2
         elif get_user_access(entity_name, team=1)["read"]:
             default = -1
     return_obj["share_count"] = default
+    if is_site_file(entity):
+        return_obj["file_type"] = map_ff_to_drive_type(entity)
+
+    return_obj["kind"] = entity_kind(entity)
 
     # To work with modern frappe-ui composables
     frappe.response["data"] = return_obj
@@ -238,7 +231,7 @@ def get_shared_with_list(entity: str):
         fields=["user", "read", "write", "comment", "upload", "share"],
     )
 
-    owner = frappe.db.get_value("Drive File", entity, "owner")
+    owner = frappe.db.get_value("File", entity, "owner")
     permissions.insert(
         0,
         frappe.db.get_value("User", owner, ["user_image", "full_name", "name as user"], as_dict=True),
@@ -251,26 +244,12 @@ def get_shared_with_list(entity: str):
     return permissions
 
 
-def auto_delete_expired_perms():
-    current_date = getdate()
-    expired_documents = frappe.get_list(
-        "Drive Permission",
-        filters=[
-            ["valid_until", "is", "set"],
-            ["valid_until", "<", current_date],
-        ],
-        fields=["name", "valid_until"],
-    )
-    if expired_documents:
-
-        def batch_delete_perms(docs):
-            for d in docs:
-                frappe.delete_doc("Drive Permission", d.name)
-
-        frappe.enqueue(batch_delete_perms, docs=expired_documents)
-
-
 def user_has_permission(doc, ptype, user=None, team=0):
+    if isinstance(doc, str):
+        doc = frappe.get_doc("File", doc)
+    if is_site_file(doc):
+        return ff_has_permission(doc, ptype, user)
+
     if not user:
         user = frappe.session.user
     if user == "Administrator" or ptype == "create":
@@ -281,31 +260,3 @@ def user_has_permission(doc, ptype, user=None, team=0):
     access = get_user_access(doc, user, team)
     if ptype in access:
         return bool(access[ptype])
-
-
-def user_has_permission_doc(doc, ptype, user=None):
-    entity = frappe.get_value("Drive File", {"document": doc.name}, "name")
-    if ptype == "create" or not entity:
-        return True
-    perm = user_has_permission(entity, ptype, user)
-    return perm
-
-
-@frappe.whitelist()
-def toggle_allow_download(entity: str, val: bool):
-    if not user_has_permission(entity, "share"):
-        frappe.throw("You don't have permission for this action.", frappe.PermissionError)
-    frappe.db.set_value("Drive File", entity, "allow_download", val)
-
-
-def requires(perm):
-    def wrapped(fn):
-        def inner(*args, **kwargs):
-            file = frappe.db.get_value("Drive File", {"doc": args[0].name}, "name")
-            if not user_has_permission(file, perm):
-                frappe.throw("You don't have permission for this action.", ValueError)
-            fn(*args, **kwargs)
-
-        return inner
-
-    return wrapped

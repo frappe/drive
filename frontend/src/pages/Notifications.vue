@@ -1,10 +1,6 @@
 <template>
-  <div
-    class="bg-surface-white border-b w-full px-5 py-2.5 h-12 flex items-center justify-between"
-  >
-    <div
-      class="bg-surface-gray-2 rounded-[10px] space-x-0.5 h-7 flex items-center px-0.5 py-1"
-    >
+  <div class="bg-surface-white border-b w-full px-5 py-2.5 h-12 flex items-center justify-between">
+    <div class="bg-surface-gray-2 rounded-[10px] space-x-0.5 h-7 flex items-center px-0.5 py-1">
       <TabButtons
         v-model="onlyUnread"
         :buttons="[
@@ -49,13 +45,13 @@
   </div>
 </template>
 <script setup>
-import { ref, h, watch } from "vue"
-import { formatTimeAgo } from "@vueuse/core"
-import { createResource, Avatar, ListView, TabButtons } from "frappe-ui"
-import { useStore } from "vuex"
-import { formatDate } from "@/utils/format"
-import emitter from "@/emitter"
-import LucideInbox from "~icons/lucide/inbox"
+import { ref, h, watch } from 'vue'
+import { formatTimeAgo } from '@vueuse/core'
+import { createResource, Avatar, ListView, TabButtons } from 'frappe-ui'
+import { useStore } from 'vuex'
+import { formatDate } from '@/utils/format'
+import emitter from '@/emitter'
+import LucideInbox from '~icons/lucide/inbox'
 
 const store = useStore()
 const onlyUnread = ref(true)
@@ -65,7 +61,7 @@ const options = {
     params: { entityName: row.notif_doctype_name },
   }),
   onRowClick: (row) => {
-    if (row.type === "Team") emitter.emit("showSettings", 1)
+    if (row.type === 'Team') emitter.emit('showSettings', 1)
     if (onlyUnread.value) {
       markAsRead.submit({ name: row.name })
       store.state.notifCount = store.state.notifCount - 1
@@ -78,29 +74,29 @@ const options = {
 
 const columns = [
   {
-    label: "Subject",
-    key: "subject",
-    width: "80px",
+    label: 'Subject',
+    key: 'subject',
+    width: '80px',
     getLabel: ({ row }) => row.type,
   },
   {
-    label: "Message",
-    key: "message",
+    label: 'Message',
+    key: 'message',
     width: 4,
     getLabel: ({ row }) => row.message,
     prefix: ({ row }) => {
       if (row.from_user)
         return h(Avatar, {
-          shape: "circle",
+          shape: 'circle',
           label: row.from_user,
           image: row.user_image,
-          size: "sm",
+          size: 'sm',
         })
     },
   },
   {
-    key: "creation",
-    align: "end",
+    key: 'creation',
+    align: 'end',
     getLabel: ({ row }) => row.relativeTime,
   },
 ]
@@ -112,7 +108,7 @@ watch(onlyUnread, (newValue) => {
 })
 
 const notifications = createResource({
-  url: "drive.api.notifications.get_notifications",
+  url: 'drive.api.notifications.get_notifications',
   auto: true,
   params: {
     only_unread: onlyUnread.value,
@@ -126,11 +122,11 @@ const notifications = createResource({
 })
 
 const markAsRead = createResource({
-  url: "drive.api.notifications.mark_as_read",
+  url: 'drive.api.notifications.mark_as_read',
   auto: false,
-  method: "POST",
+  method: 'POST',
   params: {
-    name: "",
+    name: '',
     all: false,
   },
   onSuccess() {

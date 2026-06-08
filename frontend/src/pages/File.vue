@@ -53,6 +53,8 @@ import {
   setBreadCrumbs,
   enterFullScreen,
   updateURLSlug,
+  isWriterDocument,
+  hasHostedContent,
 } from '@/utils/files'
 import ErrorPage from '@/components/ErrorPage.vue'
 
@@ -66,12 +68,10 @@ const props = defineProps({
 const currentEntity = ref(props.entityName)
 
 // buggy logic, only works if navigated through folder
-const folderEntitites = computed(() => {
-  return store.state.currentFolder?.entities || []
-})
+const folderEntities = computed(() => store.state.currentFolder?.entities || [])
 const filteredEntities = computed(() =>
-  folderEntitites.value.filter(
-    (item) => !item.is_group && !item.doc && !item.is_link
+  folderEntities.value.filter(
+    (item) => !item.is_folder && !hasHostedContent(item) && item.file_type !== 'Link'
   )
 )
 
@@ -105,12 +105,12 @@ onKeyStroke('ArrowRight', (e) => {
 
 const onSuccess = async (entity) => {
   // temporary hack: #475
-  if (entity.doc) {
+  if (isWriterDocument(entity)) {
     window.location.href = '/writer/w/' + entity.name
   }
-  document.title = entity.title
+  document.title = entity.file_name
   setBreadCrumbs(entity)
-  updateURLSlug(entity.title)
+  updateURLSlug(entity.file_name)
   trackVisit.submit({ entity_name: entity.name })
 }
 

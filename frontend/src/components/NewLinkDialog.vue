@@ -18,7 +18,7 @@
     <template #body-content>
       <div class="flex flex-col gap-4">
         <FormControl
-          v-model="title"
+          v-model="file_name"
           v-focus
           label="Link name"
           type="text"
@@ -32,10 +32,7 @@
           @keydown="createLink.error = null"
         />
       </div>
-      <div
-        v-if="createLink.error"
-        class="pt-4 text-base font-sm text-ink-red-3"
-      >
+      <div v-if="createLink.error" class="pt-4 text-base font-sm text-ink-red-3">
         {{ createLink.error.messages[0] }}
       </div>
     </template>
@@ -43,41 +40,41 @@
 </template>
 
 <script setup>
-import { ref } from "vue"
-import { Dialog, createResource } from "frappe-ui"
-import { useRoute } from "vue-router"
+import { ref } from 'vue'
+import { Dialog, createResource } from 'frappe-ui'
+import { useRoute } from 'vue-router'
 
 const route = useRoute()
 
 const props = defineProps({
   parent: String,
 })
-const emit = defineEmits(["success"])
+const emit = defineEmits(['success'])
 
 const open = ref(true)
 const dialogType = defineModel()
 
-const title = ref("")
-const link = ref(localStorage.getItem("prevClip") || "")
+const file_name = ref('')
+const link = ref(localStorage.getItem('prevClip') || '')
 
 const createLink = createResource({
-  url: "drive.api.files.create_link",
+  url: 'drive.api.files.create_link',
   makeParams: () => ({
-    title: title.value.trim(),
+    file_name: file_name.value.trim(),
     link: link.value.trim(),
     team: route.params.team,
     parent: props.parent,
   }),
   validate(params) {
-    if (!params?.title) {
-      return "Link name is required"
+    if (!params?.file_name) {
+      return 'Link name is required'
     }
   },
   onSuccess(data) {
     open.value = false
-    title.value = ""
-    link.value = ""
-    emit("success", data)
+    file_name.value = ''
+    link.value = ''
+    emit('success', data)
   },
 })
 </script>

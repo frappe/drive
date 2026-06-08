@@ -22,7 +22,7 @@
       @dragleave="dragOverItem = null"
       @dragover="
         (e) => {
-          if (file.is_group) {
+          if (file.is_folder) {
             e.preventDefault()
             dragOverItem = file.name
           }
@@ -34,7 +34,7 @@
           ? selections.delete(file.name)
           : selections.add(file.name)
       "
-      @[action]="open(file)"
+      @click="open(file)"
       @contextmenu="contextMenu($event, file)"
       @mousedown.stop
     >
@@ -71,27 +71,26 @@
 </template>
 
 <script setup>
-import GridItem from "@/components/GridItem.vue"
-import emitter from "@/emitter"
-import { Button } from "frappe-ui"
-import { ref, computed } from "vue"
-import { openEntity } from "@/utils/files"
-import { useRoute } from "vue-router"
-import { useStore } from "vuex"
-import { settings } from "@/resources/permissions"
-import { onKeyDown } from "@vueuse/core"
+import GridItem from '@/components/GridItem.vue'
+import emitter from '@/emitter'
+import { Button } from 'frappe-ui'
+import { ref, computed } from 'vue'
+import { openEntity } from '@/utils/files'
+import { useRoute } from 'vue-router'
+import { useStore } from 'vuex'
+import { settings } from '@/resources/permissions'
+import { onKeyDown } from '@vueuse/core'
 
 const props = defineProps({
   folderContents: Object,
   actionItems: Array,
 })
-defineEmits(["dropped"])
+defineEmits(['dropped'])
 const route = useRoute()
 const store = useStore()
 const selections = defineModel(new Set())
 
 const rows = computed(() => props.folderContents)
-const action = settings.data?.single_click === 0 ? "dblclick" : "click"
 
 const selectedRow = ref(null)
 const rowEvent = ref(null)
@@ -115,22 +114,22 @@ const dropdownActionItems = (row) => {
       ...a,
       handler: () => {
         rowEvent.value = false
-        store.commit("setActiveEntity", row)
+        store.commit('setActiveEntity', row)
         a.action([row])
       },
     }))
 }
 const open = (row) =>
-  !selections.value.size && route.name !== "Trash" && openEntity(row)
+  !selections.value.size && route.name !== 'Trash' && openEntity(row)
 
 const draggedItem = ref(null)
 const dragOverItem = ref(null)
 
-onKeyDown("a", (e) => {
+onKeyDown('a', (e) => {
   if (
-    e.target.classList.contains("ProseMirror") ||
-    e.target.tagName === "INPUT" ||
-    e.target.tagName === "TEXTAREA"
+    e.target.classList.contains('ProseMirror') ||
+    e.target.tagName === 'INPUT' ||
+    e.target.tagName === 'TEXTAREA'
   )
     return
   if (e.metaKey) {
@@ -138,29 +137,29 @@ onKeyDown("a", (e) => {
     e.preventDefault()
   }
 })
-onKeyDown("Backspace", (e) => {
+onKeyDown('Backspace', (e) => {
   if (
-    e.target.classList.contains("ProseMirror") ||
-    e.target.tagName === "INPUT" ||
-    e.target.tagName === "TEXTAREA"
+    e.target.classList.contains('ProseMirror') ||
+    e.target.tagName === 'INPUT' ||
+    e.target.tagName === 'TEXTAREA'
   )
     return
-  if (e.metaKey) emitter.emit("remove")
+  if (e.metaKey) emitter.emit('remove')
 })
-onKeyDown("m", (e) => {
+onKeyDown('m', (e) => {
   if (
-    e.target.classList.contains("ProseMirror") ||
-    e.target.tagName === "INPUT" ||
-    e.target.tagName === "TEXTAREA"
+    e.target.classList.contains('ProseMirror') ||
+    e.target.tagName === 'INPUT' ||
+    e.target.tagName === 'TEXTAREA'
   )
     return
-  if (e.ctrlKey) emitter.emit("move")
+  if (e.ctrlKey) emitter.emit('move')
 })
-onKeyDown("Escape", (e) => {
+onKeyDown('Escape', (e) => {
   if (
-    e.target.classList.contains("ProseMirror") ||
-    e.target.tagName === "INPUT" ||
-    e.target.tagName === "TEXTAREA"
+    e.target.classList.contains('ProseMirror') ||
+    e.target.tagName === 'INPUT' ||
+    e.target.tagName === 'TEXTAREA'
   )
     return
   selections.value = new Set()

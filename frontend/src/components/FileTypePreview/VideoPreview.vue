@@ -1,8 +1,5 @@
 <template>
-  <LoadingIndicator
-    v-show="loading"
-    class="w-10"
-  />
+  <LoadingIndicator v-show="loading" class="w-10" />
   <video
     v-show="!loading"
     :key="src"
@@ -16,10 +13,7 @@
     draggable="false"
     @loadedmetadata="handleMediaReady"
   >
-    <source
-      :src="src"
-      :type="type"
-    >
+    <source :src="src" :type="type" />
   </video>
 </template>
 
@@ -31,8 +25,8 @@
   Server side byte is good enough for now 
 */
 
-import { LoadingIndicator } from "frappe-ui"
-import { ref, onBeforeUnmount, watch } from "vue"
+import { LoadingIndicator } from 'frappe-ui'
+import { ref, onBeforeUnmount, watch } from 'vue'
 
 const props = defineProps({
   previewEntity: Object,
@@ -42,11 +36,9 @@ const src = ref(
   `/api/method/drive.api.files.stream_file_content?entity_name=${props.previewEntity.name}`
 )
 const type = ref(
-  props.previewEntity.mime_type === "video/quicktime"
-    ? "video/mp4"
-    : props.previewEntity.mime_type
+  props.previewEntity.mime_type === 'video/quicktime' ? 'video/mp4' : props.previewEntity.mime_type
 )
-const mediaRef = ref("")
+const mediaRef = ref('')
 
 const handleMediaReady = (event) => {
   mediaRef.value = event.target
@@ -66,7 +58,7 @@ watch(
 
 onBeforeUnmount(() => {
   loading.value = true
-  src.value = ""
-  type.value = ""
+  src.value = ''
+  type.value = ''
 })
 </script>

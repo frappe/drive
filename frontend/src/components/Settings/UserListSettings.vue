@@ -1,7 +1,7 @@
 <template>
   <div class="flex items-center mb-4">
     <h1 class="font-semibold text-ink-gray-9">
-      {{ __("Teams") }}
+      {{ __('Teams') }}
     </h1>
     <Button
       variant="solid"
@@ -11,29 +11,15 @@
       @click="showAddTeam = true"
     />
   </div>
-  <Alert
-    v-if="invite"
-    type="info"
-    :icon="LucideMail"
-    class="mb-4"
-  >
+  <Alert v-if="invite" type="info" :icon="LucideMail" class="mb-4">
     <template #actions>
       <Button
         :variant="invite.status === 'Pending' ? 'ghost' : 'outline'"
         class="my-auto"
-        @click="
-          rejectInvite.submit({ key: invite.name }),
-            getInvites.data.splice(index, 1)
-        "
+        @click="rejectInvite.submit({ key: invite.name }), getInvites.data.splice(index, 1)"
       >
-        <LucideX
-          v-if="invite.status === 'Pending'"
-          class="size-4"
-        />
-        <LucideTrash
-          v-else
-          class="size-4"
-        />
+        <LucideX v-if="invite.status === 'Pending'" class="size-4" />
+        <LucideTrash v-else class="size-4" />
       </Button>
 
       <Button
@@ -63,10 +49,7 @@
       </div>
     </div>
   </Alert>
-  <div
-    v-if="Object.values(getTeams.data).length"
-    class="flex gap-2 mb-2"
-  >
+  <div v-if="Object.values(getTeams.data).length" class="flex gap-2 mb-2">
     <TeamSelector v-model="team" />
     <Dropdown
       v-if="team"
@@ -107,58 +90,29 @@
       @click="showInvite = true"
     />
   </div>
-  <div
-    v-else
-    class="text-ink-gray-8 text-center text-p-sm py-4"
-  >
+  <div v-else class="text-ink-gray-8 text-center text-p-sm py-4">
     No teams yet. Create one to get started.
   </div>
-  <Tabs
-    v-if="team"
-    v-model="tabIndex"
-    :tabs
-  >
+  <Tabs v-if="team" v-model="tabIndex" :tabs>
     <template #tab-panel="{ tab }">
       <template v-if="tab.label === 'Members'">
-        <div
-          class="flex flex-col overflow-y-auto divide-y divide-outline-gray-modals"
-        >
+        <div class="flex flex-col overflow-y-auto divide-y divide-outline-gray-modals">
           <div
             v-for="user in teamUsers?.data"
             :key="user.user_name"
             class="flex items-center justify-start pr-4 gap-x-3 py-2"
           >
-            <Avatar
-              :image="user.user_image"
-              :label="user.full_name"
-              size="lg"
-            />
+            <Avatar :image="user.user_image" :label="user.full_name" size="lg" />
             <div class="flex flex-col">
-              <span class="text-base text-ink-gray-8">{{
-                user.full_name
-              }}</span>
+              <span class="text-base text-ink-gray-8">{{ user.full_name }}</span>
               <span class="text-xs text-ink-gray-6">{{ user.email }}</span>
             </div>
-            <div
-              v-if="isAdmin.data && user.name != $store.state.user.id"
-              class="ml-auto"
-            >
-              <Dropdown
-                v-slot="{ open }"
-                :options="accessOptions"
-                placement="right"
-              >
-                <Button
-                  variant="ghost"
-                  @click="selectedUser = user"
-                >
+            <div v-if="isAdmin.data && user.name != $store.state.user.id" class="ml-auto">
+              <Dropdown v-slot="{ open }" :options="accessOptions" placement="right">
+                <Button variant="ghost" @click="selectedUser = user">
                   {{
                     __(
-                      user.access_level == 2
-                        ? "Manager"
-                        : user.access_level == 1
-                        ? "User"
-                        : "Guest"
+                      user.access_level == 2 ? 'Manager' : user.access_level == 1 ? 'User' : 'Guest'
                     )
                   }}
                   <template #suffix>
@@ -172,22 +126,11 @@
                 </Button>
               </Dropdown>
             </div>
-            <span
-              v-else
-              class="ml-auto text-base text-ink-gray-6"
-            >
+            <span v-else class="ml-auto text-base text-ink-gray-6">
               {{
-                __(
-                  user.access_level == 2
-                    ? "Manager"
-                    : user.access_level == 1
-                    ? "User"
-                    : "Guest"
-                )
+                __(user.access_level == 2 ? 'Manager' : user.access_level == 1 ? 'User' : 'Guest')
               }}
-              <template v-if="user.name === $store.state.user.id"
-                >(you)</template
-              >
+              <template v-if="user.name === $store.state.user.id">(you)</template>
             </span>
           </div>
         </div>
@@ -199,20 +142,12 @@
         >
           No invites found.
         </div>
-        <div
-          v-for="(invite, index) in invites?.data"
-          :key="invite.name"
-        >
-          <div
-            v-if="index > 0"
-            class="w-[95%] mx-auto h-px border-t border-outline-gray-modals"
-          />
+        <div v-for="(invite, index) in invites?.data" :key="invite.name">
+          <div v-if="index > 0" class="w-[95%] mx-auto h-px border-t border-outline-gray-modals" />
           <div class="flex items-center justify-start py-2 pl-2 pr-4 gap-x-3">
             <div class="flex justify-between w-full">
               <div class="flex flex-col gap-0.5">
-                <span class="text-base my-auto text-ink-gray-8">{{
-                  invite.email
-                }}</span>
+                <span class="text-base my-auto text-ink-gray-8">{{ invite.email }}</span>
                 <span class="text-xs text-ink-gray-5"
                   >Invited by
                   <UserTooltip :email="invite.owner" />
@@ -237,23 +172,14 @@
                 </Tooltip>
                 <div class="flex gap-2">
                   <Button
-                    :variant="
-                      invite.status === 'Proposed' ? 'ghost' : 'outline'
-                    "
+                    :variant="invite.status === 'Proposed' ? 'ghost' : 'outline'"
                     class="my-auto"
                     @click="
-                      rejectInvite.submit({ key: invite.name }),
-                        invites.data.splice(index, 1)
+                      rejectInvite.submit({ key: invite.name }), invites.data.splice(index, 1)
                     "
                   >
-                    <LucideX
-                      v-if="invite.status === 'Proposed'"
-                      class="size-4"
-                    />
-                    <LucideTrash
-                      v-else
-                      class="size-4"
-                    />
+                    <LucideX v-if="invite.status === 'Proposed'" class="size-4" />
+                    <LucideTrash v-else class="size-4" />
                   </Button>
 
                   <Button
@@ -295,11 +221,7 @@
             class="shadow-sm"
           >
             <template #suffix>
-              <LucideX
-                class="h-4"
-                stroke-width="1.5"
-                @click.stop="() => invited.splice(idx, 1)"
-              />
+              <LucideX class="h-4" stroke-width="1.5" @click.stop="() => invited.splice(idx, 1)" />
             </template>
           </Button>
           <div class="min-w-[10rem] flex-1">
@@ -316,11 +238,7 @@
           </div>
         </div>
       </div>
-      <Checkbox
-        v-model="inviteAsGuest"
-        class="mt-4 mb-2"
-        label="Invite as guest"
-      />
+      <Checkbox v-model="inviteAsGuest" class="mt-4 mb-2" label="Invite as guest" />
       <Button
         class="w-full"
         variant="solid"
@@ -352,8 +270,7 @@
         {
           variant: 'solid',
           theme: 'red',
-          label:
-            'I confirm that I want to remove ' + selectedUser.full_name + '.',
+          label: 'I confirm that I want to remove ' + selectedUser.full_name + '.',
           loading: removeUser.loading,
           onClick: () => {
             removeUser.submit({
@@ -367,17 +284,11 @@
       ],
     }"
   />
-  <Dialog
-    v-model="showAddTeam"
-    :options="{ title: __('New Team'), size: 'sm' }"
-  >
+  <Dialog v-model="showAddTeam" :options="{ title: __('New Team'), size: 'sm' }">
     <template #body-content>
       <div class="flex flex-col gap-4">
         <div>
-          <FormLabel
-            label="Team Name:"
-            required
-          />
+          <FormLabel label="Team Name:" required />
           <div class="flex gap-1.5 mt-1.5">
             <EmojiPicker
               v-model="selectedIcon"
@@ -418,10 +329,7 @@
           />
         </template>
       </div>
-      <div
-        v-if="createTeam.error"
-        class="text-sm text-ink-red-3 my-3"
-      >
+      <div v-if="createTeam.error" class="text-sm text-ink-red-3 my-3">
         {{ createTeam.error.messages[0] }}
       </div>
     </template>
@@ -453,7 +361,7 @@
             )
           "
         >
-          {{ __("Add") }}
+          {{ __('Add') }}
         </Button>
       </div>
     </template>
@@ -465,10 +373,7 @@
     <template #body-content>
       <div class="flex flex-col gap-4">
         <div>
-          <FormLabel
-            label="Team Name:"
-            required
-          />
+          <FormLabel label="Team Name:" required />
           <div class="flex gap-1 mt-1.5">
             <EmojiPicker
               :emojis="
@@ -482,28 +387,12 @@
                 }))
               "
             />
-            <FormControl
-              v-model="teamName"
-              v-focus
-              class="grow"
-              required
-              type="text"
-            />
+            <FormControl v-model="teamName" v-focus class="grow" required type="text" />
           </div>
         </div>
         <template v-if="getDiskSettings.data.enabled">
-          <FormControl
-            v-model="s3Bucket"
-            :disabled="true"
-            type="text"
-            label="S3 Bucket"
-          />
-          <FormControl
-            v-model="prefix"
-            :disabled="true"
-            type="text"
-            label="Folder"
-          />
+          <FormControl v-model="s3Bucket" :disabled="true" type="text" label="S3 Bucket" />
+          <FormControl v-model="prefix" :disabled="true" type="text" label="Folder" />
         </template>
       </div>
     </template>
@@ -530,22 +419,17 @@
           )
         "
       >
-        {{ __("Edit") }}
+        {{ __('Edit') }}
       </Button>
     </template>
   </Dialog>
 </template>
 
 <script setup>
-import { h, computed } from "vue"
-import { getTeams } from "@/resources/files"
-import icons from "@/utils/icons"
-import {
-  getInvites,
-  rejectInvite,
-  acceptInvite,
-  createTeam,
-} from "@/resources/permissions"
+import { h, computed } from 'vue'
+import { getTeams } from '@/resources/files'
+import icons from '@/utils/icons'
+import { getInvites, rejectInvite, acceptInvite, createTeam } from '@/resources/permissions'
 import {
   Avatar,
   Dropdown,
@@ -557,42 +441,40 @@ import {
   FormControl,
   FormLabel,
   Checkbox,
-} from "frappe-ui"
-import SyncBreakdown from "@/components/SyncBreakdown.vue"
-import { createDialog } from "@/utils/dialogs"
-import { teamUsers, getDiskSettings } from "@/resources/permissions"
-import { ref, watch } from "vue"
-import { toast } from "@/utils/toasts"
-import { useRoute } from "vue-router"
-import LucideMail from "~icons/lucide/mail"
-import LucidePlus from "~icons/lucide/plus"
-import LucideUsers from "~icons/lucide/users"
-import LucideMoreVertical from "~icons/lucide/more-vertical"
-import LucideLogOut from "~icons/lucide/log-out"
-import LucidePencil from "~icons/lucide/pencil"
-import router from "@/router"
-import Alert from "@/components/Alert.vue"
-import EmojiPicker from "@/components/EmojiPicker.vue"
-import UserTooltip from "@/components/UserTooltip.vue"
-import { dynamicList } from "@/utils/files"
-import TeamSelector from "@/components/TeamSelector.vue"
-import { LucideRefreshCcw } from "lucide-vue-next"
+} from 'frappe-ui'
+import SyncBreakdown from '@/components/SyncBreakdown.vue'
+import { createDialog } from '@/utils/dialogs'
+import { teamUsers, getDiskSettings } from '@/resources/permissions'
+import { ref, watch } from 'vue'
+import { toast } from '@/utils/toasts'
+import { useRoute } from 'vue-router'
+import LucideMail from '~icons/lucide/mail'
+import LucidePlus from '~icons/lucide/plus'
+import LucideUsers from '~icons/lucide/users'
+import LucideMoreVertical from '~icons/lucide/more-vertical'
+import LucideLogOut from '~icons/lucide/log-out'
+import LucidePencil from '~icons/lucide/pencil'
+import router from '@/router'
+import Alert from '@/components/Alert.vue'
+import EmojiPicker from '@/components/EmojiPicker.vue'
+import UserTooltip from '@/components/UserTooltip.vue'
+import { dynamicList } from '@/utils/files'
+import TeamSelector from '@/components/TeamSelector.vue'
+import { LucideRefreshCcw } from 'lucide-vue-next'
 
 const route = useRoute()
 const tabIndex = ref(0)
 getTeams.fetch()
 getDiskSettings.fetch()
 const invites = createResource({
-  url: "drive.api.product.get_team_invites",
+  url: 'drive.api.product.get_team_invites',
 })
 
 const isAdmin = createResource({
-  url: "drive.api.permissions.is_admin",
+  url: 'drive.api.permissions.is_admin',
 })
 
-const team = ref(
-  route.params.team || (getTeams.data ? Object.keys(getTeams.data)[0] : null)
-)
+const team = ref(route.params.team || (getTeams.data ? Object.keys(getTeams.data)[0] : null))
 
 const teamData = computed(() => getTeams.data?.[team.value] || {})
 watch(
@@ -607,8 +489,8 @@ watch(
   { immediate: true }
 )
 const selectedUser = ref(null)
-const invited = ref("")
-const emailInput = ref("")
+const invited = ref('')
+const emailInput = ref('')
 const inviteAsGuest = ref(false)
 const showInvite = ref(false)
 const showRemove = ref(false)
@@ -616,10 +498,10 @@ const showRemove = ref(false)
 // New team
 const showAddTeam = ref(false)
 const showEditTeam = ref(false)
-const teamName = ref("")
-const selectedIcon = ref("building")
-const s3Bucket = ref("")
-const prefix = ref("")
+const teamName = ref('')
+const selectedIcon = ref('building')
+const s3Bucket = ref('')
+const prefix = ref('')
 watch(showEditTeam, (val) => {
   if (val) {
     teamName.value = teamData.value.title
@@ -629,33 +511,30 @@ watch(showEditTeam, (val) => {
   }
 })
 const editTeam = createResource({
-  url: "drive.api.product.edit_team",
+  url: 'drive.api.product.edit_team',
 })
 const leaveTeam = createResource({
-  url: "drive.api.product.leave_team",
+  url: 'drive.api.product.leave_team',
   onSuccess: () => {
     getTeams.fetch(null, {
       onSuccess: () => {
-        team.value = Object.keys(getTeams.data).length
-          ? Object.keys(getTeams.data)[0]
-          : null
-        if (team.value)
-          router.push({ name: "Team", params: { team: team.value } })
-        else router.push({ name: "Home" })
+        team.value = Object.keys(getTeams.data).length ? Object.keys(getTeams.data)[0] : null
+        if (team.value) router.push({ name: 'Team', params: { team: team.value } })
+        else router.push({ name: 'Home' })
       },
     })
-    toast("You have left the team.")
+    toast('You have left the team.')
   },
 })
 
 const tabs = [
   {
-    label: "Members",
-    icon: h(LucideUsers, { class: "size-4" }),
+    label: 'Members',
+    icon: h(LucideUsers, { class: 'size-4' }),
   },
   {
-    label: "Invites",
-    icon: h(LucideMail, { class: "size-4" }),
+    label: 'Invites',
+    icon: h(LucideMail, { class: 'size-4' }),
   },
 ]
 
@@ -669,30 +548,28 @@ const updateAccess = (level) => {
 }
 const accessOptions = [
   {
-    label: "Manager",
+    label: 'Manager',
     onClick: () => updateAccess(2),
   },
   {
-    label: "User",
+    label: 'User',
     onClick: () => updateAccess(1),
   },
   {
-    label: "Guest",
+    label: 'Guest',
     onClick: () => updateAccess(0),
   },
   {
-    label: "Remove",
-    class: "text-ink-red-3",
+    label: 'Remove',
+    class: 'text-ink-red-3',
     component: () =>
       h(
-        "button",
+        'button',
         {
-          class: [
-            "group flex w-full items-center text-ink-red-3 rounded-md px-2 py-2 text-sm",
-          ],
+          class: ['group flex w-full items-center text-ink-red-3 rounded-md px-2 py-2 text-sm'],
           onClick: () => (showRemove.value = true),
         },
-        "Remove"
+        'Remove'
       ),
   },
 ]
@@ -708,27 +585,25 @@ function emailTest() {
 
 function extractEmails() {
   invited.value = [...invited.value, ...emailTest()]
-  emailInput.value = ""
+  emailInput.value = ''
 }
 
 const inviteUsers = createResource({
-  url: "drive.api.product.invite_users",
+  url: 'drive.api.product.invite_users',
   onSuccess: () => {
     invites.fetch()
-    toast("Invite sent!")
+    toast('Invite sent!')
   },
 })
 
 getInvites.fetch()
-const invite = computed(() =>
-  getInvites.data?.length ? getInvites.data[0] : null
-)
+const invite = computed(() => (getInvites.data?.length ? getInvites.data[0] : null))
 
 const removeUser = createResource({
-  url: "drive.api.product.remove_user",
+  url: 'drive.api.product.remove_user',
 })
 
 const updateUserAccess = createResource({
-  url: "drive.api.product.set_user_access",
+  url: 'drive.api.product.set_user_access',
 })
 </script>

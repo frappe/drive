@@ -8,7 +8,7 @@ def execute():
         doc = frappe.new_doc("Drive Entity Activity Log")
         doc.entity = i.name
         doc.action_type = "create"
-        doc.message = f"Created {i.title}"
+        doc.message = f"Created {i.file_name}"
         doc.save()
         frappe.db.set_value("Drive Entity Activity Log", doc.name, "owner", i.owner)
         frappe.db.set_value("Drive Entity Activity Log", doc.name, "creation", i.creation)

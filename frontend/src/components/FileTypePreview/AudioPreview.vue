@@ -1,8 +1,5 @@
 <template>
-  <LoadingIndicator
-    v-if="loading"
-    class="w-10"
-  />
+  <LoadingIndicator v-if="loading" class="w-10" />
   <audio
     v-else
     :key="src"
@@ -14,16 +11,13 @@
     controlslist="nodownload noremoteplayback noplaybackrate"
     @loadedmetadata="handleMediaReady"
   >
-    <source
-      :src="src"
-      :type="type"
-    >
+    <source :src="src" :type="type" />
   </audio>
 </template>
 
 <script setup>
-import { LoadingIndicator } from "frappe-ui"
-import { ref, onBeforeUnmount, watch, onMounted } from "vue"
+import { LoadingIndicator } from 'frappe-ui'
+import { ref, onBeforeUnmount, watch, onMounted } from 'vue'
 
 const props = defineProps({
   previewEntity: {
@@ -35,8 +29,8 @@ const loading = ref(true)
 const src = ref(
   `/api/method/drive.api.files.get_file_content?entity_name=${props.previewEntity.name}`
 )
-const type = ref("audio/mp3")
-const mediaRef = ref("")
+const type = ref('audio/mp3')
+const mediaRef = ref('')
 
 const handleMediaReady = (event) => {
   mediaRef.value = event.target
@@ -60,7 +54,7 @@ onMounted(() => {
 
 onBeforeUnmount(() => {
   loading.value = true
-  src.value = ""
-  type.value = ""
+  src.value = ''
+  type.value = ''
 })
 </script>

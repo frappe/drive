@@ -2,13 +2,13 @@
   <div>
     <div class="flex items-center justify-between mb-4">
       <h1 class="font-semibold text-ink-gray-9">
-        {{ __("Templates") }}
+        {{ __('Templates') }}
       </h1>
       <Button @click="showAddDialog = true">
         <template #prefix>
           <LucidePlus class="size-4" />
         </template>
-        {{ __("Add Template") }}
+        {{ __('Add Template') }}
       </Button>
     </div>
 
@@ -88,10 +88,7 @@
             :required="true"
           />
           <div class="space-y-1.5">
-            <FormLabel
-              :label="__('Content')"
-              :required="true"
-            />
+            <FormLabel :label="__('Content')" :required="true" />
             <TextEditor
               ref="textEditor"
               :content="formData.content"
@@ -124,19 +121,12 @@
 </template>
 
 <script setup>
-import { ref, reactive } from "vue"
-import {
-  Button,
-  Dialog,
-  FormLabel,
-  FormControl,
-  TextEditor,
-  createListResource,
-} from "frappe-ui"
-import LucideFileText from "~icons/lucide/file-text"
-import LucidePlus from "~icons/lucide/plus"
-import LucidePencil from "~icons/lucide/pencil"
-import LucideTrash2 from "~icons/lucide/trash-2"
+import { ref, reactive } from 'vue'
+import { Button, Dialog, FormLabel, FormControl, TextEditor, createListResource } from 'frappe-ui'
+import LucideFileText from '~icons/lucide/file-text'
+import LucidePlus from '~icons/lucide/plus'
+import LucidePencil from '~icons/lucide/pencil'
+import LucideTrash2 from '~icons/lucide/trash-2'
 
 const hoveredRow = ref(null)
 const showAddDialog = ref(false)
@@ -147,36 +137,36 @@ const textEditor = ref(null)
 const isSaving = ref(false)
 
 const formData = reactive({
-  title: "",
-  content: "",
+  title: '',
+  content: '',
 })
 
 // Use the modern useList resource
 const templates = createListResource({
-  doctype: "Writer Template",
-  fields: ["name", "title", "content", "creation", "modified"],
-  orderBy: "modified desc",
+  doctype: 'Writer Template',
+  fields: ['name', 'title', 'content', 'creation', 'modified'],
+  orderBy: 'modified desc',
   auto: true,
 })
 
 function editTemplate(template) {
   editingTemplate.value = template
   formData.title = template.title
-  formData.content = template.content || ""
+  formData.content = template.content || ''
   showAddDialog.value = true
 }
 
 function closeDialog() {
   showAddDialog.value = false
   editingTemplate.value = null
-  formData.title = ""
-  formData.content = ""
+  formData.title = ''
+  formData.content = ''
 }
 
 async function saveTemplate() {
   if (!formData.title) return
 
-  const htmlContent = textEditor.value?.editor?.getHTML() || ""
+  const htmlContent = textEditor.value?.editor?.getHTML() || ''
   isSaving.value = true
 
   try {
@@ -198,7 +188,7 @@ async function saveTemplate() {
     templates.reload()
     closeDialog()
   } catch (error) {
-    console.error("Error saving template:", error)
+    console.error('Error saving template:', error)
   } finally {
     isSaving.value = false
     editingTemplate.value = null
@@ -219,7 +209,7 @@ async function deleteTemplate() {
     showDeleteDialog.value = false
     templateToDelete.value = null
   } catch (error) {
-    console.error("Error deleting template:", error)
+    console.error('Error deleting template:', error)
   }
 }
 </script>

@@ -75,7 +75,7 @@ def execute():
             frappe.db.set_value(
                 "Drive File",
                 name,
-                "parent_entity",
+                "folder",
                 home_folder,
                 update_modified=False,
             )
@@ -83,7 +83,7 @@ def execute():
             frappe.db.set_value(
                 "Drive File",
                 name,
-                "parent_entity",
+                "folder",
                 translate[k["parent_drive_entity"]],
                 update_modified=False,
             )
@@ -111,14 +111,13 @@ def execute():
                     "share": s["share"],
                     "write": s["share"],
                     "comment": 1,
-                    "valid_until": s["valid_until"],
                 }
             ).insert()
 
     RENAME_MAP = {
         "Drive Notification": "notif_doctype_name",
         "Drive Favourite": "entity",
-        "Drive Document Version": "parent_entity",
+        "Drive Document Version": "folder",
         "Drive Entity Activity Log": "entity",
         "Drive Entity Log": "entity_name",
     }

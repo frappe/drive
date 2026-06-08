@@ -1,33 +1,21 @@
 <template>
   <div class="flex items-center mb-6">
     <h1 class="font-semibold text-ink-gray-9">
-      {{ __("Tags") }}
+      {{ __('Tags') }}
     </h1>
-    <Button
-      class="ml-auto mr-4"
-      variant="solid"
-      icon-left="plus"
-      @click="showNewTagDialog = true"
-    >
-      {{ __("New") }}
+    <Button class="ml-auto mr-4" variant="solid" icon-left="plus" @click="showNewTagDialog = true">
+      {{ __('New') }}
     </Button>
   </div>
   <div class="flex flex-col items-stretch justify-start overflow-y-auto">
-    <div
-      v-for="(tag, i) in $resources.getTagsWithOwner.data"
-      :key="tag.name"
-    >
+    <div v-for="(tag, i) in $resources.getTagsWithOwner.data" :key="tag.name">
       <div
         class="flex items-center justify-between text-sm py-1.5 gap-x-1.5 w-full"
         :class="i > 0 ? 'border-t' : ''"
       >
         <div class="flex gap-2 items-center">
-          <LucideCircle
-            class="size-2"
-            :fill="tag.color"
-            :stroke="tag.color"
-          />
-          <span class="text-sm text-ink-gray-8">{{ tag.title }}</span>
+          <LucideCircle class="size-2" :fill="tag.color" :stroke="tag.color" />
+          <span class="text-sm text-ink-gray-8">{{ tag.file_name }}</span>
         </div>
         <Dropdown
           class="ml-auto"
@@ -99,12 +87,12 @@
   />
 </template>
 <script>
-import { Dropdown, Button, Dialog } from "frappe-ui"
-import NewTagDialog from "./NewTagDialog.vue"
-import EditTagDialog from "./EditTagDialog.vue"
+import { Dropdown, Button, Dialog } from 'frappe-ui'
+import NewTagDialog from './NewTagDialog.vue'
+import EditTagDialog from './EditTagDialog.vue'
 
 export default {
-  name: "TagSettings",
+  name: 'TagSettings',
   components: {
     Dropdown,
     Button,
@@ -128,7 +116,7 @@ export default {
   resources: {
     deleteTag() {
       return {
-        url: "drive.api.tags.delete_tag",
+        url: 'drive.api.tags.delete_tag',
         params: {
           tag: this.selectedTag?.name,
         },
@@ -143,7 +131,7 @@ export default {
     },
     getTagsWithOwner() {
       return {
-        url: "drive.api.tags.get_tags_with_owner",
+        url: 'drive.api.tags.get_tags_with_owner',
         onError(error) {
           console.log(error)
         },

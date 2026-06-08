@@ -1,5 +1,5 @@
 <script setup>
-import { reactive, onMounted, ref, toRaw, watchEffect } from "vue"
+import { reactive, onMounted, ref, toRaw, watchEffect } from 'vue'
 
 const slots = defineSlots()
 const initialValues = reactive({})
@@ -8,10 +8,10 @@ const getKey = (input) => input.props.label || input.props.id
 
 const addToInitial = (inputs) => {
   for (const input of inputs) {
-    if (input?.props && "modelValue" in input.props && getKey(input)) {
+    if (input?.props && 'modelValue' in input.props && getKey(input)) {
       initialValues[getKey(input)] = toRaw(input.props.modelValue)
     }
-    if (input?.type === "div") {
+    if (input?.type === 'div') {
       addToInitial(input.children)
     }
   }
@@ -21,7 +21,7 @@ const checkChanges = (inputs) => {
   let dirty = false
   error.value = null
   for (const input of inputs) {
-    if (input?.props && "modelValue" in input.props) {
+    if (input?.props && 'modelValue' in input.props) {
       const initial = initialValues[getKey(input)]
       if (toRaw(input.props.modelValue) !== initial) dirty = true
       if (!error.value) {
@@ -29,7 +29,7 @@ const checkChanges = (inputs) => {
         if (message !== true) error.value = message
       }
     }
-    if (!dirty && input?.type === "div") {
+    if (!dirty && input?.type === 'div') {
       dirty = checkChanges(input.children)
     }
   }
@@ -49,9 +49,5 @@ const setDirty = (val) => (dirty.value = val)
 </script>
 
 <template>
-  <slot
-    :dirty
-    :set-dirty
-    :error
-  />
+  <slot :dirty :set-dirty :error />
 </template>

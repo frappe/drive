@@ -44,7 +44,7 @@
       "fieldname": "entity",
       "fieldtype": "Link",
       "label": "Entity",
-      "options": "Drive File"
+      "options": "File"
     },
     {
       "description": "Can contain whatever meta value needed for the access log. Ex: Used to store access level 1,2,3 etc on a DriveDocShare",

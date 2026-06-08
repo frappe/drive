@@ -2,7 +2,7 @@
   <Dialog
     v-model="open"
     :options="{
-      title: 'Create a Folder',
+      title: 'Create a folder',
       size: 'xs',
       actions: [
         {
@@ -28,10 +28,7 @@
           <LucideFolderClosed class="size-4" />
         </template>
       </FormControl>
-      <div
-        v-if="createFolder.error"
-        class="pt-4 text-base font-sm text-ink-red-3"
-      >
+      <div v-if="createFolder.error" class="pt-4 text-base font-sm text-ink-red-3">
         {{ createFolder.error.messages[0] }}
       </div>
     </template>
@@ -39,38 +36,38 @@
 </template>
 
 <script setup>
-import { ref } from "vue"
-import { Dialog, createResource } from "frappe-ui"
-import { useRoute } from "vue-router"
+import { ref } from 'vue'
+import { Dialog, createResource } from 'frappe-ui'
+import { useRoute } from 'vue-router'
 
 const route = useRoute()
 const props = defineProps({
   parent: String,
 })
-const emit = defineEmits(["success"])
+const emit = defineEmits(['success'])
 
 const dialogType = defineModel()
 const open = ref(true)
 
-const folderName = ref("")
+const folderName = ref('')
 
 const createFolder = createResource({
-  url: "drive.api.files.create_folder",
-  makeParams(title) {
+  url: 'drive.api.files.create_folder',
+  makeParams(file_name) {
     return {
-      title,
+      file_name,
       team: route.params.team,
       parent: props.parent,
     }
   },
   validate(params) {
-    if (!params?.title) {
-      return "Folder name is required"
+    if (!params?.file_name) {
+      return 'Folder name is required'
     }
   },
   onSuccess(data) {
     open.value = false
-    emit("success", data)
+    emit('success', data)
   },
 })
 const submit = () => createFolder.submit(folderName.value.trim())

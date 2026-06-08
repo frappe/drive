@@ -1,8 +1,5 @@
 <template>
-  <template
-    v-for="row in rows"
-    :key="row.name"
-  >
+  <template v-for="row in rows" :key="row.name">
     <ListRow
       :row="row"
       class="group"
@@ -15,7 +12,7 @@
       ]"
       :draggable="true"
       @contextmenu="(e) => !selections.size && contextMenu(e, row)"
-      @[action]="!isModKey($event) && !selections.size && open(row)"
+      @click="!isModKey($event) && !selections.size && open(row)"
       @dragstart="
         (e) => {
           draggedItem = row.name
@@ -25,7 +22,7 @@
       @dragend="draggedItem = null"
       @dragover="
         (e) => {
-          if (row.is_group) {
+          if (row.is_folder) {
             e.preventDefault()
             dragOverItem = row.name
           }
@@ -53,31 +50,27 @@
   </template>
 </template>
 <script setup>
-import { ListRow } from "frappe-ui"
-import CustomListRowItem from "./CustomListRowItem.vue"
-import { openEntity, isModKey } from "@/utils/files"
-import { settings } from "@/resources/permissions"
-import { useRoute } from "vue-router"
-import { useStore } from "vuex"
-import { computed, ref } from "vue"
+import { ListRow } from 'frappe-ui'
+import CustomListRowItem from './CustomListRowItem.vue'
+import { openEntity, isModKey } from '@/utils/files'
+import { useRoute } from 'vue-router'
+import { useStore } from 'vuex'
+import { computed, ref } from 'vue'
 
 defineProps({
   rows: Array,
   contextMenu: Function,
   selections: Set,
 })
-defineEmits(["dropped"])
+defineEmits(['dropped'])
 
 const draggedItem = ref()
 const dragOverItem = ref()
 
 const route = useRoute()
 const store = useStore()
-const action = computed(() =>
-  settings.data?.single_click === 0 ? "dblclick" : "click"
-)
 
 // Used as right-click doesn't trigger active in frappe-ui
 const selectedName = computed(() => store.state.activeEntity?.name)
-const open = (row) => route.name !== "Trash" && openEntity(row)
+const open = (row) => route.name !== 'Trash' && openEntity(row)
 </script>

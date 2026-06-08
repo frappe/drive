@@ -1,21 +1,18 @@
 <template>
-  <LoadingIndicator
-    v-if="loading"
-    class="w-10"
-  />
+  <LoadingIndicator v-if="loading" class="w-10" />
   <img
     v-else
     v-show="!loading"
     draggable="false"
     class="self-center justify-center max-h-[70vh] max-w-full rounded-lg"
     :src="previewURL"
-  >
+  />
 </template>
 
 <script setup>
-import { LoadingIndicator } from "frappe-ui"
-import { onBeforeUnmount, onMounted, ref, watch, inject } from "vue"
-import { useObjectUrl } from "@vueuse/core"
+import { LoadingIndicator } from 'frappe-ui'
+import { onBeforeUnmount, onMounted, ref, watch, inject } from 'vue'
+import { useObjectUrl } from '@vueuse/core'
 
 const props = defineProps({
   previewEntity: Object,
@@ -24,7 +21,7 @@ const props = defineProps({
 const loading = ref(true)
 const imgBlob = ref(null)
 const previewURL = useObjectUrl(imgBlob)
-const emitter = inject("emitter")
+const emitter = inject('emitter')
 
 watch(props.previewEntity, () => {
   loading.value = true
@@ -35,14 +32,14 @@ watch(props.previewEntity, () => {
 async function fetchContent() {
   loading.value = true
   const headers = {
-    Accept: "application/json",
-    "Content-Type": "application/json; charset=utf-8",
-    "X-Frappe-Site-Name": window.location.hostname,
+    Accept: 'application/json',
+    'Content-Type': 'application/json; charset=utf-8',
+    'X-Frappe-Site-Name': window.location.hostname,
   }
   const res = await fetch(
     `/api/method/drive.api.files.get_file_content?entity_name=${props.previewEntity.name}`,
     {
-      method: "GET",
+      method: 'GET',
       headers,
     }
   )
@@ -52,12 +49,12 @@ async function fetchContent() {
   }
 }
 
-emitter.on("printFile", () => {
-  const printFrame = document.createElement("iframe")
-  printFrame.style.position = "absolute"
-  printFrame.style.width = "0"
-  printFrame.style.height = "0"
-  printFrame.style.border = "none"
+emitter.on('printFile', () => {
+  const printFrame = document.createElement('iframe')
+  printFrame.style.position = 'absolute'
+  printFrame.style.width = '0'
+  printFrame.style.height = '0'
+  printFrame.style.border = 'none'
   document.body.appendChild(printFrame)
   printFrame.contentWindow.document.open()
   printFrame.contentWindow.document.write(`
@@ -97,7 +94,7 @@ onMounted(() => {
 })
 
 onBeforeUnmount(() => {
-  emitter.off("printFile")
+  emitter.off('printFile')
   loading.value = true
   imgBlob.value = null
 })
@@ -107,8 +104,7 @@ onBeforeUnmount(() => {
 img {
   background-image: linear-gradient(45deg, #ccc 25%, transparent 25%),
     linear-gradient(135deg, #ccc 25%, transparent 25%),
-    linear-gradient(45deg, transparent 75%, #ccc 75%),
-    linear-gradient(135deg, white 75%, #ccc 75%);
+    linear-gradient(45deg, transparent 75%, #ccc 75%), linear-gradient(135deg, white 75%, #ccc 75%);
   background-size: 30px 30px; /* Must be a square */
   background-position: 0 0, 15px 0, 15px -15px, 0px 15px; /* Must be half of one side of the square */
 }

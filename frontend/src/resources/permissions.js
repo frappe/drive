@@ -1,49 +1,49 @@
-import { createResource } from "frappe-ui"
-import { toast } from "@/utils/toasts"
-import store from "@/store"
+import { createResource } from 'frappe-ui'
+import { toast } from '@/utils/toasts'
+import store from '@/store'
 
 export const usersWithAccess = createResource({
-  url: "drive.api.permissions.get_shared_with_list",
+  url: 'drive.api.permissions.get_shared_with_list',
   makeParams: (params) => params,
 })
 
 export const updateAccess = createResource({
-  url: "drive.api.files.share",
-  makeParams: (params) => ({ ...params, method: params.method || "share" }),
-  onError: (error) => toast({ type: "error", title: error.messages[0] }),
+  url: 'drive.api.files.share',
+  makeParams: (params) => ({ ...params, method: params.method || 'share' }),
+  onError: (error) => toast({ type: 'error', title: error.messages[0] }),
 })
 
 export const notifCount = createResource({
-  url: "/api/method/drive.api.notifications.get_unread_count",
-  method: "GET",
-  cache: "notif-count",
+  url: '/api/method/drive.api.notifications.get_unread_count',
+  method: 'GET',
+  cache: 'notif-count',
 })
 
 export const settings = createResource({
-  url: "/api/method/drive.api.product.get_settings",
-  method: "GET",
-  cache: "settings",
+  url: '/api/method/drive.api.product.get_settings',
+  method: 'GET',
+  cache: 'settings',
 })
 
 export const setSettings = createResource({
-  url: "/api/method/drive.api.product.set_settings",
-  method: "POST",
+  url: '/api/method/drive.api.product.set_settings',
+  method: 'POST',
   onSuccess: () => {
     settings.fetch()
   },
 })
 
 export const generalAccess = createResource({
-  url: "drive.api.permissions.get_user_access",
+  url: 'drive.api.permissions.get_user_access',
 })
 
 export const userList = createResource({
-  url: "drive.api.permissions.get_shared_with_list",
+  url: 'drive.api.permissions.get_shared_with_list',
 })
 
 export const teamUsers = createResource({
-  url: "drive.api.product.get_team_users",
-  method: "GET",
+  url: 'drive.api.product.get_team_users',
+  method: 'GET',
   transform: (data) => {
     data.map((item) => {
       item.value = item.email
@@ -53,36 +53,36 @@ export const teamUsers = createResource({
 })
 
 export const getInvites = createResource({
-  url: "drive.api.product.get_my_invites",
+  url: 'drive.api.product.get_my_invites',
 })
 
 export const acceptInvite = createResource({
-  url: "drive.api.product.accept_invite",
+  url: 'drive.api.product.accept_invite',
 })
 
 export const rejectInvite = createResource({
-  url: "drive.api.product.reject_invite",
-  onSuccess: () => toast("Removed invite"),
+  url: 'drive.api.product.reject_invite',
+  onSuccess: () => toast('Removed invite'),
 })
 
 export const isAdmin = createResource({
-  url: "drive.api.product.is_site_admin",
+  url: 'drive.api.product.is_site_admin',
 })
 
 export const apps = createResource({
-  url: "frappe.apps.get_apps",
-  cache: "apps",
+  url: 'frappe.apps.get_apps',
+  cache: 'apps',
   transform: (data) => {
     let apps = [
       {
-        name: "frappe",
-        logo: "/assets/frappe/images/framework.png",
-        title: "Desk",
-        route: "/app",
+        name: 'frappe',
+        logo: '/assets/frappe/images/framework.png',
+        title: 'Desk',
+        route: '/app',
       },
     ]
     data.map((app) => {
-      if (app.name === "drive") return
+      if (app.name === 'drive') return
       apps.push({
         name: app.name,
         logo: app.logo,
@@ -96,13 +96,13 @@ export const apps = createResource({
 })
 
 export const diskSettings = createResource({
-  url: "drive.api.product.disk_settings",
-  method: "GET",
-  cache: "disk-settings",
+  url: 'drive.api.product.disk_settings',
+  method: 'GET',
+  cache: 'disk-settings',
 })
 
 export const createTeam = createResource({
-  url: "drive.api.product.create_team",
+  url: 'drive.api.product.create_team',
   makeParams: (params) => ({
     ...params,
     user: store.state.user.id,
@@ -110,6 +110,6 @@ export const createTeam = createResource({
 })
 
 export const getDiskSettings = createResource({
-  url: "drive.api.product.disk_settings",
-  method: "GET",
+  url: 'drive.api.product.disk_settings',
+  method: 'GET',
 })

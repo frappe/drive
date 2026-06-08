@@ -28,9 +28,11 @@ def get_context():
         context.description = "Open this online."
         # Ideally add thumbnail, but that might break if there's no thumbnail
         try:
-            [title, owner, is_group] = frappe.get_cached_value("Drive File", parts[1], ["title", "owner", "is_group"])
-            context.title = "Folder - " + title if is_group else title
-            context.description = "By " + frappe.get_cached_value("User", owner, "full_name")
+            [file_name, owner, is_folder] = frappe.get_cached_value(
+                "File", parts[1], ["file_name", "owner", "is_folder"]
+            )
+            context.title = "Folder - " + file_name if is_folder else file_name
+            context.description = "Owned by " + frappe.get_cached_value("User", owner, "full_name")
         except:
             pass
 

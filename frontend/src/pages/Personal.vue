@@ -1,26 +1,23 @@
 <template>
-  <GenericPage
-    :get-entities="getPersonal"
-    :empty="{
-      icon: LucideHome,
-      title: 'No files yet',
-      description: 'Upload to get started!',
-    }"
-    :verify="{
-      data: {
-        write: 1,
-        upload: 1,
-      },
-    }"
-  />
+  <GenericPage :get-entities="getPersonal" :empty="{
+    icon: LucideHome,
+    title: 'No files yet',
+    description: 'Upload to get started!',
+  }" :verify="!store.state.shareView && {
+          data: {
+            write: 1,
+            upload: 1,
+          },
+        }
+        " />
 </template>
 
 <script setup>
-import GenericPage from "@/components/GenericPage.vue"
-import { getPersonal } from "@/resources/files"
-import { useStore } from "vuex"
-import LucideHome from "~icons/lucide/home"
+import GenericPage from '@/components/GenericPage.vue'
+import { getPersonal } from '@/resources/files'
+import { useStore } from 'vuex'
+import LucideHome from '~icons/lucide/home'
 
 const store = useStore()
-store.commit("setCurrentFolder", { name: "", team: "" })
+store.commit('setCurrentFolder', { name: '', team: '' })
 </script>

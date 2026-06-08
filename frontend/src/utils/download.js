@@ -4,10 +4,10 @@
 
 export function entitiesDownload(entities, transfer = false) {
   // Single file → stream directly (supports transfer links).
-  if (entities.length === 1 && !entities[0].is_group) {
+  if (entities.length === 1 && !entities[0].is_folder) {
     window.location.href = `/api/method/drive.api.files.get_file_content?entity_name=${
       entities[0].name
-    }&trigger_download=1${transfer ? "&transfer=1" : ""}`
+    }&trigger_download=1${transfer ? '&transfer=1' : ''}`
     return
   }
 

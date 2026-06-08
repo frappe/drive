@@ -30,10 +30,7 @@
         </template>
       </FormControl>
 
-      <div
-        v-if="createPresentation.error"
-        class="pt-4 text-base font-sm text-ink-red-3"
-      >
+      <div v-if="createPresentation.error" class="pt-4 text-base font-sm text-ink-red-3">
         {{ createFolder.error.messages[0] }}
       </div>
     </template>
@@ -41,25 +38,24 @@
 </template>
 
 <script setup>
-import { ref } from "vue"
-import { Dialog } from "frappe-ui"
-import { createPresentation } from "@/resources/files"
-import { useRoute } from "vue-router"
+import { ref } from 'vue'
+import { Dialog } from 'frappe-ui'
+import { createPresentation } from '@/resources/files'
+import { useRoute } from 'vue-router'
 
 const props = defineProps({
   parent: String,
 })
 const route = useRoute()
-const emit = defineEmits(["success"])
+const emit = defineEmits(['success'])
 
 const dialogType = defineModel()
 const open = ref(true)
 
-const presentationName = ref("")
+const presentationName = ref('')
 const submit = async () => {
   if (!presentationName.value) return
-  const data = 
-  emit("success", data)
-  window.location.replace("/slides/presentation/" + data.path)
+  const data = emit('success', data)
+  window.location.replace('/slides/presentation/' + data.path)
 }
 </script>

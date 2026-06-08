@@ -7,47 +7,19 @@
     class="bg-surface-white border-b px-5 py-2.5 h-12 flex justify-between"
   >
     <slot name="breadcrumbs">
-      <Breadcrumbs
-        :items="store.state.breadcrumbs"
-        class="select-none truncate max-w-[80%]"
-      >
+      <Breadcrumbs :items="store.state.breadcrumbs" class="select-none truncate max-w-[80%]">
         <template #prefix="{ item, index }">
-          <LoadingIndicator
-            v-if="item.loading"
-            width="20"
-            scale="70"
-          />
-          <div
-            v-if="index == 0"
-            class="mr-1.5"
-          >
-            <component
-              :is="COMPONENT_MAP[item.name]"
-              class="size-4 text-ink-gray-6"
-            />
-          </div>
+          <LoadingIndicator v-if="item.loading" width="20" scale="70" />
         </template>
       </Breadcrumbs>
     </slot>
 
     <div class="flex gap-2">
-      <div
-        id="navbar-content"
-        class="flex items-center"
-      >
+      <div id="navbar-content" class="flex items-center">
         <div class="icon mr-2">
-          <LucideGlobe2
-            v-if="rootEntity?.share_count === -2"
-            class="size-4"
-          />
-          <LucideBuilding2
-            v-else-if="rootEntity?.share_count === -1"
-            class="size-4"
-          />
-          <LucideUsers
-            v-else-if="rootEntity?.share_count > 0"
-            class="size-4"
-          />
+          <LucideGlobe2 v-if="rootEntity?.share_count === -2" class="size-4" />
+          <LucideBuilding2 v-else-if="rootEntity?.share_count === -1" class="size-4" />
+          <LucideUsers v-else-if="rootEntity?.share_count > 0" class="size-4" />
         </div>
       </div>
 
@@ -58,19 +30,12 @@
         class="my-auto stroke-amber-500 fill-amber-500"
       />
       <template v-if="!isLoggedIn && !inIframe">
-        <Button
-          variant="outline"
-          @click="$router.push({ name: 'Login' })"
-        >
-          Sign In
-        </Button>
+        <Button variant="outline" @click="$router.push({ name: 'Login' })"> Sign In </Button>
         <Button
           class="hidden md:block"
           variant="solid"
           label="Try out Drive"
-          @click="
-            open('https://frappecloud.com/dashboard/signup?product=drive')
-          "
+          @click="open('https://frappecloud.com/dashboard/signup?product=drive')"
         />
       </template>
       <Dropdown
@@ -104,9 +69,7 @@
         label="Create"
         variant="solid"
         :icon-left="h(LucidePlus, { class: 'size-4' })"
-        @click="
-          newExternal($route.name === 'Documents' ? 'Document' : 'Presentation')
-        "
+        @click="newExternal($route.name === 'Documents' ? 'Document' : 'Presentation')"
       />
       <Button
         v-if="button"
@@ -115,10 +78,7 @@
         @click="dialog = 'cta-' + $route.name.toLowerCase()"
       >
         <template #prefix>
-          <component
-            :is="button.icon"
-            class="size-4"
-          />
+          <component :is="button.icon" class="size-4" />
         </template>
         {{ button.label }}
       </Button>
@@ -130,49 +90,50 @@
   </nav>
 </template>
 <script setup>
-import { Button, Breadcrumbs, LoadingIndicator, Dropdown } from "frappe-ui"
-import { useStore } from "vuex"
-import emitter from "@/emitter"
-import { ref, computed, inject, h } from "vue"
-import { entitiesDownload } from "@/utils/download"
-import { getRecents, getTrash, toggleFav } from "@/resources/files"
-import { apps } from "@/resources/permissions"
-import { useRoute } from "vue-router"
-import { newExternal, dynamicList } from "@/utils/files"
-import { getFileLink } from "frappe-ui/drive/js/utils"
+import { Button, Breadcrumbs, LoadingIndicator, Dropdown } from 'frappe-ui'
+import { useStore } from 'vuex'
+import emitter from '@/emitter'
+import { ref, computed, inject, h } from 'vue'
+import { entitiesDownload } from '@/utils/download'
+import { getRecents, getTrash, toggleFav } from '@/resources/files'
+import { apps } from '@/resources/permissions'
+import { useRoute } from 'vue-router'
+import {
+  newExternal,
+  dynamicList,
+  isManaged,
+  isAttachmentRef,
+  isSiteFile,
+  isVirtual,
+} from '@/utils/files'
+import { getFileLink } from 'frappe-ui/drive/js/utils'
 
-import LucideClock from "~icons/lucide/clock"
-import LucideHome from "~icons/lucide/home"
-import LucideTrash from "~icons/lucide/trash"
-import LucideUsers from "~icons/lucide/users"
-import LucideBuilding2 from "~icons/lucide/building-2"
-import LucideStar from "~icons/lucide/star"
-import LucideMoreHorizontal from "~icons/lucide/more-horizontal"
-import LucideShare2 from "~icons/lucide/share-2"
-import LucideDownload from "~icons/lucide/download"
-import LucidePlus from "~icons/lucide/plus"
-import LucideLink from "~icons/lucide/link"
-import LucideArrowLeftRight from "~icons/lucide/arrow-left-right"
-import LucideSquarePen from "~icons/lucide/square-pen"
-import LucideInfo from "~icons/lucide/info"
-import LucideFileUp from "~icons/lucide/file-up"
-import LucideFolderUp from "~icons/lucide/folder-up"
-import LucideFilePlus2 from "~icons/lucide/file-plus-2"
-import LucideGalleryVerticalEnd from "~icons/lucide/gallery-vertical-end"
-import LucideFolderPlus from "~icons/lucide/folder-plus"
+import LucideClock from '~icons/lucide/clock'
+import LucideHome from '~icons/lucide/home'
+import LucideTrash from '~icons/lucide/trash'
+import LucideUsers from '~icons/lucide/users'
+import LucideBuilding2 from '~icons/lucide/building-2'
+import LucideStar from '~icons/lucide/star'
+import LucideMoreHorizontal from '~icons/lucide/more-horizontal'
+import LucideShare2 from '~icons/lucide/share-2'
+import LucideDownload from '~icons/lucide/download'
+import LucidePlus from '~icons/lucide/plus'
+import LucideLink from '~icons/lucide/link'
+import LucideArrowLeftRight from '~icons/lucide/arrow-left-right'
+import LucideCornerLeftUp from '~icons/lucide/corner-left-up'
+import LucideMonitorCog from '~icons/lucide/monitor-cog'
+import LucideSquarePen from '~icons/lucide/square-pen'
+import LucideInfo from '~icons/lucide/info'
+import LucideFileUp from '~icons/lucide/file-up'
+import LucideFolderUp from '~icons/lucide/folder-up'
+import LucideFilePlus2 from '~icons/lucide/file-plus-2'
+import LucideGalleryVerticalEnd from '~icons/lucide/gallery-vertical-end'
+import LucideFolderPlus from '~icons/lucide/folder-plus'
 
-const COMPONENT_MAP = {
-  Home: LucideHome,
-  Team: LucideBuilding2,
-  Favourites: LucideStar,
-  Shared: LucideUsers,
-  Trash: LucideTrash,
-  Recents: LucideClock,
-}
 const store = useStore()
 const route = useRoute()
 const open = (url) => {
-  window.open(url, "_blank")
+  window.open(url, '_blank')
 }
 
 const props = defineProps({
@@ -186,16 +147,14 @@ const props = defineProps({
 })
 
 const isLoggedIn = computed(() => store.getters.isLoggedIn)
-const dialog = inject("dialog", ref(""))
-const rootEntity = computed(
-  () => props.rootResource?.data?.title && props.rootResource?.data
-)
+const dialog = inject('dialog', ref(''))
+const rootEntity = computed(() => props.rootResource?.data?.file_name && props.rootResource?.data)
 
 const defaultActions = computed(() => {
-  if (!rootEntity.value?.title) return
+  if (!rootEntity.value?.file_name) return
   let actions = []
   if (props.actions) {
-    if (props.actions[0] === "extend") actions = props.actions.slice(1)
+    if (props.actions[0] === 'extend') actions = props.actions.slice(1)
     else return props.actions
   }
   return [
@@ -204,23 +163,41 @@ const defaultActions = computed(() => {
       hideLabel: true,
       items: [
         {
-          label: __("Share"),
-          icon: LucideShare2,
-          onClick: () => {
-            dialog.value = "s"
-          },
-          isEnabled: () => rootEntity.value.share,
+          label: __('Open in Desk'),
+          icon: LucideMonitorCog,
+          onClick: () => window.open('/desk/file/' + rootEntity.value.name, '_blank'),
+          isEnabled: () => isSiteFile(rootEntity.value) && store.state.user.systemUser,
         },
         {
-          label: __("Download"),
+          label: __('Go to original'),
+          icon: LucideCornerLeftUp,
+          onClick: () => {
+            window.open(
+              '/api/method/drive.api.files.redirect_to_original?file_id=' + rootEntity.value.name,
+              '_blank'
+            )
+          },
+          isEnabled: () => isAttachmentRef(rootEntity.value),
+        },
+        {
+          label: __('Download'),
           icon: LucideDownload,
-          isEnabled: () => rootEntity.value.allow_download,
+          isEnabled: () =>
+            !isVirtual(rootEntity.value) &&
+            !['Link', 'Presentation', 'Document'].includes(rootEntity.value.file_type) &&
+            rootEntity.value.allow_download,
           onClick: () => entitiesDownload([rootEntity.value]),
         },
         {
-          label: __("Copy Link"),
+          label: __('Copy Link'),
           icon: LucideLink,
           onClick: () => getFileLink(rootEntity.value),
+        },
+        {
+          label: __('Show Info'),
+          icon: LucideInfo,
+          onClick: () => (dialog.value = 'i'),
+          isEnabled: () => !store.state.activeEntity || !store.state.showInfo,
         },
       ],
     },
@@ -229,25 +206,27 @@ const defaultActions = computed(() => {
       hideLabel: true,
       items: [
         {
-          label: __("Move"),
-          icon: LucideArrowLeftRight,
-          onClick: () => (dialog.value = "m"),
-          isEnabled: () => rootEntity.value.write,
+          label: __('Share'),
+          icon: LucideShare2,
+          onClick: () => {
+            dialog.value = 's'
+          },
+          isEnabled: () => rootEntity.value.share && isManaged(rootEntity.value),
         },
         {
-          label: __("Rename"),
+          label: __('Rename'),
           icon: LucideSquarePen,
-          onClick: () => (dialog.value = "rn"),
-          isEnabled: () => rootEntity.value.write,
+          onClick: () => (dialog.value = 'rn'),
+          isEnabled: () => rootEntity.value.write && isManaged(rootEntity.value),
         },
         {
-          label: __("Show Info"),
-          icon: LucideInfo,
-          onClick: () => (dialog.value = "i"),
-          isEnabled: () => !store.state.activeEntity || !store.state.showInfo,
+          label: __('Move'),
+          icon: LucideArrowLeftRight,
+          onClick: () => (dialog.value = 'm'),
+          isEnabled: () => rootEntity.value.write && isManaged(rootEntity.value),
         },
         {
-          label: __("Favourite"),
+          label: __('Favourite'),
           icon: LucideStar,
           onClick: () => {
             rootEntity.value.is_favourite = true
@@ -258,9 +237,9 @@ const defaultActions = computed(() => {
           isEnabled: () => !rootEntity.value.is_favourite,
         },
         {
-          label: __("Unfavourite"),
+          label: __('Unfavourite'),
           icon: LucideStar,
-          color: "stroke-amber-500 fill-amber-500",
+          color: 'stroke-amber-500 fill-amber-500',
           onClick: () => {
             rootEntity.value.is_favourite = false
             toggleFav.submit({
@@ -276,11 +255,11 @@ const defaultActions = computed(() => {
       hideLabel: true,
       items: [
         {
-          label: __("Delete"),
+          label: __('Delete'),
           icon: LucideTrash,
-          onClick: () => (dialog.value = "remove"),
+          onClick: () => (dialog.value = 'remove'),
           isEnabled: () => rootEntity.value.write,
-          theme: "red",
+          theme: 'red',
         },
       ],
     },
@@ -289,75 +268,71 @@ const defaultActions = computed(() => {
     return { ...k, items: k.items.filter((l) => !l.isEnabled || l.isEnabled()) }
   })
 })
-const isPrivate = computed(() =>
-  store.state.breadcrumbs[0]?.name === "Home" ? 1 : 0
-)
+const isPrivate = computed(() => (store.state.breadcrumbs[0]?.name === 'Home' ? 1 : 0))
 
 // Functions
 
 // Constants
 const possibleButtons = [
   {
-    route: "Recents",
-    label: __("Clear"),
+    route: 'Recents',
+    label: __('Clear'),
     icon: LucideClock,
     entities: getRecents,
   },
   {
-    route: "Trash",
-    label: __("Empty"),
+    route: 'Trash',
+    label: __('Empty'),
     icon: LucideTrash,
     entities: getTrash,
-    theme: "red",
+    theme: 'red',
   },
 ]
-const button = computed(() =>
-  possibleButtons.find((k) => k.route == route.name)
-)
+const button = computed(() => possibleButtons.find((k) => k.route == route.name))
 
 const newEntityOptions = computed(() => [
   {
-    group: "Create",
+    group: 'Create',
     items: dynamicList([
       {
-        label: "Document",
+        label: 'Document',
         icon: LucideFilePlus2,
-        onClick: () => newExternal("Document"),
+        onClick: () => newExternal('Document'),
       },
       {
-        label: "Presentation",
+        label: 'Presentation',
         icon: LucideGalleryVerticalEnd,
-        onClick: () => newExternal("Presentation"),
-        cond: apps.data?.find?.((k) => k.name === "slides"),
+        onClick: () => newExternal('Presentation'),
+        cond: isPrivate.value && apps.data?.find?.((k) => k.name === 'slides'),
       },
       {
-        label: "Folder",
+        label: 'Folder',
         icon: LucideFolderPlus,
-        onClick: () => (dialog.value = "f"),
+        onClick: () => (dialog.value = 'f'),
       },
       {
-        label: "Link",
+        label: 'Link',
         icon: LucideLink,
-        onClick: () => (dialog.value = "l"),
+        onClick: () => (dialog.value = 'l'),
       },
     ]),
   },
   {
-    group: "Upload",
+    group: 'Upload',
     items: [
       {
-        label: "Upload File",
+        label: 'Upload File',
         icon: LucideFileUp,
-        onClick: () => emitter.emit("uploadFile"),
+        onClick: () => emitter.emit('uploadFile'),
       },
       {
-        label: "Upload Folder",
+        label: 'Upload Folder',
         icon: LucideFolderUp,
-        onClick: () => emitter.emit("uploadFolder"),
+        onClick: () => emitter.emit('uploadFolder'),
       },
     ],
   },
 ])
 
-const inIframe = inject("inIframe")
+const inIframe = inject('inIframe')
 </script>

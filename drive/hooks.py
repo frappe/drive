@@ -45,7 +45,7 @@ app_include_js = "ff_integration.bundle.js"
 # page_js = {"page" : "public/js/file.js"}
 
 # include js in doctype views
-# doctype_js = {"doctype" : "public/js/doctype.js"}
+doctype_js = {"doctype" : "public/js/file.js"}
 # doctype_list_js = {"doctype" : "public/js/doctype_list.js"}
 # doctype_tree_js = {"doctype" : "public/js/doctype_tree.js"}
 # doctype_calendar_js = {"doctype" : "public/js/doctype_calendar.js"}
@@ -99,26 +99,25 @@ after_install = "drive.install.after_install"
 
 permission_query_conditions = {
     "Drive Team": "drive.utils.overrides.filter_drive_team",
-    "Drive File": "drive.utils.overrides.filter_drive_file",
     "Drive Permission": "drive.utils.overrides.filter_drive_permission",
-    "Drive Document": "drive.utils.overrides.filter_drive_document",
-    "Drive Comment": "drive.utils.overrides.filter_drive_comment",
     "Drive Favourite": "drive.utils.overrides.filter_drive_favourite",
     "Drive Entity Log": "drive.utils.overrides.filter_drive_recent",
     "Drive Notification": "drive.utils.overrides.filter_drive_notif",
 }
 
 has_permission = {
-    "Drive File": "drive.api.permissions.user_has_permission",
-    "Drive Document": "drive.api.permissions.user_has_permission_doc",
+    "File": "drive.api.permissions.user_has_permission",
 }
+
+after_upload_file = "drive.overrides.file.after_upload_file"
+# write_file = 'drive.overrides.file.write_file'
 # DocType Class
 # ---------------
 # Override standard doctype classes
 
-# override_doctype_class = {
-# 	"ToDo": "custom_app.utils.overrides.CustomToDo"
-# }
+override_doctype_class = {
+	"File": "drive.overrides.file.File"
+}
 
 # Document Events
 # ---------------
@@ -135,14 +134,20 @@ doc_events = {
 }
 
 
-# fixtures = [{"dt": "Role", "filters": [["role_name", "like", "Drive %"]]}]
+fixtures = [
+    # Drive bolts its fields onto the framework File doctype; without this the
+    # custom_field.json / role.json fixtures never sync to other sites.
+    {"dt": "Custom Field", "filters": [["dt", "=", "File"]]},
+    # Desk-form tweaks for the framework File form (Drive folder + file_url fields).
+    {"dt": "Property Setter", "filters": [["doc_type", "=", "File"]]},
+    {"dt": "Role", "filters": [["role_name", "like", "Drive %"]]},
+]
 
 # Scheduled Tasks
 # ---------------
 
 scheduler_events = {
-    "daily": ["drive.api.files.auto_delete_from_trash", "drive.api.files.clear_deleted_files"],
-    "hourly": ["drive.api.permissions.auto_delete_expired_perms", "drive.api.files.auto_delete_transfers"],
+    "daily": ["drive.api.scripts.auto_delete_from_trash", "drive.api.scripts.clear_deleted_files"],
 }
 
 after_request = "drive.api.product.after_request"

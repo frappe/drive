@@ -7,10 +7,7 @@
       :options="dialog.options"
       @close="dialog.remove"
     >
-      <template
-        v-if="dialog.options.component"
-        #body-content
-      >
+      <template v-if="dialog.options.component" #body-content>
         <component :is="dialog.options.component" />
       </template>
     </Dialog>
@@ -18,8 +15,8 @@
 </template>
 
 <script setup lang="ts">
-import { useDialogs } from "@/utils/dialogs"
-import { Dialog } from "frappe-ui"
+import { useDialogs } from '@/utils/dialogs'
+import { Dialog } from 'frappe-ui'
 
 const dialogs = useDialogs()
 </script>
