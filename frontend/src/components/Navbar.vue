@@ -173,6 +173,15 @@ const defaultActions = computed(() => {
           isEnabled: () => rootEntity.value.kind === 'reference',
         },
         {
+          label: __('Download'),
+          icon: LucideDownload,
+          isEnabled: () =>
+            rootEntity.value.kind !== 'virtual' &&
+            !['Link', 'Presentation', 'Document'].includes(rootEntity.value.file_type) &&
+            rootEntity.value.allow_download,
+          onClick: () => entitiesDownload([rootEntity.value]),
+        },
+        {
           label: __('Copy Link'),
           icon: LucideLink,
           onClick: () => getFileLink(rootEntity.value),
@@ -182,11 +191,6 @@ const defaultActions = computed(() => {
           icon: LucideInfo,
           onClick: () => (dialog.value = 'i'),
           isEnabled: () => !store.state.activeEntity || !store.state.showInfo,
-        },
-        {
-          label: __('Download'),
-          icon: LucideDownload,
-          onClick: () => entitiesDownload(route.params.team, [rootEntity.value]),
         },
       ],
     },

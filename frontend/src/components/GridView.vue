@@ -84,7 +84,6 @@ import { onKeyDown } from '@vueuse/core'
 const props = defineProps({
   folderContents: Object,
   actionItems: Array,
-  userData: Object,
 })
 defineEmits(['dropped'])
 const route = useRoute()

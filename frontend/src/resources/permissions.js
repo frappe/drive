@@ -41,8 +41,8 @@ export const userList = createResource({
   url: 'drive.api.permissions.get_shared_with_list',
 })
 
-export const allUsers = createResource({
-  url: 'drive.api.product.get_all_users',
+export const teamUsers = createResource({
+  url: 'drive.api.product.get_team_users',
   method: 'GET',
   transform: (data) => {
     data.map((item) => {

@@ -15,6 +15,18 @@ export const COMMON_OPTIONS = {
   },
 }
 
+export const getTeam = createResource({
+  ...COMMON_OPTIONS,
+  url: 'drive.api.list.files',
+  makeParams: (params) => {
+    return {
+      ...params,
+      personal: 0,
+    }
+  },
+  cache: 'team-folder-contents',
+})
+
 export const getFiles = createResource({
   ...COMMON_OPTIONS,
   url: 'drive.api.list.files',

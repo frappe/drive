@@ -291,11 +291,16 @@ def remove_user(team: str, user_id: str):
     frappe.delete_doc("Drive Team Member", drive_team[user_id].name)
 
 
-# SECURITY: send user data with files
-@frappe.whitelist(allow_guest=True)
+@frappe.whitelist()
 @default_team
-def get_all_users(team: str):
-    teams = [team] if team != "all" else get_teams()
+def get_team_users(team: str):
+    user_teams = get_teams()
+    if team == "all":
+        teams = user_teams
+    elif team in user_teams:
+        teams = [team]
+    else:
+        frappe.throw(_("You don't have access to this team."), frappe.PermissionError)
 
     team_users = {}
     for team in teams:
@@ -316,23 +321,6 @@ def get_all_users(team: str):
         u["access_level"] = team_users[u["name"]]
     return users
 
-
-@frappe.whitelist()
-def get_drive_users():
-    users = frappe.get_all(
-        doctype="User",
-        filters=[
-            ["user_type", "=", "Drive User"],
-            ["enabled", "=", 1],
-        ],
-        fields=[
-            "name",
-            "email",
-            "full_name",
-            "user_image",
-        ],
-    )
-    return users
 
 
 @frappe.whitelist(allow_guest=True)
@@ -425,21 +413,3 @@ def after_request(request):
 @frappe.whitelist(allow_guest=True)
 def signup_disabled():
     return frappe.get_website_settings("disable_signup")
-
-
-# SECURITY: all user data is available
-@frappe.whitelist(allow_guest=True)
-def get_drive_users():
-    users = frappe.get_all(
-        doctype="User",
-        filters=[
-            ["enabled", "=", 1],
-        ],
-        fields=[
-            "name",
-            "email",
-            "full_name",
-            "user_image",
-        ],
-    )
-    return users

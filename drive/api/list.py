@@ -235,7 +235,6 @@ def files(
         limit=limit,
     )
 
-
 @frappe.whitelist()
 @default_team
 def shared(
@@ -376,6 +375,11 @@ def get_query_data(
         *FILE_FIELDS,
         DrivePermission.user.as_("shared_team"),
     ).where(fn.Coalesce(DrivePermission.read, 1).as_("read") == 1)
+
+    # Send owner display data with files so the list view doesn't need a separate users fetch
+    query = query.left_join(DriveUser).on(DriveUser.name == DriveFile.owner).select(
+        DriveUser.full_name.as_("owner_full_name"), DriveUser.user_image.as_("owner_image")
+    )
 
     # Apply favourites filter
     if favourites_only:
