@@ -99,7 +99,6 @@ after_install = "drive.install.after_install"
 
 permission_query_conditions = {
     "Drive Team": "drive.utils.overrides.filter_drive_team",
-    "Drive File": "drive.utils.overrides.filter_drive_file",
     "Drive Permission": "drive.utils.overrides.filter_drive_permission",
     "Drive Document": "drive.utils.overrides.filter_drive_document",
     "Drive Comment": "drive.utils.overrides.filter_drive_comment",
@@ -109,9 +108,6 @@ permission_query_conditions = {
 }
 
 has_permission = {
-    # Registered on the framework `File` doctype (the class override lives there
-    # too). `user_has_permission` delegates non-drive Files to the framework's own
-    # check, so attachments are unaffected; drive Files go through Drive's ACL.
     "File": "drive.api.permissions.user_has_permission",
 }
 

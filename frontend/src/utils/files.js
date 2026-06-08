@@ -17,6 +17,21 @@ import { toast } from '@/utils/toasts.js'
 import { useFileUpload, toast as nToast } from 'frappe-ui'
 import emitter from '@/emitter'
 
+export const WRITER_CONTENT_DOCTYPE = 'Writer Document'
+export const PRESENTATION_CONTENT_DOCTYPE = 'Presentation'
+
+export function isWriterDocument(entity) {
+  return entity?.content_doctype === WRITER_CONTENT_DOCTYPE
+}
+
+export function isPresentation(entity) {
+  return entity?.content_doctype === PRESENTATION_CONTENT_DOCTYPE
+}
+
+export function hasHostedContent(entity) {
+  return isWriterDocument(entity) || isPresentation(entity)
+}
+
 export const openEntity = (entity, new_tab = false) => {
   // Virtual grouping node: navigate into its attachments bucket. A node with an
   // attached_to_name drills into a single document; otherwise into a doctype.
@@ -428,7 +443,7 @@ function getLinkStem(entity) {
     {
       true: 'f',
       [new Boolean(entity.is_folder)]: 'd',
-      [new Boolean(entity.doc || entity.mime_type === 'text/markdown')]: 'w',
+      [new Boolean(isWriterDocument(entity) || entity.mime_type === 'text/markdown')]: 'w',
     }[true]
   }/${entity.name}/${slugger(entity.file_name)}`
 }

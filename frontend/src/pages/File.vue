@@ -53,6 +53,8 @@ import {
   setBreadCrumbs,
   enterFullScreen,
   updateURLSlug,
+  isWriterDocument,
+  hasHostedContent,
 } from '@/utils/files'
 import ErrorPage from '@/components/ErrorPage.vue'
 
@@ -69,7 +71,7 @@ const currentEntity = ref(props.entityName)
 const folderEntities = computed(() => store.state.currentFolder?.entities || [])
 const filteredEntities = computed(() =>
   folderEntities.value.filter(
-    (item) => !item.is_folder && !item.document && !item.is_link
+    (item) => !item.is_folder && !hasHostedContent(item) && item.file_type !== 'Link'
   )
 )
 
@@ -103,7 +105,7 @@ onKeyStroke('ArrowRight', (e) => {
 
 const onSuccess = async (entity) => {
   // temporary hack: #475
-  if (entity.doc) {
+  if (isWriterDocument(entity)) {
     window.location.href = '/writer/w/' + entity.name
   }
   document.title = entity.file_name

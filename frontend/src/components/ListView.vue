@@ -58,6 +58,10 @@ import ContextMenu from '@/components/ContextMenu.vue'
 import CustomListRow from './CustomListRow.vue'
 import { openEntity, isModKey, getLink } from '@/utils/files'
 import { formatDate } from '@/utils/format'
+import {
+  WRITER_CONTENT_DOCTYPE,
+  PRESENTATION_CONTENT_DOCTYPE,
+} from '@/utils/files'
 
 import { onKeyDown } from '@vueuse/core'
 import emitter from '@/emitter'
@@ -96,11 +100,19 @@ const selectedColumns = [
   {
     label: __('Name'),
     key: 'file_name',
-    getLabel: ({ row: { file_name, is_folder, document } }) =>
-      file_name.lastIndexOf('.') === -1 || is_folder || document
+    getLabel: ({ row: { file_name, is_folder, content_doctype } }) =>
+      file_name.lastIndexOf('.') === -1 ||
+      is_folder ||
+      content_doctype === WRITER_CONTENT_DOCTYPE ||
+      content_doctype === PRESENTATION_CONTENT_DOCTYPE
         ? file_name
         : file_name.slice(0, file_name.lastIndexOf('.')),
-    getTooltip: (e) => (e.is_folder || e.document ? '' : e.file_name),
+    getTooltip: (e) =>
+      e.is_folder ||
+      e.content_doctype === WRITER_CONTENT_DOCTYPE ||
+      e.content_doctype === PRESENTATION_CONTENT_DOCTYPE
+        ? ''
+        : e.file_name,
     prefix: ({ row }) => {
       return getThumbnailUrl(row)
     },

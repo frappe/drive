@@ -70,6 +70,7 @@ import { Avatar, createResource } from 'frappe-ui'
 import { computed, ref, watch } from 'vue'
 import ArrowRight from '~icons/lucide/arrow-right'
 import { formatDate } from '@/utils/format'
+import { hasHostedContent } from '@/utils/files'
 import ActivityTreeItem from './ActivityTreeItem.vue'
 import ActivityTreeShare from './ActivityTreeShare.vue'
 
@@ -112,7 +113,7 @@ const entityText = computed(() => {
 function generateMessage(activity) {
   const user = activity.full_name ? activity.full_name : activity.owner
   const creationText =
-    entity.value.is_folder || entity.value.document
+    entity.value.is_folder || hasHostedContent(entity.value)
       ? 'created this'
       : 'uploaded this'
 

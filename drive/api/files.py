@@ -737,23 +737,23 @@ def search(query: str):
     try:
         result = frappe.db.sql(
             """
-        SELECT  `tabDrive File`.name,
-                `tabDrive File`.file_name,
-                `tabDrive File`.file_type,
-                `tabDrive File`.document,
-                `tabDrive File`.color,
+        SELECT  `tabFile`.name,
+                `tabFile`.file_name,
+                `tabFile`.file_type,
+                `tabFile`.content_doctype,
+                `tabFile`.content_docname,
                 `tabUser`.name AS user_name,
                 `tabUser`.user_image,
                 `tabUser`.full_name
-        FROM `tabDrive File`
-        LEFT JOIN `tabUser` ON `tabDrive File`.`owner` = `tabUser`.`name`
-        WHERE `tabDrive File`.team IN %(teams)s
-            AND `tabDrive File`.`status` = 1
-            AND `tabDrive File`.`folder` <> ''
-            AND MATCH(file_name) AGAINST (%(text)s IN BOOLEAN MODE)
-        GROUP  BY `tabDrive File`.`name`
+        FROM `tabFile`
+        LEFT JOIN `tabUser` ON `tabFile`.`owner` = `tabUser`.`name`
+        WHERE `tabFile`.team IN %(teams)s
+            AND `tabFile`.`status` = %(status)s
+            AND COALESCE(`tabFile`.`folder`, '') <> ''
+            AND MATCH(`tabFile`.file_name) AGAINST (%(text)s IN BOOLEAN MODE)
+        GROUP BY `tabFile`.`name`
         """,
-            values={"teams": teams, "text": text},
+            values={"teams": teams, "text": text, "status": STATUS_ACTIVE},
             as_dict=1,
         )
         return result

@@ -19,6 +19,8 @@ STATUS_REMOVED = "Removed"
 # A drive File whose `content_doctype` is "File" points at another framework File
 # row (the library / attachment-copy flow) rather than holding its own content.
 ATTACHMENT_CONTENT_DOCTYPE = "File"
+WRITER_CONTENT_DOCTYPE = "Writer Document"
+PRESENTATION_CONTENT_DOCTYPE = "Presentation"
 
 # `kind` — what a row in a Drive listing actually is, relative to Drive. This is a
 # mutually-exclusive, exhaustive partition (NOT the MIME `file_kinds` filter):
@@ -355,24 +357,26 @@ def create_drive_file(
     mime_type=None,
     file_size=0,
     file_modified=None,
-    document=None,
+    content_doctype=None,
+    content_docname=None,
     owner=None,
 ):
-    drive_file = frappe.get_doc(
-        {
-            "doctype": "File",
-            "is_private": 1,
-            "team": team,
-            "file_name": file_name,
-            "folder": parent,
-            "file_size": file_size,
-            "file_type": file_type,
-            "mime_type": mime_type,
-            "doc": document,
-            "is_folder": file_type == "Folder",
-            "file_modified": (datetime.fromtimestamp(file_modified) if file_modified else frappe.utils.now()),
-        }
-    )
+    values = {
+        "doctype": "File",
+        "is_private": 1,
+        "team": team,
+        "file_name": file_name,
+        "folder": parent,
+        "file_size": file_size,
+        "file_type": file_type,
+        "mime_type": mime_type,
+        "is_folder": file_type == "Folder",
+        "file_modified": (datetime.fromtimestamp(file_modified) if file_modified else frappe.utils.now()),
+    }
+    if content_doctype:
+        values["content_doctype"] = content_doctype
+        values["content_docname"] = content_docname
+    drive_file = frappe.get_doc(values)
     drive_file.flags.file_created = True
     drive_file.insert(ignore_permissions=True)
     path = entity_path if isinstance(entity_path, str) else entity_path(drive_file)
