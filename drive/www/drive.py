@@ -4,7 +4,7 @@ import frappe
 
 no_cache = 1
 
-TITLES = {"login": "Login", "signup": "Create an Account"}
+TITLES = {"signup": "Create an Account"}
 
 
 def get_desk_theme():

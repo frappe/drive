@@ -30,7 +30,7 @@
         class="my-auto text-ink-amber-3 stroke-current fill-current"
       />
       <template v-if="!isLoggedIn && !inIframe">
-        <Button variant="outline" @click="$router.push({ name: 'Login' })"> Sign In </Button>
+        <Button variant="outline" @click="redirectLogin">Sign In</Button>
         <Button
           class="hidden md:block"
           variant="solid"
@@ -335,4 +335,8 @@ const newEntityOptions = computed(() => [
 ])
 
 const inIframe = inject('inIframe')
+const redirectLogin = () => {
+  window.location.href =
+    '/login?redirect-to=' + encodeURIComponent('/drive' + route.path)
+}
 </script>
