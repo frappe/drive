@@ -16,6 +16,7 @@ import './index.css'
 import { initSocket } from './socket'
 import focusDirective from './utils/focus'
 import translation from './translation'
+import { setupTheme } from './utils/setupTheme'
 
 const app = createApp(App)
 setConfig('resourceFetcher', frappeRequest)
@@ -47,4 +48,4 @@ setConfig('resourceFetcher', (options) => {
 app.component('FormControl', FormControl)
 app.component('Button', Button)
 
-app.mount('#app')
+setupTheme().then(() => app.mount('#app'))

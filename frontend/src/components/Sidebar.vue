@@ -71,14 +71,19 @@ import LucideGalleryVerticalEnd from '~icons/lucide/gallery-vertical-end'
 import SettingsDialog from '@/components/Settings/SettingsDialog.vue'
 import ShortcutsDialog from '@/components/ShortcutsDialog.vue'
 import emitter from '@/emitter'
-import { ref, computed, watch, onMounted, h } from 'vue'
+import { ref, computed, watch, h } from 'vue'
 import AppsIcon from '@/components/AppsIcon.vue'
 import { useRouter } from 'vue-router'
 import { move } from '@/resources/files'
 
 import LucideBook from '~icons/lucide/book'
 import LucideBadgeHelp from '~icons/lucide/badge-help'
+import LucideSunMoon from '~icons/lucide/sun-moon'
+import LucideSun from '~icons/lucide/sun'
 import LucideMoon from '~icons/lucide/moon'
+import LucideMonitor from '~icons/lucide/monitor'
+import LucideCheck from '~icons/lucide/check'
+import { getThemeMode, switchTheme } from '@/utils/setupTheme'
 
 defineEmits(['toggleMobileSidebar', 'showSearchPopUp'])
 const store = useStore()
@@ -109,6 +114,13 @@ emitter.on('showSettings', (val = 0) => {
 emitter.on('toggleShortcuts', () => {
   showShortcuts.value = !showShortcuts.value
 })
+
+const themeMode = ref(getThemeMode())
+
+function selectTheme(theme) {
+  switchTheme(theme)
+  themeMode.value = theme.toLowerCase()
+}
 
 const settingsItems = computed(() => [
   {
@@ -150,9 +162,25 @@ const settingsItems = computed(() => [
         onClick: () => window.open('https://t.me/frappedrive', '_blank'),
       },
       {
-        icon: LucideMoon,
-        label: 'Toggle theme',
-        onClick: toggleTheme,
+        icon: LucideSunMoon,
+        label: __('Theme'),
+        submenu: [
+          {
+            label: __('Light'),
+            icon: themeMode.value === 'light' ? LucideCheck : LucideSun,
+            onClick: () => selectTheme('Light'),
+          },
+          {
+            label: __('Dark'),
+            icon: themeMode.value === 'dark' ? LucideCheck : LucideMoon,
+            onClick: () => selectTheme('Dark'),
+          },
+          {
+            label: __('Automatic'),
+            icon: themeMode.value === 'automatic' ? LucideCheck : LucideMonitor,
+            onClick: () => selectTheme('Automatic'),
+          },
+        ],
       },
     ],
   },
@@ -173,20 +201,6 @@ const settingsItems = computed(() => [
     ],
   },
 ])
-
-function toggleTheme() {
-  const currentTheme = document.documentElement.getAttribute('data-theme')
-  const theme = currentTheme === 'dark' ? 'light' : 'dark'
-  document.documentElement.setAttribute('data-theme', theme)
-  localStorage.setItem('theme', theme)
-}
-
-onMounted(() => {
-  const theme = localStorage.getItem('theme')
-  if (['light', 'dark'].includes(theme)) {
-    document.documentElement.setAttribute('data-theme', theme)
-  }
-})
 
 function logout() {
   store.dispatch('logout')

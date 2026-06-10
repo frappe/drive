@@ -20,6 +20,11 @@ html {
   scrollbar-width: auto;
 }
 
+html.theme-switching,
+html.theme-switching * {
+  transition: none !important;
+}
+
 *::-webkit-scrollbar-thumb {
   background: #c0c6cc;
   border-radius: 6px;
