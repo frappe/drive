@@ -31,7 +31,6 @@ const store = createStore({
     sortOrder: getJson('sortOrder', {}),
     view: getJson('view', 'list'),
     shareView: false,
-    activeTags: [],
     activeEntity: null,
     currentResource: [],
     listResource: [],

@@ -29,7 +29,6 @@ Team = frappe.qb.DocType("Drive Team")
 TeamMember = frappe.qb.DocType("Drive Team Member")
 DriveFavourite = frappe.qb.DocType("Drive Favourite")
 Recents = frappe.qb.DocType("Drive Entity Log")
-DriveEntityTag = frappe.qb.DocType("Drive Entity Tag")
 
 Binary = CustomFunction("BINARY", ["expression"])
 
@@ -52,19 +51,6 @@ def _apply_shared_filter(query, shared_type):
         return query.right_join(DrivePermission).on(cond)
     else:
         return query.left_join(DrivePermission).on(cond)
-
-
-def _apply_tags_filter(query, tag_list):
-    """
-    Filters files by tags using OR logic (matches any tag).
-    """
-    if not tag_list:
-        return query
-
-    tag_list = json.loads(tag_list) if isinstance(tag_list, str) else tag_list
-    query = query.left_join(DriveEntityTag).on(DriveEntityTag.parent == DriveFile.name)
-    tag_list_criterion = [DriveEntityTag.tag == tag for tag in tag_list]
-    return query.where(Criterion.any(tag_list_criterion))
 
 
 def _apply_file_kinds_filter(query, file_kinds):
@@ -167,7 +153,6 @@ def files(
     entity_name: str | None = None,
     order_by: str = "modified",
     ascending: bool = True,
-    tag_list: list[str] | str = [],
     file_kinds: list[str] | str = [],
     search: str = None,
     start: int = 0,
@@ -206,7 +191,6 @@ def files(
         names = frappe.get_list("File", filters=ff_filters, pluck="name")
         return get_query_data(
             frappe.qb.from_(DriveFile).where(DriveFile.name.isin(names or [""])),
-            tag_list=tag_list,
             file_kinds=file_kinds,
             order_by=order_by,
             ascending=ascending,
@@ -226,7 +210,6 @@ def files(
     return get_query_data(
         query,
         team=team,
-        tag_list=tag_list,
         file_kinds=file_kinds,
         entity_name=entity_name,
         order_by=order_by,
@@ -242,7 +225,6 @@ def shared(
     shared_type: str = "with",
     order_by: str = "modified",
     ascending: bool = True,
-    tag_list: list[str] | str = [],
     file_kinds: list[str] | str = [],
     search: str = None,
 ):
@@ -256,7 +238,6 @@ def shared(
     return get_query_data(
         query,
         shared_type=shared_type,
-        tag_list=tag_list,
         file_kinds=file_kinds,
         team=team,
         order_by=order_by,
@@ -270,7 +251,6 @@ def favourites(
     team: str,
     order_by: str = "modified",
     ascending: bool = True,
-    tag_list: list[str] | str = [],
     file_kinds: list[str] | str = [],
     search: str = None,
 ):
@@ -282,7 +262,6 @@ def favourites(
     return get_query_data(
         query,
         favourites_only=True,
-        tag_list=tag_list,
         file_kinds=file_kinds,
         team=team,
         order_by=order_by,
@@ -296,7 +275,6 @@ def recents(
     team: str,
     order_by: str = "modified",
     ascending: bool = True,
-    tag_list: list[str] | str = [],
     file_kinds: list[str] | str = [],
     search: str = None,
 ):
@@ -308,7 +286,6 @@ def recents(
     return get_query_data(
         query,
         recents_only=True,
-        tag_list=tag_list,
         file_kinds=file_kinds,
         team=team,
         order_by=order_by,
@@ -322,7 +299,6 @@ def trash(
     team: str,
     order_by: str = "modified",
     ascending: bool = True,
-    tag_list: list[str] | str = [],
     file_kinds: list[str] | str = [],
     search: str = None,
 ):
@@ -341,7 +317,6 @@ def trash(
     return get_query_data(
         query,
         team=team,
-        tag_list=tag_list,
         file_kinds=file_kinds,
         order_by=order_by,
         ascending=ascending,
@@ -352,7 +327,6 @@ def get_query_data(
     query,
     favourites_only=False,
     recents_only=False,
-    tag_list=[],
     file_kinds=[],
     team=None,
     entity_name=None,
@@ -407,8 +381,7 @@ def get_query_data(
 
     query = query.select(Recents.last_interaction.as_("accessed"))
 
-    # Apply tag and file kind filters
-    query = _apply_tags_filter(query, tag_list)
+    # Apply file kind filter
     query = _apply_file_kinds_filter(query, file_kinds)
 
     # Page through large result sets (aggregation below is scoped to the page).

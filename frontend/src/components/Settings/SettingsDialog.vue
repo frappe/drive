@@ -50,10 +50,8 @@ import UserListSettings from './UserListSettings.vue'
 import LucideCloudCog from '~icons/lucide/cloud-cog'
 import LucideFileText from '~icons/lucide/file-text'
 import LucideChartBar from '~icons/lucide/chart-bar'
-import LucideTag from '~icons/lucide/tag'
 import LucideUser from '~icons/lucide/user'
 import LucideUserPlus from '~icons/lucide/user-plus'
-import TagSettings from './TagSettings.vue'
 import BackendSettings from './BackendSettings.vue'
 
 const tabs = [
@@ -71,11 +69,6 @@ const tabs = [
     label: 'Statistics',
     icon: LucideChartBar,
     component: markRaw(StorageSettings),
-  },
-  {
-    label: 'Tags',
-    icon: LucideTag,
-    component: markRaw(TagSettings),
   },
   {
     enabled: computed(() => isAdmin.data?.is_admin || false),

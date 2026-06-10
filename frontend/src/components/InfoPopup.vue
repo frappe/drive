@@ -50,10 +50,6 @@
           <span class="inline-block w-24 text-ink-gray-5">{{ __('Added') }}:</span>
           <span class="col-span-1">{{ formatDate(entity.creation) }}</span>
         </li>
-        <li class="flex items-center">
-          <span class="inline-block w-24 text-ink-gray-5">{{ __('Tags') }}:</span>
-          <TagInput class="flex-grow" :entity />
-        </li>
       </ul>
 
       <ul v-if="editor?.storage?.characterCount" class="space-y-3 text-sm mb-4 text-ink-gray-8">
@@ -148,7 +144,6 @@
 import { formatDate } from '@/utils/format'
 import { isAttachmentRef } from '@/utils/files'
 import { Dialog, Button, LoadingIndicator, createResource, Alert } from 'frappe-ui'
-import TagInput from '@/components/TagInput.vue'
 import { ref, inject } from 'vue'
 import { onKeyDown } from '@vueuse/core'
 import emitter from '@/emitter'
