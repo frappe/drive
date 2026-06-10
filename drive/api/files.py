@@ -1,12 +1,10 @@
 import json
 import re
 import zipfile
-from datetime import timedelta
 from io import BytesIO
 from pathlib import Path
 
 import frappe
-import jwt
 # import magic
 import mimemapper
 from pypika import Order
@@ -293,36 +291,29 @@ def create_link(team: str, file_name: str, link: str, parent: str | None = None)
 def create_auth_token(entity_name: str):
     if not user_has_permission(entity_name, "read"):
         raise frappe.PermissionError("You do not have permission to view this file")
-    settings = frappe.get_single("Drive Disk Settings")
-    key = settings.get_password("jwt_key", raise_exception=False)
-    return jwt.encode(
-        {"name": entity_name, "expiry": (frappe.utils.now_datetime() + timedelta(minutes=1)).timestamp()},
-        key=key,
-    )
+    token = frappe.get_doc(
+        {
+            "doctype": "Drive Token",
+            "file": entity_name,
+            "user": frappe.session.user,
+            "expiry": frappe.utils.add_to_date(None, minutes=5),
+        }
+    ).insert(ignore_permissions=True)
+    return token.name
 
 
 @frappe.whitelist(allow_guest=True)
-def get_file_content(entity_name: str, trigger_download: bool = False, jwt_token: str | None = None):
+def get_file_content(entity_name: str, trigger_download: bool = False, token: str | None = None):
     """
-    Stream file content and optionally trigger download
-
-    :param entity_name: Document-name of the file whose content is to be streamed
-    :param trigger_download: 1 to trigger the "Save As" dialog. Defaults to 0
-    :type trigger_download: int
-    :raises ValueError: If the DriveEntity doc does not exist or is not a file
-    :raises PermissionError: If the current user does not have permission to read the file
-    :raises FileLockedError: If the file has been writer-locked
-
-    JWT tokens are a vulnerability - if used, they bypass all permissions and give the file.
-    Only the file name and secret token is needed to get access to all files.
-
-    A more secure way would be a DB-stored auth token that can only be created by someone with read access.
+    Central function to get files.
     """
-    if jwt_token:
-        settings = frappe.get_single("Drive Disk Settings")
-        auth = jwt.decode(jwt_token, key=settings.get_password("jwt_key"), algorithms=["HS256"])
-        if frappe.utils.now_datetime().timestamp() > auth["expiry"] or auth["name"] != entity_name:
+    if token:
+        # Single-use capability minted by create_auth_token, for cookieless
+        # fetches (e.g. the Office Online preview).
+        auth = frappe.db.get_value("Drive Token", token, ["file", "expiry"], as_dict=True)
+        if not auth or auth.file != entity_name or frappe.utils.now_datetime() > auth.expiry:
             raise frappe.PermissionError("You do not have permission to view this file")
+        frappe.delete_doc("Drive Token", token, ignore_permissions=True, force=True)
     elif not user_has_permission(entity_name, "read"):
         raise frappe.PermissionError("You do not have permission to view this file")
 

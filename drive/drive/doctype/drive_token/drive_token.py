@@ -1,0 +1,11 @@
+# Copyright (c) 2026, Frappe Technologies Pvt. Ltd. and contributors
+# For license information, please see license.txt
+
+import frappe
+from frappe.model.document import Document
+
+
+class DriveToken(Document):
+    def autoname(self):
+        # The name is the secret capability itself.
+        self.name = frappe.generate_hash(length=43)
