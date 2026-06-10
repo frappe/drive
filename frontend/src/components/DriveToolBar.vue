@@ -59,7 +59,7 @@
           }" :disabled placement="right" />
         <Dropdown v-if="$route.name !== 'Recents'" :options="orderByItems" placement="right">
           <div class="flex items-center whitespace-nowrap">
-            <Button class="text-sm h-7 border-r border-slate-200 rounded-r-none" :disabled
+            <Button class="text-sm h-7 border-r border-outline-gray-2 rounded-r-none" :disabled
               @click.stop="toggleAscending">
               <template #icon>
                 <LucideArrowDownAz v-if="sortOrder.ascending" class="size-4" />

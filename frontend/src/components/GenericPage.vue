@@ -398,7 +398,7 @@ const actionItems = computed(() => {
       {
         label: __('Unfavourite'),
         icon: LucideStar,
-        class: 'stroke-amber-500 fill-amber-500',
+        class: 'text-ink-amber-3 stroke-current fill-current',
         action: (entities) => {
           entities.forEach((e) => (e.is_favourite = false))
           props.getEntities.setData(props.getEntities.data)

@@ -518,7 +518,7 @@ export function getLink(entity, copy = true, withDomain = true) {
     if (err.name === 'NotAllowedError') {
       toast({
         icon: 'alert-triangle',
-        iconClasses: 'text-red-700',
+        iconClasses: 'text-ink-red-3',
         title: 'Clipboard permission denied',
         position: 'bottom-right',
       })

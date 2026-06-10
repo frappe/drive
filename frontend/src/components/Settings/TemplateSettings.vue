@@ -53,7 +53,7 @@
             variant="ghost"
             @click="confirmDelete(template)"
           >
-            <LucideTrash2 class="size-4 text-red-600" />
+            <LucideTrash2 class="size-4 text-ink-red-3" />
           </Button>
         </div>
       </div>

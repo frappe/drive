@@ -39,7 +39,7 @@ export default {
     },
     primaryClass: {
       type: String,
-      default: 'text-black',
+      default: 'text-ink-gray-9',
     },
     secondaryClass: {
       type: String,

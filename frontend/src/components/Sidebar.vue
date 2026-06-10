@@ -144,7 +144,7 @@ const settingsItems = computed(() => [
               h('img', { src: app.logo, class: 'size-6' }),
               h(
                 'span',
-                { class: 'max-w-18 text-sm w-full truncate' },
+                { class: 'max-w-18 text-sm w-full truncate text-ink-gray-9' },
                 app.title
               ),
             ]

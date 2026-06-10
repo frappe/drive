@@ -8,7 +8,7 @@
         <Tooltip
           :text="__(label)"
           placement="right"
-          arrow-class="fill-gray-900"
+          arrow-class="fill-surface-gray-7"
           :disabled="!isCollapsed"
         >
           <slot name="icon">

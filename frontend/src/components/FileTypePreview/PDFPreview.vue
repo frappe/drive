@@ -17,7 +17,7 @@
         :scale
         :text-layer="true"
       >
-        <LoadingIndicator class="w-10 text-neutral-100 mx-auto h-full" />
+        <LoadingIndicator class="w-10 text-ink-gray-8 mx-auto h-full" />
       </VuePDF>
     </div>
     <div v-if="pages" class="flex gap-2 justify-center items-center">
