@@ -1,6 +1,6 @@
 <template>
   <div
-    class="mx-auto w-full bg-surface-white dark:bg-surface-gray-2 px-4 py-8 mt-6 w-112 rounded-2xl p-6 md:shadow-2xl flex flex-col gap-4"
+    class="mx-auto w-full bg-surface-white px-4 py-8 mt-6 w-112 rounded-2xl p-6 md:shadow-2xl flex flex-col gap-4"
   >
     <div class="text-sm absolute top-5 right-5 flex gap-1.5 text-ink-gray-8">
       <LucideLogOut class="w-3 h-3 my-auto" />

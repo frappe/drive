@@ -11,7 +11,7 @@
       >
         <LoadingIndicator
           v-if="file.loading"
-          class="w-10 h-full text-neutral-100"
+          class="w-10 h-full text-ink-gray-8"
         />
         <FileRender v-else-if="file.data" :preview-entity="file.data" />
       </div>

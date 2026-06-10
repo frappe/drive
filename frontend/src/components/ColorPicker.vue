@@ -18,7 +18,7 @@
       />
     </template>
     <template #body>
-      <div ref="colorPicker" class="rounded-lg bg-surface-white p-3 shadow-lg dark:bg-zinc-900">
+      <div ref="colorPicker" class="rounded-lg bg-surface-white p-3 shadow-lg">
         <div
           ref="colorMap"
           :style="{
@@ -91,7 +91,7 @@
             />
             <svg
               v-if="isSupported"
-              class="text-ink-gray-7 dark:text-zinc-300"
+              class="text-ink-gray-7"
               xmlns="http://www.w3.org/2000/svg"
               width="16"
               height="16"

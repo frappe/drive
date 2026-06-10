@@ -27,7 +27,7 @@
         v-if="rootEntity?.is_favourite"
         width="16"
         height="16"
-        class="my-auto stroke-amber-500 fill-amber-500"
+        class="my-auto text-ink-amber-3 stroke-current fill-current"
       />
       <template v-if="!isLoggedIn && !inIframe">
         <Button variant="outline" @click="$router.push({ name: 'Login' })"> Sign In </Button>
@@ -239,7 +239,7 @@ const defaultActions = computed(() => {
         {
           label: __('Unfavourite'),
           icon: LucideStar,
-          color: 'stroke-amber-500 fill-amber-500',
+          color: 'text-ink-amber-3 stroke-current fill-current',
           onClick: () => {
             rootEntity.value.is_favourite = false
             toggleFav.submit({

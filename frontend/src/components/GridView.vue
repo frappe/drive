@@ -40,7 +40,7 @@
     >
       <LucideStar
         v-if="$route.name !== 'Favourites' && file.is_favourite"
-        class="stroke-amber-500 fill-amber-500 absolute top-2 left-2 h-4"
+        class="text-ink-amber-3 stroke-current fill-current absolute top-2 left-2 h-4"
         width="16"
         height="16"
       />
