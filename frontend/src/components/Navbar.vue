@@ -27,10 +27,18 @@
         v-if="rootEntity?.is_favourite"
         width="16"
         height="16"
-        class="my-auto stroke-amber-500 fill-amber-500"
+        class="my-auto text-ink-amber-3 stroke-current fill-current"
       />
       <template v-if="!isLoggedIn && !inIframe">
-        <Button variant="outline" @click="goToLogin"> Sign In </Button>
+        <Button
+          variant="outline"
+          @click="
+            window.location.href =
+              '/login?redirect-to=' + encodeURIComponent('/drive' + route.fullPath)
+          "
+        >
+          Sign In
+        </Button>
         <Button
           class="hidden md:block"
           variant="solid"
@@ -107,7 +115,6 @@ import {
   isVirtual,
 } from '@/utils/files'
 import { getFileLink } from 'frappe-ui/drive/js/utils'
-import { redirectToLogin, loginRedirectTarget } from '@/utils/auth'
 
 import LucideClock from '~icons/lucide/clock'
 import LucideHome from '~icons/lucide/home'
@@ -133,9 +140,6 @@ import LucideFolderPlus from '~icons/lucide/folder-plus'
 
 const store = useStore()
 const route = useRoute()
-const goToLogin = () => {
-  redirectToLogin(loginRedirectTarget(route.path))
-}
 const open = (url) => {
   window.open(url, '_blank')
 }
@@ -243,7 +247,7 @@ const defaultActions = computed(() => {
         {
           label: __('Unfavourite'),
           icon: LucideStar,
-          color: 'stroke-amber-500 fill-amber-500',
+          color: 'text-ink-amber-3 stroke-current fill-current',
           onClick: () => {
             rootEntity.value.is_favourite = false
             toggleFav.submit({

@@ -34,14 +34,15 @@
 import { Button } from 'frappe-ui'
 import store from '@/store'
 import router from '@/router'
-import { redirectToLogin, loginRedirectTarget } from '@/utils/auth'
 import { watchEffect } from 'vue'
 import { LucideFileUser } from 'lucide-vue-next'
 
 const props = defineProps({ error: Object })
 
 const goToLogin = () => {
-  redirectToLogin(loginRedirectTarget(router.currentRoute.value.path))
+  window.location.href =
+    "/login?redirect-to=" +
+    encodeURIComponent("/drive" + router.currentRoute.value.path)
 }
 
 watchEffect(() => {

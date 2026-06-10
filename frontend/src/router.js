@@ -3,7 +3,6 @@ import store from './store'
 import { createResource } from 'frappe-ui'
 import Dummy from '@/pages/Dummy.vue'
 import { translate } from '@/resources/files'
-import { redirectToLogin, loginRedirectTarget } from '@/utils/auth'
 
 function clearStore() {
   store.commit('setActiveEntity', null)
@@ -219,7 +218,9 @@ let router = createRouter({
 
 router.beforeEach(async (to, from, next) => {
   if (!store.getters.isLoggedIn && !to.meta.allowGuest) {
-    redirectToLogin(loginRedirectTarget(to.path))
+    const redirectTo = to.path === '/login' ? '/drive' : '/drive' + to.path
+    window.location.href =
+      '/login?redirect-to=' + encodeURIComponent(redirectTo)
   } else {
     if (to.params.team) localStorage.setItem('recentTeam', to.params.team)
     clearStore()
