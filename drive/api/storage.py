@@ -1,6 +1,8 @@
 import frappe
+from frappe import _
 from pypika import functions as fn
 
+from drive.api.permissions import get_teams
 from drive.utils import default_team, STATUS_ACTIVE
 
 MEGA_BYTE = 1024**2
@@ -9,6 +11,9 @@ DriveFile = frappe.qb.DocType("File")
 
 @frappe.whitelist()
 def storage_breakdown(team: str, owned_only: bool):
+    if team not in get_teams():
+        frappe.throw(_("You don't have access to this team."), frappe.PermissionError)
+
     limit = frappe.get_value("Drive Team", team, "quota" if owned_only else "storage") * MEGA_BYTE
     filters = {
         "team": team,
@@ -48,6 +53,9 @@ def storage_bar_data(team: str | None = None, entity_name: str | None = None):
         team = frappe.get_value("File", entity_name, "team")
         if not team:
             frappe.throw("Could not find team.", ValueError)
+
+    if team not in get_teams():
+        frappe.throw(_("You don't have access to this team."), frappe.PermissionError)
 
     query = (
         frappe.qb.from_(DriveFile)

@@ -80,6 +80,9 @@ def get_my_invites():
 
 @frappe.whitelist()
 def get_team_invites(team: str):
+    if not is_admin(team):
+        frappe.throw(_("You don't have the permissions for this action."), frappe.PermissionError)
+
     invites = frappe.db.get_list(
         "Drive User Invitation",
         fields=["creation", "status", "email", "name", "owner"],
@@ -250,6 +253,10 @@ def set_settings(updates: dict[str, int | str]):
 def invite_users(emails: str, team: str = None, as_guest: bool = False, auto: bool = False):
     if not emails:
         return
+
+    # team-less call (share with new user) is gated at its call site
+    if team and not is_admin(team):
+        frappe.throw(_("You don't have the permissions for this action."), frappe.PermissionError)
 
     email_string = validate_email_address(emails, throw=False)
     email_list = split_emails(email_string)
