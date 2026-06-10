@@ -2,11 +2,27 @@
 Create framework `File` records from legacy `Drive File` rows.
 """
 
+import json
+
 import frappe
+from frappe.custom.doctype.custom_field.custom_field import create_custom_fields
 from drive.utils import MIME_LIST_MAP, PRESENTATION_CONTENT_DOCTYPE, STATUS_ACTIVE, STATUS_TRASHED, WRITER_CONTENT_DOCTYPE
 from drive.utils.files import get_s3_url
 
 LEGACY_DOCTYPE = "Drive File"
+
+
+def ensure_custom_fields():
+    """Drive's File columns ship as fixtures, which sync after pre_model_sync patches.
+    Create them up front so the migration below can write to them."""
+    with open(frappe.get_app_path("drive", "fixtures", "custom_field.json")) as f:
+        fields = json.load(f)
+
+    custom_fields = {}
+    for df in fields:
+        custom_fields.setdefault(df["dt"], []).append(df)
+
+    create_custom_fields(custom_fields, ignore_validate=True)
 
 
 def get_file_type(row):
@@ -21,12 +37,14 @@ def get_file_type(row):
 
 
 def execute(files=None):
-    if not frappe.db.table_exists(f"tab{LEGACY_DOCTYPE}"):
+    if not frappe.db.table_exists(LEGACY_DOCTYPE):
         return
+
+    ensure_custom_fields()
 
     frappe.flags.mute_drive_activity_log = True
     try:
-        root_files = files or frappe.get_all(LEGACY_DOCTYPE, filters={"parent_entity": ""}, pluck="name")
+        root_files = files or frappe.get_all(LEGACY_DOCTYPE, filters={"parent_entity": ["is", "not set"]}, pluck="name")
 
         is_remote = frappe.get_single("Drive Disk Settings").enabled
         failures = []
@@ -39,15 +57,19 @@ def execute(files=None):
         frappe.flags.mute_drive_activity_log = False
 
 
+def get_legacy(name):
+    # The Drive File doctype is deleted by the time this runs, so its controller
+    # can't be imported; read rows as plain dicts (get_all needs only the meta).
+    return frappe.get_all(LEGACY_DOCTYPE, filters={"name": name}, fields=["*"])[0]
+
+
 def migrate_folder(folder_name, is_remote=False, failures=None):
     print(f"Migrating folder {folder_name}")
-    folder = frappe.get_doc(LEGACY_DOCTYPE, folder_name)
-    migrate_file(folder, is_remote, failures)
+    migrate_file(get_legacy(folder_name), is_remote, failures)
 
-    for child_name in frappe.get_all(LEGACY_DOCTYPE, filters={"parent_entity": folder_name}, pluck="name"):
-        child = frappe.get_doc(LEGACY_DOCTYPE, child_name)
+    for child in frappe.get_all(LEGACY_DOCTYPE, filters={"parent_entity": folder_name}, fields=["*"]):
         if child.is_group or child.doc:
-            migrate_folder(child_name, is_remote, failures)
+            migrate_folder(child.name, is_remote, failures)
         else:
             migrate_file(child, is_remote, failures)
 
@@ -64,7 +86,9 @@ def get_link(file, is_remote=False):
 
 
 def migrate_file(file, is_remote=False, failures=None):
-    if frappe.db.exists("File", {"name": file.name, "team": file.team}):
+    # File name is the global primary key; dedup on it alone so re-runs skip
+    # rows from an earlier (partial) migration instead of colliding on insert.
+    if frappe.db.exists("File", file.name):
         return
 
     ff_file = frappe.get_doc(
@@ -84,11 +108,11 @@ def migrate_file(file, is_remote=False, failures=None):
         }
     )
 
-    if file.doc:
+    if file.doc and frappe.db.exists(WRITER_CONTENT_DOCTYPE, file.doc):
         ff_file.content_doctype = WRITER_CONTENT_DOCTYPE
         ff_file.content_docname = file.doc
 
-    if file.mime_type == "frappe/slides":
+    if file.mime_type == "frappe/slides" and frappe.db.exists(PRESENTATION_CONTENT_DOCTYPE, file.path):
         ff_file.content_doctype = PRESENTATION_CONTENT_DOCTYPE
         ff_file.content_docname = file.path
 
@@ -96,7 +120,7 @@ def migrate_file(file, is_remote=False, failures=None):
         ff_file.attached_to_doctype = "File"
         ff_file.attached_to_name = file.parent_entity
 
-    ff_file.file_type = get_file_type(file.as_dict())
+    ff_file.file_type = get_file_type(file)
 
     try:
         ff_file.insert()

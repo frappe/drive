@@ -142,7 +142,6 @@ FILE_FIELDS = [
 
 
 def get_home_folder(team):
-    # team=None → the single Site root (team & folder both null).
     team_filter = DriveFile.team.isnull() if not team else (DriveFile.team == team)
     ls = (
         frappe.qb.from_(DriveFile)
