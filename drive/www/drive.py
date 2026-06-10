@@ -7,12 +7,19 @@ no_cache = 1
 TITLES = {"login": "Login", "signup": "Create an Account"}
 
 
+def get_desk_theme():
+    if frappe.session.user == "Guest":
+        return "Light"
+    return frappe.get_cached_value("User", frappe.session.user, "desk_theme") or "Light"
+
+
 def get_context():
     csrf_token = frappe.sessions.get_csrf_token()
     frappe.db.commit()
     context = frappe._dict()
     context.boot = get_boot()
     context.boot.csrf_token = csrf_token
+    context.desk_theme = context.boot.desk_theme
     context.csrf_token = csrf_token
     context.site_name = frappe.local.site
 
@@ -56,6 +63,7 @@ def get_boot():
             "default_route": get_default_route(),
             "site_name": frappe.local.site,
             "read_only_mode": frappe.flags.read_only,
+            "desk_theme": get_desk_theme(),
         }
     )
 
