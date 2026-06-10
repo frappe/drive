@@ -4,7 +4,7 @@ import frappe
 
 no_cache = 1
 
-TITLES = {"login": "Login", "signup": "Create an Account"}
+TITLES = {"signup": "Create an Account"}
 
 
 def get_desk_theme():
@@ -28,6 +28,10 @@ def get_context():
 
     if not frappe.form_dict.app_path:
         return context
+
+    if frappe.form_dict.app_path == "login" or frappe.form_dict.app_path.startswith("login/"):
+        frappe.local.flags.redirect_location = "/login?redirect-to=/drive"
+        raise frappe.Redirect
 
     # Parsing
     parts = frappe.form_dict.app_path.split("/")

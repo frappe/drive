@@ -3,7 +3,7 @@ import store from './store'
 import { createResource } from 'frappe-ui'
 import Dummy from '@/pages/Dummy.vue'
 import { translate } from '@/resources/files'
-import { redirectToLogin } from '@/utils/auth'
+import { redirectToLogin, loginRedirectTarget } from '@/utils/auth'
 
 function clearStore() {
   store.commit('setActiveEntity', null)
@@ -29,22 +29,6 @@ async function setRootBreadCrumb(to) {
 }
 
 const routes = [
-  {
-    path: '/login',
-    name: 'Login',
-    meta: { allowGuest: true },
-    component: Dummy,
-    beforeEnter: (to, from) => {
-      if (store.getters.isLoggedIn) return '/'
-
-      let redirectTo = to.query['redirect-to']
-      if (!redirectTo) {
-        redirectTo =
-          from.path && from.path !== '/login' ? '/drive' + from.path : '/drive'
-      }
-      redirectToLogin(redirectTo)
-    },
-  },
   {
     path: '/signup',
     name: 'Signup',
@@ -235,7 +219,7 @@ let router = createRouter({
 
 router.beforeEach(async (to, from, next) => {
   if (!store.getters.isLoggedIn && !to.meta.allowGuest) {
-    redirectToLogin('/drive' + to.path)
+    redirectToLogin(loginRedirectTarget(to.path))
   } else {
     if (to.params.team) localStorage.setItem('recentTeam', to.params.team)
     clearStore()

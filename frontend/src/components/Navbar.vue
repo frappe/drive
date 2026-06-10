@@ -30,7 +30,7 @@
         class="my-auto stroke-amber-500 fill-amber-500"
       />
       <template v-if="!isLoggedIn && !inIframe">
-        <Button variant="outline" @click="$router.push({ name: 'Login' })"> Sign In </Button>
+        <Button variant="outline" @click="goToLogin"> Sign In </Button>
         <Button
           class="hidden md:block"
           variant="solid"
@@ -107,6 +107,7 @@ import {
   isVirtual,
 } from '@/utils/files'
 import { getFileLink } from 'frappe-ui/drive/js/utils'
+import { redirectToLogin, loginRedirectTarget } from '@/utils/auth'
 
 import LucideClock from '~icons/lucide/clock'
 import LucideHome from '~icons/lucide/home'
@@ -132,6 +133,9 @@ import LucideFolderPlus from '~icons/lucide/folder-plus'
 
 const store = useStore()
 const route = useRoute()
+const goToLogin = () => {
+  redirectToLogin(loginRedirectTarget(route.path))
+}
 const open = (url) => {
   window.open(url, '_blank')
 }

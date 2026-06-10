@@ -1,11 +1,8 @@
-const DEFAULT_REDIRECT = '/drive'
-
-export function getLoginUrl(redirectTo = DEFAULT_REDIRECT) {
-  const target =
-    !redirectTo || redirectTo === '/drive/login' ? DEFAULT_REDIRECT : redirectTo
-  return '/login?redirect-to=' + encodeURIComponent(target)
+export function redirectToLogin(redirectTo = '/drive') {
+  window.location.href =
+    '/login?redirect-to=' + encodeURIComponent(redirectTo)
 }
 
-export function redirectToLogin(redirectTo) {
-  window.location.href = getLoginUrl(redirectTo)
+export function loginRedirectTarget(path) {
+  return path === '/login' ? '/drive' : '/drive' + path
 }
