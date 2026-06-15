@@ -129,15 +129,14 @@ def upload_file(
 @frappe.whitelist(allow_guest=True)
 def get_thumbnail(entity_name: str):
     drive_file = frappe.get_cached_doc("File", entity_name)
-    if not drive_file or drive_file.is_folder:
-        return
 
-    # Thumbnails only exist for these types; bail before touching storage otherwise.
-    if drive_file.file_type not in ("Image", "Video", "PDF"):
-        return ""
-
+    # Permission first, so callers can't probe type/existence of files they can't read.
     if not user_has_permission(drive_file, "read"):
         frappe.throw("No permission", frappe.PermissionError)
+
+    # Thumbnails only exist for these types; bail before touching storage otherwise.
+    if drive_file.is_folder or drive_file.file_type not in ("Image", "Video", "PDF"):
+        return ""
 
     thumbnail_data = None
     if frappe.cache().exists(entity_name):
