@@ -100,7 +100,7 @@ import { move } from '@/resources/files'
 import { LoadingIndicator } from 'frappe-ui'
 import { settings } from '@/resources/permissions'
 import emitter from '@/emitter'
-import { getFileLink } from 'frappe-ui/drive/js/utils'
+import { getFileLink } from '@/ui/drive/js/utils'
 
 import LucideClock from '~icons/lucide/clock'
 import LucideDownload from '~icons/lucide/download'
