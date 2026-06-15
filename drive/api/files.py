@@ -152,7 +152,7 @@ def get_thumbnail(entity_name: str):
                 with manager.get_file(drive_file) as f:
                     thumbnail_data = f.read()[:1000].decode("utf-8").replace("\n", "<br/>")
             elif drive_file.file_type == "Document":
-                html = frappe.get_value("Writer Document", drive_file.content_docname, "raw_content")
+                html = frappe.get_value("Writer Document", drive_file.content_docname, "html")
                 thumbnail_data = html[:1000] if html else ""
             elif drive_file.mime_type == "frappe/slides":
                 thumbnail_url = frappe.call(

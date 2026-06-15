@@ -80,7 +80,7 @@ import emitter from '@/emitter'
 
 import NewFolderDialog from '@/components/NewFolderDialog.vue'
 import NewLinkDialog from '@/components/NewLinkDialog.vue'
-import { ShareDialog, MoveDialog, RenameDialog, InfoDialog } from 'frappe-ui/drive'
+import { ShareDialog, MoveDialog, RenameDialog, InfoDialog } from '@/ui/drive'
 import ConfirmDialog from '@/components/ConfirmDialog.vue'
 
 const props = defineProps({
