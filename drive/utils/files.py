@@ -4,13 +4,10 @@ from io import BytesIO
 from pathlib import Path
 import shutil
 
-import boto3
 import cv2
 import frappe
 import magic
 import mimemapper
-from botocore.config import Config
-from botocore.exceptions import ClientError
 from PIL import Image, ImageOps
 
 from drive.locks.distributed_lock import DistributedLock
@@ -45,6 +42,9 @@ class FileManager:
         self.prefix_map = {k["name"]: k["prefix"] for k in TEAMS}
 
         if self.s3_enabled:
+            import boto3
+            from botocore.config import Config
+
             self.conn = boto3.client(
                 "s3",
                 aws_access_key_id=settings.aws_key,
@@ -360,6 +360,8 @@ class FileManager:
     def move_to_trash(self, entity: DriveFile):
         if not entity.path or entity.mime_type.startswith("frappe"):
             return
+
+        from botocore.exceptions import ClientError
 
         trash_path = self.__get_trash_path(entity)
         try:
