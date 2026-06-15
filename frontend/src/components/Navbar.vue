@@ -184,8 +184,7 @@ const defaultActions = computed(() => {
           icon: LucideDownload,
           isEnabled: () =>
             !isVirtual(rootEntity.value) &&
-            !['Link', 'Presentation', 'Document'].includes(rootEntity.value.file_type) &&
-            rootEntity.value.allow_download,
+            !['Link', 'Presentation', 'Document'].includes(rootEntity.value.file_type),
           onClick: () => entitiesDownload([rootEntity.value]),
         },
         {
