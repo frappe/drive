@@ -5,7 +5,6 @@ from io import BytesIO
 from pathlib import Path
 
 import frappe
-# import magic
 import mimemapper
 from pypika import Order
 from werkzeug.utils import secure_filename, send_file
@@ -95,9 +94,6 @@ def upload_file(
         frappe.throw("You're out of storage!", ValueError)
 
     mime_type = mimemapper.get_mime_type(str(temp_path), native_first=False)
-    if mime_type is None:
-        mime_type = magic.from_buffer(open(temp_path, "rb").read(2048), mime=True)
-
     file_type = get_file_type(mime_type)
     manager = FileManager()
 

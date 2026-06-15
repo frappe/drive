@@ -6,9 +6,7 @@ import shutil
 from urllib.parse import unquote
 
 import boto3
-import cv2
 import frappe
-# import magic
 import mimemapper
 from botocore.config import Config
 from botocore.exceptions import ClientError
@@ -106,41 +104,29 @@ class FileManager:
 
         try:
             with DistributedLock(file_path, exclusive=False):
-                # Keep image/video thumbnail as `thumbnail` results in very dark thumbnails (albeit better)
                 if file.mime_type.startswith("image"):
                     with Image.open(file_path).convert("RGB") as image:
                         image = ImageOps.exif_transpose(image)
                         image.thumbnail((512, 512))
                         image.save(disk_path, format="webp")
                 elif file.mime_type.startswith("video"):
-                    cap = cv2.VideoCapture(file_path)
-                    frame_count = int(cap.get(cv2.CAP_PROP_FRAME_COUNT))
-                    target_frame = int(frame_count / 2)
-                    cap.set(cv2.CAP_PROP_POS_FRAMES, target_frame)
-                    _, frame = cap.read()
-                    cap.release()
-                    _, thumbnail_encoded = cv2.imencode(
-                        ".webp",
-                        frame,
-                        [int(cv2.IMWRITE_WEBP_QUALITY), 50],
-                    )
-                    with open(disk_path, "wb") as f:
-                        f.write(thumbnail_encoded)
-                else:
-                    from thumbnail import generate_thumbnail
+                    import av
 
-                    # PDF thumbnail
-                    generate_thumbnail(
-                        file_path,
-                        disk_path,
-                        {
-                            "trim": False,
-                            "height": 512,
-                            "width": 512,
-                            "quality": 100,
-                            "type": "thumbnail",
-                        },
-                    )
+                    with av.open(file_path) as container:
+                        stream = container.streams.video[0]
+                        if stream.duration:
+                            container.seek(stream.duration // 2, stream=stream)
+                        image = next(container.decode(stream)).to_image()
+                        image.thumbnail((512, 512))
+                        image.save(disk_path, format="webp")
+                else:
+                    import pymupdf
+
+                    pdf = pymupdf.open(file_path)
+                    page = pdf.load_page(0)
+                    zoom = 512 / max(page.rect.width, page.rect.height)
+                    page.get_pixmap(matrix=pymupdf.Matrix(zoom, zoom)).save(disk_path)
+                    pdf.close()
 
                 disk_path = Path(disk_path)
                 if self.s3_enabled:
@@ -319,8 +305,6 @@ class FileManager:
                     mime_type = "folder"
                 else:
                     mime_type = mimemapper.get_mime_type(str(f), native_first=False)
-                if mime_type is None:
-                    mime_type = magic.from_buffer(open(f, "rb").read(2048), mime=True)
 
                 # Twice `path` for compatability with S3 format
                 files[path] = (f.stat().st_size, f.stat().st_mtime, mime_type, str(path))
