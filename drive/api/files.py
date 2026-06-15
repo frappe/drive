@@ -159,7 +159,8 @@ def get_thumbnail(entity_name: str):
         wrap_file(frappe.request.environ, thumbnail_data),
         direct_passthrough=True,
     )
-    response.headers.set("Content-Type", "image/jpeg")
+    response.headers.set("Content-Type", "image/webp")
+    response.headers.set("Cache-Control", "private, max-age=3600")
     response.headers.set("Content-Disposition", "inline", filename=entity_name)
     return response
 

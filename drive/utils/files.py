@@ -125,7 +125,8 @@ class FileManager:
                     pdf = pymupdf.open(file_path)
                     page = pdf.load_page(0)
                     zoom = 512 / max(page.rect.width, page.rect.height)
-                    page.get_pixmap(matrix=pymupdf.Matrix(zoom, zoom)).save(disk_path)
+                    pix = page.get_pixmap(matrix=pymupdf.Matrix(zoom, zoom))
+                    Image.frombytes("RGB", (pix.width, pix.height), pix.samples).save(disk_path, format="webp")
                     pdf.close()
 
                 disk_path = Path(disk_path)
