@@ -79,7 +79,7 @@ def get_country_info():
 
 
 
-def assign_drive_role_and_create_settings(user: User, method: str) -> None:
+def assign_drive_role_and_create_settings(user, method: str) -> None:
     """Assign the "Drive User" role, settings and a personal team to a new User."""
     from drive.api.product import create_team
 

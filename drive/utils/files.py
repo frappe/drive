@@ -208,7 +208,7 @@ class FileManager:
             (self.site_folder / path).mkdir()
         return str(path) + "/"
 
-    def get_file(self, entity, range_header=None):
+    def get_file(self, entity, range_header=None, log=True):
         """
         Function to get a file, with an optional range header for S3 objects
         """
@@ -225,7 +225,8 @@ class FileManager:
                 with open(self.site_folder / file_url, "rb") as fh:
                     buf = BytesIO(fh.read())
         except (ClientError, FileNotFoundError, OSError) as e:
-            frappe.log_error("Drive: could not read file", e)
+            if log:
+                frappe.log_error("Drive: could not read file", e)
             frappe.throw("Could not find this file.", frappe.DoesNotExistError)
 
         return buf
@@ -345,7 +346,9 @@ class FileManager:
         return Path(storage_key(get_home_folder(team)["file_url"])) / self.settings.thumbnail_prefix / (name + ".thumbnail")
 
     def get_thumbnail(self, team, name):
-        return self.get_file(frappe._dict({"team": team, "file_url": str(self.get_thumbnail_path(team, name))}))
+        return self.get_file(
+            frappe._dict({"team": team, "file_url": str(self.get_thumbnail_path(team, name))}), log=False
+        )
 
     def __get_trash_path(self, entity):
         root = get_home_folder(entity.team)
