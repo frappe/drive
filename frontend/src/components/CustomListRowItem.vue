@@ -5,7 +5,7 @@
         v-if="!imgLoaded"
         loading="lazy"
         class="h-[16px] w-[16px] rounded-sm"
-        :src="backupLink"
+        :src="fallback"
         :draggable="false"
       />
       <img
@@ -55,14 +55,7 @@ const props = defineProps({
   contextMenu: Function,
 })
 
-let src, imgLoaded, thumbnailLink, backupLink, _
-
-if (props.column.prefix && props.column.key === 'file_name') {
-  ;[thumbnailLink, backupLink, _] = props.column.prefix({
-    row: props.row,
-  })
-
-  src = ref(thumbnailLink || backupLink)
-  imgLoaded = ref(false)
-}
+const isFileColumn = props.column.prefix && props.column.key === 'file_name'
+const { src, fallback } = isFileColumn ? props.column.prefix({ row: props.row }) : {}
+const imgLoaded = ref(false)
 </script>

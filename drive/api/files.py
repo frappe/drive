@@ -136,6 +136,10 @@ def get_thumbnail(entity_name: str):
     if not drive_file or drive_file.is_folder:
         return
 
+    # Thumbnails only exist for these types; bail before touching storage otherwise.
+    if drive_file.file_type not in ("Image", "Video", "PDF"):
+        return ""
+
     if not user_has_permission(drive_file, "read"):
         frappe.throw("No permission", frappe.PermissionError)
 
@@ -148,42 +152,21 @@ def get_thumbnail(entity_name: str):
     if not thumbnail_data:
         manager = FileManager()
         try:
-            if drive_file.file_type == "Markdown":
-                with manager.get_file(drive_file) as f:
-                    thumbnail_data = f.read()[:1000].decode("utf-8").replace("\n", "<br/>")
-            elif drive_file.file_type == "Document":
-                html = frappe.get_value("Writer Document", drive_file.content_docname, "html")
-                thumbnail_data = html[:1000] if html else ""
-            elif drive_file.mime_type == "frappe/slides":
-                thumbnail_url = frappe.call(
-                    "slides.slides.doctype.presentation.presentation.get_presentation_thumbnail",
-                    presentation_name=drive_file.path,
-                )
-                if not thumbnail_url:
-                    return ""
-                frappe.local.response["type"] = "redirect"
-                frappe.local.response["location"] = thumbnail_url
-                return
-            else:
-                thumbnail = manager.get_thumbnail(drive_file.team, entity_name)
-                thumbnail_data = BytesIO(thumbnail.read())
-                thumbnail.close()
+            thumbnail = manager.get_thumbnail(drive_file.team, entity_name)
+            thumbnail_data = BytesIO(thumbnail.read())
+            thumbnail.close()
         except:
             return ""
 
-    if thumbnail_data:
-        frappe.cache().set_value(entity_name, thumbnail_data, expires_in_sec=60 * 60)
+    frappe.cache().set_value(entity_name, thumbnail_data, expires_in_sec=60 * 60)
 
-    if isinstance(thumbnail_data, BytesIO):
-        response = Response(
-            wrap_file(frappe.request.environ, thumbnail_data),
-            direct_passthrough=True,
-        )
-        response.headers.set("Content-Type", "image/jpeg")
-        response.headers.set("Content-Disposition", "inline", filename=entity_name)
-        return response
-    else:
-        return thumbnail_data
+    response = Response(
+        wrap_file(frappe.request.environ, thumbnail_data),
+        direct_passthrough=True,
+    )
+    response.headers.set("Content-Type", "image/jpeg")
+    response.headers.set("Content-Disposition", "inline", filename=entity_name)
+    return response
 
 
 

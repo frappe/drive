@@ -22,17 +22,6 @@ S3_URL_PREFIX = "/api/method/drive.api.s3.fetch?path="
 
 
 class FileManager:
-    ACCEPTABLE_MIME_TYPES = [
-        "application/msword",
-        "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
-        "application/vnd.ms-excel",
-        "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-        "application/vnd.oasis.opendocument.spreadsheet",
-        "application/vnd.ms-powerpoint",
-        "application/vnd.openxmlformats-officedocument.presentationml.presentation",
-        "application/vnd.oasis.opendocument.presentation",
-    ]
-
     def __init__(self):
         settings = frappe.get_single("Drive Disk Settings")
         self.settings = settings
@@ -76,14 +65,10 @@ class FileManager:
         return prefix
 
     def can_create_thumbnail(self, file):
-        # Don't create thumbnails for text files
+        # Only images, videos and PDFs get thumbnails.
         if not hasattr(file, "mime_type"):
             return False
-        return (
-            file.mime_type.startswith(("image", "video"))
-            or file.mime_type == "application/pdf"
-            or file.mime_type in FileManager.ACCEPTABLE_MIME_TYPES
-        )
+        return file.mime_type.startswith(("image", "video")) or file.mime_type == "application/pdf"
 
     def upload_file(self, current_path: Path, file, create_thumbnail=True) -> None:
         """
@@ -144,7 +129,7 @@ class FileManager:
                 else:
                     from thumbnail import generate_thumbnail
 
-                    # Word document thumbnail
+                    # PDF thumbnail
                     generate_thumbnail(
                         file_path,
                         disk_path,

@@ -121,7 +121,7 @@ import {
   defineComponent,
   onWatcherCleanup,
 } from 'vue'
-import { getIconUrl } from '@/utils/getIconUrl'
+import { getIconUrl } from '@/utils/files'
 import { useStore } from 'vuex'
 import { onKeyDown } from '@vueuse/core'
 import LucideFilter from '~icons/lucide/filter'

@@ -30,6 +30,7 @@ export default defineConfig(async ({ mode }) => {
     resolve: {
       alias: {
         '@': path.resolve(__dirname, 'src'),
+        '@icons': path.resolve(__dirname, '../drive/public/images/icons'),
         'tailwind.config.js': path.resolve(__dirname, 'tailwind.config.js'),
         ...localFrappeUIAliases,
       },
