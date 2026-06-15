@@ -1,73 +1,29 @@
 <template>
-  <Navbar
-    v-if="!verify?.error && !getEntities.error"
-    :root-resource="verify"
-    :entities="activeEntity ? [activeEntity] : selectedEntitities"
-  />
+  <Navbar v-if="!verify?.error && !getEntities.error" :root-resource="verify"
+    :entities="activeEntity ? [activeEntity] : selectedEntitities" />
 
-  <ErrorPage
-    v-if="verify?.error || getEntities.error"
-    :error="verify?.error || getEntities.error"
-  />
+  <ErrorPage v-if="verify?.error || getEntities.error" :error="verify?.error || getEntities.error" />
 
-  <div
-    v-else
-    id="drop-area"
-    ref="container"
-    class="flex flex-col overflow-auto min-h-full bg-surface-white"
-  >
-    <DriveToolBar
-      v-model:sort-order="sortOrder"
-      v-model:search="search"
-      v-model:filters="filters"
-      v-model:team="team"
-      :action-items="actionItems"
-      :selections="selectedEntitities"
-      :get-entities="getEntities || { data: [] }"
-    />
+  <div v-else id="drop-area" ref="container" class="flex flex-col overflow-auto min-h-full bg-surface-white">
+    <DriveToolBar v-model:sort-order="sortOrder" v-model:search="search" v-model:filters="filters" v-model:team="team"
+      :action-items="actionItems" :selections="selectedEntitities" :get-entities="getEntities || { data: [] }" />
 
-    <div
-      v-if="!props.getEntities.data"
-      class="m-auto"
-      style="transform: translate(0, -88.5px)"
-    >
+    <div v-if="!props.getEntities.data" class="m-auto" style="transform: translate(0, -88.5px)">
       <LoadingIndicator class="size-5 text-ink-gray-9" />
     </div>
-    <NoFilesSection
-      v-else-if="!props.getEntities.data?.length"
-      :icon="icon"
-      v-bind="empty"
-    />
-    <ListView
-      v-else-if="$store.state.view === 'list'"
-      v-model="selections"
-      :folder-contents="rows && grouper(rows)"
-      :action-items="actionItems"
-      :root-entity="verify?.data"
-      @dropped="onDrop"
-    />
-    <GridView
-      v-else
-      v-model="selections"
-      :folder-contents="rows"
-      :action-items="actionItems"
-      @dropped="onDrop"
-    />
+    <NoFilesSection v-else-if="!props.getEntities.data?.length" :icon="icon" v-bind="empty" />
+    <ListView v-else-if="$store.state.view === 'list'" v-model="selections" :folder-contents="rows && grouper(rows)"
+      :action-items="actionItems" :root-entity="verify?.data" @dropped="onDrop" />
+    <GridView v-else v-model="selections" :folder-contents="rows" :action-items="actionItems" @dropped="onDrop" />
   </div>
-  <p
-    class="hidden absolute text-center top-1/2 left-[calc(50%-4rem)] w-32 z-10 font-bold"
-  >
+  <p class="hidden absolute text-center top-1/2 left-[calc(50%-4rem)] w-32 z-10 font-bold">
     Drop to upload
   </p>
-  <Transition
-    v-if="store.state.uploads.length > 0"
+  <Transition v-if="store.state.uploads.length > 0"
     enter-active-class="transition duration-[150ms] ease-[cubic-bezier(.21,1.02,.73,1)]"
-    enter-from-class="translate-y-1 opacity-0"
-    enter-to-class="translate-y-0 opacity-100"
+    enter-from-class="translate-y-1 opacity-0" enter-to-class="translate-y-0 opacity-100"
     leave-active-class="transition duration-[150ms] ease-[cubic-bezier(.21,1.02,.73,1)]"
-    leave-from-class="translate-y-0 opacity-100"
-    leave-to-class="translate-y-1 opacity-0"
-  >
+    leave-from-class="translate-y-0 opacity-100" leave-to-class="translate-y-1 opacity-0">
     <UploadTracker />
   </Transition>
 </template>
@@ -151,15 +107,15 @@ const sortId = computed(
 const inIframe = inject('inIframe')
 const DEFAULT_SORT = inIframe.value
   ? {
-      label: 'Name',
-      field: 'name',
-      ascending: true,
-    }
+    label: 'Name',
+    field: 'name',
+    ascending: true,
+  }
   : {
-      label: 'Modified',
-      field: 'modified',
-      ascending: false,
-    }
+    label: 'Modified',
+    field: 'modified',
+    ascending: false,
+  }
 const sortOrder = ref(store.state.sortOrder[sortId.value] || DEFAULT_SORT)
 const search = ref('')
 const filters = ref([])
@@ -235,7 +191,7 @@ const refreshData = () => {
   const params = { team: team.value === 'home' ? '' : team.value || '' }
   if (sortOrder.value) {
     params.order_by = sortOrder.value.field
-    params.ascending=  sortOrder.value.ascending
+    params.ascending = sortOrder.value.ascending
   }
   props.getEntities.fetch({ ...props.getEntities.params, ...params })
 }
@@ -330,8 +286,7 @@ const actionItems = computed(() => {
         // nodes and non-downloadable types are excluded.
         isEnabled: (e) =>
           !isVirtual(e) &&
-          !['Link', 'Presentation', 'Document'].includes(e.file_type) &&
-          e.allow_download,
+          !['Link', 'Presentation', 'Document'].includes(e.file_type),
         action: (entities) => entitiesDownload(entities),
         multi: true,
         important: true,
@@ -347,7 +302,7 @@ const actionItems = computed(() => {
         action: ([entity]) => {
           window.open(
             '/api/method/drive.api.files.redirect_to_original?file_id=' +
-              entity.name,
+            entity.name,
             '_blank'
           )
         },
@@ -454,7 +409,7 @@ async function newLink() {
           },
         ],
       })
-  } catch {}
+  } catch { }
 }
 
 // JS doesn't allow direct reading of clipboard
@@ -499,7 +454,7 @@ socket.on('client-rename', ({ entity_name, title }) => {
   padding-right: 0;
 }
 
-.file-drag #drop-area + p {
+.file-drag #drop-area+p {
   display: block;
 }
 </style>
