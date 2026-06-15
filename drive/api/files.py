@@ -138,22 +138,12 @@ def get_thumbnail(entity_name: str):
     if drive_file.is_folder or drive_file.file_type not in ("Image", "Video", "PDF"):
         return ""
 
-    thumbnail_data = None
-    if frappe.cache().exists(entity_name):
-        try:
-            thumbnail_data = frappe.cache().get_value(entity_name)
-        except:
-            frappe.cache().delete_value(entity_name)
-    if not thumbnail_data:
-        manager = FileManager()
-        try:
-            thumbnail = manager.get_thumbnail(drive_file.team, entity_name)
-            thumbnail_data = BytesIO(thumbnail.read())
-            thumbnail.close()
-        except:
-            return ""
-
-    frappe.cache().set_value(entity_name, thumbnail_data, expires_in_sec=60 * 60)
+    try:
+        thumbnail = FileManager().get_thumbnail(drive_file.team, entity_name)
+        thumbnail_data = BytesIO(thumbnail.read())
+        thumbnail.close()
+    except Exception:
+        return ""
 
     response = Response(
         wrap_file(frappe.request.environ, thumbnail_data),
