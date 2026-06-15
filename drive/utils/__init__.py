@@ -140,6 +140,17 @@ FILE_FIELDS = [
 ]
 
 
+def hide_storage_key(row):
+    """Blank file_url unless the client needs it as a real URL.
+
+    For managed files it's the raw storage key, which leaks the owner's path;
+    only Link/Presentation/site files use it client-side.
+    """
+    if row.get("file_type") not in ("Link", "Presentation") and not is_site_file(row):
+        row["file_url"] = None
+    return row
+
+
 def get_home_folder(team):
     team_filter = DriveFile.team.isnull() if not team else (DriveFile.team == team)
     ls = (
