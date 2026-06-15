@@ -18,7 +18,7 @@ class DriveTeam(Document):
                 "name": self.name,
                 "doctype": "File",
                 "file_name": f"Drive - {self.name}",
-                "path": "",
+                "file_url": "",
                 "is_folder": 1,
                 "team": self.name,
             }
@@ -41,7 +41,7 @@ class DriveTeam(Document):
                     settings.team_prefix == "none": "",
                 }[True]
             )
-        d.path = str(root_folder)
+        d.file_url = str(root_folder)
         d.save()
 
         # Create even with S3 as we need local folders before uploading to S3
@@ -62,7 +62,7 @@ class DriveTeam(Document):
 
         try:
             files_dir = Path(frappe.get_site_path("private/files"))
-            user_directory_path = files_dir / get_home_folder(self.name).path
+            user_directory_path = files_dir / get_home_folder(self.name).file_url
             if user_directory_path != files_dir:
                 shutil.rmtree(str(user_directory_path))
             frappe.db.delete("File", {"team": self.name})
