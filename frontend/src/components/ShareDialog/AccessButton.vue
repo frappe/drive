@@ -45,7 +45,7 @@ import { dynamicList } from "@/utils/files"
 
 
 const props = defineProps({ accessLevels: Object, accessObj: Object, folder: Boolean })
-const shareAccess = ref(props.accessObj.write ? "editor" : "reader")
+const shareAccess = ref(props.accessObj.write ? "editor" : props.accessObj.upload ? "upload" : "reader")
 
 watch(shareAccess, (val) =>
   emit("updateAccess", {
