@@ -35,7 +35,7 @@ import { Button } from 'frappe-ui'
 import store from '@/store'
 import router from '@/router'
 import { watchEffect } from 'vue'
-import { LucideFileUser } from 'lucide-vue-next'
+import LucideFileUser from '~icons/lucide/file-user'
 
 const props = defineProps({ error: Object })
 

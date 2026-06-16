@@ -1,4 +1,3 @@
-import { format } from 'date-fns'
 export function formatSize(size, nDigits = 1) {
   if (size === 0) return '0 KB'
   var i = -1
@@ -21,16 +20,15 @@ export function base2BlockSize(bytes) {
 export function formatDate(date) {
   if (!date) return ''
   const dateObj = new Date(date)
-  const timeZone = Intl.DateTimeFormat().resolvedOptions().timeZone
-  const hourCycle = navigator.language || 'en-US'
-
-  const formattedDate = format(dateObj, 'MM/dd/yy', { timeZone })
-  let formattedTime
-  if (hourCycle === 'en-US') {
-    formattedTime = format(dateObj, 'hh:mm a', { timeZone })
-  } else {
-    formattedTime = format(dateObj, 'hh:mm a', { timeZone })
-  }
+  const formattedDate = new Intl.DateTimeFormat('en-US', {
+    month: '2-digit',
+    day: '2-digit',
+    year: '2-digit',
+  }).format(dateObj)
+  const formattedTime = new Intl.DateTimeFormat('en-US', {
+    hour: '2-digit',
+    minute: '2-digit',
+  }).format(dateObj)
   return `${formattedDate}, ${formattedTime}`
 }
 

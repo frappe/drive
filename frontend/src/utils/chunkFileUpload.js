@@ -1,4 +1,3 @@
-import { v4 as uuidv4 } from 'uuid'
 import store from '@/store'
 
 /* Simple function to chunk upload a file instead of dropzone JS 
@@ -6,7 +5,7 @@ import store from '@/store'
 */
 
 export async function uploadDriveEntity(file, team, doc_name) {
-  const fileUuid = uuidv4()
+  const fileUuid = crypto.randomUUID()
   const chunkSize = 5 * 1024 * 1024 // size of each chunk (5MB)
   let chunkByteOffset = 0
   let chunkIndex = 0

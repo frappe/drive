@@ -1,5 +1,4 @@
 import { toast } from 'frappe-ui'
-import slugify from 'slugify'
 import { useTimeAgo } from '@vueuse/core'
 
 import dayjs from 'dayjs'
@@ -45,11 +44,13 @@ function getLinkStem(entity) {
 }
 
 function slugger(file_name) {
-  return slugify(file_name.split('.').join(' '), {
-    lower: true,
-    trim: true,
-    remove: /[^\w\s\']|_/,
-  })
+  return file_name
+    .split('.')
+    .join(' ')
+    .toLowerCase()
+    .trim()
+    .replace(/[^\w\s']|_/g, '')
+    .replace(/\s+/g, '-')
 }
 
 export const copyToClipboard = (str) => {
