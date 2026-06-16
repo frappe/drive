@@ -55,10 +55,16 @@ const props = defineProps({ file: Object })
 
 const { src, fallback } = getThumbnailUrl(props.file, 'grid')
 const hasThumbnail = src !== fallback
+const isThumbnailType = ['Image', 'Video', 'PDF'].includes(props.file.file_type)
 const imgLoaded = ref(false)
 
+// Show the footer type icon once a real thumbnail has loaded, or always for
+// types that never get one (Documents, Spreadsheets, etc.).
 const showTypeIcon = computed(
-  () => hasThumbnail && imgLoaded.value && !props.file.is_folder && props.file.file_type !== 'Unknown'
+  () =>
+    props.file.file_type !== 'Unknown' &&
+    !props.file.is_folder &&
+    ((imgLoaded.value && hasThumbnail) || !isThumbnailType)
 )
 
 const childrenSentence = computed(() => {
