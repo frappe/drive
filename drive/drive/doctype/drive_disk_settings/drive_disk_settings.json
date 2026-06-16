@@ -6,7 +6,6 @@
  "engine": "InnoDB",
  "field_order": [
   "general_section",
-  "jwt_key",
   "preview_size",
   "use_drive_for_files",
   "disk_section",
@@ -86,12 +85,6 @@
    "label": "Thumbnail prefix"
   },
   {
-   "fieldname": "jwt_key",
-   "fieldtype": "Data",
-   "label": "JWT Key",
-   "options": "Dangerous - if leaked, all files can be accessed."
-  },
-  {
    "default": "100",
    "description": "Used to configure maximum file sizes of in-browser previews (in megabytes).",
    "fieldname": "preview_size",
@@ -129,12 +122,22 @@
  "index_web_pages_for_search": 1,
  "issingle": 1,
  "links": [],
- "modified": "2026-03-06 14:48:40.048946",
+ "modified": "2026-06-16 18:24:47.598513",
  "modified_by": "Administrator",
  "module": "Drive",
  "name": "Drive Disk Settings",
  "owner": "Administrator",
  "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "print": 1,
+   "read": 1,
+   "role": "Drive Admin",
+   "share": 1,
+   "write": 1
+  },
   {
    "create": 1,
    "delete": 1,
