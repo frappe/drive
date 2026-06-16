@@ -5,7 +5,7 @@
   <div class="flex justify-start w-full items-center gap-x-4">
     <Avatar :image="newImageUrl" size="3xl" :label="fullName" class="w-20 h-20" />
     <div class="flex flex-col">
-      <span class="text-xl font-semibold text-ink-gray-8">{{ fullName }}</span>
+      <span class="text-3xl-semibold text-ink-gray-8">{{ fullName }}</span>
       <span class="text-base text-ink-gray-6">{{ $store.state.user.id }}</span>
     </div>
     <Button class="ml-auto" @click="editProfileDialog = true">
@@ -13,20 +13,18 @@
     </Button>
   </div>
   <Dialog
-    v-model="editProfileDialog"
-    :options="{
-      title: __('Edit Profile'),
-      size: 'md',
-      actions: [
-        {
-          label: __('Confirm'),
-          variant: 'solid',
-          onClick: updateProfile,
-        },
-      ],
-    }"
+    v-model:open="editProfileDialog"
+    :title="__('Edit Profile')"
+    size="md"
+    :actions="[
+      {
+        label: __('Confirm'),
+        variant: 'solid',
+        onClick: updateProfile,
+      },
+    ]"
   >
-    <template #body-content>
+    <template #default>
       <div class="flex flex-col items-start justify-start gap-y-2">
         <span class="text-base text-ink-gray-5">Profile Photo</span>
         <div class="flex items-center justify-between w-full">
@@ -67,9 +65,9 @@
         </div>
         <div class="w-full flex flex-col gap-y-2 my-2">
           <span class="text-base text-ink-gray-5">{{ __('First Name') }}</span>
-          <Input v-model="newFirstName" v-focus />
+          <TextInput v-model="newFirstName" v-focus />
           <span class="text-base text-ink-gray-5">{{ __('Last Name') }}</span>
-          <Input v-model="newLastName" />
+          <TextInput v-model="newLastName" />
         </div>
       </div>
     </template>
@@ -87,7 +85,7 @@
 <script setup>
 import {
   Button,
-  Input,
+  TextInput,
   Avatar,
   Dialog,
   FileUploader,

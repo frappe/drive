@@ -1,5 +1,5 @@
 <template>
-  <div class="flex h-screen w-full overflow-hidden sm:bg-surface-menu-bar">
+  <div class="flex h-screen w-full overflow-hidden sm:bg-surface-sidebar">
     <div class="w-full overflow-auto">
       <div class="relative h-full">
         <div class="relative z-10 mx-auto pt-8 sm:w-max sm:pt-20">
@@ -7,10 +7,10 @@
             <FrappeDriveLogo class="inline-block h-12 w-12 rounded-md" />
           </div>
           <div
-            class="mx-auto w-full bg-surface-white p-5 sm:mt-6 sm:w-96 sm:rounded-xl sm:p-6 sm:shadow-md"
+            class="mx-auto w-full bg-surface-base p-5 sm:mt-6 sm:w-96 sm:rounded-xl sm:p-6 sm:shadow-md"
           >
             <h1
-              class="mb-5 text-center text-xl font-semibold text-ink-gray-9"
+              class="mb-5 text-center text-3xl-semibold text-ink-gray-9"
             >
               {{
                 params.get("t")

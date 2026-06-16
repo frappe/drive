@@ -1,13 +1,13 @@
 <template>
-  <Dialog v-model="open" @close="dialogType = ''">
-    <template #body-title>
-      <h3 class="text-2xl font-semibold leading-6 text-ink-gray-9 cursor-pointer pr-2" @click="emitter.emit('rename')">
+  <Dialog v-model:open="open" @close="dialogType = ''">
+    <template #title>
+      <h3 class="text-4xl-semibold leading-6 text-ink-gray-9 cursor-pointer pr-2" @click="emitter.emit('rename')">
         {{ entity.file_name }}
       </h3>
     </template>
-    <template #body-content>
+    <template #default>
       <ul class="space-y-3 text-sm mb-4 text-ink-gray-8">
-        <span class="text-base font-semibold">Information</span>
+        <span class="text-base-semibold">Information</span>
         <li>
           <span class="inline-block w-24 text-ink-gray-5">{{ __('Owner') }}:</span>
           <span class="col-span-1">
@@ -35,7 +35,7 @@
       </ul>
 
       <ul v-if="editor?.storage?.characterCount" class="space-y-3 text-sm mb-4 text-ink-gray-8">
-        <span class="text-base font-semibold">{{ __('Stats') }}</span>
+        <span class="text-base-semibold">{{ __('Stats') }}</span>
         <li>
           <span class="inline-block w-24 text-ink-gray-5">{{ __('Words') }}:</span>
           <span class="col-span-1">{{
@@ -61,7 +61,7 @@
         </li>
       </ul>
       <div class="flex justify-between items-center">
-        <span class="text-base font-semibold text-ink-gray-8">Access</span>
+        <span class="text-base-semibold text-ink-gray-8">Access</span>
         <Button v-if="entity.share" :variant="'subtle'" size="sm"
           class="rounded flex justify-center items-center scale-[90%]" @click="emitter.emit('share')">
           {{ __('Manage') }}
@@ -99,7 +99,7 @@
       </ul>
       <ul v-if="developer" class="space-y-3 text-sm text-ink-gray-8 mb-4 mt-4">
         <div>
-          <span class="text-base font-semibold">{{ __('Developer') }}</span>
+          <span class="text-base-semibold">{{ __('Developer') }}</span>
           <Button variant="subtle" size="sm" class="scale-[90%] float-right">
             <a :href="'/app/file/' + entity.name" target="_blank">Open in Desk</a>
           </Button>
@@ -181,12 +181,12 @@ onKeyDown('D', () => {
 const accessConfig = {
   team: {
     icon: LucideBuilding2,
-    color: 'bg-surface-blue-2 text-ink-blue-2',
+    color: 'bg-surface-blue-2 text-ink-blue-5',
     label: 'Team',
   },
   public: {
     icon: LucideGlobe2,
-    color: 'bg-surface-red-2 text-ink-red-3',
+    color: 'bg-surface-red-2 text-ink-red-6',
     label: 'Public',
   },
   restricted: {

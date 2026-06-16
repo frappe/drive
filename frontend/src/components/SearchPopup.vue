@@ -1,6 +1,6 @@
 <template>
-  <Dialog v-model="open" :options="{ size: 'xl', position: 'top' }">
-    <template #body>
+  <Dialog v-model:open="open" size="xl" position="top" bare>
+    <template #default>
       <div class="flex px-4 py-3 gap-1 items-center border-b">
         <LucideSearch class="w-4 mr-1 h-auto" name="search" />
         <input
@@ -52,21 +52,21 @@
         <span class="mb-1 px-4.5 text-base text-ink-gray-5">Jump to</span>
         <div class="px-2.5">
           <div
-            class="flex w-full min-w-0 items-center rounded px-2 py-2 text-base font-medium text-ink-gray-7 hover:bg-surface-gray-2"
+            class="flex w-full min-w-0 items-center rounded px-2 py-2 text-base-medium text-ink-gray-7 hover:bg-surface-gray-2"
             @click="$router.push({ name: 'Home' }), emitter.emit('showSearchPopup', false)"
           >
             <LucideHome class="mr-2 size-4 text-ink-gray-7" />
             Home
           </div>
           <div
-            class="flex w-full min-w-0 items-center rounded px-2 py-2 text-base font-medium text-ink-gray-7 hover:bg-surface-gray-2"
+            class="flex w-full min-w-0 items-center rounded px-2 py-2 text-base-medium text-ink-gray-7 hover:bg-surface-gray-2"
             @click="$router.push({ name: 'Recents' }), emitter.emit('showSearchPopup', false)"
           >
             <LucideClock class="mr-2 size-4 text-ink-gray-7" />
             Recents
           </div>
           <div
-            class="flex w-full min-w-0 items-center rounded px-2 py-2 text-base font-medium text-ink-gray-7 hover:bg-surface-gray-2"
+            class="flex w-full min-w-0 items-center rounded px-2 py-2 text-base-medium text-ink-gray-7 hover:bg-surface-gray-2"
             @click="$router.push({ name: 'Favourites' }), emitter.emit('showSearchPopup', false)"
           >
             <LucideStar class="mr-2 size-4 text-ink-gray-7" />
@@ -76,14 +76,14 @@
         <span class="mt-3 mb-1 px-4.5 text-base text-ink-gray-5">Actions</span>
         <div class="px-2.5">
           <div
-            class="flex w-full min-w-0 items-center rounded px-2 py-2 text-base font-medium text-ink-gray-7 hover:bg-surface-gray-2"
+            class="flex w-full min-w-0 items-center rounded px-2 py-2 text-base-medium text-ink-gray-7 hover:bg-surface-gray-2"
             @click="emitter.emit('uploadFile'), emitter.emit('showSearchPopup', false)"
           >
             <LucideFilePlus2 class="stroke-[1.35] mr-2 size-4 text-ink-gray-7" />
             Upload File
           </div>
           <div
-            class="flex w-full min-w-0 items-center rounded px-2 py-2 text-base font-medium text-ink-gray-7 hover:bg-surface-gray-2"
+            class="flex w-full min-w-0 items-center rounded px-2 py-2 text-base-medium text-ink-gray-7 hover:bg-surface-gray-2"
             @click="emitter.emit('uploadFolder'), emitter.emit('showSearchPopup', false)"
           >
             <LucideFolderPlus class="stroke-[1.35] mr-2 size-4 text-ink-gray-7" />

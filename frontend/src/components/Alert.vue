@@ -4,7 +4,7 @@
       <component :is="icon ? icon : LucideInfo" class="size-4 text-ink-gray-6" />
       <div class="flex items-center justify-between flex-1">
         <slot>
-          <h3 v-if="title" class="text-lg font-medium text-ink-gray-9">
+          <h3 v-if="title" class="text-xl-medium text-ink-gray-9">
             {{ title }}
           </h3>
         </slot>

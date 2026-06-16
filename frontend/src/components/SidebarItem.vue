@@ -1,6 +1,6 @@
 <template>
   <button
-    class="flex h-7 w-full cursor-pointer items-center rounded text-ink-gray-7 active:bg-surface-selected hover:bg-surface-gray-2"
+    class="flex h-7 w-full cursor-pointer items-center rounded text-ink-gray-7 active:bg-surface-elevation-3 hover:bg-surface-gray-2"
     @click="handleClick"
   >
     <div class="flex w-full items-center justify-between duration-300 ease-in-out p-2">
@@ -8,7 +8,7 @@
         <Tooltip
           :text="__(label)"
           placement="right"
-          arrow-class="fill-surface-gray-7"
+          arrow-class="fill-surface-gray-10"
           :disabled="!isCollapsed"
         >
           <slot name="icon">

@@ -35,7 +35,7 @@
         <LucideFileText class="size-4 text-ink-gray-5 flex-shrink-0" />
 
         <div class="flex flex-col flex-1 min-w-0">
-          <span class="text-ink-gray-8 text-sm font-medium truncate">
+          <span class="text-ink-gray-8 text-sm-medium truncate">
             {{ template.title }}
           </span>
         </div>
@@ -53,7 +53,7 @@
             variant="ghost"
             @click="confirmDelete(template)"
           >
-            <LucideTrash2 class="size-4 text-ink-red-3" />
+            <LucideTrash2 class="size-4 text-ink-red-6" />
           </Button>
         </div>
       </div>
@@ -61,22 +61,20 @@
 
     <!-- Add/Edit Template Dialog -->
     <Dialog
-      v-model="showAddDialog"
-      :options="{
-        title: editingTemplate ? __('Edit Template') : __('Add Template'),
-        size: 'xl',
-        actions: [
-          {
-            label: editingTemplate ? __('Update') : __('Add'),
-            loading: isSaving,
-            disabled: !formData.title,
-            onClick: saveTemplate,
-            variant: 'solid',
-          },
-        ],
-      }"
+      v-model:open="showAddDialog"
+      :title="editingTemplate ? __('Edit Template') : __('Add Template')"
+      size="xl"
+      :actions="[
+        {
+          label: editingTemplate ? __('Update') : __('Add'),
+          loading: isSaving,
+          disabled: !formData.title,
+          onClick: saveTemplate,
+          variant: 'solid',
+        },
+      ]"
     >
-      <template #body-content>
+      <template #default>
         <div class="space-y-4">
           <FormControl
             type="text"
@@ -89,12 +87,15 @@
           />
           <div class="space-y-1.5">
             <FormLabel :label="__('Content')" :required="true" />
-            <TextEditor
-              ref="textEditor"
-              :content="formData.content"
+            <Editor
+              v-model="formData.content"
+              :extensions="[RichTextKit]"
               :editable="true"
-              editor-class="prose-sm max-w-none min-h-[300px] max-h-[300px] overflow-y-auto px-3 py-2 border rounded"
-            />
+            >
+              <template #default>
+                <EditorContent class="prose-sm max-w-none min-h-[300px] max-h-[300px] overflow-y-auto px-3 py-2 border rounded" />
+              </template>
+            </Editor>
           </div>
         </div>
       </template>
@@ -102,27 +103,26 @@
 
     <!-- Delete Confirmation Dialog -->
     <Dialog
-      v-model="showDeleteDialog"
-      :options="{
-        title: __('Delete Template'),
-        message: `Are you sure you want to delete this (${templateToDelete?.title}) template?`,
-        size: 'sm',
-        actions: [
-          {
-            label: 'Delete',
-            theme: 'red',
-            loading: templates.delete.loading,
-            onClick: deleteTemplate,
-          },
-        ],
-      }"
+      v-model:open="showDeleteDialog"
+      :title="__('Delete Template')"
+      :message="`Are you sure you want to delete this (${templateToDelete?.title}) template?`"
+      size="sm"
+      :actions="[
+        {
+          label: 'Delete',
+          theme: 'red',
+          loading: templates.delete.loading,
+          onClick: deleteTemplate,
+        },
+      ]"
     />
   </div>
 </template>
 
 <script setup>
 import { ref, reactive } from 'vue'
-import { Button, Dialog, FormLabel, FormControl, TextEditor, createListResource } from 'frappe-ui'
+import { Button, Dialog, FormLabel, FormControl, createListResource } from 'frappe-ui'
+import { Editor, EditorContent, RichTextKit } from 'frappe-ui/editor'
 import LucideFileText from '~icons/lucide/file-text'
 import LucidePlus from '~icons/lucide/plus'
 import LucidePencil from '~icons/lucide/pencil'
@@ -133,7 +133,6 @@ const showAddDialog = ref(false)
 const showDeleteDialog = ref(false)
 const editingTemplate = ref(null)
 const templateToDelete = ref(null)
-const textEditor = ref(null)
 const isSaving = ref(false)
 
 const formData = reactive({
@@ -166,7 +165,7 @@ function closeDialog() {
 async function saveTemplate() {
   if (!formData.title) return
 
-  const htmlContent = textEditor.value?.editor?.getHTML() || ''
+  const htmlContent = formData.content || ''
   isSaving.value = true
 
   try {

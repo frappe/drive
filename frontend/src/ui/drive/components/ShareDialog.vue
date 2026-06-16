@@ -1,10 +1,10 @@
 <template>
-  <Dialog v-model="open" :options="{ size: 'lg' }">
-    <template #body-main>
+  <Dialog v-model:open="open" size="lg" bare>
+    <template #default>
       <div class="p-4">
         <!-- Header -->
         <div class="flex w-full justify-between gap-x-2 mb-4">
-          <div class="font-semibold text-2xl flex text-nowrap overflow-hidden">
+          <div class=" text-4xl-semibold flex text-nowrap overflow-hidden">
             Sharing "
             <div class="truncate max-w-[80%]">
               {{ entity?.file_name }}
@@ -22,7 +22,7 @@
         <div>
           <!-- General section -->
           <div class="border-b pb-4 mb-4">
-            <div class="mb-2 text-ink-gray-5 font-medium text-base">
+            <div class="mb-2 text-ink-gray-5 text-base-medium">
               General Access
             </div>
             <div class="flex justify-between mt-3">
@@ -63,7 +63,7 @@
             </div>
           </div>
           <!-- Members section -->
-          <div class="text-ink-gray-5 font-medium text-base mb-2">Members</div>
+          <div class="text-ink-gray-5 text-base-medium mb-2">Members</div>
           <div class="flex gap-3 pb-2">
             <TagInput
               v-model="usersToAdd"
@@ -101,7 +101,7 @@
               />
 
               <div class="flex items-start flex-col gap-1">
-                <span class="font-medium text-base text-ink-gray-9">{{
+                <span class=" text-base-medium text-ink-gray-9">{{
                   user.full_name || user.user || user.email
                 }}</span>
                 <span class="text-ink-gray-7 text-sm">{{

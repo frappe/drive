@@ -9,7 +9,7 @@
   >
   <div
     v-else
-    class="max-w-[450px] h-fit self-center p-10 bg-surface-white rounded-md text-xl text-center font-medium shadow-xl flex flex-col justify-center items-center gap-4"
+    class="max-w-[450px] h-fit self-center p-10 bg-surface-base rounded-md text-3xl-medium text-center shadow-xl flex flex-col justify-center items-center gap-4"
   >
     <div v-if="error" class="text-p-base">
       <LucideSettings class="size-8 mb-6 mx-auto" />

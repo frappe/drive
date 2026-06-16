@@ -6,7 +6,7 @@
       :class="[
         row.name === selectedName || selections.has(row.name)
           ? 'bg-surface-gray-2 hover:!bg-surface-gray-3'
-          : 'bg-surface-white',
+          : 'bg-surface-base',
         draggedItem === row.name ? 'opacity-60 hover:shadow-none' : '',
         dragOverItem === row.name ? '!bg-surface-gray-3' : '',
       ]"

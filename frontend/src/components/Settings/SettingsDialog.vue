@@ -1,10 +1,10 @@
 <template>
-  <Dialog v-model="open" :options="{ title: 'Settings', size: '5xl' }">
-    <template #body>
+  <Dialog v-model:open="open" size="5xl" bare>
+    <template #default>
       <div class="flex" :style="{ height: '80vh' }">
-        <div class="flex w-52 shrink-0 flex-col bg-surface-menu-bar py-3 p-4 border-r">
+        <div class="flex w-52 shrink-0 flex-col bg-surface-sidebar py-3 p-4 border-r">
           <div class="flex justify-between items-center">
-            <h1 class="text-xl font-semibold leading-6 text-ink-gray-9 pr-2">
+            <h1 class="text-3xl-semibold leading-6 text-ink-gray-9 pr-2">
               {{ __('Settings') }}
             </h1>
             <!-- <Button
