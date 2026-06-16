@@ -110,8 +110,7 @@
 <script setup>
 import { formatSize, base2BlockSize, COLOR_MAP, formatPercent } from '@/utils/format'
 import { Tooltip, TabButtons } from 'frappe-ui'
-import { getIconUrl } from '@/utils/getIconUrl'
-import { openEntity, MIME_LIST_MAP } from '@/utils/files'
+import { getIconUrl, openEntity, MIME_LIST_MAP } from '@/utils/files'
 import { createResource } from 'frappe-ui'
 import { ref, watch } from 'vue'
 import { useRoute } from 'vue-router'

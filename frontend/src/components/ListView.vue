@@ -50,13 +50,12 @@ import {
   Avatar,
   Tooltip,
 } from 'frappe-ui'
-import { getThumbnailUrl } from '@/utils/getIconUrl'
 import { useStore } from 'vuex'
 import { useRoute } from 'vue-router'
 import { computed, h, ref, watch, useTemplateRef } from 'vue'
 import ContextMenu from '@/components/ContextMenu.vue'
 import CustomListRow from './CustomListRow.vue'
-import { openEntity, isModKey, getLink } from '@/utils/files'
+import { openEntity, isModKey, getLink, getThumbnailUrl } from '@/utils/files'
 import { formatDate } from '@/utils/format'
 import {
   WRITER_CONTENT_DOCTYPE,

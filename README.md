@@ -171,27 +171,13 @@ Install bench and set up a `frappe-bench` directory by following the [installati
 bench get-app drive --branch main
 ```
 
-**Step 3**: Install some Drive specific system packages
-
-Ubuntu/Debian (apt based distros)
-
-```sh
-sudo apt install ffmpeg libmagic
-```
-
-MacOs
-
-```sh
-brew install libmagic ffmpeg
-```
-
-**Step 4**: Install drive once it's downloaded
+**Step 3**: Install drive once it's downloaded
 
 ```
 bench install-app drive
 ```
 
-**Step 5**: Start bench if it's not already running
+**Step 4**: Start bench if it's not already running
 
 ```
 bench start

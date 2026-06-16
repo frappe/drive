@@ -5,7 +5,6 @@ from io import BytesIO
 from pathlib import Path
 
 import frappe
-# import magic
 import mimemapper
 from pypika import Order
 from werkzeug.utils import secure_filename, send_file
@@ -95,9 +94,6 @@ def upload_file(
         frappe.throw("You're out of storage!", ValueError)
 
     mime_type = mimemapper.get_mime_type(str(temp_path), native_first=False)
-    if mime_type is None:
-        mime_type = magic.from_buffer(open(temp_path, "rb").read(2048), mime=True)
-
     file_type = get_file_type(mime_type)
     manager = FileManager()
 
@@ -133,57 +129,30 @@ def upload_file(
 @frappe.whitelist(allow_guest=True)
 def get_thumbnail(entity_name: str):
     drive_file = frappe.get_cached_doc("File", entity_name)
-    if not drive_file or drive_file.is_folder:
-        return
 
+    # Permission first, so callers can't probe type/existence of files they can't read.
     if not user_has_permission(drive_file, "read"):
         frappe.throw("No permission", frappe.PermissionError)
 
-    thumbnail_data = None
-    if frappe.cache().exists(entity_name):
-        try:
-            thumbnail_data = frappe.cache().get_value(entity_name)
-        except:
-            frappe.cache().delete_value(entity_name)
-    if not thumbnail_data:
-        manager = FileManager()
-        try:
-            if drive_file.file_type == "Markdown":
-                with manager.get_file(drive_file) as f:
-                    thumbnail_data = f.read()[:1000].decode("utf-8").replace("\n", "<br/>")
-            elif drive_file.file_type == "Document":
-                html = frappe.get_value("Writer Document", drive_file.content_docname, "html")
-                thumbnail_data = html[:1000] if html else ""
-            elif drive_file.mime_type == "frappe/slides":
-                thumbnail_url = frappe.call(
-                    "slides.slides.doctype.presentation.presentation.get_presentation_thumbnail",
-                    presentation_name=drive_file.path,
-                )
-                if not thumbnail_url:
-                    return ""
-                frappe.local.response["type"] = "redirect"
-                frappe.local.response["location"] = thumbnail_url
-                return
-            else:
-                thumbnail = manager.get_thumbnail(drive_file.team, entity_name)
-                thumbnail_data = BytesIO(thumbnail.read())
-                thumbnail.close()
-        except:
-            return ""
+    # Thumbnails only exist for these types; bail before touching storage otherwise.
+    if drive_file.is_folder or drive_file.file_type not in ("Image", "Video", "PDF"):
+        return ""
 
-    if thumbnail_data:
-        frappe.cache().set_value(entity_name, thumbnail_data, expires_in_sec=60 * 60)
+    try:
+        thumbnail = FileManager().get_thumbnail(drive_file.team, entity_name)
+        thumbnail_data = BytesIO(thumbnail.read())
+        thumbnail.close()
+    except Exception:
+        return ""
 
-    if isinstance(thumbnail_data, BytesIO):
-        response = Response(
-            wrap_file(frappe.request.environ, thumbnail_data),
-            direct_passthrough=True,
-        )
-        response.headers.set("Content-Type", "image/jpeg")
-        response.headers.set("Content-Disposition", "inline", filename=entity_name)
-        return response
-    else:
-        return thumbnail_data
+    response = Response(
+        wrap_file(frappe.request.environ, thumbnail_data),
+        direct_passthrough=True,
+    )
+    response.headers.set("Content-Type", "image/webp")
+    response.headers.set("Cache-Control", "private, max-age=3600")
+    response.headers.set("Content-Disposition", "inline", filename=entity_name)
+    return response
 
 
 

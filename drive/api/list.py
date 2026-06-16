@@ -13,6 +13,7 @@ from drive.utils import (
     FILE_FIELDS,
     map_ff_to_drive_type,
     entity_kind,
+    hide_storage_key,
     is_site_file,
     KIND_VIRTUAL,
     STATUS_ACTIVE,
@@ -424,6 +425,7 @@ def get_query_data(
         if is_site_file(r):
             r["file_type"] = map_ff_to_drive_type(r)
         r["kind"] = entity_kind(r)
+        hide_storage_key(r)
         r |= get_user_access(name)
 
     return res

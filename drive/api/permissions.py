@@ -11,6 +11,7 @@ from drive.utils import (
     get_home_folder,
     map_ff_to_drive_type,
     entity_kind,
+    hide_storage_key,
     is_site_file,
     STATUS_ACTIVE,
 )
@@ -205,6 +206,7 @@ def get_entity_with_permissions(entity_name: str):
         return_obj["file_type"] = map_ff_to_drive_type(entity)
 
     return_obj["kind"] = entity_kind(entity)
+    hide_storage_key(return_obj)
 
     # To work with modern frappe-ui composables
     frappe.response["data"] = return_obj

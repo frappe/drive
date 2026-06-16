@@ -5,7 +5,6 @@ from functools import wraps
 from pathlib import Path
 
 import frappe
-from bs4 import BeautifulSoup
 from pypika import Field, functions as fn
 import mimemapper
 
@@ -139,6 +138,17 @@ FILE_FIELDS = [
     "attached_to_doctype",
     "attached_to_name",
 ]
+
+
+def hide_storage_key(row):
+    """Blank file_url unless the client needs it as a real URL.
+
+    For managed files it's the raw storage key, which leaks the owner's path;
+    only Link/Presentation/site files use it client-side.
+    """
+    if row.get("file_type") not in ("Link", "Presentation") and not is_site_file(row):
+        row["file_url"] = None
+    return row
 
 
 def get_home_folder(team):
@@ -374,31 +384,6 @@ def create_drive_file(
     if owner:
         drive_file.db_set("owner", owner, update_modified=False)
     return drive_file
-
-
-def extract_mentions(content):
-    soup = BeautifulSoup(content, "html.parser")
-    mentions = []
-    for span in soup.find_all("span", class_="mention", attrs={"data-type": "mention"}):
-        data_id = span.get("data-id")
-        if data_id:
-            mentions.append(data_id)
-    return mentions
-
-
-def strip_comment_spans(html: str) -> str:
-    """
-    Remove only <span> tags with a data-comment-id attribute.
-    Keeps their inner content.
-    """
-    soup = BeautifulSoup(html, "html.parser")
-
-    for span in soup.find_all("span", attrs={"data-comment-id": True}):
-        span.unwrap()
-    for span in soup.find_all("img"):
-        span.unwrap()
-
-    return str(soup)
 
 
 @frappe.whitelist()

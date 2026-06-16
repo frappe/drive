@@ -96,8 +96,7 @@
 </template>
 <script setup>
 import { Dialog, Avatar, createResource } from 'frappe-ui'
-import { getIconUrl } from '@/utils/getIconUrl'
-import { openEntity } from '@/utils/files'
+import { getIconUrl, openEntity } from '@/utils/files'
 import { ref, watch } from 'vue'
 import { useRoute } from 'vue-router'
 
