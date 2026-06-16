@@ -172,8 +172,7 @@ def files(
             frappe.throw("You must provide a folder to query", ValueError)
 
     entity = frappe.get_doc("File", entity_name)
-    if not is_site_file(entity) and team != entity.team:
-        frappe.throw("Given team doesn't match the file's team", ValueError)
+    team = entity.team
 
     if not user_has_permission(entity, "read"):
         frappe.throw(

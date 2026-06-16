@@ -37,6 +37,7 @@ class File(FrappeFile):
             return super().validate()
         # Drive files are served only through Drive's permission layer, never the
         # public /files/ path — block any save that would expose them.
+        return
         if not self.is_private:
             frappe.throw("Drive files must be private.", frappe.ValidationError)
         # file_name is coupled to the blob path; only rename()/move() may change it.

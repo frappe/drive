@@ -368,7 +368,7 @@ def create_drive_file(
     drive_file = frappe.get_doc(values)
     drive_file.flags.file_created = True
     drive_file.insert(ignore_permissions=True)
-    path = entity_path if isinstance(entity_path, str) else entity_path(drive_file)
+    path = entity_path(drive_file) if callable(entity_path) else entity_path
     drive_file.file_url = str(path) if path else ""
     drive_file.save(ignore_permissions=True)
     if owner:

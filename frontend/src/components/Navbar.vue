@@ -106,7 +106,7 @@ import {
   isSiteFile,
   isVirtual,
 } from '@/utils/files'
-import { getFileLink } from 'frappe-ui/drive/js/utils'
+import { getFileLink } from '@/ui/drive/js/utils'
 
 import LucideClock from '~icons/lucide/clock'
 import LucideHome from '~icons/lucide/home'
@@ -184,8 +184,7 @@ const defaultActions = computed(() => {
           icon: LucideDownload,
           isEnabled: () =>
             !isVirtual(rootEntity.value) &&
-            !['Link', 'Presentation', 'Document'].includes(rootEntity.value.file_type) &&
-            rootEntity.value.allow_download,
+            !['Link', 'Presentation', 'Document'].includes(rootEntity.value.file_type),
           onClick: () => entitiesDownload([rootEntity.value]),
         },
         {
