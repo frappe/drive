@@ -13,7 +13,7 @@
   "dependencies": {
     "@vueuse/core": "^10.3.0",
     "dropzone": "^6.0.0-beta.2",
-    "frappe-ui": "0.1.269",
+    "frappe-ui": "github:frappe/frappe-ui#e320b8fcc4faa95c183fb830df3ea41a86e6a888",
     "idb-keyval": "^6.2.1",
     "jszip": "^3.10.1",
     "mitt": "^3.0.0",

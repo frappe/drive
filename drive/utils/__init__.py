@@ -488,3 +488,32 @@ def get_upload_path(team_path, file_name):
     if not os.path.exists(uploads_path):
         uploads_path.mkdir()
     return uploads_path / file_name
+
+
+@default_team
+def create_file(
+    title="Untitled",
+    parent=None,
+    path=None,
+    mime_type=None,
+    file_type=None,
+    content_doctype=None,
+    content_docname=None,
+    team=None,
+):
+    """Convenience wrapper for external apps (e.g. Slides, Writer) to create a Drive file."""
+    if not parent:
+        parent = get_home_folder(team).name
+    else:
+        team = frappe.db.get_value("File", parent, "team")
+
+    return create_drive_file(
+        team,
+        title,
+        parent,
+        file_type or "Unknown",
+        lambda _: path,
+        mime_type=mime_type,
+        content_doctype=content_doctype,
+        content_docname=content_docname,
+    )

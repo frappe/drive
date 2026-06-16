@@ -225,17 +225,9 @@ ALLOWED_PATHS = [
     "/api/method/ping",
     "/api/method/login",
     "/api/method/logout",
-    "/api/method/press.press.doctype.razorpay_webhook_log.razorpay_webhook_log.razorpay_webhook_handler",
-    "/api/method/press.press.doctype.razorpay_webhook_log.razorpay_webhook_log.razorpay_authorized_payment_handler",
-    "/api/method/press.press.doctype.stripe_webhook_log.stripe_webhook_log.stripe_webhook_handler",
-    "/api/method/press.press.doctype.drip_email.drip_email.unsubscribe",
     "/api/method/upload_file",
     "/api/method/frappe.search.web_search",
     "/api/method/frappe.email.queue.unsubscribe",
-    "/api/method/press.utils.telemetry.capture_read_event",
-    "/api/method/validate_plan_change",
-    "/api/method/marketplace-apps",
-    "/api/method/press.www.dashboard.get_context_for_dev",
     "/api/method/frappe.website.doctype.web_form.web_form.accept",
     "/api/method/frappe.core.doctype.user.user.test_password_strength",
     "/api/method/frappe.core.doctype.user.user.update_password",
@@ -243,7 +235,6 @@ ALLOWED_PATHS = [
 
 ALLOWED_WILDCARD_PATHS = [
     "/api/method/drive.api.",
-    "/api/method/frappe.integrations.oauth2_logins.",
 ]
 
 DENIED_PATHS = []
