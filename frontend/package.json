@@ -10,7 +10,6 @@
     "lint": "eslint --fix"
   },
   "dependencies": {
-    "@tato30/vue-pdf": "1.10.0",
     "@tiptap/core": "^3.11.0",
     "@tiptap/extension-collaboration": "^3.11.0",
     "@tiptap/extension-font-family": "^3.11.0",
