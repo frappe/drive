@@ -37,4 +37,4 @@ gh auth setup-git
 git push -u upstream "${branch_name}"
 
 echo "Creating a PR..."
-gh pr create --fill --base "${BASE_BRANCH}" --head "${branch_name}" -R frappe/drive
+gh pr create --fill --base "${BASE_BRANCH}" --head "${branch_name}" -R frappe/drive --label "translation" --label "skip-review"

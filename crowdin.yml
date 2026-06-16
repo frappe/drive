@@ -4,5 +4,6 @@ files:
 pull_request_title: "chore: sync translations from crowdin"
 pull_request_labels:
   - translation
+  - skip-review
 commit_message: "chore: %language% translations"
 append_commit_message: false
