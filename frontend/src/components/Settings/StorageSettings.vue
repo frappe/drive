@@ -4,7 +4,7 @@
   </h1>
 
   <div class="flex items-center justify-between w-full mb-2">
-    <span class="text-base-medium text-ink-gray-8"
+    <span class="text-base font-medium text-ink-gray-8"
       >{{ showFileStorage ? 'You have' : 'Your team has' }} used
       {{ formatSize(usedSpace) ? formatSize(usedSpace) + ' out' : 'none' }} of
       {{ showFileStorage ? 'your' : '' }} {{ base2BlockSize(spaceLimit) }} ({{
@@ -27,7 +27,7 @@
         class="max-h-6 leading-none transition-colors focus:outline-none"
         :class="[
           showFileStorage === true
-            ? 'bg-surface-base shadow-sm hover:bg-surface-base active:bg-surface-base'
+            ? 'bg-surface-white shadow-sm hover:bg-surface-white active:bg-surface-white'
             : '',
         ]"
         @click="showFileStorage = true"
@@ -39,7 +39,7 @@
         class="max-h-6 leading-none transition-colors focus:outline-none"
         :class="[
           showFileStorage === false
-            ? 'bg-surface-base shadow-sm hover:bg-surface-base active:bg-surface-base'
+            ? 'bg-surface-white shadow-sm hover:bg-surface-white active:bg-surface-white'
             : '',
         ]"
         @click="showFileStorage = false"
@@ -50,12 +50,12 @@
   </div>
   <div
     v-if="usedSpace > 0"
-    class="w-full flex justify-start items-start bg-surface-sidebar border rounded overflow-clip h-7 pl-0 mb-4"
+    class="w-full flex justify-start items-start bg-surface-menu-bar border rounded overflow-clip h-7 pl-0 mb-4"
   >
     <Tooltip v-for="[file_kind, i] in storageBreakdown.data?.total" :key="file_kind">
       <template #body>
         <div
-          class="text-center rounded bg-surface-gray-10 px-2 py-1 text-xs text-ink-base shadow-xl"
+          class="text-center rounded bg-surface-gray-7 px-2 py-1 text-xs text-ink-white shadow-xl"
         >
           {{ i.kind }} <br />{{ i.h_size }} ({{ i.percentageFormat }})
         </div>
@@ -76,7 +76,7 @@
   </div>
   <div
     v-if="storageBreakdown.data?.entities?.length"
-    class="mt-1 text-ink-gray-8 text-base-medium py-2"
+    class="mt-1 text-ink-gray-8 font-medium text-base py-2"
     :class="storageBreakdown.data?.entities?.length ? 'border-b' : ''"
   >
     Large Files:

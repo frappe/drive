@@ -2,7 +2,7 @@
   <LoadingIndicator v-if="loading" class="w-10" />
   <pre
     v-else
-    class="overflow-y-auto h-[80vh] font-[InterVar] text-p-base text-ink-gray-8 sm:w-full border p-3 rounded overflow-x-auto"
+    class="overflow-y-auto h-[80vh] font-[InterVar] font-normal text-p-base text-ink-gray-8 sm:w-full border p-3 rounded overflow-x-auto"
     >{{ blob }}</pre
   >
 </template>

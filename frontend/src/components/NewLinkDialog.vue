@@ -1,19 +1,21 @@
 <template>
   <Dialog
-    v-model:open="open"
-    title="New Link"
-    size="xs"
-    :actions="[
-      {
-        label: 'Create',
-        variant: 'solid',
-        loading: createLink.loading,
-        onClick: createLink.submit,
-      },
-    ]"
+    v-model="open"
+    :options="{
+      title: 'New Link',
+      size: 'xs',
+      actions: [
+        {
+          label: 'Create',
+          variant: 'solid',
+          loading: createLink.loading,
+          onClick: createLink.submit,
+        },
+      ],
+    }"
     @close="dialogType = ''"
   >
-    <template #default>
+    <template #body-content>
       <div class="flex flex-col gap-4">
         <FormControl
           v-model="file_name"
@@ -30,7 +32,7 @@
           @keydown="createLink.error = null"
         />
       </div>
-      <div v-if="createLink.error" class="pt-4 text-base font-sm text-ink-red-6">
+      <div v-if="createLink.error" class="pt-4 text-base font-sm text-ink-red-3">
         {{ createLink.error.messages[0] }}
       </div>
     </template>

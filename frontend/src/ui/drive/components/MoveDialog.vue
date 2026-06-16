@@ -1,9 +1,9 @@
 <template>
-  <Dialog v-model:open="open" size="lg" bare @close="dialogType = ''">
-    <template #default>
+  <Dialog v-model="open" :options="{ size: 'lg' }" @close="dialogType = ''">
+    <template #body-main>
       <div class="p-4 sm:px-6">
         <div class="flex w-full justify-between gap-x-15 mb-4">
-          <div class=" text-4xl-semibold flex text-nowrap overflow-hidden">
+          <div class="font-semibold text-2xl flex text-nowrap overflow-hidden">
             <template v-if="props.entities.length > 1">
               Moving {{ props.entities.length }} items
             </template>
@@ -75,7 +75,7 @@
                           ? 'bg-surface-gray-3'
                           : 'hover:bg-surface-gray-2',
                         entities[0].folder === node.value
-                          ? 'cursor-not-allowed hover:bg-surface-base'
+                          ? 'cursor-not-allowed hover:bg-surface-white'
                           : 'group',
                       ]"
                     >
@@ -85,11 +85,11 @@
                       />
                       <LucideFolder v-else class="mr-1 size-4" />
                       <div v-if="node.value === null" class="overflow-visible">
-                        <input
+                        <Input
                           v-model="node.label"
                           v-focus
                           type="text"
-                          class="h-6 rounded border border-outline-gray-2 bg-surface-base px-2 text-base text-ink-gray-8 focus:outline-none focus:ring-1 focus:ring-outline-gray-3"
+                          input-class=" !h-6"
                           @click.stop
                           @keydown.enter="openEntity(node)"
                         />
@@ -221,6 +221,7 @@ import {
   Tabs,
   Dropdown,
   Tree,
+  Input,
   LoadingIndicator,
   toast,
 } from 'frappe-ui'

@@ -96,7 +96,7 @@
   <Tabs v-if="team" v-model="tabIndex" :tabs>
     <template #tab-panel="{ tab }">
       <template v-if="tab.label === 'Members'">
-        <div class="flex flex-col overflow-y-auto divide-y divide-outline-elevation-2">
+        <div class="flex flex-col overflow-y-auto divide-y divide-outline-gray-modals">
           <div
             v-for="user in teamUsers?.data"
             :key="user.user_name"
@@ -143,7 +143,7 @@
           No invites found.
         </div>
         <div v-for="(invite, index) in invites?.data" :key="invite.name">
-          <div v-if="index > 0" class="w-[95%] mx-auto h-px border-t border-outline-elevation-2" />
+          <div v-if="index > 0" class="w-[95%] mx-auto h-px border-t border-outline-gray-modals" />
           <div class="flex items-center justify-start py-2 pl-2 pr-4 gap-x-3">
             <div class="flex justify-between w-full">
               <div class="flex flex-col gap-0.5">
@@ -204,11 +204,13 @@
   </Tabs>
 
   <Dialog
-    v-model:open="showInvite"
-    :title="'Invite people to ' + teamData.title"
-    size="lg"
+    v-model="showInvite"
+    :options="{
+      title: 'Invite people to ' + teamData.title,
+      size: 'lg',
+    }"
   >
-    <template #default>
+    <template #body-content>
       <div class="flex items-start justify-start gap-4">
         <div class="flex flex-wrap gap-1 rounded w-full bg-surface-gray-2 p-2">
           <Button
@@ -259,29 +261,31 @@
   </Dialog>
   <Dialog
     v-if="showRemove"
-    v-model:open="showRemove"
-    title="Are you sure?"
-    size="md"
-    :message="`Removing ${selectedUser.full_name} will completely revoke their access to your team. You can always add them back using the same email ID.`"
-    :actions="[
-      {
-        variant: 'solid',
-        theme: 'red',
-        label: 'I confirm that I want to remove ' + selectedUser.full_name + '.',
-        loading: removeUser.loading,
-        onClick: () => {
-          removeUser.submit({
-            user_id: selectedUser.name,
-            team,
-          })
-          teamUsers.data.splice(teamUsers.data.indexOf(selectedUser), 1)
-          showRemove = false
+    v-model="showRemove"
+    :options="{
+      title: 'Are you sure?',
+      size: 'md',
+      message: `Removing ${selectedUser.full_name} will completely revoke their access to your team. You can always add them back using the same email ID.`,
+      actions: [
+        {
+          variant: 'solid',
+          theme: 'red',
+          label: 'I confirm that I want to remove ' + selectedUser.full_name + '.',
+          loading: removeUser.loading,
+          onClick: () => {
+            removeUser.submit({
+              user_id: selectedUser.name,
+              team,
+            })
+            teamUsers.data.splice(teamUsers.data.indexOf(selectedUser), 1)
+            showRemove = false
+          },
         },
-      },
-    ]"
+      ],
+    }"
   />
-  <Dialog v-model:open="showAddTeam" :title="__('New Team')" size="sm">
-    <template #default>
+  <Dialog v-model="showAddTeam" :options="{ title: __('New Team'), size: 'sm' }">
+    <template #body-content>
       <div class="flex flex-col gap-4">
         <div>
           <FormLabel label="Team Name:" required />
@@ -325,7 +329,7 @@
           />
         </template>
       </div>
-      <div v-if="createTeam.error" class="text-sm text-ink-red-6 my-3">
+      <div v-if="createTeam.error" class="text-sm text-ink-red-3 my-3">
         {{ createTeam.error.messages[0] }}
       </div>
     </template>
@@ -363,11 +367,10 @@
     </template>
   </Dialog>
   <Dialog
-    v-model:open="showEditTeam"
-    :title="__('Settings - ' + teamData.title)"
-    size="sm"
+    v-model="showEditTeam"
+    :options="{ title: __('Settings - ' + teamData.title), size: 'sm' }"
   >
-    <template #default>
+    <template #body-content>
       <div class="flex flex-col gap-4">
         <div>
           <FormLabel label="Team Name:" required />
@@ -558,12 +561,12 @@ const accessOptions = [
   },
   {
     label: 'Remove',
-    class: 'text-ink-red-6',
+    class: 'text-ink-red-3',
     component: () =>
       h(
         'button',
         {
-          class: ['group flex w-full items-center text-ink-red-6 rounded-md px-2 py-2 text-sm'],
+          class: ['group flex w-full items-center text-ink-red-3 rounded-md px-2 py-2 text-sm'],
           onClick: () => (showRemove.value = true),
         },
         'Remove'

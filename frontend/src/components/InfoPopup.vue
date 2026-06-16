@@ -1,12 +1,30 @@
 <template>
   <Dialog v-model="open" @close="dialogType = ''">
     <template #body-title>
-      <h3 class="text-2xl font-semibold leading-6 text-ink-gray-9 cursor-pointer pr-2" @click="emitter.emit('rename')">
+      <h3
+        class="text-2xl font-semibold leading-6 text-ink-gray-9 cursor-pointer pr-2"
+        @click="emitter.emit('rename')"
+      >
         {{ entity.file_name }}
       </h3>
     </template>
     <template #body-content>
       <ul class="space-y-3 text-sm mb-4 text-ink-gray-8">
+        <Alert
+          v-if="isAttachmentRef(entity)"
+          title="This is an attachment of another file."
+          theme="blue"
+          :dismissable="false"
+          class="mb-3"
+        >
+          <template #description>
+            <a
+              :href="`/api/method/drive.api.files.redirect_to_original?file_id=${entity.name}`"
+              target="_blank"
+              >Open the original.</a
+            >
+          </template>
+        </Alert>
         <span class="text-base font-semibold">Information</span>
         <li>
           <span class="inline-block w-24 text-ink-gray-5">{{ __('Owner') }}:</span>
@@ -38,32 +56,29 @@
         <span class="text-base font-semibold">{{ __('Stats') }}</span>
         <li>
           <span class="inline-block w-24 text-ink-gray-5">{{ __('Words') }}:</span>
-          <span class="col-span-1">{{
-            editor.storage.characterCount.words()
-            }}</span>
+          <span class="col-span-1">{{ editor.storage.characterCount.words() }}</span>
         </li>
         <li>
           <span class="inline-block w-24 text-ink-gray-5">{{ __('Characters') }}:</span>
-          <span class="col-span-1">{{
-            editor.storage.characterCount.characters()
-            }}</span>
+          <span class="col-span-1">{{ editor.storage.characterCount.characters() }}</span>
         </li>
         <li>
           <span class="inline-block w-24 text-ink-gray-5">{{ __('Reading time') }}:</span>
           <span class="col-span-1">
             {{ Math.ceil(editor.storage.characterCount.words() / 200) }}
-            {{
-              Math.ceil(editor.storage.characterCount.words() / 200) > 1
-                ? 'minutes'
-                : 'minute'
-            }}
+            {{ Math.ceil(editor.storage.characterCount.words() / 200) > 1 ? 'minutes' : 'minute' }}
           </span>
         </li>
       </ul>
       <div class="flex justify-between items-center">
         <span class="text-base font-semibold text-ink-gray-8">Access</span>
-        <Button v-if="entity.share" :variant="'subtle'" size="sm"
-          class="rounded flex justify-center items-center scale-[90%]" @click="emitter.emit('share')">
+        <Button
+          v-if="entity.share"
+          :variant="'subtle'"
+          size="sm"
+          class="rounded flex justify-center items-center scale-[90%]"
+          @click="emitter.emit('share')"
+        >
           {{ __('Manage') }}
         </Button>
       </div>
@@ -72,13 +87,12 @@
         <li class="flex">
           <span class="inline-block w-24 text-ink-gray-5">{{ __('General') }}:</span>
           <div class="col-span-1 flex gap-2">
-            <div class="col-span-1 flex gap-2 items-center text-ink-gray-8">
-              <div class="rounded-full flex items-center justify-center p-0.5 size-4.5"
-                :class="accessConfig[getGeneralAccess.data.type].color">
-                <component :is="accessConfig[getGeneralAccess.data.type].icon" class="h-[90%] w-[90%]" />
-              </div>
-              <span>{{ accessConfig[getGeneralAccess.data.type].label }}</span>
-            </div>
+            <GeneralAccess
+              size="sm"
+              :access-type="getGeneralAccess.data.type"
+              :show-text="true"
+              class="-mr-[3px]"
+            />
           </div>
         </li>
         <li>
@@ -90,7 +104,8 @@
               (userAccess.data.length === 1 ? __('person') : __('people'))
             }}
             {{
-              userAccess.data.length < 3 ? '(' + userAccess.data.map((k) => k.user).join(', ') + ')'
+              userAccess.data.length < 3
+                ? '(' + userAccess.data.map((k) => k.user).join(', ') + ')'
                 : ''
             }}
           </span>
@@ -101,7 +116,7 @@
         <div>
           <span class="text-base font-semibold">{{ __('Developer') }}</span>
           <Button variant="subtle" size="sm" class="scale-[90%] float-right">
-            <a :href="'/app/file/' + entity.name" target="_blank">Open in Desk</a>
+            <a :href="'/app/drive-file/' + entity.name" target="_blank">Open in Desk</a>
           </Button>
         </div>
         <li>
@@ -110,11 +125,15 @@
         </li>
         <li>
           <span class="inline-block w-24">Disk path:</span>
-          <span class="col-span-1">{{ entity.storage_path }}</span>
+          <span class="col-span-1">{{ entity.file_url }}</span>
         </li>
         <li>
           <span class="inline-block w-24">Team:</span>
           <span class="col-span-1">{{ entity.team }}</span>
+        </li>
+        <li>
+          <span class="inline-block w-24">MIME type:</span>
+          <span class="col-span-1">{{ entity.mime_type }}</span>
         </li>
       </ul>
     </template>
@@ -122,20 +141,12 @@
 </template>
 
 <script setup>
-import {
-  Dialog,
-  Button,
-  LoadingIndicator,
-  createResource,
-} from 'frappe-ui'
+import { formatDate } from '@/utils/format'
+import { isAttachmentRef } from '@/utils/files'
+import { Dialog, Button, LoadingIndicator, createResource, Alert } from 'frappe-ui'
 import { ref, inject } from 'vue'
 import { onKeyDown } from '@vueuse/core'
-import { formatDate } from '../js/utils'
-
-import LucideBuilding2 from '~icons/lucide/building-2'
-import LucideLock from '~icons/lucide/lock'
-import LucideGlobe2 from '~icons/lucide/globe-2'
-
+import emitter from '@/emitter'
 
 const dialogType = defineModel()
 const open = ref(true)
@@ -143,7 +154,6 @@ const open = ref(true)
 const editor = inject('editor')
 const props = defineProps({
   entity: Object,
-  emitter: Object,
 })
 
 // Refactor to share with ShareDialog
@@ -155,8 +165,7 @@ const getGeneralAccess = createResource({
   }),
   transform: (data) => {
     if (!data || !data.read) {
-      if (getGeneralAccess.params.user === 'Guest')
-        getGeneralAccess.fetch({ team: 1 })
+      if (getGeneralAccess.params.user === 'Guest') getGeneralAccess.fetch({ team: 1 })
       else
         return {
           type: 'restricted',
@@ -177,22 +186,4 @@ const developer = ref(false)
 onKeyDown('D', () => {
   developer.value = !developer.value
 })
-
-const accessConfig = {
-  team: {
-    icon: LucideBuilding2,
-    color: 'bg-surface-blue-2 text-ink-blue-2',
-    label: 'Team',
-  },
-  public: {
-    icon: LucideGlobe2,
-    color: 'bg-surface-red-2 text-ink-red-3',
-    label: 'Public',
-  },
-  restricted: {
-    icon: LucideLock,
-    color: 'text-ink-gray-7 bg-surface-gray-4',
-    label: 'Restricted',
-  },
-}
 </script>

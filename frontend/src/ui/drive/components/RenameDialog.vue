@@ -1,19 +1,21 @@
 <template>
   <Dialog
-    v-model:open="open"
-    title="Rename"
-    size="xs"
-    :actions="[
-      {
-        label: 'Confirm',
-        variant: 'solid',
-        disabled: !newTitle || newTitle === entity.file_name || rename.loading,
-        onClick: submit,
-      },
-    ]"
+    v-model="open"
+    :options="{
+      title: 'Rename',
+      size: 'xs',
+      actions: [
+        {
+          label: 'Confirm',
+          variant: 'solid',
+          disabled: !newTitle || newTitle === entity.file_name || rename.loading,
+          onClick: submit,
+        },
+      ],
+    }"
     @close="dialogType = ''"
   >
-    <template #default>
+    <template #body-content>
       <div class="flex gap-3">
         <FormControl
           v-model="newTitle"

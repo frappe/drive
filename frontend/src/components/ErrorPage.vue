@@ -4,8 +4,8 @@
       <LucideFileUser v-if="error.exc_type === 'PermissionError'" />
       <LucideFileQuestionMark v-else />
     </div>
-    <h1 class="text-5xl-bold text-ink-gray-8 mt-4">Uh oh!</h1>
-    <p class="text-xl text-ink-gray-5 mt-4" v-html="error.messages?.join?.('\n') || error" />
+    <h1 class="text-3xl font-bold text-ink-gray-8 mt-4">Uh oh!</h1>
+    <p class="text-lg text-ink-gray-5 mt-4" v-html="error.messages?.join?.('\n') || error" />
     <div class="w-50 flex gap-8 my-12">
       <Button
         v-if="$router.options.history.state.back"

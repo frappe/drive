@@ -7,7 +7,7 @@ const toast = (obj) => {
   fToast.create({
     message: title,
     action: buttons?.[0],
-    icon: icon && h(icon, { class: 'text-ink-base' }),
+    icon: icon && h(icon, { class: 'text-ink-white' }),
     duration: duration || 5,
     type,
   })

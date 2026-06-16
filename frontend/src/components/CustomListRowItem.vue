@@ -36,7 +36,7 @@
           name="star"
           width="16"
           height="16"
-          class="my-auto text-ink-amber-6 stroke-current fill-current"
+          class="my-auto text-ink-amber-3 stroke-current fill-current"
         />
         <component :is="column.suffix({ row })" v-if="column.suffix" />
       </div>

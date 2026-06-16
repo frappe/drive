@@ -102,7 +102,7 @@
           <Button variant="outline" :tooltip="item.label" @click.once="item.action(selections)">
             <template #icon>
               <component :is="item.icon" class="size-4 text-ink-gray-6"
-                :class="[item.class, item.theme ? 'text-ink-red-6' : '']" />
+                :class="[item.class, item.theme ? 'text-ink-red-3' : '']" />
             </template>
           </Button>
         </template>

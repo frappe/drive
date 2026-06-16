@@ -15,7 +15,7 @@
         :class="
           (100 * storageBar.data.total_size) / storageMax > 100
             ? 'bg-surface-red-500'
-            : 'bg-surface-gray-10'
+            : 'bg-surface-gray-7'
         "
         :style="{
           width: calculatePercent,

@@ -3,14 +3,13 @@
     <Dialog
       v-for="dialog in dialogs"
       :key="dialog.key"
-      v-model:open="dialog.modelValue"
-      :title="dialog.options.title"
-      :message="dialog.options.message"
-      :size="dialog.options.size"
-      :actions="dialog.options.actions"
+      v-model="dialog.modelValue"
+      :options="dialog.options"
       @close="dialog.remove"
     >
-      <component v-if="dialog.options.component" :is="dialog.options.component" />
+      <template v-if="dialog.options.component" #body-content>
+        <component :is="dialog.options.component" />
+      </template>
     </Dialog>
   </div>
 </template>

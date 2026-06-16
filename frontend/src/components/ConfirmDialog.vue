@@ -1,12 +1,6 @@
 <template>
-  <Dialog
-    v-model:open="open"
-    :title="dialogOptions.title"
-    :size="dialogOptions.size"
-    :actions="dialogOptions.actions"
-    @close="dialogType = ''"
-  >
-    <template #default>
+  <Dialog v-model="open" :options="dialogOptions" @close="dialogType = ''">
+    <template #body-content>
       <div class="flex items-center justify-start">
         <div class="text-base text-ink-gray-6">
           <template v-if="props.entities.length">

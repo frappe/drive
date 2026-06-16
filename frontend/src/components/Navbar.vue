@@ -4,7 +4,7 @@
     id="navbar"
     ondragstart="return false;"
     ondrop="return false;"
-    class="bg-surface-base border-b px-5 py-2.5 h-12 flex justify-between"
+    class="bg-surface-white border-b px-5 py-2.5 h-12 flex justify-between"
   >
     <slot name="breadcrumbs">
       <Breadcrumbs :items="store.state.breadcrumbs" class="select-none truncate max-w-[80%]">
@@ -27,7 +27,7 @@
         v-if="rootEntity?.is_favourite"
         width="16"
         height="16"
-        class="my-auto text-ink-amber-6 stroke-current fill-current"
+        class="my-auto text-ink-amber-3 stroke-current fill-current"
       />
       <template v-if="!isLoggedIn && !inIframe">
         <Button variant="outline" @click="redirectLogin">Sign In</Button>
@@ -238,7 +238,7 @@ const defaultActions = computed(() => {
         {
           label: __('Unfavourite'),
           icon: LucideStar,
-          color: 'text-ink-amber-6 stroke-current fill-current',
+          color: 'text-ink-amber-3 stroke-current fill-current',
           onClick: () => {
             rootEntity.value.is_favourite = false
             toggleFav.submit({

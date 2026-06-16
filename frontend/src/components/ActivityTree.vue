@@ -4,7 +4,7 @@
       v-if="group.length && Object.keys(groupedActivityLog).length > 1"
       class="px-5 pb-2 gap-x-2"
     >
-      <span class="text-base-medium text-ink-gray-5 leading-6">
+      <span class="text-base text-ink-gray-5 font-medium leading-6">
         {{ __(i) }}
       </span>
       <div

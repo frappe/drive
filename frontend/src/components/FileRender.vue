@@ -1,7 +1,7 @@
 <template>
   <div
     v-if="error"
-    class="max-w-[450px] h-fit self-center p-10 border border-outline-gray-2 bg-surface-base rounded-md text-3xl-medium text-center shadow-xl flex flex-col justify-center items-center gap-4"
+    class="max-w-[450px] h-fit self-center p-10 border border-outline-gray-2 bg-surface-white rounded-md text-xl text-center font-medium shadow-xl flex flex-col justify-center items-center gap-4"
   >
     <LucideAlertCircle class="size-8 text-ink-gray-8" />
     <span class="text-ink-gray-9">Cannot open file</span>

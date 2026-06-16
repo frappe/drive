@@ -8,11 +8,11 @@
       v-for="file in rows"
       :id="file.name"
       :key="file.name"
-      class="grid-item rounded-lg group select-none entity cursor-pointer relative h-[172px] border bg-surface-base"
+      class="grid-item rounded-lg group select-none entity cursor-pointer relative h-[172px] border bg-surface-white"
       :class="[
         selections.has(file.name) || selectedRow?.name === file.name
           ? 'bg-surface-gray-2 shadow-gray'
-          : 'border-outline-elevation-2 hover:shadow-lg',
+          : 'border-outline-gray-modals hover:shadow-lg',
         draggedItem === file.name ? 'opacity-60 hover:shadow-none' : '',
         dragOverItem === file.name ? '!bg-surface-gray-3' : '',
       ]"
@@ -40,7 +40,7 @@
     >
       <LucideStar
         v-if="$route.name !== 'Favourites' && file.is_favourite"
-        class="text-ink-amber-6 stroke-current fill-current absolute top-2 left-2 h-4"
+        class="text-ink-amber-3 stroke-current fill-current absolute top-2 left-2 h-4"
         width="16"
         height="16"
       />

@@ -6,7 +6,7 @@
       </slot>
     </template>
     <template #body="{ togglePopover }">
-      <div class="bg-surface-base my-3 transform rounded px-4 sm:px-0">
+      <div class="bg-surface-white my-3 transform rounded px-4 sm:px-0">
         <div class="relative rounded shadow-2xl ring-1 ring-black ring-opacity-5">
           <div class="flex gap-2 px-3 pb-1 pt-3">
             <div class="flex-1">
@@ -28,13 +28,13 @@
             <div v-for="(emojis, group) in emojiGroups" :key="group" class="px-3">
               <div
                 v-if="group === 'No results'"
-                class="bg-surface-base text-ink-gray-6 text-center text-sm py-4"
+                class="bg-surface-white text-ink-gray-6 text-center text-sm py-4"
               >
                 {{ group }}
               </div>
               <div
                 v-else-if="group !== 'All'"
-                class="bg-surface-base text-ink-gray-6 sticky top-0 py text-sm"
+                class="bg-surface-white text-ink-gray-6 sticky top-0 py text-sm"
               >
                 {{ group }}
               </div>
@@ -43,7 +43,7 @@
                   v-for="_emoji in emojis"
                   :key="_emoji.value"
                   variant="ghost"
-                  class="hover:bg-surface-gray-2 h-8 w-8 rounded-md p-1 text-4xl"
+                  class="hover:bg-surface-gray-2 h-8 w-8 rounded-md p-1 text-2xl"
                   :title="_emoji.value"
                   :icon="_emoji.icon"
                   @click="() => (emojiValue = _emoji.value) && togglePopover()"

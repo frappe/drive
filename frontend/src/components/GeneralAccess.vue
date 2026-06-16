@@ -31,8 +31,8 @@ const logo = {
 }[props.accessType]
 
 const colorClasses = {
-  team: 'bg-surface-blue-2 text-ink-blue-5',
-  public: 'bg-surface-red-2 text-ink-red-6',
+  team: 'bg-surface-blue-2 text-ink-blue-2',
+  public: 'bg-surface-red-2 text-ink-red-3',
   restricted: 'text-ink-gray-7 bg-surface-gray-4',
 }[props.accessType]
 </script>
