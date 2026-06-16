@@ -82,7 +82,6 @@ declare module 'vue' {
     StorageSettings: typeof import('./src/components/Settings/StorageSettings.vue')['default']
     SyncBreakdown: typeof import('./src/components/SyncBreakdown.vue')['default']
     TeamSelector: typeof import('./src/components/TeamSelector.vue')['default']
-    TemplateSettings: typeof import('./src/components/Settings/TemplateSettings.vue')['default']
     TextPreview: typeof import('./src/components/FileTypePreview/TextPreview.vue')['default']
     UploadTracker: typeof import('./src/components/UploadTracker.vue')['default']
     UserListSettings: typeof import('./src/components/Settings/UserListSettings.vue')['default']

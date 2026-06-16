@@ -33,7 +33,7 @@ export default defineConfig(async ({ mode }) => {
         'tailwind.config.js': path.resolve(__dirname, 'tailwind.config.js'),
         ...localFrappeUIAliases,
       },
-      dedupe: ['yjs'],
+      dedupe: [],
     },
     css: {
       lightningcss: {
@@ -61,7 +61,7 @@ export default defineConfig(async ({ mode }) => {
       external: ['html2canvas', 'dompurify'],
     },
     optimizeDeps: {
-      include: ['frappe-ui > feather-icons', 'frappe-ui > lowlight', 'yjs', 'tailwind.config.js'],
+      include: ['tailwind.config.js'],
     },
   }
   return config
