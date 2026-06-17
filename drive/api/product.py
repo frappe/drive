@@ -363,15 +363,19 @@ def get_translations():
     return get_all_translations(language)
 
 
+def is_drive_site_admin():
+    return frappe.has_permission("Drive Disk Settings", "write")
+
+
 @frappe.whitelist()
 def is_site_admin():
-    return {"is_admin": "Drive Admin" in frappe.get_roles()}
+    return {"is_admin": is_drive_site_admin()}
 
 
 @frappe.whitelist(allow_guest=True)
 def disk_settings(**kwargs):
     settings = frappe.get_single("Drive Disk Settings")
-    if not is_site_admin()["is_admin"]:
+    if not is_drive_site_admin():
         # Return only safe values
         return {"preview_size": settings.preview_size, "enabled": settings.enabled}
 
