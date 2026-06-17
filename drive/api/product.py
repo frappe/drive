@@ -364,8 +364,6 @@ def get_translations():
 
 
 def is_drive_site_admin():
-    if frappe.session.user == "Administrator":
-        return True
     return frappe.has_permission("Drive Disk Settings", "write")
 
 
