@@ -20,14 +20,13 @@ from drive.utils import (
     update_file_size,
     get_new_file_name,
     validate_filename,
-    get_upload_path,
     is_site_file,
     ATTACHMENT_CONTENT_DOCTYPE,
     STATUS_ACTIVE,
     STATUS_TRASHED,
 )
 from drive.utils.api import prettify_file
-from drive.utils.files import FileManager, storage_key, get_s3_key, get_s3_url
+from drive.utils.files import FileManager, get_s3_key, get_s3_url
 from drive.utils.users import mark_as_viewed
 
 from .permissions import get_teams, user_has_permission
@@ -80,7 +79,7 @@ def upload_file(
     file = frappe.request.files["file"]
     file_name = get_new_file_name(file.filename, parent)
     upload_session = frappe.form_dict.uuid
-    temp_path = get_upload_path(storage_key(home_folder["file_url"]), f"{upload_session}_{secure_filename(file_name)}")
+    temp_path = get_upload_path(f"{upload_session}_{secure_filename(file_name)}")
     with temp_path.open("ab") as f:
         f.seek(offset)
         f.write(file.stream.read())
@@ -781,3 +780,10 @@ def get_docs_attached_to(file_name: str):
         filters={"attached_to_doctype": ["is", "set"], "file_url": file.file_url},
         fields=["attached_to_doctype", "attached_to_name"],
     )
+
+def get_upload_path(file_name):
+    root_folder = frappe.get_single("Drive Disk Settings").root_folder or ""
+    uploads_path = Path(frappe.get_site_path("private/files"), root_folder, ".uploads")
+    uploads_path.mkdir(exist_ok=True)
+
+    return uploads_path / file_name
