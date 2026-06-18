@@ -30,7 +30,6 @@ import { onKeyDown } from '@vueuse/core'
 import emitter from '@/emitter'
 import { FrappeUIProvider } from 'frappe-ui'
 import { useRoute } from 'vue-router'
-import 'access-key-label-polyfill'
 
 const store = useStore()
 const route = useRoute()

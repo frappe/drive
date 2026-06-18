@@ -13,13 +13,14 @@
   <component :is="previewComponent" v-else :preview-entity="previewEntity" />
 </template>
 <script setup>
-import MSOfficePreview from '@/components/FileTypePreview/MSOfficePreview.vue'
-import ImagePreview from '@/components/FileTypePreview/ImagePreview.vue'
-import PDFPreview from './FileTypePreview/PDFPreview.vue'
-import VideoPreview from './FileTypePreview/VideoPreview.vue'
-import TextPreview from './FileTypePreview/TextPreview.vue'
-import AudioPreview from '@/components/FileTypePreview/AudioPreview.vue'
-import { computed } from 'vue'
+import { computed, defineAsyncComponent } from 'vue'
+
+const MSOfficePreview = defineAsyncComponent(() => import('@/components/FileTypePreview/MSOfficePreview.vue'))
+const ImagePreview = defineAsyncComponent(() => import('@/components/FileTypePreview/ImagePreview.vue'))
+const PDFPreview = defineAsyncComponent(() => import('./FileTypePreview/PDFPreview.vue'))
+const VideoPreview = defineAsyncComponent(() => import('./FileTypePreview/VideoPreview.vue'))
+const TextPreview = defineAsyncComponent(() => import('./FileTypePreview/TextPreview.vue'))
+const AudioPreview = defineAsyncComponent(() => import('@/components/FileTypePreview/AudioPreview.vue'))
 import LucideAlertCircle from '~icons/lucide/alert-circle'
 import { diskSettings } from '@/resources/permissions'
 import store from '@/store'

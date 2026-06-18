@@ -12,7 +12,6 @@ import {
 } from '@/resources/files'
 import { getTeams, getPublicTeams } from '@/resources/files'
 import { set } from 'idb-keyval'
-import slugify from 'slugify'
 import { toast } from '@/utils/toasts.js'
 import { useFileUpload, toast as nToast } from 'frappe-ui'
 import emitter from '@/emitter'
@@ -501,11 +500,13 @@ export function enterFullScreen() {
 }
 
 function slugger(file_name) {
-  return slugify(file_name.split('.').join(' '), {
-    lower: true,
-    trim: true,
-    remove: /[^\w\s\']|_/,
-  })
+  return file_name
+    .split('.')
+    .join(' ')
+    .toLowerCase()
+    .trim()
+    .replace(/[^\w\s']|_/g, '')
+    .replace(/\s+/g, '-')
 }
 
 function getLinkStem(entity) {
