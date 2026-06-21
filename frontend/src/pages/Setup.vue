@@ -17,7 +17,7 @@
             </div>
 
             <div v-if="createTeam.error" class="flex flex-col py-5 gap-3">
-              <p class="text-sm text-center text-ink-red-3" v-html="createTeam.error.messages?.[0]"></p>
+              <ErrorMessage class="text-center" :message="sanitizedError" />
             </div>
             <div v-else class="flex flex-col py-5 gap-3">
               <LoadingIndicator class="size-5 self-center" />
@@ -31,14 +31,21 @@
 </template>
 
 <script setup>
-import { createResource, FormControl, LoadingIndicator } from 'frappe-ui'
-import { ref, computed } from 'vue'
+import { computed, onMounted } from 'vue'
+import { ErrorMessage, LoadingIndicator } from 'frappe-ui'
 import FrappeDriveLogo from '@/components/FrappeDriveLogo.vue'
 import { useRoute } from 'vue-router'
 import { useStore } from 'vuex'
 import { createTeam } from '@/resources/permissions'
 
 const route = useRoute()
+
+const sanitizedError = computed(() => {
+  const raw = createTeam.error?.messages?.[0] ?? ''
+  const el = document.createElement('div')
+  el.textContent = raw
+  return el.innerHTML.replace(/&lt;(\/?strong)&gt;/g, '<$1>')
+})
 
 onMounted(() => {
   createTeam.submit(
