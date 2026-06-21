@@ -16,7 +16,10 @@
               </p>
             </div>
 
-            <div class="flex flex-col py-5 gap-3">
+            <div v-if="createTeam.error" class="flex flex-col py-5 gap-3">
+              <p class="text-sm text-center text-ink-red-3" v-html="createTeam.error.messages?.[0]"></p>
+            </div>
+            <div v-else class="flex flex-col py-5 gap-3">
               <LoadingIndicator class="size-5 self-center" />
               <div class="text-sm text-center">Just a minute...</div>
             </div>
@@ -37,12 +40,14 @@ import { createTeam } from '@/resources/permissions'
 
 const route = useRoute()
 
-createTeam.submit(
-  { personal: 1 },
-  {
-    onSuccess: (data) => {
-      if (data) window.location.replace(route.query['redirect-to'] || '/drive')
+onMounted(() => {
+  createTeam.submit(
+    { personal: 1 },
+    {
+      onSuccess: (data) => {
+        if (data) window.location.replace(route.query['redirect-to'] || '/drive')
+      },
     },
-  }
-)
+  )
+})
 </script>
