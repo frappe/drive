@@ -16,7 +16,10 @@
               </p>
             </div>
 
-            <div class="flex flex-col py-5 gap-3">
+            <div v-if="createTeam.error" class="flex flex-col py-5 gap-3">
+              <ErrorMessage class="text-center" :message="sanitizedError" />
+            </div>
+            <div v-else class="flex flex-col py-5 gap-3">
               <LoadingIndicator class="size-5 self-center" />
               <div class="text-sm text-center">Just a minute...</div>
             </div>
@@ -28,8 +31,8 @@
 </template>
 
 <script setup>
-import { createResource, FormControl, LoadingIndicator } from 'frappe-ui'
-import { ref, computed } from 'vue'
+import { computed, onMounted } from 'vue'
+import { ErrorMessage, LoadingIndicator } from 'frappe-ui'
 import FrappeDriveLogo from '@/components/FrappeDriveLogo.vue'
 import { useRoute } from 'vue-router'
 import { useStore } from 'vuex'
@@ -37,12 +40,21 @@ import { createTeam } from '@/resources/permissions'
 
 const route = useRoute()
 
-createTeam.submit(
-  { personal: 1 },
-  {
-    onSuccess: (data) => {
-      if (data) window.location.replace(route.query['redirect-to'] || '/drive')
+const sanitizedError = computed(() => {
+  const raw = createTeam.error?.messages?.[0] ?? ''
+  const el = document.createElement('div')
+  el.textContent = raw
+  return el.innerHTML.replace(/&lt;(\/?strong)&gt;/g, '<$1>')
+})
+
+onMounted(() => {
+  createTeam.submit(
+    { personal: 1 },
+    {
+      onSuccess: (data) => {
+        if (data) window.location.replace(route.query['redirect-to'] || '/drive')
+      },
     },
-  }
-)
+  )
+})
 </script>
