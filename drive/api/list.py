@@ -323,6 +323,11 @@ def trash(
     )
 
 
+ALLOWED_SORT_FIELDS = {
+    "name", "file_name", "file_size", "file_type", "creation", "modified", "owner",
+}
+
+
 def get_query_data(
     query,
     favourites_only=False,
@@ -339,6 +344,9 @@ def get_query_data(
     """
     Runs all the necessary commands to obtain files in the structure expected by Drive frontend.
     """
+    if order_by not in ALLOWED_SORT_FIELDS:
+        order_by = "modified"
+
     # Filter by team
     if team and team != "all":
         query = query.where(DriveFile.team == team)
