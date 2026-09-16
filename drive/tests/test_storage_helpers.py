@@ -1,9 +1,36 @@
+from pathlib import Path
+import subprocess
+import sys
 import unittest
 
 from drive.utils.files import storage_key, get_s3_url, get_s3_key
 
 
 class TestStorageHelpers(unittest.TestCase):
+    def test_module_import_does_not_require_s3_dependencies(self):
+        script = """
+import builtins
+import importlib
+
+real_import = builtins.__import__
+
+def fake_import(name, globals=None, locals=None, fromlist=(), level=0):
+    if name == "boto3" or name.startswith("botocore"):
+        raise ImportError(name)
+    return real_import(name, globals, locals, fromlist, level)
+
+builtins.__import__ = fake_import
+module = importlib.import_module("drive.utils.files")
+assert module.get_s3_key("/files/test.txt") == "test.txt"
+"""
+        result = subprocess.run(
+            [sys.executable, "-c", script],
+            cwd=Path(__file__).resolve().parents[2],
+            capture_output=True,
+            text=True,
+        )
+        self.assertEqual(result.returncode, 0, result.stderr)
+
     def test_s3_url_roundtrip(self):
         # get_s3_url builds a stored file_url; storage_key must recover the key.
         for key in [
