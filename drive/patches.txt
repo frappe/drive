@@ -12,4 +12,4 @@ drive.patches.turn_on_flat_disk
 drive.patches.add_modified_field
 drive.patches.add_drive_user_role
 drive.patches.add_search_index
-
+drive.patches.remove_expired_permissions_job
