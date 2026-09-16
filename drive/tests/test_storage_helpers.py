@@ -28,6 +28,7 @@ assert module.get_s3_key("/files/test.txt") == "test.txt"
             cwd=Path(__file__).resolve().parents[2],
             capture_output=True,
             text=True,
+            timeout=10,
         )
         self.assertEqual(result.returncode, 0, result.stderr)
 
