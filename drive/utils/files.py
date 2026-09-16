@@ -373,7 +373,7 @@ class FileManager:
                     shutil.move(cur_path, full_trash_path)
                 else:
                     cur_path.rename(full_trash_path)
-        except self.s3_errors + (FileNotFoundError, OSError):
+        except self.s3_errors + (FileNotFoundError,):
             frappe.log_error(f"Moved {entity.name} to trash without it being on disk")
             pass
 
