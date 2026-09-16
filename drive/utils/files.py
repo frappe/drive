@@ -38,10 +38,6 @@ def _get_s3_client_errors():
     return (ClientError,)
 
 
-def _get_s3_errors(*extra_errors):
-    return _get_s3_client_errors() + extra_errors
-
-
 class FileManager:
     def __init__(self):
         settings = frappe.get_single("Drive Disk Settings")
@@ -50,12 +46,14 @@ class FileManager:
         self.flat = settings.flat
         self.bucket = settings.bucket
         self.site_folder = Path(frappe.get_site_path())
+        self.s3_errors = ()
 
         TEAMS = frappe.get_all("Drive Team", fields=["name", "s3_bucket", "prefix"])
         self.bucket_map = {k["name"]: k["s3_bucket"] for k in TEAMS}
         self.prefix_map = {k["name"]: k["prefix"] for k in TEAMS}
 
         if self.s3_enabled:
+            self.s3_errors = _get_s3_client_errors()
             self.conn = _get_s3_client(settings)
 
     def _not_if_flat(func):
@@ -214,7 +212,7 @@ class FileManager:
             else:
                 with open(self.site_folder / file_url, "rb") as fh:
                     buf = BytesIO(fh.read())
-        except _get_s3_errors(FileNotFoundError, OSError) as e:
+        except self.s3_errors + (FileNotFoundError, OSError) as e:
             if log:
                 frappe.log_error("Drive: could not read file", e)
             frappe.throw("Could not find this file.", frappe.DoesNotExistError)
@@ -375,7 +373,7 @@ class FileManager:
                     shutil.move(cur_path, full_trash_path)
                 else:
                     cur_path.rename(full_trash_path)
-        except _get_s3_errors(FileNotFoundError):
+        except self.s3_errors + (FileNotFoundError,):
             frappe.log_error(f"Moved {entity.name} to trash without it being on disk")
             pass
 
