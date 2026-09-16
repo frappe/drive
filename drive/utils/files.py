@@ -38,8 +38,8 @@ def _get_s3_client_errors():
     return (ClientError,)
 
 
-S3_READ_ERRORS = _get_s3_client_errors() + (FileNotFoundError, OSError)
-S3_MOVE_ERRORS = _get_s3_client_errors() + (FileNotFoundError,)
+def _get_s3_errors(*extra_errors):
+    return _get_s3_client_errors() + extra_errors
 
 
 class FileManager:
@@ -214,7 +214,7 @@ class FileManager:
             else:
                 with open(self.site_folder / file_url, "rb") as fh:
                     buf = BytesIO(fh.read())
-        except S3_READ_ERRORS as e:
+        except _get_s3_errors(FileNotFoundError, OSError) as e:
             if log:
                 frappe.log_error("Drive: could not read file", e)
             frappe.throw("Could not find this file.", frappe.DoesNotExistError)
@@ -375,7 +375,7 @@ class FileManager:
                     shutil.move(cur_path, full_trash_path)
                 else:
                     cur_path.rename(full_trash_path)
-        except S3_MOVE_ERRORS:
+        except _get_s3_errors(FileNotFoundError):
             frappe.log_error(f"Moved {entity.name} to trash without it being on disk")
             pass
 
