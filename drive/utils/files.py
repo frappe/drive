@@ -5,11 +5,8 @@ from pathlib import Path
 import shutil
 from urllib.parse import unquote
 
-import boto3
 import frappe
 import mimemapper
-from botocore.config import Config
-from botocore.exceptions import ClientError
 from PIL import Image, ImageOps
 
 from drive.locks.distributed_lock import DistributedLock
@@ -17,6 +14,28 @@ from drive.locks.distributed_lock import DistributedLock
 from . import get_home_folder, STATUS_ACTIVE
 
 S3_URL_PREFIX = "/api/method/drive.api.s3.fetch?path="
+
+
+def _get_s3_client(settings):
+    import boto3
+    from botocore.config import Config
+
+    return boto3.client(
+        "s3",
+        aws_access_key_id=settings.aws_key,
+        aws_secret_access_key=settings.get_password("aws_secret"),
+        endpoint_url=(settings.endpoint_url or None),
+        config=Config(signature_version=settings.signature_version),
+    )
+
+
+def _get_s3_client_errors():
+    try:
+        from botocore.exceptions import ClientError
+    except ImportError:
+        return ()
+
+    return (ClientError,)
 
 
 class FileManager:
@@ -27,19 +46,15 @@ class FileManager:
         self.flat = settings.flat
         self.bucket = settings.bucket
         self.site_folder = Path(frappe.get_site_path())
+        self.s3_errors = ()
 
         TEAMS = frappe.get_all("Drive Team", fields=["name", "s3_bucket", "prefix"])
         self.bucket_map = {k["name"]: k["s3_bucket"] for k in TEAMS}
         self.prefix_map = {k["name"]: k["prefix"] for k in TEAMS}
 
         if self.s3_enabled:
-            self.conn = boto3.client(
-                "s3",
-                aws_access_key_id=settings.aws_key,
-                aws_secret_access_key=settings.get_password("aws_secret"),
-                endpoint_url=(settings.endpoint_url or None),
-                config=Config(signature_version=settings.signature_version),
-            )
+            self.s3_errors = _get_s3_client_errors()
+            self.conn = _get_s3_client(settings)
 
     def _not_if_flat(func):
         """
@@ -197,7 +212,7 @@ class FileManager:
             else:
                 with open(self.site_folder / file_url, "rb") as fh:
                     buf = BytesIO(fh.read())
-        except (ClientError, FileNotFoundError, OSError) as e:
+        except self.s3_errors + (FileNotFoundError, OSError) as e:
             if log:
                 frappe.log_error("Drive: could not read file", e)
             frappe.throw("Could not find this file.", frappe.DoesNotExistError)
@@ -358,7 +373,7 @@ class FileManager:
                     shutil.move(cur_path, full_trash_path)
                 else:
                     cur_path.rename(full_trash_path)
-        except (FileNotFoundError, ClientError):
+        except self.s3_errors + (FileNotFoundError,):
             frappe.log_error(f"Moved {entity.name} to trash without it being on disk")
             pass
 
