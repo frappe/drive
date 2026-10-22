@@ -111,6 +111,7 @@ permission_query_conditions = {
 has_permission = {
     "Drive File": "drive.api.permissions.user_has_permission",
     "Drive Document": "drive.api.permissions.user_has_permission_doc",
+    "Drive Team": "drive.api.permissions.user_has_permission_team",
 }
 # DocType Class
 # ---------------

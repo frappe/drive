@@ -83,16 +83,6 @@
             cond: isAdmin.data,
           },
           {
-            label: 'Sync',
-            icon: LucideRefreshCcw,
-            cond: isAdmin.data && teamData.s3_bucket,
-            onClick: () =>
-              createDialog({
-                title: 'Sync files from S3',
-                component: h(SyncBreakdown, { team }),
-              }),
-          },
-          {
             label: 'Leave',
             icon: LucideLogOut,
             onClick: () => leaveTeam.submit({ team }),
@@ -402,7 +392,7 @@
             />
           </div>
         </div>
-        <template v-if="getDiskSettings.data.enabled">
+        <template v-if="getDiskSettings.data.enabled && isDriveAdmin.data?.is_admin">
           <FormControl
             v-model="s3Bucket"
             type="text"
@@ -558,9 +548,11 @@ import {
   FormLabel,
   Checkbox,
 } from "frappe-ui"
-import SyncBreakdown from "@/components/SyncBreakdown.vue"
-import { createDialog } from "@/utils/dialogs"
-import { allUsers, getDiskSettings } from "@/resources/permissions"
+import {
+  allUsers,
+  getDiskSettings,
+  isAdmin as isDriveAdmin,
+} from "@/resources/permissions"
 import { ref, watch } from "vue"
 import { toast } from "@/utils/toasts"
 import { useRoute } from "vue-router"
@@ -576,7 +568,6 @@ import EmojiPicker from "@/components/EmojiPicker.vue"
 import UserTooltip from "@/components/UserTooltip.vue"
 import { dynamicList } from "@/utils/files"
 import TeamSelector from "@/components/TeamSelector.vue"
-import { LucideRefreshCcw } from "lucide-vue-next"
 
 const route = useRoute()
 const tabIndex = ref(0)

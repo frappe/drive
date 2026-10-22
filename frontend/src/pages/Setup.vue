@@ -111,6 +111,7 @@ import { useRoute } from "vue-router"
 import { useStore } from "vuex"
 import LoadingIndicator from "frappe-ui/src/components/LoadingIndicator.vue"
 import { createTeam } from "@/resources/permissions"
+import { safeRedirectPath } from "@/utils/helpers"
 
 const store = useStore()
 const team_name = ref(null)
@@ -137,7 +138,7 @@ const domainTeams = createResource({
 const onSuccess = (data) => {
   if (data) {
     console.log(route.query["redirect-to"], "/drive")
-    window.location.replace(route.query["redirect-to"] || "/drive")
+    window.location.replace(safeRedirectPath(route.query["redirect-to"]))
   }
 }
 

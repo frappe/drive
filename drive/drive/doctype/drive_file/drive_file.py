@@ -3,15 +3,20 @@ from pathlib import Path
 
 import frappe
 from frappe.model.document import Document
-from frappe.utils import now
+from frappe.utils import now, sbool
 
 from drive.api.activity import create_new_activity_log
-from drive.api.files import get_new_title
+from drive.api.files import get_unused_title
 from drive.api.permissions import get_user_access, user_has_permission
-from drive.api.product import invite_users
+from drive.api.product import create_invitations
 from drive.utils import generate_upward_path, get_home_folder, update_file_size, update_clients
 from drive.utils.files import FileManager
 from drive.utils.api import prettify_file
+
+
+# Fields that decide which bytes a record points to, and who can reach them.
+# Only Drive's own code may set them, and it sets flags.allow_storage_change to say so.
+STORAGE_FIELDS = ("path", "trash_path", "document", "is_link", "is_group", "mime_type", "team", "parent_entity", "owner")
 
 
 class DriveFile(Document):
@@ -21,6 +26,26 @@ class DriveFile(Document):
     @property
     def manager(self):
         return FileManager()
+
+    def validate(self):
+        self.validate_storage_fields()
+        self.validate_title()
+
+    def validate_storage_fields(self):
+        if self.flags.allow_storage_change or frappe.flags.in_patch or frappe.flags.in_install:
+            return
+        if self.is_new():
+            frappe.throw("Files and folders can only be created through Drive.", frappe.PermissionError)
+        changed = [field for field in STORAGE_FIELDS if self.has_value_changed(field)]
+        if changed:
+            frappe.throw(f"These fields can't be changed: {', '.join(changed)}", frappe.PermissionError)
+
+    def validate_title(self):
+        # The title is used as the name on disk
+        if (self.is_new() or self.has_value_changed("title")) and (
+            "/" in self.title or "\0" in self.title or self.title in (".", "..")
+        ):
+            frappe.throw("Names can't contain '/' or be '.' or '..'.")
 
     def after_insert(self):
         full_name = frappe.db.get_value("User", {"name": frappe.session.user}, ["full_name"])
@@ -101,11 +126,14 @@ class DriveFile(Document):
         :raises FileExistsError: If a file or folder with the same name already exists in the specified parent folder
         :return: DriveEntity doc once file is moved
         """
-        if new_team and not new_parent:
-            new_parent = new_parent or get_home_folder(new_team).name
-        elif new_parent and not new_team:
-            new_team = frappe.db.get_value('Drive File', new_parent, 'team')
-        elif not new_parent and not new_team:
+        self.flags.allow_storage_change = True
+        if new_parent:
+            # A file is always in its folder's team. The team is passed in only when moving children,
+            # because their new parent has not been saved yet.
+            new_team = new_team or frappe.db.get_value("Drive File", new_parent, "team")
+        elif new_team:
+            new_parent = get_home_folder(new_team).name
+        else:
             new_team = self.team
             new_parent = new_parent or get_home_folder(new_team).name
 
@@ -136,7 +164,7 @@ class DriveFile(Document):
             update_file_size(self.parent_entity, -self.file_size)
             update_file_size(new_parent, +self.file_size)
             self.parent_entity = new_parent
-            self.title = get_new_title(self.title, new_parent, self.is_group, self.name)
+            self.title = get_unused_title(self.title, new_parent, self.is_group, self.name)
 
         self.team = new_team
 
@@ -153,7 +181,6 @@ class DriveFile(Document):
 
         return frappe.get_value("Drive File", new_parent, ["title", "team", "name", "parent_entity"], as_dict=True)
 
-    @frappe.whitelist()
     @__update_modified
     def rename(self, new_title):
         """
@@ -166,7 +193,7 @@ class DriveFile(Document):
         if new_title == self.title:
             return self
 
-        validated_name = get_new_title(new_title, self.parent_entity, self.is_group, self.name)
+        validated_name = get_unused_title(new_title, self.parent_entity, self.is_group, self.name)
         if new_title != validated_name:
             return frappe.throw(
                 f"{'Folder' if self.is_group else 'File'} '{new_title}' already exists\n Try '{validated_name}' ",
@@ -188,12 +215,13 @@ class DriveFile(Document):
         self.title = new_title
         path = self.manager.rename(self)
 
-        if self.path and self.mime_type != "frappe/slides":
+        if path and self.path and self.mime_type != "frappe/slides":
             self.recursive_path_move(self.path, path)
 
         self.save()
 
     def recursive_path_move(self, old, new):
+        self.flags.allow_storage_change = True
         if new:
             self.path = new
         for child in self.get_children():
@@ -202,7 +230,6 @@ class DriveFile(Document):
                 child.recursive_path_move(child.path, str(Path(new) / Path(child.path).relative_to(old)))
         self.save()
 
-    @frappe.whitelist()
     def change_color(self, new_color):
         """
         Change color of a folder
@@ -226,7 +253,6 @@ class DriveFile(Document):
                 child.permanent_delete()
         self.save()
 
-    @frappe.whitelist()
     def share(
         self,
         user=None,
@@ -266,7 +292,7 @@ class DriveFile(Document):
 
         # Create user
         if not frappe.db.exists("User", user):
-            invite_users(user, auto=True)
+            create_invitations(user, auto=True)
 
         levels = [
             ["read", read],
@@ -275,11 +301,13 @@ class DriveFile(Document):
             ["upload", upload],
             ["write", write],
         ]
+        for level, value in levels:
+            if sbool(value) and not user_has_permission(self, level):
+                frappe.throw("You can't give access that you don't have.", frappe.PermissionError)
         permission.update({l[0]: l[1] for l in levels if l[1] is not None})
 
         permission.save(ignore_permissions=True)
 
-    @frappe.whitelist()
     def unshare(self, user=None):
         """Unshare this file or folder with the specified user
         :param user: User or group with whom this is to be shared
@@ -322,7 +350,7 @@ class DriveFile(Document):
                         "write": 0,
                         "team": bool(user),
                     }
-                ).insert()
+                ).insert(ignore_permissions=True)
 
         else:
             perm_name = frappe.db.get_value(

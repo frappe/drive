@@ -1,7 +1,5 @@
 import frappe
 
-from drive.api.permissions import get_teams
-
 
 def common_filters(func):
     def decorator(user):
@@ -25,10 +23,9 @@ def filter_drive_permission(user):
 
 @common_filters
 def filter_drive_team(user):
-    teams = get_teams(user)
-    if teams:
-        teams = ", ".join(frappe.db.escape(team) for team in teams)
-        return f"""(`tabDrive Team`.name in ({teams}))"""
+    return f"""(`tabDrive Team`.name in (
+        select parent from `tabDrive Team Member` where parenttype = 'Drive Team' and user = {user}
+    ))"""
 
 
 @common_filters

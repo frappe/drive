@@ -65,7 +65,7 @@ def get_user_access(entity, user: str = None, team: bool = False):
     #     frappe.throw("You cannot check permissions of other users", PermissionError)
 
     # Owners and team members of a file have access
-    teams = get_teams(user)
+    teams = get_user_teams(user)
 
     if user == entity.owner:
         access = {"read": 1, "comment": 1, "share": 1, "upload": 1, "write": 1, "type": "admin"}
@@ -106,7 +106,8 @@ def is_admin(team):
     if frappe.session.user == "Administrator":
         return True
     drive_team = {k.user: k for k in frappe.get_doc("Drive Team", team).users}
-    return drive_team[frappe.session.user].access_level == 2
+    member = drive_team.get(frappe.session.user)
+    return bool(member and member.access_level == 2)
 
 
 def get_access_level(team):
@@ -114,19 +115,21 @@ def get_access_level(team):
     return drive_team[frappe.session.user].access_level
 
 
-@frappe.whitelist()
-def get_teams(user=None, details=None, exclude_personal=True):
-    """
-    Returns all the teams that the current user is part of.
-    """
-    if not user:
-        user = frappe.session.user
-
-    teams = frappe.get_all(
+def get_user_teams(user):
+    """Returns all the teams that `user` is part of."""
+    return frappe.get_all(
         "Drive Team Member",
         pluck="parent",
         filters=[["parenttype", "=", "Drive Team"], ["user", "=", user]],
     )
+
+
+@frappe.whitelist()
+def get_teams(details=None, exclude_personal=True):
+    """
+    Returns all the teams that the current user is part of.
+    """
+    teams = get_user_teams(frappe.session.user)
     if details:
         teams_info = {team: frappe.get_doc("Drive Team", team) for team in teams}
         if exclude_personal:
@@ -282,6 +285,14 @@ def user_has_permission_doc(doc, ptype, user=None):
         return True
     perm = user_has_permission(entity, ptype, user)
     return perm
+
+
+def user_has_permission_team(doc, ptype, user=None):
+    """Only members see a team. Changes go through Drive's own methods, which check for team admins."""
+    user = user or frappe.session.user
+    if ptype == "create" or {"System Manager", "Drive Admin"} & set(frappe.get_roles(user)):
+        return True
+    return user in {member.user for member in doc.users}
 
 
 @frappe.whitelist()

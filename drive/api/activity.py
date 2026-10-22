@@ -32,6 +32,10 @@ def get_entity_activity_log(entity_name):
     """
     Warning: Assumes `Drive File` only
     """
+    from drive.api.permissions import user_has_permission
+
+    if not user_has_permission(entity_name, "read"):
+        raise frappe.PermissionError("You do not have permission to view this file")
     Activity = frappe.qb.DocType("Drive Entity Activity Log")
     User = frappe.qb.DocType("User")
     selectedFields = [

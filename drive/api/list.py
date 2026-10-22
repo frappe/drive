@@ -7,7 +7,7 @@ from pypika import functions as fn
 from drive.utils import MIME_LIST_MAP, default_team, get_file_type, get_home_folder
 from drive.utils.api import get_default_access
 
-from .permissions import ENTITY_FIELDS, get_user_access
+from .permissions import ENTITY_FIELDS, get_teams, get_user_access
 
 DriveUser = frappe.qb.DocType("User")
 UserGroupMember = frappe.qb.DocType("User Group Member")
@@ -52,6 +52,10 @@ def files(
     if team == "all":
         all_teams = True
         team = None
+
+    # Guests can only list a folder that has been shared with them
+    if frappe.session.user == "Guest" and (all_teams or not entity_name):
+        frappe.throw("Please log in to see these files.", frappe.PermissionError)
 
     if not entity_name and team:
         entity_name = get_home_folder(team)["name"]
@@ -108,6 +112,9 @@ def files(
         query = query.where(DriveFile.parent_entity == entity_name)
     elif not all_teams:
         query = query.where((DriveFile.team == team) & (DriveFile.parent_entity != ""))
+    elif not (recents_only or favourites_only or shared or not is_active):
+        # Everywhere: only the teams this user is a member of
+        query = query.where(DriveFile.team.isin(get_teams() or [""]))
 
     # Get favourites data (only that, if applicable)
     if favourites_only:
@@ -208,7 +215,8 @@ def files(
         else:
             r["share_count"] = default
         r |= get_user_access(r["name"])
-    return res
+    # Never return a file the user can't read, whatever the filters were
+    return [r for r in res if r.get("read")]
 
 
 @frappe.whitelist()

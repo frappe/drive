@@ -1,8 +1,10 @@
+import base64
 import inspect
 from datetime import datetime
 from functools import wraps
 
 import frappe
+import pycrdt
 from bs4 import BeautifulSoup
 
 DriveFile = frappe.qb.DocType("Drive File")
@@ -283,6 +285,7 @@ def if_folder_exists(team, folder_name, parent):
         return existing_folder.name
     else:
         d = frappe.get_doc({"doctype": "Drive File", **values, "_modified": frappe.utils.now_datetime()})
+        d.flags.allow_storage_change = True
         d.insert()
         return d.name
 
@@ -313,6 +316,7 @@ def create_drive_file(
         }
     )
     drive_file.flags.file_created = True
+    drive_file.flags.allow_storage_change = True
     drive_file.insert(ignore_permissions=True)
     path = entity_path(drive_file)
     drive_file.path = str(path) if path else ""
@@ -345,6 +349,16 @@ def strip_comment_spans(html: str) -> str:
         span.unwrap()
 
     return str(soup)
+
+
+def strip_yjs_comment_marks(yjs: str | None) -> list:
+    """
+    Return the editor content of a base64 Yjs document as plain data, without comment marks.
+    """
+    doc = pycrdt.Doc()
+    if yjs:
+        doc.apply_update(base64.b64decode(yjs))
+    return _without_comment_marks(doc.get("default", type=pycrdt.XmlFragment))
 
 
 @frappe.whitelist()
@@ -417,3 +431,20 @@ def update_clients(entity_name, team, type, current_client=None):
     except BaseException as e:
         print(e)
         frappe.log_error("There was an error updating the desktop client:", e)
+
+
+def _without_comment_marks(node):
+    if isinstance(node, pycrdt.XmlText):
+        chunks = []
+        for text, attrs in node.diff():
+            # y-prosemirror names marks "comment", or "comment--<hash>" when they can overlap.
+            attrs = {k: v for k, v in (attrs or {}).items() if k.split("--")[0] != "comment"}
+            if chunks and chunks[-1][1] == attrs and isinstance(text, str) and isinstance(chunks[-1][0], str):
+                chunks[-1] = (chunks[-1][0] + text, attrs)
+            else:
+                chunks.append((text, attrs))
+        return chunks
+    children = [_without_comment_marks(child) for child in node.children]
+    if isinstance(node, pycrdt.XmlElement):
+        return [node.tag, dict(node.attributes), children]
+    return children
