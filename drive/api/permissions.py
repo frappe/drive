@@ -2,7 +2,6 @@ import io
 
 import frappe
 import markdown
-from frappe.utils import getdate
 from markdown.extensions.wikilinks import WikiLinkExtension
 from pypika import Field
 
@@ -244,25 +243,6 @@ def get_shared_with_list(entity):
         if user_info:
             p.update(user_info)
     return permissions
-
-
-def auto_delete_expired_perms():
-    current_date = getdate()
-    expired_documents = frappe.get_list(
-        "Drive Permission",
-        filters=[
-            ["valid_until", "is", "set"],
-            ["valid_until", "<", current_date],
-        ],
-        fields=["name", "valid_until"],
-    )
-    if expired_documents:
-
-        def batch_delete_perms(docs):
-            for d in docs:
-                frappe.delete_doc("Drive Permission", d.name)
-
-        frappe.enqueue(batch_delete_perms, docs=expired_documents)
 
 
 def user_has_permission(doc, ptype, user=None, team=0):
