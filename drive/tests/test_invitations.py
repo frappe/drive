@@ -7,11 +7,17 @@ import frappe
 from frappe.client import insert
 
 from drive.api.product import accept_invite, get_my_invites, get_team_invites, invite_users, reject_invite, signup
+from drive.drive.doctype.drive_user_invitation.drive_user_invitation import get_invite_link
 from drive.tests.utils import OTHER, THIRD, DriveTestCase, make_file
 
 
 def new_email():
     return f"drive-new-{frappe.generate_hash(length=6)}@test.io"
+
+
+def link_params(key):
+    """The query of the link emailed to an invited person"""
+    return {k: v[0] for k, v in parse_qs(urlsplit(get_invite_link(key)).query).items()}
 
 
 class TestInvitations(DriveTestCase):
@@ -66,7 +72,13 @@ class TestInvitations(DriveTestCase):
         invite_users(email, team=self.team)
         key = frappe.db.get_value("Drive User Invitation", {"email": email, "team": self.team})
         frappe.set_user("Guest")
-        accept_invite(key)
+        # Signing up needs the link from the email, not just the invitation's name
+        for token in (None, "0" * 64):
+            with self.subTest(token=token), self.assertRaises(frappe.PermissionError):
+                accept_invite(key, token=token)
+        self.assertFalse(frappe.db.exists("Account Request", {"email": email}))
+
+        accept_invite(**link_params(key))
         request = parse_qs(urlsplit(frappe.local.response["location"]).query)["r"][0]
         self.assertEqual(frappe.session.user, "Guest")
 
@@ -83,11 +95,12 @@ class TestInvitations(DriveTestCase):
         email = new_email()
         invite_users(email, team=self.team)
         key = frappe.db.get_value("Drive User Invitation", {"email": email, "team": self.team})
+        token = link_params(key)["token"]
         frappe.set_user("Guest")
         cases = {"/drive/t/x": True, "https://example.com": False, "//example.com": False, "/\\example.com": False}
         for redirect, kept in cases.items():
             frappe.local.response = frappe._dict()
-            accept_invite(key, redirect=redirect)
+            accept_invite(key, redirect=redirect, token=token)
             with self.subTest(redirect=redirect):
                 self.assertEqual("redirect-to=" in frappe.local.response["location"], kept)
 

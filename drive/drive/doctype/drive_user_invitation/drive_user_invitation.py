@@ -1,11 +1,14 @@
 # Copyright (c) 2024, Frappe Technologies Pvt. Ltd. and contributors
 # For license information, please see license.txt
 
+import hashlib
+import hmac
 from urllib.parse import quote
 
 import frappe
 from frappe.model.document import Document
 from frappe.utils import add_days, get_datetime, now, validate_email_address
+from frappe.utils.password import get_encryption_key
 
 EXPIRY_DAYS = 1
 
@@ -45,14 +48,14 @@ class DriveUserInvitation(Document):
             subject=f"Frappe Drive - Invitation",
             template="drive_invitation",
             args={
-                "invite_link": frappe.utils.get_url(f"/api/method/drive.api.product.accept_invite?key={self.name}"),
+                "invite_link": get_invite_link(self.name),
                 "user": frappe.session.user,
                 "team_name": frappe.db.get_value("Drive Team", self.team, "title"),
             },
             now=True,
         )
 
-    def accept(self, redirect=True):
+    def accept(self, redirect=True, token=None):
         """
         Add the invited person to the team.
 
@@ -70,7 +73,7 @@ class DriveUserInvitation(Document):
             frappe.local.response["type"] = "redirect"
 
         if frappe.session.user == "Guest":
-            return self.send_guest_to_login(redirect)
+            return self.send_guest_to_login(redirect, token)
         if frappe.session.user != self.email.lower():
             frappe.throw(f"This invitation is for {self.email}. Please log in with that account.", frappe.PermissionError)
 
@@ -89,14 +92,16 @@ class DriveUserInvitation(Document):
         frappe.local.response["location"] = location
         return location
 
-    def send_guest_to_login(self, redirect):
+    def send_guest_to_login(self, redirect, token=None):
         if frappe.db.exists("User", self.email):
             # Come back to this link once logged in as the invited user
             accept_url = f"/api/method/drive.api.product.accept_invite?key={self.name}"
             frappe.local.response["location"] = f"/login?redirect-to={quote(accept_url)}"
             return
 
-        # The link was sent to this address, so it stands in for verifying the email when signing up
+        # Only the emailed link has the token, so it stands in for verifying the email when signing up
+        if not token or not hmac.compare_digest(str(token), get_invite_token(self.name)):
+            frappe.throw("Please open the link in your invitation email to sign up.", frappe.PermissionError)
         req = frappe.get_doc(
             {
                 "doctype": "Account Request",
@@ -111,6 +116,18 @@ class DriveUserInvitation(Document):
         if isinstance(redirect, str) and is_site_path(redirect):
             url += f"&redirect-to={quote(redirect)}"
         frappe.local.response["location"] = url
+
+
+def get_invite_token(key):
+    return hmac.new(get_encryption_key().encode(), f"Drive User Invitation {key}".encode(), hashlib.sha256).hexdigest()
+
+
+def get_invite_link(key, redirect=None):
+    """The link emailed to an invited person. Its token shows that whoever opens it received the email."""
+    url = f"/api/method/drive.api.product.accept_invite?key={key}&token={get_invite_token(key)}"
+    if redirect:
+        url += f"&redirect={quote(redirect)}"
+    return frappe.utils.get_url(url)
 
 
 def is_site_path(path):

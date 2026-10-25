@@ -347,13 +347,13 @@ def get_team_users(team: str):
 
 
 @frappe.whitelist(allow_guest=True)
-def accept_invite(key: str, redirect: bool | str = True):
+def accept_invite(key: str, redirect: bool | str = True, token: str | None = None):
     try:
         invitation = frappe.get_doc("Drive User Invitation", key)
     except:
         frappe.throw("Could not find invitation.")
 
-    return invitation.accept(redirect)
+    return invitation.accept(redirect, token)
 
 
 @frappe.whitelist()
