@@ -297,7 +297,7 @@ class FileManager:
 
     @__not_if_flat
     def rename(self, entity):
-        if not entity.path or entity.mime_type == "frappe/slides":
+        if not entity.path or entity.is_link or entity.mime_type == "frappe/slides":
             return
         new_path = self.get_disk_path(entity)
         return self.move(entity, new_path)
@@ -308,7 +308,7 @@ class FileManager:
         Move a file or folder into the team's .trash folder, under a name that is not taken.
         Returns where it was put, or None if there was nothing to move.
         """
-        if not entity.path or entity.mime_type.startswith("frappe"):
+        if not entity.path or entity.is_link or entity.mime_type.startswith("frappe"):
             return None
 
         from botocore.exceptions import ClientError
@@ -326,6 +326,8 @@ class FileManager:
         """
         Move a file or folder from the trash to `new_path`.
         """
+        if entity.is_link:
+            return
         trash_path = entity.trash_path
         if not trash_path:
             # Trashed before trash_path was stored

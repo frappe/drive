@@ -1,4 +1,6 @@
 from . import __version__ as app_version
+from frappe.model import base_document
+
 
 app_name = "drive"
 app_title = "Frappe Drive"
@@ -126,9 +128,11 @@ has_permission = {
 # ---------------
 # Override standard doctype classes
 
-# override_doctype_class = {
-# 	"ToDo": "custom_app.utils.overrides.CustomToDo"
-# }
+# Frappe v16 added extend_doctype_class, which lets several apps extend File. Older versions can only override it.
+if hasattr(base_document, "_get_extended_class"):
+    extend_doctype_class = {"File": ["drive.overrides.file.TeamFolderGuard"]}
+else:
+    override_doctype_class = {"File": "drive.overrides.file.File"}
 
 # Document Events
 # ---------------

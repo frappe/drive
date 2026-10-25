@@ -4,6 +4,7 @@ import re
 from datetime import date, timedelta
 from io import BytesIO
 from pathlib import Path
+from urllib.parse import urlparse
 
 import frappe
 import html2text
@@ -436,11 +437,17 @@ def create_link(team, title, link, parent=None):
             FileExistsError,
         )
 
+    link = link.strip()
+    if "://" not in link:
+        link = "https://" + link
+    validate_web_link(link)
+
     drive_file = frappe.get_doc(
         {
             "doctype": "Drive File",
             "title": title,
-            "team": team,
+            # A file is always in its folder's team
+            "team": frappe.db.get_value("Drive File", parent, "team"),
             "path": link,
             "is_link": 1,
             "mime_type": "link/unknown",
@@ -454,12 +461,20 @@ def create_link(team, title, link, parent=None):
     return drive_file
 
 
+def validate_web_link(url):
+    parsed = urlparse(url)
+    if parsed.scheme not in ("http", "https") or not parsed.netloc:
+        frappe.throw("Links must be web addresses that start with http:// or https://.")
+
+
 @frappe.whitelist()
 def edit_file_content(entity_name, client=None):
     # TBD: notify other clients of the update
     entity = frappe.get_doc("Drive File", entity_name)
     if not user_has_permission(entity, "write"):
         frappe.throw("You cannot edit this file", frappe.PermissionError)
+    if entity.is_group or entity.is_link or entity.document:
+        frappe.throw("Only files can be edited this way.")
 
     file = frappe.request.files["file"]
     home_folder = get_home_folder(entity.team)
@@ -612,6 +627,9 @@ def get_file_content(entity_name, trigger_download=0, jwt_token=None, transfer=F
 
 
 def get_file_internal(file, trigger_download=0):
+    # A link's path is a web address, never bytes on this site
+    if file.get("is_link") or file.get("is_group"):
+        frappe.throw("Not found", frappe.NotFound)
     if not trigger_download and get_file_type(file.as_dict() if file.as_dict else dict(file)) == "Video":
         return stream_file_content(file.name)
     if file.document:
@@ -643,6 +661,8 @@ def stream_file_content(entity_name):
     entity = frappe.get_doc("Drive File", entity_name)
     if not user_has_permission(entity, "read"):
         raise frappe.PermissionError("You do not have permission to view this file")
+    if entity.is_group or entity.is_link:
+        frappe.throw("Not found", frappe.NotFound)
     size = entity.file_size
     byte1, byte2 = 0, None
 

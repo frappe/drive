@@ -1,9 +1,12 @@
 # Copyright (c) 2026, Frappe Technologies Pvt. Ltd. and Contributors
 # See license.txt
 
+from urllib.parse import parse_qs, urlsplit
+
 import frappe
 
-from drive.api.product import accept_invite, get_team_invites, invite_users, reject_invite
+from drive.api.product import accept_invite, get_team_invites, invite_users, reject_invite, signup
+from drive.drive.doctype.drive_user_invitation.drive_user_invitation import get_invite_link
 from drive.tests.utils import OTHER, DriveTestCase, make_file, make_user
 
 THIRD = "drive-third@test.io"
@@ -55,11 +58,12 @@ class TestInvitations(DriveTestCase):
         email = f"drive-new-{frappe.generate_hash(length=6)}@test.io"
         invite_users(email, team=self.team)
         key = frappe.db.get_value("Drive User Invitation", {"email": email, "team": self.team})
+        token = parse_qs(urlsplit(get_invite_link(key)).query)["token"][0]
         frappe.set_user("Guest")
         cases = {"/drive/t/x": True, "https://example.com": False, "//example.com": False, "/\\example.com": False}
         for redirect, kept in cases.items():
             frappe.local.response = frappe._dict()
-            accept_invite(key, redirect=redirect)
+            accept_invite(key, redirect=redirect, token=token)
             with self.subTest(redirect=redirect):
                 self.assertEqual("redirect-to=" in frappe.local.response["location"], kept)
 
@@ -86,3 +90,24 @@ class TestInvitations(DriveTestCase):
         frappe.set_user(THIRD)
         accept_invite(key)
         self.assertIn(THIRD, self.members())
+
+    def test_new_people_sign_up_only_from_the_emailed_link(self):
+        email = f"drive-new-{frappe.generate_hash(length=6)}@test.io"
+        invite_users(email, team=self.team)
+        key = frappe.db.get_value("Drive User Invitation", {"email": email, "team": self.team})
+        link = urlsplit(get_invite_link(key))
+        frappe.set_user("Guest")
+        for token in (None, "0" * 64):
+            with self.subTest(token=token), self.assertRaises(frappe.PermissionError):
+                accept_invite(key, token=token)
+        self.assertFalse(frappe.db.exists("Account Request", {"email": email}))
+
+        accept_invite(**{k: v[0] for k, v in parse_qs(link.query).items()})
+        request = parse_qs(urlsplit(frappe.local.response["location"]).query)["r"][0]
+        frappe.local.login_manager = frappe._dict(login_as=frappe.set_user)
+        signup(request, "New")
+        self.assertIn(email, self.members())
+        self.assertEqual(self.status_of(key), "Accepted")
+
+    def status_of(self, key):
+        return frappe.db.get_value("Drive User Invitation", key, "status")

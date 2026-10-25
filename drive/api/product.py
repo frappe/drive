@@ -398,13 +398,13 @@ def get_drive_users():
 
 
 @frappe.whitelist(allow_guest=True)
-def accept_invite(key, redirect=True):
+def accept_invite(key, redirect=True, token=None):
     try:
         invitation = frappe.get_doc("Drive User Invitation", key)
     except:
         frappe.throw("Could not find invitation.")
 
-    return invitation.accept(redirect)
+    return invitation.accept(redirect, token)
 
 
 @frappe.whitelist()
