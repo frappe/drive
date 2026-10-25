@@ -436,7 +436,7 @@ def get_query_data(
         hide_storage_key(r)
         r |= get_user_access(name)
 
-    return res
+    return [r for r in res if r.get("read")]
 
 
 @frappe.whitelist()

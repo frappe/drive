@@ -13,3 +13,5 @@ drive.patches.add_modified_field
 drive.patches.add_drive_user_role
 drive.patches.add_search_index
 drive.patches.remove_expired_permissions_job
+drive.patches.reset_custom_permissions #2
+drive.patches.make_team_files_private

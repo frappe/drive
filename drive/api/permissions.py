@@ -39,7 +39,16 @@ def get_team_access(entity):
 def get_user_access(entity: str | Document | frappe._dict, user: str = None, team: bool = False):
     """
     Return the user specific permissions for an entity. Toggle `team` to check team permission.
+    Only people who can share a file see what access other people have.
     """
+    if user and user not in (frappe.session.user, "Guest") and not user_has_permission(entity, "share"):
+        frappe.throw("You can't check what access other people have.", frappe.PermissionError)
+    if team and not user_has_permission(entity, "read"):
+        frappe.throw("You don't have access to this file.", frappe.PermissionError)
+    return get_access(entity, user, team)
+
+
+def get_access(entity: str | Document | frappe._dict, user: str = None, team: bool = False):
     if isinstance(entity, str):
         entity = frappe.get_cached_doc("File", entity)
 
@@ -60,11 +69,9 @@ def get_user_access(entity: str | Document | frappe._dict, user: str = None, tea
             return get_team_access(entity)
         else:
             user = frappe.session.user
-    # if not team and user not in [frappe.session.user, "Guest"] and not is_admin(entity.team):
-    #     frappe.throw("You cannot check permissions of other users", PermissionError)
 
     # Owners and team members of a file have access
-    teams = get_teams(user)
+    teams = get_user_teams(user)
 
     if frappe.db.get_value("Drive Team", entity.team, "public"):
         access["read"] = 1
@@ -110,7 +117,8 @@ def is_admin(team: str):
     if frappe.session.user == "Administrator":
         return True
     drive_team = {k.user: k for k in frappe.get_doc("Drive Team", team).users}
-    return drive_team[frappe.session.user].access_level == 2
+    member = drive_team.get(frappe.session.user)
+    return bool(member and member.access_level == 2)
 
 
 def get_access_level(team, user=None):
@@ -121,18 +129,11 @@ def get_access_level(team, user=None):
 
 
 @frappe.whitelist()
-def get_teams(user: str = None, details: bool = False, exclude_personal: bool = True):
+def get_teams(details: bool = False, exclude_personal: bool = True):
     """
     Returns all the teams that the current user is part of.
     """
-    if not user:
-        user = frappe.session.user
-
-    teams = frappe.get_all(
-        "Drive Team Member",
-        pluck="parent",
-        filters=[["parenttype", "=", "Drive Team"], ["user", "=", user]],
-    )
+    teams = get_user_teams(frappe.session.user)
     if details:
         teams_info = {
             team: {**frappe.get_doc("Drive Team", team).as_dict(), "file": get_home_folder(team)["name"]}
@@ -142,6 +143,24 @@ def get_teams(user: str = None, details: bool = False, exclude_personal: bool = 
             return {t: team for t, team in teams_info.items() if not team["personal"]}
         return teams_info
     return teams
+
+
+def get_user_teams(user: str) -> list[str]:
+    return frappe.get_all(
+        "Drive Team Member",
+        pluck="parent",
+        filters=[["parenttype", "=", "Drive Team"], ["user", "=", user]],
+    )
+
+
+def user_has_permission_team(doc, ptype=None, user=None, debug=False):
+    """Only members see a team. Changes go through Drive's own team APIs."""
+    user = user or frappe.session.user
+    if user == "Administrator" or "Drive Admin" in frappe.get_roles(user):
+        return True
+    if ptype not in (None, "read", "select"):
+        return False
+    return doc.name in get_user_teams(user)
 
 
 @frappe.whitelist(allow_guest=True)
@@ -259,6 +278,6 @@ def user_has_permission(doc, ptype, user=None, team=0):
     if ptype not in ("read", "write", "comment", "share", "upload"):
         # Should ideally deflect to Framework
         ptype = "write"
-    access = get_user_access(doc, user, team)
+    access = get_access(doc, user, team)
     if ptype in access:
         return bool(access[ptype])

@@ -56,7 +56,7 @@ def mark_as_read(name: str | None = None, all: bool = False):
     if all:
         frappe.db.set_value("Drive Notification", {"to_user": frappe.session.user, "read": False}, "read", True)
         return
-    frappe.db.set_value("Drive Notification", name, "read", True)
+    frappe.db.set_value("Drive Notification", {"name": name, "to_user": frappe.session.user}, "read", True)
     return
 
 
@@ -99,9 +99,9 @@ def notify_share(entity_name, docperm_name):
 
 
 def create_notification(from_user: str, to_user: str, type: str, entity: str, message: str | None = None):
-    from drive.api.permissions import get_user_access
+    from drive.api.permissions import get_access
 
-    user_access = get_user_access(entity.name, to_user)
+    user_access = get_access(entity.name, to_user)
     if user_access.get("read") == 0:
         return
 
@@ -119,7 +119,7 @@ def create_notification(from_user: str, to_user: str, type: str, entity: str, me
     if notif:
         return False
     try:
-        frappe.get_doc({"doctype": "Drive Notification", **details}).insert()
+        frappe.get_doc({"doctype": "Drive Notification", **details}).insert(ignore_permissions=True)
         return True
     except Exception:
         frappe.log_error(frappe.get_traceback(), "Frappe Drive Notification Error")

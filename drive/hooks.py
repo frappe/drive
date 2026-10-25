@@ -103,10 +103,16 @@ permission_query_conditions = {
     "Drive Favourite": "drive.utils.overrides.filter_drive_favourite",
     "Drive Entity Log": "drive.utils.overrides.filter_drive_recent",
     "Drive Notification": "drive.utils.overrides.filter_drive_notif",
+    "Drive Settings": "drive.utils.overrides.filter_drive_settings",
 }
 
 has_permission = {
     "File": "drive.api.permissions.user_has_permission",
+    "Drive Team": "drive.api.permissions.user_has_permission_team",
+    "Drive Favourite": "drive.utils.overrides.is_own_record",
+    "Drive Entity Log": "drive.utils.overrides.is_own_record",
+    "Drive Settings": "drive.utils.overrides.is_own_record",
+    "Drive Notification": "drive.utils.overrides.is_own_record",
 }
 
 after_upload_file = "drive.overrides.file.after_upload_file"

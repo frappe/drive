@@ -35,6 +35,11 @@ def get_context():
         context.description = "Open this online."
         # Ideally add thumbnail, but that might break if there's no thumbnail
         try:
+            from drive.api.permissions import user_has_permission
+
+            # Page titles name the file and its owner, so only show them to people who can open it
+            if not user_has_permission(parts[1], "read"):
+                raise frappe.PermissionError
             [file_name, owner, is_folder] = frappe.get_cached_value(
                 "File", parts[1], ["file_name", "owner", "is_folder"]
             )

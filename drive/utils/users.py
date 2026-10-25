@@ -34,6 +34,9 @@ def generate_otp():
 
 
 def get_country_info():
+    # Sends the visitor's IP address to a third party, so it is off unless a site turns it on
+    if not frappe.conf.get("drive_enable_ip_geolocation"):
+        return {}
     ip = frappe.local.request_ip
 
     def _get_country_info():

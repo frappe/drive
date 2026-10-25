@@ -322,10 +322,12 @@ def update_file_size(entity, delta):
     doc = frappe.get_doc("File", entity)
     while doc.folder:
         doc.file_size += delta
+        doc.flags.allow_storage_change = True
         doc.save(ignore_permissions=True)
         doc = frappe.get_doc("File", doc.folder)
     # Update root
     doc.file_size += delta
+    doc.flags.allow_storage_change = True
     doc.save(ignore_permissions=True)
 
 
@@ -342,7 +344,8 @@ def if_folder_exists(team, folder_name, parent):
     if existing_folder:
         return existing_folder.name
     else:
-        d = frappe.get_doc({"doctype": "File", **values, "file_modified": frappe.utils.now_datetime()})
+        d = frappe.get_doc({"doctype": "File", **values, "is_private": 1, "file_modified": frappe.utils.now_datetime()})
+        d.flags.allow_storage_change = True
         d.insert()
         return d.name
 
@@ -377,6 +380,7 @@ def create_drive_file(
         values["content_docname"] = content_docname
     drive_file = frappe.get_doc(values)
     drive_file.flags.file_created = True
+    drive_file.flags.allow_storage_change = True
     drive_file.insert(ignore_permissions=True)
     path = entity_path(drive_file) if callable(entity_path) else entity_path
     drive_file.file_url = str(path) if path else ""
@@ -436,34 +440,33 @@ def get_teams(user=None, details=None, exclude_personal=True):
         return teams_info
     return teams
 
-def get_new_file_name(file_name: str, parent_name: str, type: str = False, entity: str | None = None):
-    entity_title, entity_ext = os.path.splitext(file_name)
+def get_new_file_name(file_name: str, parent_name: str, entity: str | None = None):
+    """
+    Return `file_name`, or `file_name (n)` if something in the folder already has it.
+    Looks at every file in the folder, including ones the current user can't see, because names must be unique on disk.
 
+    :param entity: The file being renamed or moved, which doesn't count as a clash with itself
+    """
+    entity_title, entity_ext = os.path.splitext(file_name)
     filters = {
         "status": STATUS_ACTIVE,
         "folder": parent_name,
         "file_name": ["like", f"{entity_title}%{entity_ext}"],
     }
+    if entity:
+        filters["name"] = ["!=", entity]
 
-    if type:
-        filters["file_type"] = type
-
-    sibling_entity_titles = frappe.db.get_list(
-        "File",
-        filters=filters,
-        fields=["file_name", "name"],
-    )
-    if (
-        not sibling_entity_titles
-        or (sibling_entity_titles[0].name == entity)
-        or not any(k["file_name"] == file_name for k in sibling_entity_titles)
-    ):
-        return file_name
-    return f"{entity_title} ({len(sibling_entity_titles)}){entity_ext}"
+    taken = set(frappe.get_all("File", filters=filters, pluck="file_name"))
+    new_name, n = file_name, 1
+    while new_name in taken:
+        new_name = f"{entity_title} ({n}){entity_ext}"
+        n += 1
+    return new_name
 
 
-def validate_filename(file_name, parent, type, error=None):
-    suggested_name = get_new_file_name(file_name, parent, type)
+def validate_filename(file_name, parent, error=None):
+    validate_name_on_disk(file_name)
+    suggested_name = get_new_file_name(file_name, parent)
     if suggested_name != file_name:
         if not error:
             error = f"{file_name} exists."
@@ -471,6 +474,12 @@ def validate_filename(file_name, parent, type, error=None):
             f"{error} Try {suggested_name}",
             frappe.ValidationError,
         )
+
+
+def validate_name_on_disk(file_name):
+    """File and folder names are used as names on disk, so they can't be paths."""
+    if not file_name or "/" in file_name or "\0" in file_name or file_name in (".", ".."):
+        frappe.throw("Names can't contain '/' or be '.' or '..'.", frappe.ValidationError)
 
 
 def map_ff_to_drive_type(file):
@@ -485,8 +494,7 @@ def map_ff_to_drive_type(file):
 
 def get_upload_path(team_path, file_name):
     uploads_path = Path(frappe.get_site_path(team_path), ".uploads")
-    if not os.path.exists(uploads_path):
-        uploads_path.mkdir()
+    uploads_path.mkdir(parents=True, exist_ok=True)
     return uploads_path / file_name
 
 

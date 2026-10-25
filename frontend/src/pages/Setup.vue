@@ -34,6 +34,7 @@ import FrappeDriveLogo from '@/components/FrappeDriveLogo.vue'
 import { useRoute } from 'vue-router'
 import { useStore } from 'vuex'
 import { createTeam } from '@/resources/permissions'
+import { safeRedirectPath } from '@/utils/helpers'
 
 const route = useRoute()
 
@@ -41,7 +42,7 @@ createTeam.submit(
   { personal: 1 },
   {
     onSuccess: (data) => {
-      if (data) window.location.replace(route.query['redirect-to'] || '/drive')
+      if (data) window.location.replace(safeRedirectPath(route.query['redirect-to']))
     },
   }
 )

@@ -12,6 +12,15 @@ from drive.utils.files import get_s3_url
 LEGACY_DOCTYPE = "Drive File"
 
 
+def get_document_field():
+    """The column linking a file to its document. Older Drive versions call it `document`."""
+    return "doc" if frappe.db.has_column(LEGACY_DOCTYPE, "doc") else "document"
+
+
+def get_document(file):
+    return file.get(get_document_field())
+
+
 def ensure_custom_fields():
     """Drive's File columns ship as fixtures, which sync after pre_model_sync patches.
     Create them up front so the migration below can write to them."""
@@ -68,7 +77,7 @@ def migrate_folder(folder_name, is_remote=False, failures=None):
     migrate_file(get_legacy(folder_name), is_remote, failures)
 
     for child in frappe.get_all(LEGACY_DOCTYPE, filters={"parent_entity": folder_name}, fields=["*"]):
-        if child.is_group or child.doc:
+        if child.is_group or get_document(child):
             migrate_folder(child.name, is_remote, failures)
         else:
             migrate_file(child, is_remote, failures)
@@ -83,6 +92,13 @@ def get_link(file, is_remote=False):
         return get_s3_url(file.path)
 
     return "/private/files/" + file.path
+
+
+def get_trash_path(file, is_remote=False):
+    """Drive File stored it relative to private/files. File stores it relative to the site, like file_url."""
+    if not file.get("trash_path"):
+        return ""
+    return file.trash_path if is_remote else "private/files/" + file.trash_path
 
 
 def migrate_file(file, is_remote=False, failures=None):
@@ -105,18 +121,20 @@ def migrate_file(file, is_remote=False, failures=None):
             "status": STATUS_ACTIVE if file.is_active else STATUS_TRASHED,
             "mime_type": file.mime_type,
             "is_private": 1,
+            "trash_path": get_trash_path(file, is_remote),
         }
     )
 
-    if file.doc and frappe.db.exists(WRITER_CONTENT_DOCTYPE, file.doc):
+    document = get_document(file)
+    if document and frappe.db.exists(WRITER_CONTENT_DOCTYPE, document):
         ff_file.content_doctype = WRITER_CONTENT_DOCTYPE
-        ff_file.content_docname = file.doc
+        ff_file.content_docname = document
 
     if file.mime_type == "frappe/slides" and frappe.db.exists(PRESENTATION_CONTENT_DOCTYPE, file.path):
         ff_file.content_doctype = PRESENTATION_CONTENT_DOCTYPE
         ff_file.content_docname = file.path
 
-    if frappe.db.get_value(LEGACY_DOCTYPE, file.parent_entity, "doc"):
+    if file.parent_entity and frappe.db.get_value(LEGACY_DOCTYPE, file.parent_entity, get_document_field()):
         ff_file.attached_to_doctype = "File"
         ff_file.attached_to_name = file.parent_entity
 

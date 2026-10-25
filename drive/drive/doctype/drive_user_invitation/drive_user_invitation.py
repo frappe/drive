@@ -1,6 +1,8 @@
 # Copyright (c) 2024, Frappe Technologies Pvt. Ltd. and contributors
 # For license information, please see license.txt
 
+from urllib.parse import quote
+
 import frappe
 from frappe.model.document import Document
 from frappe.utils import add_days, get_datetime, now, validate_email_address
@@ -14,6 +16,8 @@ class DriveUserInvitation(Document):
 
     def before_insert(self):
         validate_email_address(self.email, True)
+        # User IDs are lowercase emails
+        self.email = self.email.strip().lower()
 
     def after_insert(self):
         if self.status == "Pending":
@@ -49,6 +53,11 @@ class DriveUserInvitation(Document):
         )
 
     def accept(self, redirect=True):
+        """
+        Add the invited person to the team.
+
+        Never logs anyone in. A guest is sent to log in, or to sign up, as the invited email first.
+        """
         if self.status not in ["Pending", "Automatic"]:
             frappe.throw("This key has already been used")
         if self.status == "Expired" or self.has_expired():
@@ -57,49 +66,53 @@ class DriveUserInvitation(Document):
             frappe.db.commit()
             frappe.throw("Invalid or expired key")
 
-        exists = frappe.db.exists(
-            "Account Request",
-            {
-                "email": self.email,
-                "signed_up": 1,
-            },
-        )
-
         if redirect:
             frappe.local.response["type"] = "redirect"
 
-        if not exists:
-            # If the user does not have an account, redirect to sign up
-            req = frappe.get_doc(
-                {
-                    "doctype": "Account Request",
-                    "email": self.email,
-                    "invite": self.name,
-                    "login_count": 1,
-                }
-            ).insert(ignore_permissions=True)
-            frappe.db.commit()
-            user_exists = frappe.db.exists("User", self.email)
+        if frappe.session.user == "Guest":
+            return self.send_guest_to_login(redirect)
+        if frappe.session.user != self.email.lower():
+            frappe.throw(f"This invitation is for {self.email}. Please log in with that account.", frappe.PermissionError)
 
-            if not user_exists:
-                team_name = frappe.db.get_value("Drive Team", self.team, "title")
-                url = f"/drive/signup?e={self.email}{'&t=' + team_name if team_name else ''}&r={req.name}"
-                if isinstance(redirect, str):
-                    url += f"&redirect-to={redirect}"
-                frappe.local.response["location"] = url
-                return
-
-        # Otherwise, add the user to the team
-        team = frappe.get_doc("Drive Team", self.team)
-        team.append("users", {"user": self.email, "access_level": 0 if self.as_guest else 1})
-        team.save(ignore_permissions=True)
+        if self.team:
+            team = frappe.get_doc("Drive Team", self.team)
+            email = self.email.lower()
+            if email not in {member.user for member in team.users}:
+                team.append("users", {"user": email, "access_level": 0 if self.as_guest else 1})
+                team.save(ignore_permissions=True)
         self.status = "Accepted"
-        self.accepted_at = frappe.utils.now()
+        self.accepted_on = frappe.utils.now()
         self.save(ignore_permissions=True)
         frappe.db.commit()
 
-        if frappe.session.user == "Guest":
-            frappe.local.login_manager.login_as(self.email)
+        location = f"/drive/t/{self.team}" if self.team else "/drive"
+        frappe.local.response["location"] = location
+        return location
 
-        frappe.local.response["location"] = "/drive/t/" + self.team
-        return "/drive/t/" + self.team
+    def send_guest_to_login(self, redirect):
+        if frappe.db.exists("User", self.email):
+            # Come back to this link once logged in as the invited user
+            accept_url = f"/api/method/drive.api.product.accept_invite?key={self.name}"
+            frappe.local.response["location"] = f"/login?redirect-to={quote(accept_url)}"
+            return
+
+        # The link was sent to this address, so it stands in for verifying the email when signing up
+        req = frappe.get_doc(
+            {
+                "doctype": "Account Request",
+                "email": self.email,
+                "invite": self.name,
+                "login_count": 1,
+            }
+        ).insert(ignore_permissions=True)
+        frappe.db.commit()
+        team_name = frappe.db.get_value("Drive Team", self.team, "title")
+        url = f"/drive/signup?e={quote(self.email)}{'&t=' + quote(team_name) if team_name else ''}&r={req.name}"
+        if isinstance(redirect, str) and is_site_path(redirect):
+            url += f"&redirect-to={quote(redirect)}"
+        frappe.local.response["location"] = url
+
+
+def is_site_path(path):
+    """True for a path on this site such as "/drive". Browsers treat "//host" and "/\\host" as other sites."""
+    return path.startswith("/") and path[1:2] not in ("/", "\\") and path.isprintable()

@@ -181,6 +181,13 @@ function isTargetEditable(e: Event) {
   const isInput = target.tagName === 'INPUT' || target.tagName === 'TEXTAREA'
   return isEditable || isInput
 }
+/** Returns `path` if it stays on this site, otherwise `fallback`. Browsers treat "//host" and "/\\host" as other sites. */
+function safeRedirectPath(path: unknown, fallback = '/drive'): string {
+  if (typeof path !== 'string' || !path.startsWith('/')) return fallback
+  if (path[1] === '/' || path[1] === '\\') return fallback
+  return path
+}
+
 function getDataForKey(datum: object, key: string) {
   const data = Object.assign({}, datum)
   return key.split('.').reduce((d, key) => (d ? d[key] : null), data) as string
@@ -202,5 +209,6 @@ export {
   isHTMLString,
   isTargetEditable,
   kebabToCamelCase,
+  safeRedirectPath,
   stripExtension,
 }

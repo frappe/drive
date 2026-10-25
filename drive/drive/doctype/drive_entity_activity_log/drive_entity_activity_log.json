@@ -54,7 +54,7 @@
     }
   ],
   "links": [],
- "modified": "2026-02-05 15:54:03.437373",
+  "modified": "2026-10-22 12:00:00.000000",
   "modified_by": "Administrator",
   "module": "Drive",
   "name": "Drive Entity Activity Log",
@@ -70,17 +70,6 @@
       "read": 1,
       "report": 1,
       "role": "System Manager",
-      "share": 1,
-      "write": 1
-    },
-    {
-      "create": 1,
-      "email": 1,
-      "export": 1,
-      "print": 1,
-      "read": 1,
-      "report": 1,
-      "role": "Drive User",
       "share": 1,
       "write": 1
     }

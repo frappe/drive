@@ -220,7 +220,8 @@ const signup = createResource({
   },
   onSuccess() {
     window.location.replace(
-      "/drive/setup?redirect-to=" + (params.get("redirect-to") || "/drive")
+      "/drive/setup?redirect-to=" +
+        encodeURIComponent(params.get("redirect-to") || "/drive")
     )
   },
 })

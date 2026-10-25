@@ -7,11 +7,16 @@ from pathlib import Path
 import frappe
 from frappe.model.document import Document
 
-from drive.utils import get_home_folder
+from drive.utils import get_home_folder, validate_name_on_disk
 from drive.utils.files import get_s3_url, storage_key
 
 
 class DriveTeam(Document):
+    def before_insert(self):
+        # The title becomes a folder name on disk with this setting
+        if frappe.db.get_single_value("Drive Disk Settings", "team_prefix") == "team_name":
+            validate_name_on_disk(self.title)
+
     def after_insert(self):
         """Creates the file on disk"""
         d = frappe.get_doc(
@@ -21,13 +26,15 @@ class DriveTeam(Document):
                 "file_name": f"Drive - {self.name}",
                 "file_url": "",
                 "is_folder": 1,
+                "is_private": 1,
                 "team": self.name,
             }
         )
+        d.flags.allow_storage_change = True
         d.insert()
 
         self.append("users", {"user": frappe.session.user, "access_level": 2})
-        self.save()
+        self.save(ignore_permissions=True)
 
         settings = frappe.get_single("Drive Disk Settings")
         root_folder: str
@@ -60,14 +67,14 @@ class DriveTeam(Document):
         for s in user_settings:
             d = frappe.get_doc("Drive Settings", s)
             d.default_team = ""
-            d.save()
+            d.save(ignore_permissions=True)
         frappe.db.commit()
 
         try:
             site_dir = Path(frappe.get_site_path())
-            files_dir = site_dir / "private" / "files"
-            user_directory_path = site_dir / storage_key(get_home_folder(self.name).file_url)
-            if user_directory_path != files_dir:
+            files_dir = (site_dir / "private" / "files").resolve()
+            user_directory_path = (site_dir / storage_key(get_home_folder(self.name).file_url)).resolve()
+            if user_directory_path.is_relative_to(files_dir) and user_directory_path != files_dir:
                 shutil.rmtree(str(user_directory_path))
             frappe.db.delete("File", {"team": self.name})
         except:

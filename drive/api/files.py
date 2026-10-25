@@ -20,6 +20,7 @@ from drive.utils import (
     update_file_size,
     get_new_file_name,
     validate_filename,
+    validate_name_on_disk,
     is_site_file,
     ATTACHMENT_CONTENT_DOCTYPE,
     STATUS_ACTIVE,
@@ -56,13 +57,14 @@ def upload_file(
         if res is not None and res is not True:
             frappe.throw(res or "This upload was cancelled by a validation check.", TypeError)
 
-    home_folder = get_home_folder(team)
-    parent = parent or home_folder["name"]
+    parent = parent or get_home_folder(team)["name"]
 
     if not user_has_permission(parent, "upload"):
         frappe.throw("Ask the folder owner for upload access.", frappe.PermissionError)
 
+    # A file is always in its folder's team
     team = frappe.db.get_value("File", parent, "team")
+    home_folder = get_home_folder(team)
     if fullpath:
         parent = ensure_path(team, fullpath, parent)
 
@@ -77,8 +79,10 @@ def upload_file(
         total_chunks = 1
 
     file = frappe.request.files["file"]
+    validate_name_on_disk(file.filename)
     file_name = get_new_file_name(file.filename, parent)
-    upload_session = frappe.form_dict.uuid
+    # The session id is part of a file name, so keep it to a single path segment inside .uploads
+    upload_session = secure_filename(frappe.form_dict.uuid or "")
     temp_path = get_upload_path(f"{upload_session}_{secure_filename(file_name)}")
     with temp_path.open("ab") as f:
         f.seek(offset)
@@ -111,6 +115,7 @@ def upload_file(
     manager.upload_file(temp_path, drive_file, not embed)
     # Change path to be s3 compatible
     if manager.s3_enabled:
+        drive_file.flags.allow_storage_change = True
         drive_file.file_url = get_s3_url(get_s3_key(drive_file.file_url))
         drive_file.save()
 
@@ -169,7 +174,7 @@ def create_folder(team: str, file_name: str, parent: str | None = None):
             "You don't have permissions for this.",
             frappe.PermissionError,
         )
-    validate_filename(file_name, parent, "Folder", error=f"Folder '{file_name}' already exists.")
+    validate_filename(file_name, parent, error=f"Folder '{file_name}' already exists.")
 
     manager = FileManager()
     path = manager.create_folder(
@@ -237,19 +242,25 @@ def create_link(team: str, file_name: str, link: str, parent: str | None = None)
             frappe.PermissionError,
         )
 
-    validate_filename(file_name, parent, "Link", error=f"Link '{file_name}' already exists.")
+    validate_filename(file_name, parent, error=f"Link '{file_name}' already exists.")
+    link = link.strip()
+    if "://" not in link:
+        link = "https://" + link
 
     drive_file = frappe.get_doc(
         {
             "doctype": "File",
             "file_name": file_name,
-            "team": team,
+            # A file is always in its folder's team
+            "team": frappe.db.get_value("File", parent, "team"),
             "file_url": link,
             "file_type": "Link",
+            "is_private": 1,
             "file_modified": frappe.utils.now_datetime(),
             "folder": parent,
         }
     )
+    drive_file.flags.allow_storage_change = True
     drive_file.insert()
 
     return drive_file
@@ -347,8 +358,8 @@ def stream_file_content(entity_name: str):
     size = entity.file_size
     byte1, byte2 = 0, None
 
-    m = re.search("(\d+)-(\d*)", range_header)
-    g = m.groups()
+    m = re.search(r"(\d+)-(\d*)", range_header)
+    g = m.groups() if m else (None, None)
 
     if g[0]:
         byte1 = int(g[0])
@@ -369,9 +380,12 @@ def stream_file_content(entity_name: str):
     if manager.s3_enabled:
         data = manager.get_file(entity, f"bytes={byte1}-{byte1 + length - 1}")
     else:
-        with manager.open_file(entity.file_url) as f:
-            f.seek(byte1)
-            data = f.read(length)
+        try:
+            with manager.open_file(entity.file_url) as f:
+                f.seek(byte1)
+                data = f.read(length)
+        except FileNotFoundError:
+            frappe.throw("Could not find this file.", frappe.DoesNotExistError)
 
     res = Response(data, 206, mimetype=entity.mime_type, direct_passthrough=True)
     res.headers.add("Content-Range", "bytes {0}-{1}/{2}".format(byte1, byte1 + length - 1, size))
@@ -557,14 +571,15 @@ def remove_or_restore(entity_names: list[str] | str):
     def depth_zero_toggle_status(doc):
         if not user_has_permission(doc, "write"):
             raise frappe.PermissionError("You do not have permission to remove this file")
+        doc.flags.allow_storage_change = True
         if doc.status == STATUS_ACTIVE:
             flag = STATUS_TRASHED
-            manager.move_to_trash(doc)
+            doc.trash_path = manager.move_to_trash(doc) or ""
         else:
             storage_data = storage_bar_data(doc.team)
             if (storage_data["limit"] - storage_data["total_size"]) < doc.file_size:
                 frappe.throw("You're out of storage!", ValueError)
-            manager.restore(doc)
+            restore_from_trash(doc, manager)
             flag = STATUS_ACTIVE
 
         doc.status = flag
@@ -583,6 +598,24 @@ def remove_or_restore(entity_names: list[str] | str):
 
     for entity in entity_names:
         depth_zero_toggle_status(frappe.get_doc("File", entity))
+
+
+def restore_from_trash(doc, manager):
+    """
+    Move a trashed file or folder back to its folder.
+    If its name was taken while it was in the trash, it comes back under a new name.
+    """
+    old_path = new_path = doc.file_url
+    new_name = get_new_file_name(doc.file_name, doc.folder, doc.name)
+    if new_name != doc.file_name:
+        doc.file_name = new_name
+        if doc.file_url and not manager.flat and not doc._not_in_disk():
+            new_path = "/" + str(manager.get_disk_path(doc))
+
+    manager.restore(doc, new_path)
+    if new_path != old_path:
+        doc.recursive_path_move(old_path, new_path)
+    doc.trash_path = ""
 
 
 @frappe.whitelist()
@@ -649,13 +682,17 @@ def does_entity_exist(name: str | None = None, folder: str | None = None, team: 
     if not folder:
         home_folder = get_home_folder(team)
         folder = home_folder.name
+    if not user_has_permission(folder, "read"):
+        frappe.throw("You don't have access to this folder.", frappe.PermissionError)
     result = frappe.db.exists("File", {"folder": folder, "file_name": name})
     return result
 
 
 @frappe.whitelist()
 def get_new_title(title: str, parent_name: str, folder: bool = False):
-    return get_new_file_name(title, parent_name, folder)
+    if not user_has_permission(parent_name, "read"):
+        frappe.throw("You don't have access to this folder.", frappe.PermissionError)
+    return get_new_file_name(title, parent_name)
 
 
 @frappe.whitelist()
@@ -674,9 +711,11 @@ def move(entity_names: list[str], new_parent: str | None = None, team: str | Non
     if not entity_names or not isinstance(entity_names, list):
         frappe.throw(f"Expected a non-empty list but got {type(entity_names)}", ValueError)
 
+    # The team always follows the folder; `team` only picks the home folder when there is no folder
+    destination = new_parent or get_home_folder(team).name
     for entity in entity_names:
         doc = frappe.get_doc("File", entity)
-        res = doc.move(new_parent, team)
+        res = doc.move(destination)
 
     if not res["folder"]:
         # Drive Team's display field is `title` (not `file_name`).
@@ -775,6 +814,8 @@ def track_visit(entity_name: str):
 @frappe.whitelist()
 def get_docs_attached_to(file_name: str):
     file = frappe.get_doc("File", file_name)
+    if not user_has_permission(file, "read"):
+        frappe.throw("You do not have permission to view this file.", frappe.PermissionError)
     return frappe.get_list(
         "File",
         filters={"attached_to_doctype": ["is", "set"], "file_url": file.file_url},
@@ -784,6 +825,6 @@ def get_docs_attached_to(file_name: str):
 def get_upload_path(file_name):
     root_folder = frappe.get_single("Drive Disk Settings").root_folder or ""
     uploads_path = Path(frappe.get_site_path("private/files"), root_folder, ".uploads")
-    uploads_path.mkdir(exist_ok=True)
+    uploads_path.mkdir(parents=True, exist_ok=True)
 
     return uploads_path / file_name

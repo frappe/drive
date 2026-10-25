@@ -80,7 +80,6 @@ declare module 'vue' {
     SidebarItem: typeof import('./src/components/SidebarItem.vue')['default']
     StorageBar: typeof import('./src/components/StorageBar.vue')['default']
     StorageSettings: typeof import('./src/components/Settings/StorageSettings.vue')['default']
-    SyncBreakdown: typeof import('./src/components/SyncBreakdown.vue')['default']
     TeamSelector: typeof import('./src/components/TeamSelector.vue')['default']
     TextPreview: typeof import('./src/components/FileTypePreview/TextPreview.vue')['default']
     UploadTracker: typeof import('./src/components/UploadTracker.vue')['default']
