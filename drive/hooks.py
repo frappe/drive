@@ -106,12 +106,21 @@ permission_query_conditions = {
     "Drive Favourite": "drive.utils.overrides.filter_drive_favourite",
     "Drive Entity Log": "drive.utils.overrides.filter_drive_recent",
     "Drive Notification": "drive.utils.overrides.filter_drive_notif",
+    "Drive Settings": "drive.utils.overrides.filter_drive_settings",
+    "Drive Tag": "drive.utils.overrides.filter_drive_tag",
+    "Drive Desktop Client": "drive.utils.overrides.filter_drive_desktop_client",
 }
 
 has_permission = {
     "Drive File": "drive.api.permissions.user_has_permission",
     "Drive Document": "drive.api.permissions.user_has_permission_doc",
     "Drive Team": "drive.api.permissions.user_has_permission_team",
+    "Drive Favourite": "drive.utils.overrides.is_own_record",
+    "Drive Entity Log": "drive.utils.overrides.is_own_record",
+    "Drive Settings": "drive.utils.overrides.is_own_record",
+    "Drive Notification": "drive.utils.overrides.is_own_record",
+    "Drive Tag": "drive.utils.overrides.is_own_record",
+    "Drive Desktop Client": "drive.utils.overrides.is_own_record",
 }
 # DocType Class
 # ---------------

@@ -64,7 +64,7 @@ def mark_as_read(name=None, all=False):
     if all:
         frappe.db.set_value("Drive Notification", {"to_user": frappe.session.user, "read": False}, "read", True)
         return
-    frappe.db.set_value("Drive Notification", name, "read", True)
+    frappe.db.set_value("Drive Notification", {"name": name, "to_user": frappe.session.user}, "read", True)
     return
 
 
@@ -135,7 +135,7 @@ def create_notification(from_user, to_user, type, entity, message=None):
     if notif:
         return
     try:
-        frappe.get_doc({"doctype": "Drive Notification", **details}).insert()
+        frappe.get_doc({"doctype": "Drive Notification", **details}).insert(ignore_permissions=True)
     except frappe.exceptions.ValidationError as e:
         print(f"Error inserting document: {e}")
 

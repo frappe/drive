@@ -508,8 +508,10 @@ def get_updates(client):
 
 @frappe.whitelist()
 def pop_update(name):
-    # Security: check before deletion
-    frappe.get_doc("Drive File Update", name).delete()
+    update = frappe.get_doc("Drive File Update", name)
+    if frappe.db.get_value("Drive Desktop Client", update.parent, "user") != frappe.session.user:
+        frappe.throw("You cannot access this desktop client", frappe.PermissionError)
+    update.delete(ignore_permissions=True)
 
 
 @frappe.whitelist(allow_guest=True)

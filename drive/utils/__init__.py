@@ -414,7 +414,8 @@ def get_teams(user=None, details=None, exclude_personal=True):
 
 def update_clients(entity_name, team, type, current_client=None):
     try:
-        clients = frappe.get_list("Drive Desktop Client", {"team": team}, pluck="name")
+        # Changes by anyone in the team reach every member's desktop client
+        clients = frappe.get_all("Drive Desktop Client", {"team": team}, pluck="name")
         for n in clients:
             if n == current_client:
                 continue
@@ -427,7 +428,7 @@ def update_clients(entity_name, team, type, current_client=None):
                 }
             )
             client.append("updates", update)
-            client.save()
+            client.save(ignore_permissions=True)
     except BaseException as e:
         print(e)
         frappe.log_error("There was an error updating the desktop client:", e)
