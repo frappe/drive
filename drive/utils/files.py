@@ -364,7 +364,8 @@ class FileManager:
             try:
                 self._move_object(team, new_path, path)
             except Exception:
-                frappe.log_error(f"Could not move {new_path} back to {path} after a rollback")
+                # Keep the title short: Frappe v15 refuses Error Log titles over 140 characters
+                frappe.log_error("Could not undo a Drive file move after a rollback", f"{new_path} -> {path}")
 
         frappe.db.after_rollback.add(undo)
 

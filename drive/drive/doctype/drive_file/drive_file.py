@@ -282,7 +282,8 @@ class DriveFile(Document):
             permission = frappe.new_doc("Drive Permission")
             permission.update(
                 {
-                    "user": user,
+                    # Public links have an empty user. Frappe v15 stores None as NULL, which matches nobody.
+                    "user": user or "",
                     "team": team,
                     "entity": self.name,
                 }
