@@ -224,7 +224,11 @@ class DriveFile(Document):
         self.flags.allow_storage_change = True
         if new:
             self.path = new
-        for child in self.get_children():
+        # Everything in the folder moved on disk, including files that other members own.
+        # get_children only returns the user's own files, so read the children directly.
+        for name in frappe.get_all(self.doctype, filters={"parent_entity": self.name}, pluck="name"):
+            child = frappe.get_doc(self.doctype, name)
+            child.flags.ignore_permissions = True
             not_in_disk = child.mime_type == "frappe/slides" or child.is_link
             if child.path and not not_in_disk:
                 child.recursive_path_move(child.path, str(Path(new) / Path(child.path).relative_to(old)))
@@ -294,6 +298,10 @@ class DriveFile(Document):
         # Create user
         if not frappe.db.exists("User", user):
             create_invitations(user, auto=True)
+
+        # Nothing can be uploaded into a file, so nobody gets upload access to one. The share dialog still sends it.
+        if not self.is_group and upload is not None:
+            upload = 0
 
         levels = [
             ["read", read],

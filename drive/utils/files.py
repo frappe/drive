@@ -108,7 +108,13 @@ class FileManager:
             # Embeds go in the document's .embeds folder, which older documents may not have yet
             destination = self.resolve(drive_file.path)
             destination.parent.mkdir(parents=True, exist_ok=True)
-            os.rename(current_path, destination)
+            # Link, then remove the temporary name. Unlike a rename, linking fails if another upload got there first.
+            try:
+                os.link(current_path, destination)
+            except FileExistsError:
+                os.remove(current_path)
+                frappe.throw(f"Could not upload: '{drive_file.title}' already exists.", FileExistsError)
+            os.remove(current_path)
             if drive_file and create_thumbnail and self.can_create_thumbnail(drive_file):
                 frappe.enqueue(
                     self.upload_thumbnail,

@@ -1,9 +1,13 @@
 # Copyright (c) 2026, Frappe Technologies Pvt. Ltd. and Contributors
 # See license.txt
 
-import frappe
+from datetime import timedelta
+from unittest.mock import patch
 
-from drive.api.files import create_folder, move
+import frappe
+from werkzeug.test import EnvironBuilder
+
+from drive.api.files import create_auth_token, create_folder, get_file_content, move
 from drive.api.list import files
 from drive.tests.utils import OTHER, OWNER, DriveTestCase, make_file, make_team
 from drive.utils import get_home_folder
@@ -60,3 +64,27 @@ class TestMove(DriveTestCase):
         moved = frappe.db.get_value("Drive File", self.file.name, ["parent_entity", "team"], as_dict=True)
         # The team always follows the folder
         self.assertEqual((moved.parent_entity, moved.team), (folder.name, self.team))
+
+
+class TestOfficePreviewToken(DriveTestCase):
+    def test_token_reads_one_file_while_the_preview_is_open(self):
+        settings = frappe.get_single("Drive Disk Settings")
+        settings.jwt_key = frappe.generate_hash()
+        settings.save(ignore_permissions=True)
+        file = make_file(self.team, "sheet.xlsx", "cells")
+        other = make_file(self.team, "other.xlsx", "secret")
+        token = create_auth_token(file.name)
+
+        # Microsoft's viewer fetches the file without a session, and again after a few minutes
+        frappe.set_user("Guest")
+        frappe.local.request = frappe._dict(environ=EnvironBuilder().get_environ())
+        self.addCleanup(lambda: setattr(frappe.local, "request", None))
+        later = frappe.utils.now_datetime() + timedelta(minutes=10)
+        with patch("frappe.utils.now_datetime", return_value=later):
+            self.assertEqual(get_file_content(file.name, jwt_token=token).status_code, 200)
+            with self.assertRaises(frappe.PermissionError):
+                get_file_content(other.name, jwt_token=token)
+
+        with patch("frappe.utils.now_datetime", return_value=later + timedelta(minutes=10)):
+            with self.assertRaises(frappe.PermissionError):
+                get_file_content(file.name, jwt_token=token)

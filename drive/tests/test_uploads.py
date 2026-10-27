@@ -6,8 +6,9 @@ import io
 import frappe
 from werkzeug.datastructures import FileStorage
 
-from drive.api.files import upload_file
+from drive.api.files import does_entity_exist, get_new_title, get_upload_path, upload_file
 from drive.tests.utils import OTHER, OWNER, DriveTestCase, read_file
+from drive.utils import get_home_folder
 
 
 class TestUploads(DriveTestCase):
@@ -32,3 +33,18 @@ class TestUploads(DriveTestCase):
         self.assertEqual(second.title, "report (1).txt")
         self.assertEqual(read_file(first.name), "first")
         self.assertEqual(read_file(second.name), "second")
+
+    def test_upload_does_not_pick_up_another_uploads_temporary_file(self):
+        # A single-request upload of the same name that is still running, or that failed after writing, left this behind
+        leftover = get_upload_path(get_home_folder(self.team)["path"], "_report.txt")
+        leftover.write_bytes(b"someone else's bytes ")
+
+        upload = self.upload(OTHER, b"mine")
+        self.assertEqual(read_file(upload.name), "mine")
+
+    def test_folder_upload_checks_from_a_team_root(self):
+        # FileUploader.vue sends an empty folder when a folder is uploaded at a team's root or in Home.
+        # An error here leaves the upload at "Uploading" forever.
+        frappe.set_user(OTHER)
+        self.assertFalse(does_entity_exist("Photos", ""))
+        self.assertEqual(get_new_title("Photos", "", folder=True), "Photos")

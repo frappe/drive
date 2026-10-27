@@ -5,7 +5,7 @@ import frappe
 from frappe.handler import run_doc_method
 
 from drive.api.files import call_controller_method, create_folder
-from drive.tests.utils import OTHER, OWNER, DriveTestCase
+from drive.tests.utils import OTHER, OWNER, DriveTestCase, make_file
 
 
 def call(entity_name, method, **kwargs):
@@ -67,3 +67,19 @@ class TestCallControllerMethod(DriveTestCase):
         for method in ("rename", "share", "unshare", "change_color"):
             with self.subTest(method=method), self.assertRaises(frappe.PermissionError):
                 run_doc_method(method, dt="Drive File", dn=self.folder.name, args={"new_title": "x"})
+
+    def test_team_admin_can_share_a_members_file_as_editor(self):
+        team = frappe.get_doc("Drive Team", self.team)
+        team.append("users", {"user": OTHER, "access_level": 1})
+        team.save(ignore_permissions=True)
+        frappe.set_user(OTHER)
+        file = make_file(self.team, "member.xlsx")
+        file.db_set("owner", OTHER)
+
+        # The share dialog sends upload=1 with editor access, for files too
+        frappe.set_user(OWNER)
+        call(file.name, "share", user="", read=1, comment=1, share=1, upload=1, write=1)
+        permission = frappe.db.get_value(
+            "Drive Permission", {"entity": file.name, "user": ""}, ["write", "upload"], as_dict=True
+        )
+        self.assertEqual((permission.write, permission.upload), (1, 0))

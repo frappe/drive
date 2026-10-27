@@ -96,8 +96,10 @@ def upload_file(
 
     file = frappe.request.files["file"]
     title = get_unused_title(file.filename, parent) if not transfer else file.filename
-    # The session id is used as a file name, so keep it to a single path segment inside .uploads
-    upload_session = secure_filename(frappe.form_dict.uuid or "")
+    # The session id is used as a file name, so keep it to a single path segment inside .uploads.
+    # Only chunked uploads send one. Give other uploads their own, so that two uploads with the same name
+    # never write into the same temporary file.
+    upload_session = secure_filename(frappe.form_dict.uuid or "") or frappe.generate_hash()
     temp_path = get_upload_path(home_folder["path"], f"{upload_session}_{secure_filename(title)}")
     with temp_path.open("ab") as f:
         f.seek(offset)
@@ -569,8 +571,9 @@ def create_auth_token(entity_name):
         raise frappe.PermissionError("You do not have permission to view this file")
     settings = frappe.get_single("Drive Disk Settings")
     key = settings.get_password("jwt_key", raise_exception=False)
+    # Microsoft's viewer fetches the file with this token, and can fetch it again while the preview is open
     return jwt.encode(
-        {"name": entity_name, "expiry": (frappe.utils.now_datetime() + timedelta(minutes=1)).timestamp()},
+        {"name": entity_name, "expiry": (frappe.utils.now_datetime() + timedelta(minutes=15)).timestamp()},
         key=key,
     )
 
@@ -916,6 +919,9 @@ def remove_recents(entity_names=[], clear_all=False):
 
 @frappe.whitelist()
 def does_entity_exist(name=None, parent_entity=None):
+    # Folder uploads at a team's root or in Home send no folder. The upload then merges into a folder of the same name.
+    if not parent_entity:
+        return False
     if not user_has_permission(parent_entity, "read"):
         frappe.throw("You don't have access to this folder.", frappe.PermissionError)
     result = frappe.db.exists("Drive File", {"parent_entity": parent_entity, "title": name})
@@ -1031,6 +1037,9 @@ def get_new_title(title, parent_name, folder=False, entity=None):
     :param parent_entity: Parent entity of entity to be renamed (if at all)
     :return: String with new title
     """
+    if not parent_name:
+        # See does_entity_exist
+        return title
     if not user_has_permission(parent_name, "read"):
         frappe.throw("You don't have access to this folder.", frappe.PermissionError)
     return get_unused_title(title, parent_name, folder, entity)

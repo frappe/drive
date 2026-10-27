@@ -10,3 +10,4 @@ drive.patches.new_writer #3
 drive.patches.turn_on_flat_disk
 drive.patches.add_modified_field
 drive.patches.reset_custom_permissions
+drive.patches.repair_moved_file_paths
