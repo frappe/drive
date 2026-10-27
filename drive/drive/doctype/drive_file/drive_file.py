@@ -84,10 +84,14 @@ class DriveFile(Document):
             shutil.rmtree(self.path) if self.is_group else self.path.unlink()
 
     def get_children(self):
-        """Return a generator that yields child Documents."""
-        child_names = frappe.get_list(self.doctype, filters={"parent_entity": self.name}, pluck="name")
-        for name in child_names:
-            yield frappe.get_doc(self.doctype, name)
+        """
+        Yield every child Document, including files that other members own.
+        Moving, renaming or deleting a folder changes everything in it, so the caller checks access on this folder.
+        """
+        for name in frappe.get_all(self.doctype, filters={"parent_entity": self.name}, pluck="name"):
+            child = frappe.get_doc(self.doctype, name)
+            child.flags.ignore_permissions = True
+            yield child
 
     def __update_modified(func):
         def decorator(self, *args, **kwargs):
@@ -224,11 +228,7 @@ class DriveFile(Document):
         self.flags.allow_storage_change = True
         if new:
             self.path = new
-        # Everything in the folder moved on disk, including files that other members own.
-        # get_children only returns the user's own files, so read the children directly.
-        for name in frappe.get_all(self.doctype, filters={"parent_entity": self.name}, pluck="name"):
-            child = frappe.get_doc(self.doctype, name)
-            child.flags.ignore_permissions = True
+        for child in self.get_children():
             not_in_disk = child.mime_type == "frappe/slides" or child.is_link
             if child.path and not not_in_disk:
                 child.recursive_path_move(child.path, str(Path(new) / Path(child.path).relative_to(old)))

@@ -321,7 +321,7 @@ class FileManager:
 
         trash_path = self.get_unused_path(entity.team, self.get_legacy_trash_path(entity))
         try:
-            self._move(entity.team, entity.path, trash_path)
+            self._move(entity.team, entity.path, trash_path, entity.is_group)
         except (FileNotFoundError, ClientError):
             frappe.log_error(f"Moved {entity.name} to trash without it being on disk")
             return None
@@ -340,7 +340,7 @@ class FileManager:
             trash_path = self.get_legacy_trash_path(entity)
             if entity.mime_type.startswith("frappe") or not self.exists(entity.team, trash_path):
                 return
-        self.move(frappe._dict(path=trash_path, team=entity.team), new_path)
+        self.move(frappe._dict(path=trash_path, team=entity.team, is_group=entity.is_group), new_path)
 
     @__not_if_flat
     def move(self, entity, new_path: str | Path):
@@ -350,12 +350,12 @@ class FileManager:
         from botocore.exceptions import ClientError
 
         try:
-            self._move(entity.team, entity.path, new_path)
+            self._move(entity.team, entity.path, new_path, entity.is_group)
         except (FileNotFoundError, ClientError):
             frappe.throw("This file doesn't exist on disk.")
         return new_path
 
-    def _move(self, team, path: str | Path, new_path: str | Path):
+    def _move(self, team, path: str | Path, new_path: str | Path, folder=False):
         """
         Move bytes without replacing anything, and move them back if the transaction is rolled back,
         so that disk and database stay in step.
@@ -364,22 +364,23 @@ class FileManager:
             return
         if self.exists(team, new_path):
             frappe.throw(f"Could not move: '{new_path}' already exists.", FileExistsError)
-        self._move_object(team, path, new_path)
+        self._move_object(team, path, new_path, folder)
 
         def undo():
             try:
-                self._move_object(team, new_path, path)
+                self._move_object(team, new_path, path, folder)
             except Exception:
                 # Keep the title short: Frappe v15 refuses Error Log titles over 140 characters
                 frappe.log_error("Could not undo a Drive file move after a rollback", f"{new_path} -> {path}")
 
         frappe.db.after_rollback.add(undo)
 
-    def _move_object(self, team, path: str | Path, new_path: str | Path):
+    def _move_object(self, team, path: str | Path, new_path: str | Path, folder=False):
         if self.s3_enabled:
             bucket = self.get_bucket(team)
-            self.conn.copy_object(Bucket=bucket, CopySource={"Bucket": bucket, "Key": str(path)}, Key=str(new_path))
-            self.conn.delete_object(Bucket=bucket, Key=str(path))
+            for key, new_key in self._s3_keys_to_move(bucket, path, new_path, folder):
+                self.conn.copy_object(Bucket=bucket, CopySource={"Bucket": bucket, "Key": key}, Key=new_key)
+                self.conn.delete_object(Bucket=bucket, Key=key)
         else:
             source = self.resolve(path)
             if not source.exists():
@@ -387,6 +388,20 @@ class FileManager:
             destination = self.resolve(new_path)
             destination.parent.mkdir(parents=True, exist_ok=True)
             shutil.move(source, destination)
+
+    def _s3_keys_to_move(self, bucket, path: str | Path, new_path: str | Path, folder: bool) -> list[tuple[str, str]]:
+        """
+        S3 has no folders. A folder is an empty `folder/` object, and everything in it is an object whose key
+        starts with `folder/`. Moving a folder moves all of them.
+        """
+        if not folder:
+            return [(str(path), str(new_path))]
+        prefix, new_prefix = str(path).rstrip("/") + "/", str(new_path).rstrip("/") + "/"
+        pages = self.conn.get_paginator("list_objects_v2").paginate(Bucket=bucket, Prefix=prefix)
+        keys = [obj["Key"] for page in pages for obj in page.get("Contents", [])]
+        if not keys:
+            raise FileNotFoundError(prefix)
+        return [(key, new_prefix + key.removeprefix(prefix)) for key in keys]
 
     def delete_file(self, entity):
         thumbnail_path = self.get_thumbnail_path(entity.team, entity.name)
