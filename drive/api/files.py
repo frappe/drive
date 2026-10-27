@@ -81,8 +81,10 @@ def upload_file(
     file = frappe.request.files["file"]
     validate_name_on_disk(file.filename)
     file_name = get_new_file_name(file.filename, parent)
-    # The session id is part of a file name, so keep it to a single path segment inside .uploads
-    upload_session = secure_filename(frappe.form_dict.uuid or "")
+    # The session id is part of a file name, so keep it to a single path segment inside .uploads.
+    # Only chunked uploads send one. Give other uploads their own, so that two uploads with the same name
+    # never write into the same temporary file.
+    upload_session = secure_filename(frappe.form_dict.uuid or "") or frappe.generate_hash()
     temp_path = get_upload_path(f"{upload_session}_{secure_filename(file_name)}")
     with temp_path.open("ab") as f:
         f.seek(offset)
@@ -689,7 +691,11 @@ def does_entity_exist(name: str | None = None, folder: str | None = None, team: 
 
 
 @frappe.whitelist()
-def get_new_title(title: str, parent_name: str, folder: bool = False):
+@default_team
+def get_new_title(title: str, parent_name: str | None = None, folder: bool = False, team: str | None = None):
+    # Folder uploads at a team's root or in Home send no folder, as in does_entity_exist
+    if not parent_name:
+        parent_name = get_home_folder(team).name
     if not user_has_permission(parent_name, "read"):
         frappe.throw("You don't have access to this folder.", frappe.PermissionError)
     return get_new_file_name(title, parent_name)

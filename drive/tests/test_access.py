@@ -45,6 +45,17 @@ class TestSharing(DriveTestCase):
         super().setUp()
         self.file = make_file(self.team, "private.txt", "private")
 
+    def test_editors_with_share_access_can_share_a_file_as_editor(self):
+        share(self.file.name, user=OTHER, read=1, comment=1, share=1, write=1)
+
+        # The share dialog sends upload=1 with editor access, for files too
+        frappe.set_user(OTHER)
+        share(self.file.name, user=THIRD, read=1, comment=1, share=1, upload=1, write=1)
+        permission = frappe.db.get_value(
+            "Drive Permission", {"entity": self.file.name, "user": THIRD}, ["write", "upload"], as_dict=True
+        )
+        self.assertEqual((permission.write, permission.upload), (1, 0))
+
     def test_people_cannot_give_themselves_access(self):
         frappe.set_user(OTHER)
         with self.assertRaises(frappe.PermissionError):
@@ -101,6 +112,12 @@ class TestFileAccess(DriveTestCase):
         unshare(self.file.name, OTHER)
         frappe.set_user(OTHER)
         self.assertNotIn(self.file.name, names(favourites(team="all")))
+
+    def test_folder_upload_checks_from_a_team_root(self):
+        # FileUploader.vue sends an empty folder when a folder is uploaded at a team's root or in Home.
+        # An error here leaves the upload at "Uploading" forever.
+        make_file(self.team, "Photos")
+        self.assertEqual(get_new_title("Photos", "", team=self.team), "Photos (1)")
 
     def test_names_and_activity_need_read_access(self):
         frappe.set_user(OTHER)

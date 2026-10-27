@@ -62,5 +62,7 @@ const srcUrl = computed(() =>
     ).href
   )
 )
-const download = () => (window.location.ref = srcUrl.value)
+// srcUrl is encoded for Microsoft's viewer and carries a token that may not exist yet, so download with the session
+const download = () =>
+  (window.location.href = `/api/method/drive.api.files.get_file_content?entity_name=${props.previewEntity.name}&trigger_download=1`)
 </script>

@@ -238,6 +238,10 @@ class File(FrappeFile):
         if user and not frappe.db.exists("User", user):
             create_invitations(user, auto=True)
 
+        # Nothing can be uploaded into a file, so nobody gets upload access to one. The share dialog still sends it.
+        if not self.is_folder and upload is not None:
+            upload = 0
+
         levels = [
             ["read", read],
             ["comment", comment],

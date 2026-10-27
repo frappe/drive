@@ -14,6 +14,7 @@ from drive.api.files import (
     create_folder,
     create_link,
     get_file_content,
+    get_upload_path,
     move,
     rename,
     stream_file_content,
@@ -171,6 +172,12 @@ class TestUploads(DriveTestCase):
             with self.subTest(filename=filename), self.assertRaises(frappe.ValidationError):
                 self.upload(filename=filename)
         self.assertFalse(os.path.exists(frappe.get_site_path("private", "outside.txt")))
+
+    def test_upload_does_not_pick_up_another_uploads_temporary_file(self):
+        # A single-request upload of the same name that is still running, or that failed after writing, left this behind
+        get_upload_path("_report.txt").write_bytes(b"someone else's bytes ")
+        upload = self.upload(b"mine")
+        self.assertEqual(read_file(upload.name), "mine")
 
     def test_same_name_uploads_by_two_members_keep_both(self):
         add_member(self.team, OTHER)
