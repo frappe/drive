@@ -1,5 +1,7 @@
 import frappe
 
+from drive.api.permissions import user_has_permission
+
 
 @frappe.whitelist()
 def convert_pm_to_md(obj):
@@ -10,6 +12,8 @@ def convert_pm_to_md(obj):
 
 @frappe.whitelist()
 def get_yjs_content(entity_name):
+    if not user_has_permission(entity_name, "read"):
+        raise frappe.PermissionError("You do not have permission to view this file")
     return frappe.get_value("Drive Document", frappe.get_value("Drive File", entity_name, "document"), "content")
 
 

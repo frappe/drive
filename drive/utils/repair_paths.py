@@ -1,5 +1,5 @@
 """
-Reusable Drive Path Repair patch - registered in the drive app.
+Legacy Drive path audit and compatibility entry points.
 
 Works on ANY Frappe/Drive site. Two ways to run it:
 
@@ -19,10 +19,10 @@ using the DB folder tree as the single source of truth:
   1. Computes the canonical path by walking the parent_entity folder chain.
   2. Stored path matches canonical AND file exists on disk -> OK (no change).
   3. File exists at canonical path -> only fix the DB path.
-  4. File exists elsewhere on disk -> move it to canonical, fix DB path.
-  5. File only in team .trash -> restore, fix DB path.
+  4. Other file locations -> report for manual recovery.
+  5. Unidentified files and trash copies -> leave for manual recovery.
   6. Otherwise -> flag MISSING (no bytes on disk; needs upload).
-Also repairs team mismatches (file team must equal parent folder team).
+Team mismatches are reported for manual review, never reassigned automatically.
 
 It NEVER deletes anything. Run with dry_run=True first to review the plan.
 """
@@ -89,34 +89,20 @@ class _DB:
 
 
 def resolve_storage_root(conn=None, site_dir: Path | None = None):
-    """Pick the storage root that actually holds Drive files."""
+    """Use private storage only; public legacy files require an explicit migration."""
     global SITE_FOLDER
-    db = _DB(conn)
+    SITE_FOLDER = Path(site_dir) / "private" / "files" if site_dir else Path(frappe.get_site_path("private/files"))
 
-    if site_dir is not None:
-        private = site_dir / "private" / "files"
-        public = site_dir / "files"
-    else:
-        private = Path(frappe.get_site_path("private/files"))
-        public = Path(frappe.get_site_path("files"))
 
-    row = db.fetchone(
-        "SELECT path FROM `tabDrive File` WHERE parent_entity IS NULL AND is_active = 1 LIMIT 1"
-    )
-    probe = (row[0].rstrip("/") if row and row[0] else "") or None
-
-    if probe:
-        if (public / probe).is_dir():
-            SITE_FOLDER = public
-            log(f"storage root : PUBLIC files/  ({public})")
-            return
-        if (private / probe).is_dir():
-            SITE_FOLDER = private
-            log(f"storage root : PRIVATE files/ ({private})")
-            return
-    SITE_FOLDER = private
-    log(f"storage root : defaulted to {private}")
-    return
+def _storage_path(key):
+    path = Path(str(key))
+    root = SITE_FOLDER.resolve()
+    if path.is_absolute() or ".." in path.parts:
+        raise ValueError("Path leaves Drive storage")
+    resolved = (root / path).resolve()
+    if not resolved.is_relative_to(root):
+        raise ValueError("Path leaves Drive storage")
+    return resolved
 
 
 # ---------------------------------------------------------------------------
@@ -131,6 +117,10 @@ def walk_disk() -> dict:
     for f in SITE_FOLDER.rglob("*"):
         if f.is_file():
             rel = f.relative_to(SITE_FOLDER)
+            try:
+                _storage_path(rel)
+            except ValueError:
+                continue
             if not any(p.startswith(".") for p in rel.parts):
                 index[rel] = f
     return index
@@ -191,20 +181,15 @@ def _normalize(part: str) -> str:
 
 
 def same_branch(canonical: Path, candidate: Path) -> bool:
-    """True if the candidate's folder chain is on the same branch as the canonical
-    path (fuzzy). Guards against cross-tree false matches where a file with the
-    same title exists under a totally different folder tree (e.g. AMG_MANAGEMENT
-    vs AMG-ACCOUNTS). The canonical parent components must appear, in order, as
-    a subsequence of the candidate's parent components."""
-    canon_parents = [_normalize(p) for p in canonical.parts[:-1]]
-    cand_parts = [_normalize(p) for p in candidate.parts]
-    if not canon_parents:
-        return True
-    it = iter(cand_parts)
-    for cp in canon_parents:
-        if cp not in it:
-            return False
-    return True
+    """Require the exact canonical parent chain, preserving case and punctuation."""
+    canonical, candidate = Path(canonical), Path(candidate)
+    if canonical.is_absolute() or candidate.is_absolute() or ".." in canonical.parts or ".." in candidate.parts:
+        return False
+    parents = canonical.parts[:-1]
+    if not parents:
+        return False
+    remaining = iter(candidate.parts[:-1])
+    return all(part in remaining for part in parents)
 
 
 def find_best_on_disk(disk_index, canonical: Path, title: str):
@@ -226,24 +211,8 @@ def find_best_on_disk(disk_index, canonical: Path, title: str):
     return None
 
 
-def restore_from_trash(db, team, canonical: Path) -> bool:
-    root_rows = db.fetchall(
-        "SELECT path FROM `tabDrive File` WHERE team = %s AND parent_entity IS NULL LIMIT 1",
-        (team,),
-    )
-    if not root_rows:
-        return False
-    trash_dir = SITE_FOLDER / root_rows[0][0] / ".trash"
-    if not trash_dir.is_dir():
-        return False
-    canonical = Path(canonical)
-    for f in trash_dir.rglob("*"):
-        if f.is_file() and f.name == canonical.name:
-            dst = SITE_FOLDER / canonical
-            dst.parent.mkdir(parents=True, exist_ok=True)
-            if not dst.exists():
-                shutil.move(str(f), str(dst))
-            return True
+def restore_from_trash(db, team, canonical: Path, dry_run=False) -> bool:
+    """A filename cannot identify a trashed record. Leave recovery to an administrator."""
     return False
 
 
@@ -255,10 +224,14 @@ def restore_from_trash(db, team, canonical: Path) -> bool:
 def _move_to_canonical(disk_index, db, name, source, canonical_str, stats):
     """Move a single on-disk file to its canonical location and fix the DB row.
     Never raises on a missing source - returns False so the caller can report it."""
-    src = SITE_FOLDER / source
+    if not same_branch(Path(canonical_str), Path(source)):
+        return False
+    if db.fetchone("SELECT name FROM `tabDrive File` WHERE path = %s AND name != %s LIMIT 1", (str(source), name)):
+        return False
+    src = _storage_path(source)
     if not src.is_file():
         return False
-    dst = SITE_FOLDER / Path(canonical_str)
+    dst = _storage_path(canonical_str)
     dst.parent.mkdir(parents=True, exist_ok=True)
     if not dst.exists():
         shutil.move(str(src), str(dst))
@@ -271,15 +244,21 @@ def _move_to_canonical(disk_index, db, name, source, canonical_str, stats):
 
 
 def run(dry_run=False, conn=None, site_dir=None):
-    """Audit + repair every active non-group Drive File.
+    """Use bounded administrator maintenance in Frappe; standalone access is audit-only.
 
     Safety rules:
       - DB folder tree is the single source of truth.
-      - A file is only moved from THIS record's own stored path, or from a
-        same-branch disk match (never a cross-tree filename match).
+      - Applying repairs uses the authenticated, database-only maintenance engine.
+      - Standalone audits never move bytes, restore trash or reassign teams.
       - One bad record never aborts the whole run (per-record try/except).
       - Never deletes anything.
     """
+    if conn is None:
+        from drive.utils.maintenance import inspect_paths
+
+        return inspect_paths(apply=not dry_run)
+    if not dry_run:
+        raise ValueError("Standalone apply is disabled. Use authenticated site-administrator maintenance.")
     db = _DB(conn)
     resolve_storage_root(conn, site_dir)
     disk_index = walk_disk()
@@ -318,11 +297,9 @@ def run(dry_run=False, conn=None, site_dir=None):
             pt = team_of_parent(db, name)
             if pt and pt != team:
                 report.append(f"team-fix  {name}  {team} -> {pt}")
-                if not dry_run:
-                    db.execute("UPDATE `tabDrive File` SET team = %s WHERE name = %s", (pt, name))
-                    db.commit()
-                    log(f"FIXED team {name}: {team} -> {pt}")
-                stats["team_fixed"] += 1
+                stats["errors"] += 1
+                log(f"REFUSED {name}: team does not match its parent")
+                continue
 
             # 2. Path checks
             current = (cur_path or "").rstrip("/")
@@ -334,7 +311,10 @@ def run(dry_run=False, conn=None, site_dir=None):
 
             canonical = Path(canonical)
             canonical_str = str(canonical).rstrip("/")
-            canonical_abs = SITE_FOLDER / canonical
+            canonical_abs = _storage_path(canonical)
+            if db.fetchone("SELECT name FROM `tabDrive File` WHERE path = %s AND name != %s LIMIT 1", (canonical_str, name)):
+                stats["ambiguous"] += 1
+                continue
 
             # OK only if DB path AND disk agree. If missing at canonical, fall
             # through to disk search / restore.
@@ -355,15 +335,9 @@ def run(dry_run=False, conn=None, site_dir=None):
             #    same-branch disk match. Never a cross-tree filename match.
             source = None
             source_label = None
-            if current and (SITE_FOLDER / current).is_file():
+            if current and same_branch(canonical, Path(current)) and _storage_path(current).is_file():
                 source = current
                 source_label = current
-            else:
-                match = find_best_on_disk(disk_index, canonical, title)
-                if match is not None:
-                    source = match
-                    source_label = str(match)
-
             if source is not None:
                 if dry_run:
                     report.append(f"move      {name}  {source_label} -> {canonical_str}")
@@ -381,7 +355,7 @@ def run(dry_run=False, conn=None, site_dir=None):
                 continue
 
             # 4. Restore from team trash
-            if restore_from_trash(db, team, canonical):
+            if restore_from_trash(db, team, canonical, dry_run=dry_run):
                 report.append(f"restore   {name}  (.trash) -> {canonical_str}")
                 if not dry_run:
                     db.execute("UPDATE `tabDrive File` SET path = %s WHERE name = %s", (canonical_str, name))
@@ -432,8 +406,11 @@ def verify(conn=None, site_dir=None):
     total = len(rows)
     fail = 0
     for name, path in rows:
-        fp = SITE_FOLDER / (path or "")
-        if not fp.is_file():
+        try:
+            exists = bool(path) and _storage_path(path).is_file()
+        except ValueError:
+            exists = False
+        if not exists:
             fail += 1
             log(f"VERIFY FAIL {name}  path='{path}'  NOT on disk")
     log(f"VERIFY done | total={total} failures={fail}")

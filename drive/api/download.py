@@ -1,6 +1,7 @@
 import contextlib
 import json
 import os
+import re
 import shutil
 import time
 import uuid
@@ -46,15 +47,30 @@ def _compress_type(title: str) -> int:
 
 
 def _download_dir() -> Path:
-    return Path(get_site_path(DOWNLOAD_ROOT))
+    root = Path(get_site_path("private/files")).resolve()
+    configured = Path(get_site_path(DOWNLOAD_ROOT))
+    directory = configured.resolve()
+    if configured.is_symlink() or directory == root or not directory.is_relative_to(root):
+        frappe.throw("Invalid download storage.", frappe.PermissionError)
+    return directory
+
+
+def _artifact_path(download_id: str, suffix: str) -> Path:
+    if not isinstance(download_id, str) or not re.fullmatch(r"[0-9a-f]{32}", download_id):
+        frappe.throw("Invalid download id.", frappe.ValidationError)
+    root = _download_dir()
+    path = root / f"{download_id}.{suffix}"
+    if path.is_symlink() or not path.resolve().is_relative_to(root):
+        frappe.throw("Invalid download storage.", frappe.PermissionError)
+    return path
 
 
 def _status_path(download_id: str) -> Path:
-    return _download_dir() / f"{download_id}.status"
+    return _artifact_path(download_id, "status")
 
 
 def _zip_path(download_id: str) -> Path:
-    return _download_dir() / f"{download_id}.zip"
+    return _artifact_path(download_id, "zip")
 
 
 def _purge_stale():
@@ -74,7 +90,7 @@ def _set_status(download_id: str, status: dict):
     frappe.db.commit()
 
 
-@frappe.whitelist()
+@frappe.whitelist(methods=["POST"])
 def download_zip(team, entity_names, filename=None):
     """
     Enqueue a background job that builds a zip of the given entities on the
@@ -195,8 +211,12 @@ def build_download_zip(team, entity_names, download_id, zip_name=None):
         raise
 
 
-def _zip_entity(manager: FileManager, entity_name: str, zf: zipfile.ZipFile, parent_path: Path, on_file=None) -> int:
+def _zip_entity(manager: FileManager, entity_name: str, zf: zipfile.ZipFile, parent_path: Path, on_file=None, _depth=0) -> int:
     """Add one entity (file, folder or doc) to the zip. Returns count of skipped links."""
+    if _depth > 100:
+        frappe.throw("Invalid folder tree.", frappe.ValidationError)
+    if not user_has_permission(entity_name, "read"):
+        frappe.throw("You don't have access.", frappe.PermissionError)
     entity = frappe.get_value(
         "Drive File",
         entity_name,
@@ -205,6 +225,8 @@ def _zip_entity(manager: FileManager, entity_name: str, zf: zipfile.ZipFile, par
     )
     if not entity or entity.is_active != 1:
         return 1
+    if not entity.title or entity.title in (".", "..") or any(c in entity.title for c in ("/", "\\", "\0")):
+        frappe.throw("Invalid file name in download.", frappe.ValidationError)
     arc_parent = parent_path / entity.title
     if entity.is_group:
         children = frappe.get_all(
@@ -214,7 +236,7 @@ def _zip_entity(manager: FileManager, entity_name: str, zf: zipfile.ZipFile, par
             order_by="title asc",
         )
         for child in children:
-            _zip_entity(manager, child.name, zf, arc_parent, on_file=on_file)
+            _zip_entity(manager, child.name, zf, arc_parent, on_file=on_file, _depth=_depth + 1)
         return 0
     if entity.is_link:
         return 1
@@ -240,18 +262,8 @@ def _zip_entity(manager: FileManager, entity_name: str, zf: zipfile.ZipFile, par
 
 
 def _open_entity_file(manager: FileManager, entity):
-    """Context manager yielding a binary file-like for a Drive File, streaming
-    from disk or S3. Falls back to FileManager.get_file for path-drift repair."""
-    if manager.s3_enabled:
-        obj = manager.conn.get_object(Bucket=manager.get_bucket(entity.team), Key=entity.path)
-        return contextlib.closing(obj["Body"])
-
-    disk_path = manager.site_folder / entity.path
-    if disk_path.is_file():
-        return open(disk_path, "rb")
-
-    buf = manager.get_file(entity)
-    return contextlib.closing(buf)
+    """Stream through FileManager's storage boundary checks for both disk and S3."""
+    return manager.open_file(entity.path) if not manager.s3_enabled else contextlib.closing(manager.get_file(entity))
 
 
 @frappe.whitelist()
@@ -279,6 +291,8 @@ def estimate_download(team, entity_names):
 def _estimate_entity(entity_name: str, _depth: int = 0):
     if _depth > 100:
         return 0, 0
+    if not user_has_permission(entity_name, "read"):
+        frappe.throw("You don't have access.", frappe.PermissionError)
     entity = frappe.get_value(
         "Drive File",
         entity_name,
@@ -324,11 +338,11 @@ def download_status(download_id):
         try:
             status = json.loads(status_file.read_text())
         except (json.JSONDecodeError, OSError):
-            status = {"status": "error", "message": "Download status is unreadable."}
+            frappe.throw("Download status is unreadable.", frappe.PermissionError)
     else:
-        status = {"status": "queued", "filename": "", "skipped": 0, "message": ""}
+        frappe.throw("Download was not found.", frappe.NotFound)
 
-    if status.get("user") and status.get("user") != frappe.session.user:
+    if not isinstance(status, dict) or status.get("user") != frappe.session.user:
         frappe.throw("You don't have access.", frappe.PermissionError)
 
     if status.get("status") == "ready" and not _zip_path(download_id).is_file():
@@ -341,11 +355,13 @@ def get_download_zip(download_id):
     """Stream the finished zip to the browser and delete it once sent."""
     from werkzeug.utils import send_file
 
+    status = download_status(download_id)
+    if status.get("status") != "ready":
+        frappe.throw("Download is not ready.", frappe.NotFound)
     zip_path = _zip_path(download_id)
     if not zip_path.is_file():
         frappe.throw("Download is not ready.", frappe.NotFound)
 
-    status = download_status(download_id)
     download_name = status.get("filename") or zip_path.name
 
     # The file is removed as soon as the response has been streamed out.

@@ -211,6 +211,7 @@ import FrappeDriveLogo from "@/components/FrappeDriveLogo.vue"
 import { toast } from "@/utils/toasts"
 import { useRoute } from "vue-router"
 import { settings } from "@/resources/permissions"
+import { safeRedirectPath } from "@/utils/helpers"
 
 const route = useRoute()
 const params = new URLSearchParams(new URL(window.location.href).search)
@@ -295,7 +296,7 @@ const verifyOTP = createResource({
   onSuccess: (data) => {
     otpValidated.value = true
     settings.fetch()
-    window.location.replace(params.get("redirect-to") || "/drive")
+    window.location.replace(safeRedirectPath(params.get("redirect-to")))
   },
 })
 </script>

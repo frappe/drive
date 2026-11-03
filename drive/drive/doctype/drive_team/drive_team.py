@@ -25,6 +25,7 @@ class DriveTeam(Document):
                 "team": self.name,
             }
         )
+        d.flags.allow_storage_change = True
         d.insert()
 
         self.append("users", {"user": frappe.session.user, "access_level": 2})
@@ -64,8 +65,8 @@ class DriveTeam(Document):
 
         try:
             files_dir = Path(frappe.get_site_path("private/files"))
-            user_directory_path = files_dir / get_home_folder(self.name).path
-            if user_directory_path != files_dir:
+            user_directory_path = (files_dir / get_home_folder(self.name).path).resolve()
+            if user_directory_path.is_relative_to(files_dir.resolve()) and user_directory_path != files_dir.resolve():
                 shutil.rmtree(str(user_directory_path))
             frappe.db.delete("Drive File", {"team": self.name})
         except:

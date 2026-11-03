@@ -1,4 +1,6 @@
 from . import __version__ as app_version
+from frappe.model import base_document
+
 
 app_name = "drive"
 app_title = "Frappe Drive"
@@ -106,19 +108,31 @@ permission_query_conditions = {
     "Drive Favourite": "drive.utils.overrides.filter_drive_favourite",
     "Drive Entity Log": "drive.utils.overrides.filter_drive_recent",
     "Drive Notification": "drive.utils.overrides.filter_drive_notif",
+    "Drive Settings": "drive.utils.overrides.filter_drive_settings",
+    "Drive Tag": "drive.utils.overrides.filter_drive_tag",
+    "Drive Desktop Client": "drive.utils.overrides.filter_drive_desktop_client",
 }
 
 has_permission = {
     "Drive File": "drive.api.permissions.user_has_permission",
     "Drive Document": "drive.api.permissions.user_has_permission_doc",
+    "Drive Team": "drive.api.permissions.user_has_permission_team",
+    "Drive Favourite": "drive.utils.overrides.is_own_record",
+    "Drive Entity Log": "drive.utils.overrides.is_own_record",
+    "Drive Settings": "drive.utils.overrides.is_own_record",
+    "Drive Notification": "drive.utils.overrides.is_own_record",
+    "Drive Tag": "drive.utils.overrides.is_own_record",
+    "Drive Desktop Client": "drive.utils.overrides.is_own_record",
 }
 # DocType Class
 # ---------------
 # Override standard doctype classes
 
-# override_doctype_class = {
-# 	"ToDo": "custom_app.utils.overrides.CustomToDo"
-# }
+# Frappe v16 added extend_doctype_class, which lets several apps extend File. Older versions can only override it.
+if hasattr(base_document, "_get_extended_class"):
+    extend_doctype_class = {"File": ["drive.overrides.file.TeamFolderGuard"]}
+else:
+    override_doctype_class = {"File": "drive.overrides.file.File"}
 
 # Document Events
 # ---------------
@@ -142,7 +156,7 @@ doc_events = {
 
 scheduler_events = {
     "daily": ["drive.api.files.auto_delete_from_trash", "drive.api.files.clear_deleted_files"],
-    "hourly": ["drive.api.permissions.auto_delete_expired_perms", "drive.api.files.auto_delete_transfers"],
+    "hourly": ["drive.api.files.auto_delete_transfers"],
 }
 
 after_request = "drive.api.product.after_request"

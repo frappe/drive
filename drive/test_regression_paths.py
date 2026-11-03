@@ -4,11 +4,11 @@ Regression tests for Drive naming / path drift scenarios.
 Covers the five scenarios that caused live issues:
 
   1. naming drift        - stored ``path`` is stale but the file exists at the
-                           canonical path (recompute + repair, recover on read).
-  2. duplicate title case - same-titled files at different depths; the runtime
-                           self-heal used to crash with
+                           canonical path (explicit administrator repair; reads never rewrite paths).
+  2. duplicate title case - same-titled files at different depths; the removed runtime
+                           filename guessing used to crash with
                            ``TypeError: object of type 'PosixPath' has no len()``
-                           (regression for the ``len(best_leaf.parts)`` fix).
+                           (regression: same-named copies remain untouched).
   3. missing content files - an active record with no bytes on disk is flagged
                            as MISSING and downloads raise ``frappe.NotFound``.
   4. naming mismatch     - DB ``path`` differs from the canonical path while the
@@ -34,6 +34,11 @@ from drive.drive.doctype.drive_file.drive_file import DriveFile
 from drive.utils import repair_paths
 from drive.utils.files import FileManager
 from drive.utils.repair_paths import find_best_on_disk, same_branch
+
+
+def _insert_fixture(doc):
+    doc.flags.allow_storage_change = True
+    return doc.insert(ignore_permissions=True)
 
 
 # ---------------------------------------------------------------------------
@@ -126,7 +131,7 @@ class TestPathRegression(FrappeTestCase):
         self.team = frappe.get_doc({"doctype": "Drive Team", "title": "Test Team"}).insert(
             ignore_permissions=True
         )
-        self.home = frappe.get_doc(
+        self.home = _insert_fixture(frappe.get_doc(
             {
                 "doctype": "Drive File",
                 "title": "Drive - " + self.team.name,
@@ -136,7 +141,7 @@ class TestPathRegression(FrappeTestCase):
                 "team": self.team.name,
                 "is_active": 1,
             }
-        ).insert(ignore_permissions=True)
+        ))
         self.disk = Path(tempfile.mkdtemp(prefix="drive-regression-"))
         self._old_site_folder = repair_paths.SITE_FOLDER
         self.addCleanup(self._cleanup)
@@ -148,7 +153,7 @@ class TestPathRegression(FrappeTestCase):
     def _folder(self, title, parent, team=None):
         team = team or self.team.name
         p_path = frappe.db.get_value("Drive File", parent, "path")
-        doc = frappe.get_doc(
+        doc = _insert_fixture(frappe.get_doc(
             {
                 "doctype": "Drive File",
                 "title": title,
@@ -158,11 +163,11 @@ class TestPathRegression(FrappeTestCase):
                 "team": team,
                 "is_active": 1,
             }
-        ).insert(ignore_permissions=True)
+        ))
         return doc
 
     def _file(self, title, parent, path=None):
-        doc = frappe.get_doc(
+        doc = _insert_fixture(frappe.get_doc(
             {
                 "doctype": "Drive File",
                 "title": title,
@@ -172,7 +177,7 @@ class TestPathRegression(FrappeTestCase):
                 "team": self.team.name,
                 "is_active": 1,
             }
-        ).insert(ignore_permissions=True)
+        ))
         return doc
 
     def _manager(self):
@@ -189,14 +194,14 @@ class TestPathRegression(FrappeTestCase):
         canonical = m._canonical_disk_path(fdoc)
         self.assertEqual(canonical, Path("rootpath@example.com/Folder A/drift.txt"))
 
-    def test_repair_path_drift_fixes_stale_path(self):
+    def test_implicit_repair_does_not_bypass_storage_field_validation(self):
         folder = self._folder("Folder A", self.home.name)
         fdoc = self._file("drift.txt", folder.name, path="rootpath@example.com/STALE.txt")
         doc = frappe.get_doc("Drive File", fdoc.name)
         doc.repair_path_drift()
-        self.assertEqual(doc.path, "rootpath@example.com/Folder A/drift.txt")
+        self.assertEqual(doc.path, "rootpath@example.com/STALE.txt")
 
-    def test_get_file_recovers_from_canonical_and_updates_path(self):
+    def test_get_file_does_not_rewrite_paths_during_reads(self):
         folder = self._folder("Folder A", self.home.name)
         fdoc = self._file("drift.txt", folder.name, path="rootpath@example.com/STALE.txt")
         canonical = Path("rootpath@example.com/Folder A/drift.txt")
@@ -204,19 +209,16 @@ class TestPathRegression(FrappeTestCase):
         real.parent.mkdir(parents=True, exist_ok=True)
         real.write_bytes(b"recovered-content")
 
-        buf = self._manager().get_file(fdoc)
-        self.assertEqual(buf.read(), b"recovered-content")
-        self.assertEqual(
-            frappe.db.get_value("Drive File", fdoc.name, "path"),
-            "rootpath@example.com/Folder A/drift.txt",
-        )
+        with self.assertRaises(frappe.NotFound):
+            self._manager().get_file(fdoc)
+        self.assertEqual(real.read_bytes(), b"recovered-content")
+        self.assertEqual(frappe.db.get_value("Drive File", fdoc.name, "path"), "rootpath@example.com/STALE.txt")
 
     # -- 2. duplicate title case ---------------------------------------------
 
     def test_relocate_duplicate_title_different_depths_no_crash(self):
         """Regression for `TypeError: object of type 'PosixPath' has no len()`:
-        two same-titled files at equal score but different depths must not crash
-        and the SHALLOWEST copy wins."""
+        same-titled copies must remain untouched because their ownership is uncertain."""
         folder = self._folder("Folder A", self.home.name)
         fdoc = self._file("dup.txt", folder.name, path="rootpath@example.com/Folder A/dup.txt")
         canonical = Path("rootpath@example.com/Folder A/dup.txt")
@@ -230,8 +232,10 @@ class TestPathRegression(FrappeTestCase):
 
         m = self._manager()
         result = m._relocate_mislocated_file(fdoc, canonical)
-        self.assertEqual(result, canonical)
-        self.assertEqual((self.disk / canonical).read_bytes(), b"shallow")
+        self.assertIsNone(result)
+        self.assertFalse((self.disk / canonical).exists())
+        self.assertEqual(shallow.read_bytes(), b"shallow")
+        self.assertEqual(deep.read_bytes(), b"deep")
 
     def test_relocate_returns_none_when_no_copy_on_disk(self):
         folder = self._folder("Folder A", self.home.name)

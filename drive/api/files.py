@@ -4,6 +4,7 @@ import re
 from datetime import date, timedelta
 from io import BytesIO
 from pathlib import Path
+from urllib.parse import urlparse
 
 import frappe
 import html2text
@@ -25,6 +26,7 @@ from drive.utils import (
     get_home_folder,
     update_clients,
     strip_comment_spans,
+    strip_yjs_comment_marks,
     update_file_size,
     get_default_team,
 )
@@ -72,7 +74,9 @@ def upload_file(
     parent = parent or home_folder["name"]
     embed = int(embed)
 
-    # Get again for non-root folders
+    # Embeds go inside a document, so they need edit access to it
+    if embed and not user_has_permission(parent, "write"):
+        frappe.throw("You need edit access to add images to this document.", frappe.PermissionError)
     if not embed and not user_has_permission(parent, "upload"):
         frappe.throw("Ask the folder owner for upload access.", frappe.PermissionError)
 
@@ -91,8 +95,11 @@ def upload_file(
         total_chunks = 1
 
     file = frappe.request.files["file"]
-    title = get_new_title(file.filename, parent) if not transfer else file.filename
-    upload_session = frappe.form_dict.uuid
+    title = get_unused_title(file.filename, parent) if not transfer else file.filename
+    # The session id is used as a file name, so keep it to a single path segment inside .uploads.
+    # Only chunked uploads send one. Give other uploads their own, so that two uploads with the same name
+    # never write into the same temporary file.
+    upload_session = secure_filename(frappe.form_dict.uuid or "") or frappe.generate_hash()
     temp_path = get_upload_path(home_folder["path"], f"{upload_session}_{secure_filename(title)}")
     with temp_path.open("ab") as f:
         f.seek(offset)
@@ -117,7 +124,7 @@ def upload_file(
         entity = frappe.get_doc({"doctype": "Drive Transfer", "title": title, "file_size": file_size})
         entity.insert()
         entity.path = str(
-            Path(home_folder["path"]) / (entity.name if manager.flat else Path(".transfers") / entity.title)
+            Path(home_folder["path"]) / (entity.name if manager.flat else Path(".transfers") / entity.name)
         )
         entity.save()
         drive_file = frappe._dict(**entity.as_dict(), team=team, parent=parent)
@@ -256,7 +263,7 @@ def create_document_entity(team, title=None, parent=None):
     parent_doc = frappe.get_cached_doc("Drive File", parent)
     team = frappe.db.get_value("Drive File", parent, "team")
     if not title:
-        title = get_new_title("Untitled Document", parent)
+        title = get_unused_title("Untitled Document", parent)
 
     if not user_has_permission(parent, "upload"):
         frappe.throw(
@@ -304,9 +311,7 @@ def create_document_entity(team, title=None, parent=None):
 
 def get_upload_path(team_path, file_name):
     uploads_path = Path(frappe.get_site_path("private/files"), team_path, ".uploads")
-    if not os.path.exists(uploads_path):
-        uploads_path = Path(frappe.get_site_path("private/files"), team_path, ".uploads")
-        uploads_path.mkdir()
+    uploads_path.mkdir(parents=True, exist_ok=True)
     return uploads_path / file_name
 
 
@@ -343,7 +348,7 @@ def create_folder(team, title, parent=None):
     )
 
     if entity_exists:
-        suggested_name = get_new_title(title, parent, folder=True)
+        suggested_name = get_unused_title(title, parent, folder=True)
         frappe.throw(
             f"Folder '{title}' already exists.\n Suggested: {suggested_name}",
             FileExistsError,
@@ -428,17 +433,23 @@ def create_link(team, title, link, parent=None):
     )
 
     if entity_exists:
-        suggested_name = get_new_title(title, parent, folder=True)
+        suggested_name = get_unused_title(title, parent, folder=True)
         frappe.throw(
             f"File '{title}' already exists.\n Suggested: {suggested_name}",
             FileExistsError,
         )
 
+    link = link.strip()
+    if "://" not in link:
+        link = "https://" + link
+    validate_web_link(link)
+
     drive_file = frappe.get_doc(
         {
             "doctype": "Drive File",
             "title": title,
-            "team": team,
+            # A file is always in its folder's team
+            "team": frappe.db.get_value("Drive File", parent, "team"),
             "path": link,
             "is_link": 1,
             "mime_type": "link/unknown",
@@ -446,9 +457,16 @@ def create_link(team, title, link, parent=None):
             "parent_entity": parent,
         }
     )
+    drive_file.flags.allow_storage_change = True
     drive_file.insert()
 
     return drive_file
+
+
+def validate_web_link(url):
+    parsed = urlparse(url)
+    if parsed.scheme not in ("http", "https") or not parsed.netloc:
+        frappe.throw("Links must be web addresses that start with http:// or https://.")
 
 
 @frappe.whitelist()
@@ -457,6 +475,8 @@ def edit_file_content(entity_name, client=None):
     entity = frappe.get_doc("Drive File", entity_name)
     if not user_has_permission(entity, "write"):
         frappe.throw("You cannot edit this file", frappe.PermissionError)
+    if entity.is_group or entity.is_link or entity.document:
+        frappe.throw("Only files can be edited this way.")
 
     file = frappe.request.files["file"]
     home_folder = get_home_folder(entity.team)
@@ -473,18 +493,12 @@ def edit_file_content(entity_name, client=None):
 
 @frappe.whitelist(allow_guest=True)
 def save_doc(entity_name, doc_name=None, content=None, yjs=None, comment=False):
-    # SECURITY: commenting also gives edit access in collab documents
-    can_write = (
-        user_has_permission(entity_name, "write")
-        if not yjs
-        else user_has_permission(entity_name, "comment" if comment else "write")
-    )
-    if comment and not can_write:
-        old_content = frappe.db.get_value("Drive Document", doc_name, "raw_content")
-        if not strip_comment_spans(old_content) == strip_comment_spans(content):
-            raise frappe.PermissionError("You cannot edit file while commenting.")
-        return frappe.db.set_value("Drive Document", doc_name, "raw_content", content)
-    elif not can_write:
+    # The permission check below is on entity_name, so doc_name must be that file's own document.
+    if doc_name and frappe.db.get_value("Drive File", entity_name, "document") != doc_name:
+        raise frappe.PermissionError("This document does not belong to that file.")
+    if not user_has_permission(entity_name, "write"):
+        if comment and doc_name and user_has_permission(entity_name, "comment"):
+            return save_comment_marks(doc_name, content, yjs)
         raise frappe.PermissionError("You do not have permission to edit this file")
 
     if doc_name:
@@ -506,11 +520,15 @@ def save_doc(entity_name, doc_name=None, content=None, yjs=None, comment=False):
     else:
         # Text based files
         # BROKEN - should reparse markdown files.
+        drive_file = frappe.db.get_value(
+            "Drive File", entity_name, ["path", "is_group", "is_link", "mime_type"], as_dict=True
+        )
+        if drive_file.is_group or drive_file.is_link or not (drive_file.mime_type or "").startswith("text/"):
+            frappe.throw("Only text files can be saved this way.")
         h = html2text.HTML2Text()
         h.body_width = 0
         md_content = h.handle(content)
-        path = frappe.db.get_value("Drive File", entity_name, "path")
-        FileManager().write_file(path, md_content)
+        FileManager().write_file(drive_file.path, md_content)
 
     if not yjs:
         file = frappe.get_doc("Drive File", entity_name)
@@ -533,14 +551,29 @@ def save_doc(entity_name, doc_name=None, content=None, yjs=None, comment=False):
             )
 
 
+def save_comment_marks(doc_name, content=None, yjs=None):
+    """Save a document whose only changes are comment marks."""
+    old = frappe.db.get_value("Drive Document", doc_name, ["raw_content", "content"], as_dict=True)
+    if content is not None and strip_comment_spans(old.raw_content or "") != strip_comment_spans(content):
+        raise frappe.PermissionError("You cannot edit file while commenting.")
+    if yjs is not None and strip_yjs_comment_marks(old.content) != strip_yjs_comment_marks(yjs):
+        raise frappe.PermissionError("You cannot edit file while commenting.")
+
+    if content is not None:
+        frappe.db.set_value("Drive Document", doc_name, "raw_content", content)
+    if yjs is not None:
+        frappe.db.set_value("Drive Document", doc_name, "content", yjs)
+
+
 @frappe.whitelist(allow_guest=True)
 def create_auth_token(entity_name):
     if not user_has_permission(entity_name, "read"):
         raise frappe.PermissionError("You do not have permission to view this file")
     settings = frappe.get_single("Drive Disk Settings")
     key = settings.get_password("jwt_key", raise_exception=False)
+    # Microsoft's viewer fetches the file with this token, and can fetch it again while the preview is open
     return jwt.encode(
-        {"name": entity_name, "expiry": (frappe.utils.now_datetime() + timedelta(minutes=1)).timestamp()},
+        {"name": entity_name, "expiry": (frappe.utils.now_datetime() + timedelta(minutes=15)).timestamp()},
         key=key,
     )
 
@@ -593,15 +626,13 @@ def get_file_content(entity_name, trigger_download=0, jwt_token=None, transfer=F
     if not drive_file or drive_file.is_group or drive_file.is_link or (not transfer and drive_file.is_active != 1):
         frappe.throw("Not found", frappe.NotFound)
 
-    print(
-        f"[drive:get_file_content] entity={entity_name} title={drive_file.title} "
-        f"path='{drive_file.get('path')}' team={drive_file.team}"
-    )
-
     return get_file_internal(drive_file, trigger_download)
 
 
 def get_file_internal(file, trigger_download=0):
+    # A link's path is a web address, never bytes on this site
+    if file.get("is_link") or file.get("is_group"):
+        frappe.throw("Not found", frappe.NotFound)
     if not trigger_download and get_file_type(file.as_dict() if file.as_dict else dict(file)) == "Video":
         return stream_file_content(file.name)
     if file.document:
@@ -629,15 +660,17 @@ def stream_file_content(entity_name):
     :param entity_name: Document-name of the file whose content is to be streamed
     :param drive_entity: Drive Entity record object
     """
-    range_header = frappe.request.headers.get("Range")
+    range_header = frappe.request.headers.get("Range") or ""
     entity = frappe.get_doc("Drive File", entity_name)
     if not user_has_permission(entity, "read"):
         raise frappe.PermissionError("You do not have permission to view this file")
+    if entity.is_group or entity.is_link:
+        frappe.throw("Not found", frappe.NotFound)
     size = entity.file_size
     byte1, byte2 = 0, None
 
-    m = re.search("(\d+)-(\d*)", range_header)
-    g = m.groups()
+    m = re.search(r"(\d+)-(\d*)", range_header)
+    g = m.groups() if m else (None, None)
 
     if g[0]:
         byte1 = int(g[0])
@@ -658,9 +691,12 @@ def stream_file_content(entity_name):
     if manager.s3_enabled:
         data = manager.get_file(entity, f"bytes={byte1}-{byte1 + length - 1}")
     else:
-        with manager.open_file(entity.path) as f:
-            f.seek(byte1)
-            data = f.read(length)
+        try:
+            with manager.open_file(entity.path) as f:
+                f.seek(byte1)
+                data = f.read(length)
+        except FileNotFoundError:
+            frappe.throw("Could not find this file", frappe.NotFound)
 
     res = Response(data, 206, mimetype=entity.mime_type, direct_passthrough=True)
     res.headers.add("Content-Range", "bytes {0}-{1}/{2}".format(byte1, byte1 + length - 1, size))
@@ -669,6 +705,8 @@ def stream_file_content(entity_name):
 
 @frappe.whitelist(allow_guest=True)
 def list_entity_comments(entity_name):
+    if not user_has_permission(entity_name, "read"):
+        raise frappe.PermissionError("You do not have permission to view this file")
     Comment = frappe.qb.DocType("Comment")
     User = frappe.qb.DocType("User")
     selectedFields = [
@@ -752,12 +790,13 @@ def remove_or_restore(entity_names, client=None):
     def depth_zero_toggle_is_active(doc):
         if doc.is_active:
             flag = 0
-            manager.move_to_trash(doc)
+            doc.flags.allow_storage_change = True
+            doc.trash_path = manager.move_to_trash(doc) or ""
         else:
             storage_data = storage_bar_data(doc.team)
             if (storage_data["limit"] - storage_data["total_size"]) < doc.file_size:
                 frappe.throw("You're out of storage!", ValueError)
-            manager.restore(doc)
+            restore_from_trash(doc, manager)
             flag = 1
 
         doc.is_active = flag
@@ -780,6 +819,25 @@ def remove_or_restore(entity_names, client=None):
         depth_zero_toggle_is_active(doc)
 
 
+def restore_from_trash(doc, manager):
+    """
+    Move a trashed file or folder back to its folder.
+    If its name was taken while it was in the trash, it comes back under a new name.
+    """
+    doc.flags.allow_storage_change = True
+    old_path = new_path = doc.path
+    new_title = get_unused_title(doc.title, doc.parent_entity, doc.is_group, doc.name)
+    if new_title != doc.title:
+        doc.title = new_title
+        if doc.trash_path and not manager.flat:
+            new_path = str(manager.get_disk_path(doc))
+
+    manager.restore(doc, new_path)
+    if new_path != old_path:
+        doc.recursive_path_move(old_path, new_path)
+    doc.trash_path = ""
+
+
 @frappe.whitelist()
 def delete_entities(entity_names=None, clear_all=None):
     if clear_all:
@@ -793,22 +851,42 @@ def delete_entities(entity_names=None, clear_all=None):
         frappe.get_doc("Drive File", entity).permanent_delete()
 
 
-@frappe.whitelist(allow_guest=True)
+# The Drive File methods the frontend calls, with the access each one needs.
+# Other methods, including generic Document methods, are refused.
+CONTROLLER_METHODS = {
+    "rename": "write",
+    "share": "share",
+    "unshare": "share",
+}
+
+
+@frappe.whitelist()
 def call_controller_method():
     """
-    Call a whitelisted Drive File controller method
+    Call a Drive File controller method that the frontend uses
 
     :param entity_name: Document-name of the document on which the controller method is to be called
     :param method: The controller method to be called
     :raises ValueError: If the entity does not exist
+    :raises PermissionError: If the method can't be called from the client, or the user lacks access
     :return: The result of the controller method
     """
-    method = frappe.local.form_dict.pop("method")
-    entity_name = frappe.local.form_dict.pop("entity_name")
-    frappe.local.form_dict.pop("cmd")
-    drive_file = frappe.get_doc("Drive File", entity_name)
-    if not drive_file:
+    method = frappe.local.form_dict.pop("method", None)
+    entity_name = frappe.local.form_dict.pop("entity_name", None)
+    frappe.local.form_dict.pop("cmd", None)
+
+    ptype = CONTROLLER_METHODS.get(method)
+    if not ptype:
+        frappe.throw("This action is not allowed.", frappe.PermissionError)
+    if not entity_name or not frappe.db.exists("Drive File", entity_name):
         frappe.throw("Entity does not exist", ValueError)
+
+    drive_file = frappe.get_doc("Drive File", entity_name)
+    # Anyone may remove their own access
+    leaving = method == "unshare" and frappe.local.form_dict.get("user") == frappe.session.user
+    if not leaving and not user_has_permission(drive_file, ptype):
+        frappe.throw("You don't have permission for this action.", frappe.PermissionError)
+
     return drive_file.run_method(method, **frappe.local.form_dict)
 
 
@@ -841,6 +919,11 @@ def remove_recents(entity_names=[], clear_all=False):
 
 @frappe.whitelist()
 def does_entity_exist(name=None, parent_entity=None):
+    # Folder uploads at a team's root or in Home send no folder. The upload then merges into a folder of the same name.
+    if not parent_entity:
+        return False
+    if not user_has_permission(parent_entity, "read"):
+        frappe.throw("You don't have access to this folder.", frappe.PermissionError)
     result = frappe.db.exists("Drive File", {"parent_entity": parent_entity, "title": name})
     return bool(result)
 
@@ -883,9 +966,15 @@ def move(entity_names, new_parent=None, team=None, client=None):
     if not entity_names or not isinstance(entity_names, list):
         frappe.throw(f"Expected a non-empty list but got {type(entity_names)}", ValueError)
 
+    destination = new_parent or get_home_folder(team).name
+    if not user_has_permission(destination, "upload"):
+        frappe.throw("You can't move files into this folder.", frappe.PermissionError)
+
     for entity in entity_names:
         doc = frappe.get_doc("Drive File", entity)
-        res = doc.move(new_parent, team, client=client)
+        if not user_has_permission(doc, "write"):
+            frappe.throw(f"You don't have permission to move '{doc.title}'.", frappe.PermissionError)
+        res = doc.move(destination, client=client)
 
     if not res["parent_entity"]:
         title, personal = frappe.db.get_value("Drive Team", res["team"], ["title", "personal"])
@@ -948,33 +1037,44 @@ def get_new_title(title, parent_name, folder=False, entity=None):
     :param parent_entity: Parent entity of entity to be renamed (if at all)
     :return: String with new title
     """
-    entity_title, entity_ext = os.path.splitext(title)
+    if not parent_name:
+        # See does_entity_exist
+        return title
+    if not user_has_permission(parent_name, "read"):
+        frappe.throw("You don't have access to this folder.", frappe.PermissionError)
+    return get_unused_title(title, parent_name, folder, entity)
 
+
+def get_unused_title(title, parent_name, folder=False, entity=None):
+    """
+    Return `title`, or `title (n)` if another file or folder in the folder already has it.
+    Looks at every file in the folder, including ones the current user can't see, because names must be unique on disk.
+
+    :param entity: The file being renamed or moved, which doesn't count as a clash with itself
+    """
+    entity_title, entity_ext = os.path.splitext(title)
     filters = {
         "is_active": 1,
         "parent_entity": parent_name,
         "title": ["like", f"{entity_title}%{entity_ext}"],
     }
-
     if folder:
         filters["is_group"] = 1
+    if entity:
+        filters["name"] = ["!=", entity]
 
-    sibling_entity_titles = frappe.db.get_list(
-        "Drive File",
-        filters=filters,
-        fields=["title", "name"],
-    )
-    if (
-        not sibling_entity_titles
-        or (sibling_entity_titles[0].name == entity)
-        or not any(k["title"] == title for k in sibling_entity_titles)
-    ):
-        return title
-    return f"{entity_title} ({len(sibling_entity_titles)}){entity_ext}"
+    taken = set(frappe.get_all("Drive File", filters=filters, pluck="title"))
+    new_title, n = title, 1
+    while new_title in taken:
+        new_title = f"{entity_title} ({n}){entity_ext}"
+        n += 1
+    return new_title
 
 
 @frappe.whitelist(allow_guest=True)
 def get_entity_type(entity_name):
+    if not user_has_permission(entity_name, "read"):
+        raise frappe.PermissionError("You do not have permission to view this file")
     entity = frappe.db.get_value(
         "Drive File",
         {"is_active": 1, "name": entity_name},
@@ -1008,276 +1108,17 @@ def auto_delete_transfers():
         frappe.delete_doc("Drive Transfer", name)
 
 
-@frappe.whitelist(allow_guest=True)
+@frappe.whitelist()
 def run_drive_audit():
-    """
-    Audit all active Drive File records against canonical parent-child paths and disk files.
-    """
-    import os, json
-    from pathlib import Path
+    """Inspect this site's Drive paths. Requires the System Manager role."""
+    from drive.utils.maintenance import inspect_paths
 
-    files_root = Path(frappe.get_site_path("private/files"))
-
-    records = frappe.db.get_all(
-        "Drive File",
-        fields=["name", "title", "path", "is_group", "parent_entity", "team", "is_active", "file_size"],
-        filters={"is_active": 1},
-    )
-
-    rec_map = {r["name"]: r for r in records}
-
-    # Build canonical path for every record
-    def get_canonical_rel_path(name):
-        curr = rec_map.get(name)
-        if not curr:
-            # Check DB if not in active records
-            curr_db = frappe.db.get_value("Drive File", name, ["name", "title", "parent_entity", "team"], as_dict=1)
-            if not curr_db:
-                return ""
-            curr = curr_db
-
-        chain = []
-        node = curr
-        visited = set()
-        while node and node["name"] not in visited:
-            visited.add(node["name"])
-            chain.append(node["title"])
-            p_name = node.get("parent_entity")
-            if not p_name:
-                break
-            p_node = rec_map.get(p_name)
-            if not p_node:
-                p_node = frappe.db.get_value("Drive File", p_name, ["name", "title", "parent_entity", "team"], as_dict=1)
-            node = p_node
-
-        chain.reverse()
-        return "/".join(chain)
-
-    # Pre-index all files on disk for fast lookup
-    disk_files_by_name = {}
-    for root, dirs, fnames in os.walk(files_root):
-        for fn in fnames:
-            full_p = Path(root) / fn
-            rel_p = str(full_p.relative_to(files_root))
-            disk_files_by_name.setdefault(fn, []).append(rel_p)
-
-    audit_results = []
-    stats = {"exact_match": 0, "canonical_exists": 0, "mislocated_found": 0, "missing": 0, "total_files": 0, "total_folders": 0}
-
-    for r in records:
-        canonical_rel = get_canonical_rel_path(r["name"])
-        r["canonical_path"] = canonical_rel
-        db_rel = r["path"] or ""
-
-        if r["is_group"]:
-            stats["total_folders"] += 1
-            continue
-
-        stats["total_files"] += 1
-        db_abs = files_root / db_rel if db_rel else None
-        canon_abs = files_root / canonical_rel if canonical_rel else None
-
-        db_exists = db_abs.exists() if db_abs else False
-        canon_exists = canon_abs.exists() if canon_abs else False
-
-        status = ""
-        actual_disk_path = ""
-
-        if db_exists and db_rel == canonical_rel:
-            status = "EXACT_MATCH"
-            actual_disk_path = db_rel
-            stats["exact_match"] += 1
-        elif canon_exists:
-            status = "CANONICAL_EXISTS"
-            actual_disk_path = canonical_rel
-            stats["canonical_exists"] += 1
-        elif db_exists:
-            status = "DB_PATH_EXISTS"
-            actual_disk_path = db_rel
-            stats["mislocated_found"] += 1
-        else:
-            # Search disk by filename
-            candidates = disk_files_by_name.get(r["title"], [])
-            if len(candidates) == 1:
-                status = "MISLOCATED_SINGLE_MATCH"
-                actual_disk_path = candidates[0]
-                stats["mislocated_found"] += 1
-            elif len(candidates) > 1:
-                # Score candidates by matching path segments
-                best_cand = None
-                best_score = -1
-                canon_parts = set(canonical_rel.split("/"))
-                for cand in candidates:
-                    cand_parts = set(cand.split("/"))
-                    score = len(canon_parts.intersection(cand_parts))
-                    # Give penalty if in .trash
-                    if ".trash" in cand:
-                        score -= 0.5
-                    if score > best_score:
-                        best_score = score
-                        best_cand = cand
-                status = "MISLOCATED_MULTI_MATCH"
-                actual_disk_path = best_cand
-                stats["mislocated_found"] += 1
-            else:
-                status = "TRULY_MISSING"
-                actual_disk_path = ""
-                stats["missing"] += 1
-
-        audit_results.append({
-            "name": r["name"],
-            "title": r["title"],
-            "parent_entity": r["parent_entity"],
-            "db_path": db_rel,
-            "canonical_path": canonical_rel,
-            "actual_disk_path": actual_disk_path,
-            "status": status,
-        })
-
-    report = {"stats": stats, "results": audit_results}
-    
-    out_json = Path("/home/afsal/my-frappebench/audit_report.json")
-    out_json.write_text(json.dumps(report, indent=2))
-
-    return report
+    return inspect_paths()
 
 
-@frappe.whitelist(allow_guest=True)
+@frappe.whitelist(methods=["POST"])
 def run_drive_repair():
-    """
-    Execute physical file repair and DB path update based on canonical parent-child hierarchy.
-    """
-    import os, json, shutil
-    from pathlib import Path
+    """Repair verified database paths without moving files. Requires a site administrator."""
+    from drive.utils.maintenance import inspect_paths
 
-    files_root = Path(frappe.get_site_path("private/files"))
-
-    records = frappe.db.get_all(
-        "Drive File",
-        fields=["name", "title", "path", "is_group", "parent_entity", "team", "is_active", "file_size"],
-        filters={"is_active": 1},
-    )
-
-    rec_map = {r["name"]: r for r in records}
-
-    # Build canonical path for every record
-    def get_canonical_rel_path(name):
-        curr = rec_map.get(name)
-        if not curr:
-            curr_db = frappe.db.get_value("Drive File", name, ["name", "title", "parent_entity", "team"], as_dict=1)
-            if not curr_db:
-                return ""
-            curr = curr_db
-
-        chain = []
-        node = curr
-        visited = set()
-        while node and node["name"] not in visited:
-            visited.add(node["name"])
-            chain.append(node["title"])
-            p_name = node.get("parent_entity")
-            if not p_name:
-                break
-            p_node = rec_map.get(p_name)
-            if not p_node:
-                p_node = frappe.db.get_value("Drive File", p_name, ["name", "title", "parent_entity", "team"], as_dict=1)
-            node = p_node
-
-        chain.reverse()
-        return "/".join(chain)
-
-    # First update folder paths in DB
-    folders_updated = 0
-    for r in records:
-        canonical_rel = get_canonical_rel_path(r["name"])
-        r["canonical_path"] = canonical_rel
-        if r["is_group"]:
-            if r["path"] != canonical_rel:
-                frappe.db.set_value("Drive File", r["name"], "path", canonical_rel)
-                folders_updated += 1
-                r["path"] = canonical_rel
-
-    # Index files on disk
-    disk_files_by_name = {}
-    for root, dirs, fnames in os.walk(files_root):
-        for fn in fnames:
-            full_p = Path(root) / fn
-            rel_p = str(full_p.relative_to(files_root))
-            disk_files_by_name.setdefault(fn, []).append(rel_p)
-
-    files_moved = 0
-    db_paths_updated = 0
-    missing_files = []
-    already_canonical = 0
-
-    for r in records:
-        if r["is_group"]:
-            continue
-
-        canonical_rel = r["canonical_path"]
-        canon_abs = files_root / canonical_rel
-        db_rel = r["path"] or ""
-        db_abs = files_root / db_rel if db_rel else None
-
-        # Check where file currently exists
-        source_rel = None
-        if canon_abs.exists():
-            source_rel = canonical_rel
-        elif db_abs and db_abs.exists():
-            source_rel = db_rel
-        else:
-            candidates = disk_files_by_name.get(r["title"], [])
-            if len(candidates) == 1:
-                source_rel = candidates[0]
-            elif len(candidates) > 1:
-                best_cand = None
-                best_score = -1
-                canon_parts = set(canonical_rel.split("/"))
-                for cand in candidates:
-                    cand_parts = set(cand.split("/"))
-                    score = len(canon_parts.intersection(cand_parts))
-                    if ".trash" in cand:
-                        score -= 0.5
-                    if score > best_score:
-                        best_score = score
-                        best_cand = cand
-                source_rel = best_cand
-
-        if not source_rel:
-            missing_files.append(r)
-            continue
-
-        source_abs = files_root / source_rel
-
-        # Move file to canonical path if not already there
-        if source_rel != canonical_rel or not canon_abs.exists():
-            canon_abs.parent.mkdir(parents=True, exist_ok=True)
-            if source_abs != canon_abs:
-                shutil.move(str(source_abs), str(canon_abs))
-                files_moved += 1
-        else:
-            already_canonical += 1
-
-        # Update DB path if not matching canonical path
-        if r["path"] != canonical_rel:
-            frappe.db.set_value("Drive File", r["name"], "path", canonical_rel)
-            db_paths_updated += 1
-
-    frappe.db.commit()
-
-    report = {
-        "status": "success",
-        "folders_updated": folders_updated,
-        "files_moved": files_moved,
-        "db_paths_updated": db_paths_updated,
-        "already_canonical": already_canonical,
-        "missing_files_count": len(missing_files),
-        "missing_files": missing_files,
-    }
-
-    out_json = Path("/home/afsal/my-frappebench/repair_report.json")
-    out_json.write_text(json.dumps(report, indent=2))
-
-    return report
-
-
+    return inspect_paths(apply=True)

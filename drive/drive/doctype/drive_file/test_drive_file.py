@@ -10,6 +10,11 @@ from frappe.tests.utils import FrappeTestCase
 from drive.drive.doctype.drive_file.drive_file import DriveFile
 
 
+def _insert_fixture(doc):
+    doc.flags.allow_storage_change = True
+    return doc.insert(ignore_permissions=True)
+
+
 def _fake_drive_file(title, parent_entity, path=None):
     obj = DriveFile.__new__(DriveFile)
     obj.name = "test-doc"
@@ -37,7 +42,7 @@ class TestDriveFile(FrappeTestCase):
                 "title": "Test Team",
             }
         ).insert(ignore_permissions=True)
-        self.home = frappe.get_doc(
+        self.home = _insert_fixture(frappe.get_doc(
             {
                 "doctype": "Drive File",
                 "title": "Drive - " + self.team.name,
@@ -47,8 +52,8 @@ class TestDriveFile(FrappeTestCase):
                 "team": self.team.name,
                 "is_active": 1,
             }
-        ).insert(ignore_permissions=True)
-        self.folder = frappe.get_doc(
+        ))
+        self.folder = _insert_fixture(frappe.get_doc(
             {
                 "doctype": "Drive File",
                 "title": "Folder A",
@@ -58,7 +63,7 @@ class TestDriveFile(FrappeTestCase):
                 "team": self.team.name,
                 "is_active": 1,
             }
-        ).insert(ignore_permissions=True)
+        ))
 
     def tearDown(self):
         frappe.delete_doc("Drive File", self.folder.name, force=True, ignore_permissions=True)

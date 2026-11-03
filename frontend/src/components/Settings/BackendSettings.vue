@@ -3,11 +3,6 @@
     <h1 class="font-semibold text-ink-gray-9">
       {{ __("Storage") }}
     </h1>
-    <Button
-      label="Sync"
-      class="ml-auto mr-4"
-      @click="confirmSync"
-    />
   </div>
   <div class="overflow-y-auto ps-1">
     <LoadingIndicator
@@ -99,7 +94,7 @@
 </template>
 
 <script setup>
-import { ref, reactive, watch, markRaw } from "vue"
+import { ref, reactive, watch } from "vue"
 import {
   FormControl,
   Button,
@@ -107,9 +102,7 @@ import {
   LoadingIndicator,
 } from "frappe-ui"
 import { toast } from "@/utils/toasts"
-import { createDialog } from "@/utils/dialogs"
 import { getDiskSettings } from "@/resources/permissions"
-import SyncBreakdown from "@/components/SyncBreakdown.vue"
 
 const edited = ref(false)
 
@@ -137,13 +130,6 @@ watch(
     deep: true,
   }
 )
-
-function confirmSync() {
-  createDialog({
-    title: "Sync files from S3",
-    component: markRaw(SyncBreakdown),
-  })
-}
 
 getDiskSettings.fetch(null, {
   onSuccess: (data) => {

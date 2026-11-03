@@ -30,9 +30,13 @@ def mark_as_viewed(entity):
 @rate_limit(key="reference_name", limit=10, seconds=60 * 60)
 def add_comment(reference_name: str, content: str, comment_email: str, comment_by: str):
     """Allow logged user with permission to read document to add a comment"""
+    from drive.api.permissions import user_has_permission
+
     exists = frappe.db.exists("Drive File", reference_name)
     if not exists:
         frappe.throw("Entity does not exist", frappe.NotFound)
+    if not user_has_permission(reference_name, "comment"):
+        frappe.throw("You don't have comment access", frappe.PermissionError)
     comment = frappe.new_doc("Comment")
     comment.update(
         {
@@ -55,6 +59,9 @@ def generate_otp():
 
 
 def get_country_info():
+    # Looking up the location sends the visitor's IP address to ip-api.com, so it is opt-in
+    if not frappe.conf.get("drive_enable_ip_geolocation"):
+        return {}
     ip = frappe.local.request_ip
 
     def _get_country_info():

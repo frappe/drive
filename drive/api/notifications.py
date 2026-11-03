@@ -64,7 +64,7 @@ def mark_as_read(name=None, all=False):
     if all:
         frappe.db.set_value("Drive Notification", {"to_user": frappe.session.user, "read": False}, "read", True)
         return
-    frappe.db.set_value("Drive Notification", name, "read", True)
+    frappe.db.set_value("Drive Notification", {"name": name, "to_user": frappe.session.user}, "read", True)
     return
 
 
@@ -99,8 +99,10 @@ def notify_share(entity_name, docperm_name):
     link = get_link(entity)
     message = f'{author_full_name} shared a {entity_type} with you: "{entity.title}"'
     if not frappe.db.exists("User", docshare.user):
+        from drive.drive.doctype.drive_user_invitation.drive_user_invitation import get_invite_link
+
         key = frappe.get_value("Drive User Invitation", {"email": docshare.user})
-        link = frappe.utils.get_url(f"/api/method/drive.api.product.accept_invite?key={key}&redirect={link}")
+        link = get_invite_link(key, link)
     else:
         create_notification(docshare.owner, docshare.user, "Share", entity, message)
     send_share_email(docshare.user, message, link, entity.team, entity_type)
@@ -135,7 +137,7 @@ def create_notification(from_user, to_user, type, entity, message=None):
     if notif:
         return
     try:
-        frappe.get_doc({"doctype": "Drive Notification", **details}).insert()
+        frappe.get_doc({"doctype": "Drive Notification", **details}).insert(ignore_permissions=True)
     except frappe.exceptions.ValidationError as e:
         print(f"Error inserting document: {e}")
 

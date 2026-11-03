@@ -192,6 +192,13 @@ function getDataForKey(datum: object, key: string) {
   return key.split(".").reduce((d, key) => (d ? d[key] : null), data) as string
 }
 
+// Only follow redirects to paths on this site; "//host" and "/\host" lead elsewhere.
+function safeRedirectPath(path: unknown, fallback = "/drive") {
+  if (typeof path !== "string" || !/^\/(?![/\\])/.test(path)) return fallback
+  const url = new URL(path, window.location.origin)
+  return url.origin === window.location.origin ? path : fallback
+}
+
 export {
   HSVToHex,
   HexToHSV,
@@ -208,5 +215,6 @@ export {
   isHTMLString,
   isTargetEditable,
   kebabToCamelCase,
+  safeRedirectPath,
   stripExtension,
 }

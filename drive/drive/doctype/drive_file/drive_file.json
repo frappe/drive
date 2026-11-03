@@ -13,6 +13,7 @@
     "is_link",
     "parent_entity",
     "path",
+    "trash_path",
     "color",
     "mime_type",
     "file_size",
@@ -38,24 +39,37 @@
       "fieldtype": "Link",
       "label": "Team",
       "options": "Drive Team",
-      "reqd": 1
+      "reqd": 1,
+      "read_only": 1
     },
     {
       "default": "0",
       "fieldname": "is_group",
       "fieldtype": "Check",
-      "label": "Is Group"
+      "label": "Is Group",
+      "read_only": 1
     },
     {
       "fieldname": "parent_entity",
       "fieldtype": "Link",
       "label": "Parent Entity",
-      "options": "Drive File"
+      "options": "Drive File",
+      "read_only": 1
     },
     {
       "fieldname": "path",
       "fieldtype": "Text",
-      "label": "Path"
+      "label": "Path",
+      "read_only": 1
+    },
+    {
+      "description": "Where the file or folder was put in the trash.",
+      "fieldname": "trash_path",
+      "fieldtype": "Text",
+      "hidden": 1,
+      "label": "Trash Path",
+      "no_copy": 1,
+      "read_only": 1
     },
     {
       "fieldname": "color",
@@ -65,7 +79,8 @@
     {
       "fieldname": "mime_type",
       "fieldtype": "Data",
-      "label": "MIME Type"
+      "label": "MIME Type",
+      "read_only": 1
     },
     {
       "fieldname": "file_size",
@@ -89,7 +104,8 @@
       "fieldname": "document",
       "fieldtype": "Link",
       "label": "Document",
-      "options": "Drive Document"
+      "options": "Drive Document",
+      "read_only": 1
     },
     {
       "default": "0",
@@ -106,7 +122,8 @@
       "default": "0",
       "fieldname": "is_link",
       "fieldtype": "Check",
-      "label": "Is Link"
+      "label": "Is Link",
+      "read_only": 1
     },
     {
       "fieldname": "comments",
@@ -127,7 +144,7 @@
     }
   ],
   "links": [],
-  "modified": "2025-09-22 13:41:35.517139",
+  "modified": "2026-10-22 18:30:00.000000",
   "modified_by": "Administrator",
   "module": "Drive",
   "name": "Drive File",
