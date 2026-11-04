@@ -593,11 +593,6 @@ def get_file_content(entity_name, trigger_download=0, jwt_token=None, transfer=F
     if not drive_file or drive_file.is_group or drive_file.is_link or (not transfer and drive_file.is_active != 1):
         frappe.throw("Not found", frappe.NotFound)
 
-    print(
-        f"[drive:get_file_content] entity={entity_name} title={drive_file.title} "
-        f"path='{drive_file.get('path')}' team={drive_file.team}"
-    )
-
     return get_file_internal(drive_file, trigger_download)
 
 
@@ -636,7 +631,7 @@ def stream_file_content(entity_name):
     size = entity.file_size
     byte1, byte2 = 0, None
 
-    m = re.search("(\d+)-(\d*)", range_header)
+    m = re.search(r"(\d+)-(\d*)", range_header)
     g = m.groups()
 
     if g[0]:
@@ -1008,11 +1003,12 @@ def auto_delete_transfers():
         frappe.delete_doc("Drive Transfer", name)
 
 
-@frappe.whitelist(allow_guest=True)
+@frappe.whitelist()
 def run_drive_audit():
     """
     Audit all active Drive File records against canonical parent-child paths and disk files.
     """
+    frappe.only_for("System Manager")
     import os, json
     from pathlib import Path
 
@@ -1136,17 +1132,20 @@ def run_drive_audit():
 
     report = {"stats": stats, "results": audit_results}
     
-    out_json = Path("/home/afsal/my-frappebench/audit_report.json")
+    out_dir = Path(frappe.get_site_path("private", "files"))
+    out_dir.mkdir(parents=True, exist_ok=True)
+    out_json = out_dir / "audit_report.json"
     out_json.write_text(json.dumps(report, indent=2))
 
     return report
 
 
-@frappe.whitelist(allow_guest=True)
+@frappe.whitelist()
 def run_drive_repair():
     """
     Execute physical file repair and DB path update based on canonical parent-child hierarchy.
     """
+    frappe.only_for("System Manager")
     import os, json, shutil
     from pathlib import Path
 
@@ -1275,7 +1274,9 @@ def run_drive_repair():
         "missing_files": missing_files,
     }
 
-    out_json = Path("/home/afsal/my-frappebench/repair_report.json")
+    out_dir = Path(frappe.get_site_path("private", "files"))
+    out_dir.mkdir(parents=True, exist_ok=True)
+    out_json = out_dir / "repair_report.json"
     out_json.write_text(json.dumps(report, indent=2))
 
     return report

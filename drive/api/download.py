@@ -1,6 +1,7 @@
 import contextlib
 import json
 import os
+import re
 import shutil
 import time
 import uuid
@@ -49,18 +50,28 @@ def _download_dir() -> Path:
     return Path(get_site_path(DOWNLOAD_ROOT))
 
 
+def _validate_download_id(download_id: str):
+    if not isinstance(download_id, str) or not re.fullmatch(r"[a-f0-9]{32}", download_id):
+        frappe.throw("Invalid download ID.", frappe.ValidationError)
+
+
 def _status_path(download_id: str) -> Path:
+    _validate_download_id(download_id)
     return _download_dir() / f"{download_id}.status"
 
 
 def _zip_path(download_id: str) -> Path:
+    _validate_download_id(download_id)
     return _download_dir() / f"{download_id}.zip"
 
 
 def _purge_stale():
     """Delete download artifacts older than TTL so failed/abandoned jobs don't leak disk."""
+    d = _download_dir()
+    if not d.exists():
+        return
     cutoff = frappe.utils.now_datetime().timestamp() - DOWNLOAD_TTL_SECONDS
-    for entry in _download_dir().glob("*"):
+    for entry in d.glob("*"):
         try:
             if entry.stat().st_mtime < cutoff:
                 entry.unlink()

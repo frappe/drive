@@ -4,7 +4,10 @@ from io import BytesIO
 from pathlib import Path
 import shutil
 
-import cv2
+try:
+    import cv2
+except ImportError:
+    cv2 = None
 import frappe
 import magic
 import mimemapper
@@ -14,7 +17,10 @@ from drive.locks.distributed_lock import DistributedLock
 
 from . import get_home_folder
 
-DriveFile = frappe.qb.DocType("Drive File")
+try:
+    DriveFile = frappe.qb.DocType("Drive File")
+except Exception:
+    DriveFile = None
 
 
 class FileManager:
@@ -92,12 +98,9 @@ class FileManager:
         probe = ((rows[0]["path"] if rows else "") or "").rstrip("/")
         if probe:
             if (public / probe).is_dir():
-                print(f"[drive:files] storage root resolved to PUBLIC files/ ({public})")
                 return public
             if (private / probe).is_dir():
-                print(f"[drive:files] storage root resolved to PRIVATE files/ ({private})")
                 return private
-        print(f"[drive:files] storage root defaulted to {private}")
         return private
 
     def get_bucket(self, team):
@@ -264,7 +267,6 @@ class FileManager:
         try:
             with open(self.site_folder / entity.path, "rb") as fh:
                 buf = BytesIO(fh.read())
-            print(f"[drive:get_file] OK {entity.name} ({entity.title}) path='{entity.path}'")
         except (FileNotFoundError, TypeError, OSError):
             # Path drift self-heal: a file may have been moved/renamed on disk
             # without its Drive File path being updated (or vice versa). Fall
@@ -272,20 +274,11 @@ class FileManager:
             # repair the record so subsequent downloads resolve directly. If
             # the file is not at its canonical location either, search the
             # disk by name and relocate it there (dynamic repair).
-            print(
-                f"[drive:get_file] DRIFT {entity.name} ({entity.title}) stored='{entity.path}' not found "
-                f"at {self.site_folder / entity.path}"
-            )
             canonical = self._canonical_disk_path(entity)
             if not canonical or not (self.site_folder / canonical).is_file():
                 canonical = self._relocate_mislocated_file(entity, canonical)
             if not canonical or not (self.site_folder / canonical).is_file():
-                print(
-                    f"[drive:get_file] RECOVERY-FAILED {entity.name} canonical={canonical} "
-                    f"exists={bool(canonical and (self.site_folder / canonical).is_file())}"
-                )
                 frappe.throw("Could not find this file", frappe.NotFound)
-            print(f"[drive:get_file] RECOVERED {entity.name} canonical='{canonical}'")
             frappe.log_error(
                 message=(
                     f"Drive File {entity.name} ({entity.title}) not found at "
@@ -312,6 +305,8 @@ class FileManager:
         if not canonical:
             return None
 
+        from drive.utils.repair_paths import same_branch
+
         title = entity.title
         chain_titles = {p for p in canonical.parts[:-1]}
         best = None
@@ -324,7 +319,11 @@ class FileManager:
                 continue
             if path.name == title:
                 leaf = path.relative_to(self.site_folder)
+                if not same_branch(canonical, leaf):
+                    continue
                 score = sum(1 for p in leaf.parts if p in chain_titles)
+                if score < 1 and chain_titles:
+                    continue
                 # Prefer the shallowest match as a tie-breaker
                 if score > best_score or (score == best_score and (best is None or len(leaf.parts) < len(best_leaf.parts))):
                     best = path
@@ -334,9 +333,6 @@ class FileManager:
         if best is None:
             return None
 
-        print(
-            f"[drive:get_file] RELOCATING {entity.name} '{title}' from '{best_leaf}' -> '{canonical}'"
-        )
         dst = self.site_folder / canonical
         dst.parent.mkdir(parents=True, exist_ok=True)
         if dst.exists():

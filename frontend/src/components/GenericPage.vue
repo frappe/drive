@@ -319,14 +319,7 @@ const actionItems = computed(() => {
         icon: LucideDownload,
         isEnabled: (e) =>
           !e.is_link && e.mime_type !== "frappe/slides" && e.allow_download,
-        action: (entities) => {
-          console.log("[Drive][Download] toolbar action fired", {
-            team: team.value,
-            count: entities.length,
-            names: entities.map((e) => e.name),
-          })
-          entitiesDownload(team.value, entities)
-        },
+        action: (entities) => entitiesDownload(team.value, entities),
         multi: true,
         important: true,
       },
