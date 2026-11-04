@@ -75,8 +75,11 @@ def _zip_path(download_id: str) -> Path:
 
 def _purge_stale():
     """Delete download artifacts older than TTL so failed/abandoned jobs don't leak disk."""
+    d = _download_dir()
+    if not d.exists():
+        return
     cutoff = frappe.utils.now_datetime().timestamp() - DOWNLOAD_TTL_SECONDS
-    for entry in _download_dir().glob("*"):
+    for entry in d.glob("*"):
         try:
             if entry.stat().st_mtime < cutoff:
                 entry.unlink()

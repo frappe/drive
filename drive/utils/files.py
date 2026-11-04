@@ -4,7 +4,10 @@ from io import BytesIO
 from pathlib import Path
 import shutil
 
-import cv2
+try:
+    import cv2
+except ImportError:
+    cv2 = None
 import frappe
 from PIL import Image, ImageOps
 
@@ -12,7 +15,10 @@ from drive.locks.distributed_lock import DistributedLock
 
 from . import get_home_folder
 
-DriveFile = frappe.qb.DocType("Drive File")
+try:
+    DriveFile = frappe.qb.DocType("Drive File")
+except Exception:
+    DriveFile = None
 
 
 class FileManager:
@@ -259,7 +265,6 @@ class FileManager:
             frappe.throw("Could not find this file", frappe.NotFound)
 
         return buf
-
 
     def _canonical_disk_path(self, entity):
         """Recompute the on-disk path of a file from the folder tree."""

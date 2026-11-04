@@ -426,7 +426,10 @@ def audit(conn=None, site_dir=None):
 # Logging helper
 # ---------------------------------------------------------------------------
 
-SITE_FOLDER = None
+try:
+    SITE_FOLDER = Path(frappe.get_site_path("private/files"))
+except Exception:
+    SITE_FOLDER = None
 
 DEBUG = True
 

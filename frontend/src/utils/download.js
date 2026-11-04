@@ -49,22 +49,14 @@ function clearDownloadInProgress() {
 }
 
 export function entitiesDownload(team, entities, transfer = false) {
-  console.log("[Drive][Download] entitiesDownload entry", {
-    team,
-    count: entities.length,
-    names: entities.map((e) => e && e.name),
-    transfer,
-  })
   if (isDownloadInProgress()) return
   if (entities.length === 1) {
     if (entities[0].mime_type === "frappe_doc") {
-      console.log("[Drive][Download] branch: frappe_doc (printFile)")
-      if (router.currentRoute.value.name) {
+      if (router.currentRoute.value.name === "Document") {
         emitter.emit("printFile")
         clearDownloadInProgress()
         return
       }
-      // BROKEN
       return fetch(
         `/api/method/drive.api.files.get_file_content?entity_name=${entities[0].name}`
       )
@@ -82,7 +74,6 @@ export function entitiesDownload(team, entities, transfer = false) {
         .finally(() => clearDownloadInProgress())
     }
     if (entities[0].is_group) {
-      console.log("[Drive][Download] branch: single folder -> folderDownload")
       return folderDownload(team, entities[0])
     }
     if (entities[0].is_link) {
@@ -93,7 +84,6 @@ export function entitiesDownload(team, entities, transfer = false) {
       })
       return
     }
-    console.log("[Drive][Download] branch: single file -> blob download")
     const t = toast(`Downloading "${entities[0].title}"...`)
     const url = `/api/method/drive.api.files.get_file_content?entity_name=${
       entities[0].name
@@ -132,16 +122,10 @@ export function entitiesDownload(team, entities, transfer = false) {
       })
   }
 
-  console.log("[Drive][Download] branch: multi-select -> hybrid zip")
   return decideDownload(team, entities, "Drive Download " + new Date().getTime())
 }
 
 export function folderDownload(team, root_entity) {
-  console.log("[Drive][Download] folderDownload -> hybrid zip", {
-    team,
-    folder: root_entity.name,
-    title: root_entity.title,
-  })
   return decideDownload(team, [root_entity], root_entity.title)
 }
 
@@ -180,10 +164,8 @@ function decideDownload(team, entities, filename) {
         message.total_size <= CLIENT_ZIP_MAX_BYTES &&
         message.count <= CLIENT_ZIP_MAX_FILES
       ) {
-        console.log("[Drive][Download] small -> client-side zip", message)
         return clientZipDownload(team, entities, filename)
       }
-      console.log("[Drive][Download] heavy -> server-side zip", message)
       return serverZipDownload(team, names, filename)
     })
     .catch((error) => {
@@ -395,12 +377,14 @@ function serverZipDownload(team, entity_names, filename) {
 function pollDownloadStatus(download_id, onProgress) {
   return new Promise((resolve, reject) => {
     const startedAt = Date.now()
+    let retries = 0
     const poll = () => {
       fetch(
         `/api/method/drive.api.download.download_status?download_id=${download_id}`
       )
         .then((response) => response.json())
         .then(({ message }) => {
+          retries = 0
           if (message.status === "ready") {
             resolve(download_id)
           } else if (message.status === "error") {
@@ -427,7 +411,12 @@ function pollDownloadStatus(download_id, onProgress) {
           }
         })
         .catch((error) => {
-          reject(error)
+          if (retries < 3 && Date.now() - startedAt < POLL_TIMEOUT_MS) {
+            retries++
+            setTimeout(poll, POLL_INTERVAL_MS)
+          } else {
+            reject(error)
+          }
         })
     }
     poll()

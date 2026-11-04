@@ -205,7 +205,8 @@ const props = defineProps({
 })
 const store = useStore()
 
-const isDownloadItem = (item) => item.label === "Download"
+const isDownloadItem = (item) =>
+  item.label === "Download" || item.label === __("Download")
 
 const activeFilters = defineModel("filters")
 const disabled = computed(() => !props.getEntities.data?.length)

@@ -58,7 +58,6 @@ class DriveFile(Document):
             field_new_value=self.title,
         )
 
-
     def get_canonical_path(self):
         """Reconstruct the canonical path by walking up the parent_entity chain.
 
