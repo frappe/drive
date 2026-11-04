@@ -3,6 +3,7 @@
 
 import io
 import shutil
+from pathlib import Path
 
 import frappe
 from botocore.exceptions import ClientError
@@ -22,6 +23,7 @@ from drive.api.files import (
 from drive.patches import repair_moved_file_paths
 from drive.tests.test_controller_method import call
 from drive.tests.utils import OTHER, OWNER, DriveTestCase, make_file, make_team, read_file
+from drive.utils import get_home_folder
 from drive.utils.files import FileManager
 
 
@@ -91,6 +93,32 @@ class TestFoldersWithOtherMembersFiles(DriveTestCase):
         outer = create_folder(self.team, "Outer")
         move([self.folder.name], outer.name)
         self.assert_member_can_open_their_file()
+
+    def test_rename_repairs_a_members_stale_path_from_its_exact_folder_location(self):
+        home = get_home_folder(self.team)
+        stale = str(Path(home.path) / "missing-parent" / self.file.title)
+        frappe.db.set_value("Drive File", self.file.name, "path", stale)
+
+        call(self.folder.name, "rename", new_title="Renamed")
+
+        expected = str(Path(self.folder.path).with_name("Renamed") / self.file.title)
+        self.assertEqual(frappe.db.get_value("Drive File", self.file.name, "path"), expected)
+        self.assert_member_can_open_their_file()
+
+    def test_ambiguous_stored_path_stops_rename_before_moving_files(self):
+        other = make_file(self.team, "other.txt", "unrelated bytes")
+        frappe.db.set_value("Drive File", self.file.name, "path", other.path)
+        manager = FileManager()
+        old = manager.resolve(self.folder.path)
+        destination = manager.resolve(Path(self.folder.path).with_name("Renamed"))
+
+        with self.assertRaises(frappe.ValidationError):
+            call(self.folder.name, "rename", new_title="Renamed")
+
+        self.assertTrue(old.is_dir())
+        self.assertFalse(destination.exists())
+        self.assertEqual(frappe.db.get_value("Drive File", self.folder.name, "title"), "Shared")
+        self.assertEqual(manager.resolve(other.path).read_text(), "unrelated bytes")
 
     def test_restoring_the_folder_under_a_new_name_keeps_the_file(self):
         remove_or_restore([self.folder.name])
