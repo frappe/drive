@@ -40,3 +40,6 @@ ensure_newline_before_comments = true
 packages = [
     "ffmpeg",
 ]
+
+[tool.bench.frappe-dependencies]
+frappe = ">=14.0.0,<18.0.0"

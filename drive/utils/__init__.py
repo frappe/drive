@@ -7,7 +7,12 @@ import frappe
 import pycrdt
 from bs4 import BeautifulSoup
 
-DriveFile = frappe.qb.DocType("Drive File")
+try:
+    DriveFile = frappe.qb.DocType("Drive File")
+except Exception:
+    # Outside a connected frappe context (e.g. running repair_paths standalone),
+    # DriveFile isn't needed at import time; functions using it run in frappe.
+    DriveFile = None
 MIME_LIST_MAP = {
     "Image": [
         "image/png",

@@ -58,6 +58,43 @@ class DriveFile(Document):
             field_new_value=self.title,
         )
 
+    def get_canonical_path(self):
+        """Reconstruct the canonical path by walking up the parent_entity chain.
+
+        The on-disk path is rooted at the top-level folder's *path* field
+        (e.g. the home folder's path), with each descendant level appended by
+        title. This mirrors drive.utils.repair_paths.canonical_path_for.
+        """
+        chain = []
+        cur_name = self.parent_entity
+        guard = 0
+        while cur_name and guard < 50:
+            p_doc = frappe.db.get_value(
+                "Drive File",
+                cur_name,
+                ["name", "title", "path", "parent_entity", "is_group"],
+                as_dict=True,
+            )
+            if not p_doc:
+                break
+            chain.append(p_doc)
+            if not p_doc.get("is_group") or not p_doc.get("parent_entity"):
+                break
+            cur_name = p_doc.get("parent_entity")
+            guard += 1
+        if not chain:
+            return None
+        chain.reverse()
+        root_path = (chain[0].get("path") or "").rstrip("/")
+        if not root_path:
+            return None
+        parts = [p["title"] for p in chain[1:]] + [self.title]
+        return str(Path(root_path) / Path(*parts))
+
+    def repair_path_drift(self):
+        """Compatibility hook: path changes now require explicit administrator maintenance."""
+        return
+
     def on_trash(self):
         frappe.db.delete("Drive Favourite", {"entity": self.name})
         frappe.db.delete("Drive Entity Log", {"entity_name": self.name})
@@ -194,6 +231,8 @@ class DriveFile(Document):
         :raises FileExistsError: If a file or folder with the same name already exists in the parent folder
         :return: DriveEntity doc once it's renamed
         """
+        if not user_has_permission(self, "write"):
+            frappe.throw("You cannot rename this file.", frappe.PermissionError)
         if new_title == self.title:
             return self
 
@@ -204,23 +243,41 @@ class DriveFile(Document):
                 FileExistsError,
             )
 
+        if len(new_title) > 140:
+            frappe.throw("Your title can't be more than 140 characters.")
+        old_title = self.title
+        self.title = new_title
+        manager = self.manager
+        plan = None
+        try:
+            self.validate_title()
+            if self.path and not manager.flat and not self.is_link and self.mime_type != "frappe/slides":
+                from drive.utils.path_moves import plan_rename_paths
+
+                plan = plan_rename_paths(self, manager.get_disk_path(self), manager, get_home_folder(self.team))
+        except Exception:
+            self.title = old_title
+            raise
+
         full_name = frappe.db.get_value("User", {"name": frappe.session.user}, ["full_name"])
-        message = f"{full_name} renamed {self.title} to {new_title}"
+        message = f"{full_name} renamed {old_title} to {new_title}"
         create_new_activity_log(
             entity=self.name,
             activity_type="rename",
             activity_message=message,
             document_field="title",
-            field_old_value=self.title,
+            field_old_value=old_title,
             field_new_value=new_title,
         )
-        if len(new_title) > 140:
-            frappe.throw("Your title can't be more than 140 characters.")
-        self.title = new_title
-        path = self.manager.rename(self)
+        path = manager.rename(self)
 
-        if path and self.path and self.mime_type != "frappe/slides":
-            self.recursive_path_move(self.path, path)
+        if path and plan is not None:
+            # The complete plan was checked before the storage move. Save
+            # descendants first, retaining v0.4.4's all-members behavior.
+            for doc, destination in reversed(plan):
+                doc.flags.allow_storage_change = True
+                doc.path = destination
+                doc.save()
 
         self.save()
 

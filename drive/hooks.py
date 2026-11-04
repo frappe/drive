@@ -142,7 +142,10 @@ doc_events = {
     "Presentation": {
         "on_update": "drive.api.integration.presentation",
         "on_trash": "drive.api.integration.presentation",
-    }
+    },
+    "Error Log": {
+        "before_insert": "drive.utils.overrides.truncate_error_log_title",
+    },
 }
 
 

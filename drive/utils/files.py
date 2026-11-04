@@ -4,7 +4,10 @@ from io import BytesIO
 from pathlib import Path
 import shutil
 
-import cv2
+try:
+    import cv2
+except ImportError:
+    cv2 = None
 import frappe
 from PIL import Image, ImageOps
 
@@ -12,7 +15,10 @@ from drive.locks.distributed_lock import DistributedLock
 
 from . import get_home_folder
 
-DriveFile = frappe.qb.DocType("Drive File")
+try:
+    DriveFile = frappe.qb.DocType("Drive File")
+except Exception:
+    DriveFile = None
 
 
 class FileManager:
@@ -35,8 +41,9 @@ class FileManager:
         self.bucket = settings.bucket
         self.site_folder = Path(frappe.get_site_path("private/files"))
 
-        TEAMS = frappe.get_all("Drive Team", fields=["name", "s3_bucket"])
+        TEAMS = frappe.get_all("Drive Team", fields=["name", "s3_bucket", "prefix"])
         self.bucket_map = {k["name"]: k["s3_bucket"] for k in TEAMS}
+        self.prefix_map = {k["name"]: k["prefix"] for k in TEAMS}
 
         if self.s3_enabled:
             import boto3
@@ -67,6 +74,9 @@ class FileManager:
         Return where `path` is on disk. Refuses anything outside the site's private files folder,
         such as paths with `..` or absolute paths.
         """
+        path = Path(path)
+        if path.is_absolute() or ".." in path.parts:
+            frappe.throw("This file is outside Drive's storage.", frappe.PermissionError)
         root = self.site_folder.resolve()
         full_path = (root / path).resolve()
         if not full_path.is_relative_to(root):
@@ -75,6 +85,10 @@ class FileManager:
 
     def get_bucket(self, team):
         return self.bucket_map.get(team) or self.bucket
+
+    def get_prefix(self, team):
+        prefix = self.prefix_map.get(team)
+        return self.settings.root_folder if prefix is None else prefix
 
     def can_create_thumbnail(self, file):
         # Don't create thumbnails for text files
@@ -114,6 +128,14 @@ class FileManager:
             except FileExistsError:
                 os.remove(current_path)
                 frappe.throw(f"Could not upload: '{drive_file.title}' already exists.", FileExistsError)
+            except OSError as error:
+                if error.errno == 28:
+                    frappe.throw(
+                        "There's not enough storage space on the server to upload this file. "
+                        "Try a smaller file, or ask your administrator to free up space.",
+                        frappe.ValidationError,
+                    )
+                raise
             os.remove(current_path)
             if drive_file and create_thumbnail and self.can_create_thumbnail(drive_file):
                 frappe.enqueue(
@@ -243,6 +265,40 @@ class FileManager:
             frappe.throw("Could not find this file", frappe.NotFound)
 
         return buf
+
+    def _canonical_disk_path(self, entity):
+        """Recompute the on-disk path of a file from the folder tree."""
+        if self.flat:
+            return Path(entity.name)
+
+        chain = []
+        cur_name = entity.parent_entity
+        guard = 0
+        while cur_name and guard < 50:
+            row = frappe.db.get_value(
+                "Drive File", cur_name, ["title", "path", "parent_entity", "is_group"], as_dict=True
+            )
+            if not row:
+                break
+            chain.append(row)
+            if row.is_group == 0 or not row.parent_entity:
+                break
+            cur_name = row.parent_entity
+            guard += 1
+        if not chain:
+            return None
+
+        # Walk parents until the root folder (whose path is the home-folder name)
+        chain.reverse()
+        root = chain[0]
+        base = (root["path"] or "").rstrip("/")
+        if not base:
+            return None
+        return Path(base) / Path(*[r["title"] for r in chain[1:]]) / entity.title
+
+    def _relocate_mislocated_file(self, entity, canonical):
+        """Filename matches cannot establish ownership. Never relocate files during a read."""
+        return None
 
     def write_file(self, path: str | Path, content: str):
         if self.s3_enabled:

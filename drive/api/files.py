@@ -1106,3 +1106,19 @@ def auto_delete_transfers():
 
     for name in transfers:
         frappe.delete_doc("Drive Transfer", name)
+
+
+@frappe.whitelist()
+def run_drive_audit():
+    """Inspect this site's Drive paths. Requires the System Manager role."""
+    from drive.utils.maintenance import inspect_paths
+
+    return inspect_paths()
+
+
+@frappe.whitelist(methods=["POST"])
+def run_drive_repair():
+    """Repair verified database paths without moving files. Requires a site administrator."""
+    from drive.utils.maintenance import inspect_paths
+
+    return inspect_paths(apply=True)

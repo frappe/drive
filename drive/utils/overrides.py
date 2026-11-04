@@ -97,3 +97,15 @@ def is_own_record(doc, ptype=None, user=None, debug=False):
     # Changes are checked on the edited record, so the saved record must also be theirs.
     # Otherwise people could take over a record by putting their own name on it.
     return doc.is_new() or frappe.db.get_value(doc.doctype, doc.name, person) == user
+
+
+ERROR_LOG_TITLE_MAX_LENGTH = 140
+
+
+def truncate_error_log_title(doc, method=None):
+    """Error Log's method (Title) field is a Data field capped at 140 chars; a
+    long exception string would make the insert fail and drop the whole log.
+    Runs as a doc_events before_insert hook so it applies on every site
+    (localhost, staging, production) without patching the frappe app."""
+    if doc.method and len(doc.method) > ERROR_LOG_TITLE_MAX_LENGTH:
+        doc.method = doc.method[:ERROR_LOG_TITLE_MAX_LENGTH]

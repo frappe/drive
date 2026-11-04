@@ -167,7 +167,8 @@
             variant="outline"
             :tooltip="item.label"
             size="md"
-            @click.once="item.action(selections)"
+            :loading="isDownloadItem(item) && downloadInProgress"
+            @click="item.action(selections)"
           >
             <template #icon>
               <component
@@ -188,6 +189,7 @@ import { ref, computed, watch, useTemplateRef, h, defineComponent } from "vue"
 import { getIconUrl } from "@/utils/getIconUrl"
 import { useStore } from "vuex"
 import { onKeyDown } from "@vueuse/core"
+import { downloadInProgress } from "@/utils/download"
 import LucideFilter from "~icons/lucide/filter"
 import TeamSelector from "@/components/TeamSelector.vue"
 
@@ -202,6 +204,9 @@ const props = defineProps({
   getEntities: Object,
 })
 const store = useStore()
+
+const isDownloadItem = (item) =>
+  item.label === "Download" || item.label === __("Download")
 
 const activeFilters = defineModel("filters")
 const disabled = computed(() => !props.getEntities.data?.length)
